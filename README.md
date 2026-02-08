@@ -148,4 +148,4 @@ This project is open source and available for personal use.
 
 ---
 
-Built with ☕ and attention to detail. Optimized for Big Tech recruiters.
+Built with ☕ and attention to detail.
