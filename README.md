@@ -2,13 +2,13 @@
 
 Professional portfolio website for security engineering roles at Big Tech companies.
 
-## 🎯 Overview
+## Overview
 
 Modern, interactive portfolio showcasing security engineering projects, technical expertise, and professional background. Built with vanilla JavaScript and optimized for recruiter readability.
 
 **Live Demo:** [Coming Soon]
 
-## ✨ Features
+## Features
 
 - **Unique Design Elements**
   - Custom animated cursor with magnetic hover effects
@@ -30,7 +30,7 @@ Modern, interactive portfolio showcasing security engineering projects, technica
   - Responsive design (mobile/tablet/desktop)
   - Accessibility support (`prefers-reduced-motion`)
 
-## 🚀 Tech Stack
+## Tech Stack
 
 - **Frontend:** HTML5, CSS3, JavaScript (ES6+)
 - **Build Tool:** Vite 6.4.1
@@ -38,7 +38,7 @@ Modern, interactive portfolio showcasing security engineering projects, technica
 - **Animations:** Canvas API (matrix background), Intersection Observer
 - **Typography:** Google Fonts (Inter, JetBrains Mono)
 
-## 📦 Installation
+## Installation
 
 ```bash
 # Clone repository
@@ -54,7 +54,7 @@ npm run dev
 
 Development server runs at `http://localhost:5173`
 
-## 🏗️ Build
+## Build
 
 ```bash
 # Create production build
@@ -66,7 +66,7 @@ npm run preview
 
 Build output is in the `dist/` directory.
 
-## 🌐 Deployment
+## Deployment
 
 ### Vercel (Recommended)
 1. Push to GitHub
@@ -84,7 +84,7 @@ Build output is in the `dist/` directory.
 2. Push `dist/` contents to `gh-pages` branch
 3. Enable GitHub Pages in repository settings
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 PortfolioSite/
