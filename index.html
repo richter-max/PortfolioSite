@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Max Richter - Security Engineer focused on building secure systems with clarity, automation, and discipline. Targeting roles at Google, Microsoft, and Meta.">
+  <meta name="keywords" content="security engineer, cybersecurity, software engineering, secure systems, big tech">
+  <meta name="author" content="Max Richter">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Max Richter - Security Engineer">
+  <meta property="og:description" content="Building secure systems with clarity, automation, and discipline.">
+  <meta property="og:type" content="website">
+
+  <title>Max Richter - Security Engineer</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet" href="/src/styles/index.css">
+</head>
+
+<body>
+  <!-- Custom Cursor -->
+  <div class="cursor">
+    <div class="cursor-dot"></div>
+  </div>
+
+  <!-- Matrix Background (more subtle) -->
+  <canvas id="matrix-bg" class="matrix-background"></canvas>
+
+  <!-- Hero Section -->
+  <section id="hero" class="hero">
+    <div class="hero-content">
+      <div class="terminal-badge">
+        <span class="prompt">$</span> whoami
+      </div>
+      <h1 class="hero-name" data-text="Max Richter">Max Richter</h1>
+      <p class="hero-tagline typing-text" id="typing-text"></p>
+      <div class="hero-role">Security Engineer</div>
+    </div>
+    <div class="scroll-indicator">
+      <div class="scroll-arrow"></div>
+    </div>
+  </section>
+
+  <!-- About & Philosophy Section -->
+  <section id="about" class="section">
+    <div class="container">
+      <h2 class="section-title">About</h2>
+      <div class="about-grid">
+        <div class="about-main glass-card tilt-card" data-tilt>
+          <p>Software Developer focused on <span class="highlight">Security & AI</span>. Recent graduate (Jan 2026) with
+            professional experience at <span class="highlight">Bosch</span>.</p>
+          <p>Current focus: <span class="highlight">AI Agent Robustness</span> and <span class="highlight">Prompt
+              Injection defense</span> — understanding attack surfaces in emerging systems where traditional security
+            models don't cleanly apply.</p>
+          <p>I prioritize hands-on security engineering over theoretical frameworks. I learn quickly, build
+            deliberately, and value long-term consistency over short-term wins.</p>
+        </div>
+        <div class="philosophy-card glass-card tilt-card" data-tilt>
+          <h3 class="card-subtitle">Philosophy</h3>
+          <ul class="philosophy-list">
+            <li><span class="bullet">→</span>Secure systems over features</li>
+            <li><span class="bullet">→</span>Real-world attack paths</li>
+            <li><span class="bullet">→</span>Clarity through tooling</li>
+            <li><span class="bullet">→</span>Practical over theoretical</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Projects Section -->
+  <section id="projects" class="section section-dark">
+    <div class="container">
+      <h2 class="section-title">Selected Projects</h2>
+
+      <div class="projects-grid">
+        <!-- Flagship Project -->
+        <div class="project-card featured glass-card tilt-card" data-tilt>
+          <div class="project-badge">Flagship</div>
+          <h3 class="project-title">Attack Surface Scanner</h3>
+          <p class="project-tech">Python • Security • CI/CD</p>
+          <p class="project-description">Non-intrusive attack surface and transport security scanner for SaaS
+            environments. Passive asset discovery via Certificate Transparency, TLS analysis, security header
+            validation, and deterministic risk scoring.</p>
+          <div class="project-highlights">
+            <span class="highlight-tag">Certificate Transparency</span>
+            <span class="highlight-tag">TLS Analysis</span>
+            <span class="highlight-tag">Security Headers</span>
+            <span class="highlight-tag">Risk Scoring</span>
+          </div>
+          <a href="https://github.com/cleamax/attack-surface-scanner" class="project-link magnetic" target="_blank"
+            rel="noopener noreferrer">
+            View Project <span class="arrow">→</span>
+          </a>
+        </div>
+
+        <!-- Other Projects -->
+        <div class="project-card glass-card tilt-card" data-tilt>
+          <h3 class="project-title">AEGIS</h3>
+          <p class="project-tech">Python • Dashboard • Visualization</p>
+          <p class="project-description">Security visibility dashboard with modern architecture, CI/CD integration, and
+            professional design for monitoring system health and vulnerabilities.</p>
+          <a href="https://github.com/cleamax/aegis" class="project-link magnetic" target="_blank"
+            rel="noopener noreferrer">
+            View Project <span class="arrow">→</span>
+          </a>
+        </div>
+
+        <div class="project-card glass-card tilt-card" data-tilt>
+          <h3 class="project-title">CloudPentestLab</h3>
+          <p class="project-tech">Terraform • Python • AWS</p>
+          <p class="project-description">Reproducible AWS pentest lab with intentionally vulnerable configurations.
+            Demonstrates attack chains: Public S3 → SSRF → privilege escalation.</p>
+          <a href="https://github.com/cleamax/CloudPentestLab" class="project-link magnetic" target="_blank"
+            rel="noopener noreferrer">
+            View Project <span class="arrow">→</span>
+          </a>
+        </div>
+
+        <div class="project-card glass-card tilt-card" data-tilt>
+          <h3 class="project-title">Blockchain Attack Playground</h3>
+          <p class="project-tech">Solidity • Security • Smart Contracts</p>
+          <p class="project-description">Vulnerable smart contracts with exploit demonstrations: reentrancy, access
+            control flaws, oracle manipulation. Educational security resource.</p>
+          <a href="https://github.com/cleamax/Blockchain-Attack-Playground" class="project-link magnetic"
+            target="_blank" rel="noopener noreferrer">
+            View Project <span class="arrow">→</span>
+          </a>
+        </div>
+
+        <div class="project-card glass-card tilt-card" data-tilt>
+          <h3 class="project-title">SecCheck</h3>
+          <p class="project-tech">TypeScript • DevSecOps • CI</p>
+          <p class="project-description">Lightweight CI security scanner that aggregates dependency scanning, secret
+            detection, and static analysis into a single unified report.</p>
+          <a href="https://github.com/cleamax/seccheck" class="project-link magnetic" target="_blank"
+            rel="noopener noreferrer">
+            View Project <span class="arrow">→</span>
+          </a>
+        </div>
+
+        <div class="project-card glass-card tilt-card" data-tilt>
+          <h3 class="project-title">WebSec Playground</h3>
+          <p class="project-tech">Flask • OWASP • Web Security</p>
+          <p class="project-description">Deliberately vulnerable web application demonstrating OWASP Top 10: SQLi, XSS,
+            IDOR, CSRF for educational purposes.</p>
+          <a href="https://github.com/cleamax/websec-playground" class="project-link magnetic" target="_blank"
+            rel="noopener noreferrer">
+            View Project <span class="arrow">→</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Technical Stack Section -->
+  <section id="stack" class="section">
+    <div class="container">
+      <h2 class="section-title">Technical Stack</h2>
+      <div class="stack-grid">
+        <div class="stack-category glass-card tilt-card" data-tilt>
+          <h3 class="category-title">Languages</h3>
+          <div class="stack-tags">
+            <span class="stack-tag">Python</span>
+            <span class="stack-tag">TypeScript</span>
+            <span class="stack-tag">Solidity</span>
+            <span class="stack-tag">HCL</span>
+          </div>
+        </div>
+
+        <div class="stack-category glass-card tilt-card" data-tilt>
+          <h3 class="category-title">Security</h3>
+          <div class="stack-tags">
+            <span class="stack-tag">TLS Analysis</span>
+            <span class="stack-tag">Certificate Transparency</span>
+            <span class="stack-tag">OWASP</span>
+            <span class="stack-tag">AWS Security</span>
+            <span class="stack-tag">Smart Contract Auditing</span>
+          </div>
+        </div>
+
+        <div class="stack-category glass-card tilt-card" data-tilt>
+          <h3 class="category-title">Cloud & Infrastructure</h3>
+          <div class="stack-tags">
+            <span class="stack-tag">AWS</span>
+            <span class="stack-tag">IAM</span>
+            <span class="stack-tag">Terraform</span>
+            <span class="stack-tag">Docker</span>
+          </div>
+        </div>
+
+        <div class="stack-category glass-card tilt-card" data-tilt>
+          <h3 class="category-title">DevOps & Tools</h3>
+          <div class="stack-tags">
+            <span class="stack-tag">GitHub Actions</span>
+            <span class="stack-tag">CI/CD</span>
+            <span class="stack-tag">Pydantic</span>
+            <span class="stack-tag">Flask</span>
+            <span class="stack-tag">boto3</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Discipline Section -->
+  <section id="discipline" class="section section-dark">
+    <div class="container">
+      <h2 class="section-title">Discipline & Performance</h2>
+      <p class="section-description">Long-term consistency, performance under stress, structured execution.</p>
+      <div class="discipline-grid">
+        <div class="discipline-card glass-card tilt-card" data-tilt>
+          <div class="discipline-icon">🏓</div>
+          <h3 class="discipline-title">Youth Table Tennis Coach</h3>
+          <p class="discipline-desc">Leadership, responsibility, and mentoring. Teaching technique and competitive
+            mindset to young athletes.</p>
+        </div>
+
+        <div class="discipline-card glass-card tilt-card" data-tilt>
+          <div class="discipline-icon">🏊</div>
+          <h3 class="discipline-title">Ironman 70.3 — 2026</h3>
+          <p class="discipline-desc">Long-distance endurance preparation. 1.9km swim, 90km bike, 21.1km run. Sustained
+            effort and recovery management.</p>
+        </div>
+
+        <div class="discipline-card glass-card tilt-card" data-tilt>
+          <div class="discipline-icon">🏃</div>
+          <h3 class="discipline-title">Berlin Marathon — 2026</h3>
+          <p class="discipline-desc">42.2km of execution. Structured training blocks, progressive overload, and race-day
+            discipline.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Terminal Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-terminal">
+        <div class="terminal-line">
+          <span class="prompt">$</span>
+          <span class="command">connect --with max</span>
+        </div>
+        <div class="terminal-line output">
+          <a href="https://github.com/cleamax" target="_blank" rel="noopener noreferrer"
+            class="terminal-link magnetic">GitHub</a>
+          <span class="separator">|</span>
+          <a href="https://linkedin.com/in/maxrichter" target="_blank" rel="noopener noreferrer"
+            class="terminal-link magnetic">LinkedIn</a>
+        </div>
+        <div class="terminal-line copyright">
+          <span class="prompt">$</span>
+          <span class="command">© 2026 Max Richter</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="/src/main.js"></script>
+  <script type="module" src="/src/effects.js"></script>
+</body>
+
+</html>
