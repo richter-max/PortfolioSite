@@ -265,10 +265,24 @@ function checkReducedMotion() {
 }
 
 // ============================================
+// BACKGROUND IMAGES
+// ============================================
+function initBackgroundImages() {
+    const elementsWithBg = document.querySelectorAll('[data-bg]');
+    elementsWithBg.forEach(element => {
+        const bgUrl = element.getAttribute('data-bg');
+        if (bgUrl) {
+            element.style.backgroundImage = `url('${bgUrl}')`;
+        }
+    });
+}
+
+// ============================================
 // INITIALIZE ALL EFFECTS
 // ============================================
 document.addEventListener('DOMContentLoaded', () => {
     checkReducedMotion();
+    initBackgroundImages();
     initMatrixBackground();
     initCustomCursor();
     initTypingAnimation();
