@@ -157,14 +157,15 @@ function init3DTilt() {
             const centerX = rect.width / 2;
             const centerY = rect.height / 2;
 
-            const rotateX = (y - centerY) / 20;
-            const rotateY = (centerX - x) / 20;
+            // Reduced rotation intensity from /20 to /8 for gentler movement
+            const rotateX = (y - centerY) / 8;
+            const rotateY = (centerX - x) / 8;
 
             card.style.transform = `
         perspective(1000px)
         rotateX(${rotateX}deg)
         rotateY(${rotateY}deg)
-        scale3d(1.02, 1.02, 1.02)
+        scale3d(1.01, 1.01, 1.01)
       `;
 
             // Update spotlight position
