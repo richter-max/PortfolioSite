@@ -80,84 +80,203 @@
   <!-- Projects Section -->
   <section id="projects" class="section section-dark">
     <div class="container">
-      <h2 class="section-title">Selected Projects</h2>
+      <h2 class="section-title">Projects</h2>
 
-      <div class="projects-grid">
-        <!-- Flagship Project -->
-        <div class="project-card featured glass-card tilt-card" data-tilt>
-          <div class="project-badge">Flagship</div>
-          <h3 class="project-title">Attack Surface Scanner</h3>
-          <p class="project-tech">Python • Security • CI/CD</p>
-          <p class="project-description">Non-intrusive attack surface and transport security scanner for SaaS
-            environments. Passive asset discovery via Certificate Transparency, TLS analysis, security header
-            validation, and deterministic risk scoring.</p>
-          <div class="project-highlights">
-            <span class="highlight-tag">Certificate Transparency</span>
-            <span class="highlight-tag">TLS Analysis</span>
-            <span class="highlight-tag">Security Headers</span>
-            <span class="highlight-tag">Risk Scoring</span>
+      <!-- AEGIS - Flagship Project -->
+      <div class="flagship-project glass-card">
+        <div class="flagship-header">
+          <div class="flagship-badge">Flagship Project</div>
+          <div class="flagship-title-section">
+            <h3 class="flagship-title">AEGIS</h3>
+            <p class="flagship-subtitle">Security evaluation & policy framework for analyzing system and LLM behavior
+            </p>
+            <p class="flagship-tech">Python • FastAPI • SQLite • Next.js • Docker • CI/CD</p>
           </div>
+          <div class="flagship-links">
+            <a href="https://github.com/cleamax/aegis" class="github-primary-link" target="_blank"
+              rel="noopener noreferrer">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+              </svg>
+              View Repository
+            </a>
+          </div>
+        </div>
+
+        <div class="flagship-content">
+          <div class="flagship-section">
+            <h4 class="section-heading">Problem</h4>
+            <p>Traditional security tools lack visibility into LLM and agentic system behavior. Existing solutions focus
+              on static analysis or basic prompt filtering, missing runtime policy violations, unexpected tool usage,
+              and behavioral anomalies in production systems.</p>
+          </div>
+
+          <div class="flagship-section">
+            <h4 class="section-heading">Approach</h4>
+            <p>Trace-based evaluation framework that captures execution context, tool invocations, and decision paths.
+              Policy engine evaluates behavior against defined rules with full audit trails. Designed for deterministic,
+              reproducible security assessments.</p>
+          </div>
+
+          <div class="flagship-section">
+            <h4 class="section-heading">Key Features</h4>
+            <ul class="feature-list">
+              <li>Real-time detection engine with rule-based pattern matching</li>
+              <li>Event normalization pipeline for heterogeneous log sources</li>
+              <li>Evidence collection and alert triage dashboard</li>
+              <li>Comprehensive test coverage with fuzzing and property-based testing</li>
+              <li>Production-ready CI/CD with security scanning and supply chain verification</li>
+            </ul>
+          </div>
+
+          <div class="flagship-section">
+            <h4 class="section-heading">Engineering Focus</h4>
+            <div class="engineering-highlights">
+              <div class="highlight-item">
+                <span class="highlight-label">Explainability</span>
+                <span class="highlight-desc">Full trace context for every detection</span>
+              </div>
+              <div class="highlight-item">
+                <span class="highlight-label">Determinism</span>
+                <span class="highlight-desc">Reproducible evaluations with versioned policies</span>
+              </div>
+              <div class="highlight-item">
+                <span class="highlight-label">Production-Ready</span>
+                <span class="highlight-desc">Docker containerization, CI/CD, comprehensive testing</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Visual Demonstration -->
+          <div class="flagship-section demo-section">
+            <h4 class="section-heading">Dashboard</h4>
+            <div class="demo-container">
+              <img src="/aegis-dashboard.png" alt="AEGIS Security Command Center Dashboard" class="demo-image" />
+              <p class="demo-caption">Security Command Center showing real-time analytics, incident trace logs, and
+                event distribution patterns</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Other Projects Grid -->
+      <h3 class="subsection-title">Additional Projects</h3>
+      <div class="projects-grid">
+
+        <!-- Attack Surface Scanner -->
+        <div class="project-card glass-card tilt-card" data-tilt>
+          <h3 class="project-title">Attack Surface Scanner</h3>
+          <p class="project-tech">Python • Certificate Transparency • TLS</p>
+          <p class="project-description">Non-intrusive attack surface scanner for SaaS environments. Passive asset
+            discovery via Certificate Transparency logs, TLS configuration analysis, security header validation, and
+            deterministic risk scoring.</p>
+
+          <div class="engineering-highlights-compact">
+            <h4 class="highlights-heading">Engineering Highlights</h4>
+            <ul class="highlights-list">
+              <li>Zero-touch reconnaissance using CT logs and passive DNS</li>
+              <li>TLS cipher suite analysis with known-weak detection</li>
+              <li>Deterministic scoring model for consistent risk assessment</li>
+            </ul>
+          </div>
+
           <a href="https://github.com/cleamax/attack-surface-scanner" class="project-link magnetic" target="_blank"
             rel="noopener noreferrer">
-            View Project <span class="arrow">→</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+            </svg>
+            View Repository
           </a>
         </div>
 
-        <!-- Other Projects -->
+        <!-- Cloud Signal Engine -->
         <div class="project-card glass-card tilt-card" data-tilt>
-          <h3 class="project-title">AEGIS</h3>
-          <p class="project-tech">Python • Dashboard • Visualization</p>
-          <p class="project-description">Security visibility dashboard with modern architecture, CI/CD integration, and
-            professional design for monitoring system health and vulnerabilities.</p>
-          <a href="https://github.com/cleamax/aegis" class="project-link magnetic" target="_blank"
+          <h3 class="project-title">Cloud Signal Engine</h3>
+          <p class="project-tech">Python • FastAPI • Detection Engineering</p>
+          <p class="project-description">Production-style security detection and abuse monitoring system. Ingests and
+            normalizes logs, runs rule-based detections, generates alerts with evidence, and provides triage UI.</p>
+
+          <!-- Visual Demonstration -->
+          <div class="project-demo">
+            <img src="/signalforge-dashboard.png" alt="SignalForge Detection Platform" class="project-demo-image" />
+            <p class="project-demo-caption">Alert triage interface with severity classification and real-time detection
+              monitoring</p>
+          </div>
+
+          <div class="engineering-highlights-compact">
+            <h4 class="highlights-heading">Engineering Highlights</h4>
+            <ul class="highlights-list">
+              <li>Event normalization pipeline for heterogeneous sources</li>
+              <li>Rule-based detection engine with pattern matching</li>
+              <li>Evidence-based alerting with full context preservation</li>
+            </ul>
+          </div>
+
+          <a href="https://github.com/cleamax/signalforge" class="project-link magnetic" target="_blank"
             rel="noopener noreferrer">
-            View Project <span class="arrow">→</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+            </svg>
+            View Repository
           </a>
         </div>
 
+        <!-- Cloud Pentest Lab -->
         <div class="project-card glass-card tilt-card" data-tilt>
-          <h3 class="project-title">CloudPentestLab</h3>
-          <p class="project-tech">Terraform • Python • AWS</p>
-          <p class="project-description">Reproducible AWS pentest lab with intentionally vulnerable configurations.
-            Demonstrates attack chains: Public S3 → SSRF → privilege escalation.</p>
+          <h3 class="project-title">Cloud Pentest Lab</h3>
+          <p class="project-tech">Terraform • Python • AWS • IAM</p>
+          <p class="project-description">Reproducible AWS penetration testing environment with intentionally vulnerable
+            configurations. Demonstrates realistic attack chains from initial access to privilege escalation.</p>
+
+          <div class="engineering-highlights-compact">
+            <h4 class="highlights-heading">Engineering Highlights</h4>
+            <ul class="highlights-list">
+              <li>Infrastructure-as-code for reproducible vulnerable environments</li>
+              <li>Multi-stage attack chain: S3 exposure → SSRF → privilege escalation</li>
+              <li>Automated teardown to prevent cost accumulation</li>
+            </ul>
+          </div>
+
           <a href="https://github.com/cleamax/CloudPentestLab" class="project-link magnetic" target="_blank"
             rel="noopener noreferrer">
-            View Project <span class="arrow">→</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+            </svg>
+            View Repository
           </a>
         </div>
 
-        <div class="project-card glass-card tilt-card" data-tilt>
-          <h3 class="project-title">Blockchain Attack Playground</h3>
-          <p class="project-tech">Solidity • Security • Smart Contracts</p>
-          <p class="project-description">Vulnerable smart contracts with exploit demonstrations: reentrancy, access
-            control flaws, oracle manipulation. Educational security resource.</p>
-          <a href="https://github.com/cleamax/Blockchain-Attack-Playground" class="project-link magnetic"
-            target="_blank" rel="noopener noreferrer">
-            View Project <span class="arrow">→</span>
-          </a>
-        </div>
-
-        <div class="project-card glass-card tilt-card" data-tilt>
-          <h3 class="project-title">SecCheck</h3>
-          <p class="project-tech">TypeScript • DevSecOps • CI</p>
-          <p class="project-description">Lightweight CI security scanner that aggregates dependency scanning, secret
-            detection, and static analysis into a single unified report.</p>
-          <a href="https://github.com/cleamax/seccheck" class="project-link magnetic" target="_blank"
-            rel="noopener noreferrer">
-            View Project <span class="arrow">→</span>
-          </a>
-        </div>
-
+        <!-- WebSec Playground -->
         <div class="project-card glass-card tilt-card" data-tilt>
           <h3 class="project-title">WebSec Playground</h3>
           <p class="project-tech">Flask • OWASP • Web Security</p>
-          <p class="project-description">Deliberately vulnerable web application demonstrating OWASP Top 10: SQLi, XSS,
-            IDOR, CSRF for educational purposes.</p>
+          <p class="project-description">Deliberately vulnerable web application demonstrating OWASP Top 10
+            vulnerabilities. Educational resource for understanding common web security flaws and exploitation
+            techniques.</p>
+
+          <div class="engineering-highlights-compact">
+            <h4 class="highlights-heading">Engineering Highlights</h4>
+            <ul class="highlights-list">
+              <li>Realistic implementations of SQLi, XSS, IDOR, and CSRF</li>
+              <li>Isolated environment with clear exploitation paths</li>
+              <li>Educational focus with vulnerability explanations</li>
+            </ul>
+          </div>
+
           <a href="https://github.com/cleamax/websec-playground" class="project-link magnetic" target="_blank"
             rel="noopener noreferrer">
-            View Project <span class="arrow">→</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+            </svg>
+            View Repository
           </a>
         </div>
+
       </div>
     </div>
   </section>
