@@ -780,6 +780,12 @@ body {
   overflow: hidden;
 }
 
+/* Override glass-card hover for consistent grey borders on sport cards */
+.discipline-card:hover {
+  border-color: var(--glass-border);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
 /* Background image styling for discipline cards */
 .discipline-card[data-bg] {
   background-size: cover;
