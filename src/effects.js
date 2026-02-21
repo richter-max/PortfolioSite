@@ -51,7 +51,6 @@ function initCustomCursor() {
     const cursor = document.querySelector('.cursor');
     if (!cursor || window.matchMedia('(pointer: coarse)').matches) return;
 
-    const cursorDot = document.querySelector('.cursor-dot');
     let mouseX = 0, mouseY = 0;
     let cursorX = 0, cursorY = 0;
 
@@ -74,46 +73,6 @@ function initCustomCursor() {
         el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
         el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
     });
-}
-
-// ============================================
-// TYPING ANIMATION
-// ============================================
-function initTypingAnimation() {
-    const typingElement = document.getElementById('typing-text');
-    if (!typingElement) return;
-
-    const messages = [
-        'Building secure systems with clarity, automation, and discipline.',
-        'Understanding real-world attack surfaces.',
-        'Security engineering over theoretical abstractions.'
-    ];
-
-    let messageIndex = 0, charIndex = 0, isDeleting = false;
-
-    function type() {
-        const currentMessage = messages[messageIndex];
-        if (isDeleting) {
-            typingElement.textContent = currentMessage.substring(0, charIndex - 1);
-            charIndex--;
-        } else {
-            typingElement.textContent = currentMessage.substring(0, charIndex + 1);
-            charIndex++;
-        }
-
-        let typeSpeed = isDeleting ? 30 : 80;
-        if (!isDeleting && charIndex === currentMessage.length) {
-            typeSpeed = 2000;
-            isDeleting = true;
-        } else if (isDeleting && charIndex === 0) {
-            isDeleting = false;
-            messageIndex = (messageIndex + 1) % messages.length;
-            typeSpeed = 500;
-        }
-        setTimeout(type, typeSpeed);
-    }
-
-    setTimeout(type, 1000);
 }
 
 // ============================================
@@ -168,16 +127,22 @@ function initMagneticEffect() {
 }
 
 // ============================================
-// SCROLL REVEAL ANIMATIONS
+// SCROLL REVEAL — section-level + child stagger
 // ============================================
 function initScrollAnimations() {
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
     const observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry, i) => {
+        entries.forEach((entry) => {
             if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
-                observer.unobserve(entry.target);
+                const el = entry.target;
+                el.classList.add('visible');
+                observer.unobserve(el);
+
+                // Stagger direct children marked with .reveal-child
+                const children = el.querySelectorAll('.reveal-child');
+                children.forEach((child, i) => {
+                    child.style.transitionDelay = `${(i + 1) * 70}ms`;
+                    child.classList.add('visible');
+                });
             }
         });
     }, {
@@ -186,12 +151,10 @@ function initScrollAnimations() {
         threshold: 0.06
     });
 
-    // Apply staggered transition-delay based on position within parent
+    // Apply stagger delay for sibling .reveal elements in the same parent
     const revealEls = document.querySelectorAll('.reveal');
     revealEls.forEach((el) => {
-        // If the element has an explicit inline transition-delay already set, respect it
         if (!el.style.transitionDelay) {
-            // Stagger siblings within the same parent grid/flex container
             const siblings = Array.from(el.parentElement.querySelectorAll(':scope > .reveal'));
             const idx = siblings.indexOf(el);
             if (idx > 0 && idx < 6) {
@@ -244,19 +207,14 @@ function initScrollProgress() {
 }
 
 // ============================================
-// STICKY NAV — scrolled class + active section
+// STICKY NAV — scrolled class
 // ============================================
 function initStickyNav() {
     const nav = document.getElementById('site-nav');
     if (!nav) return;
 
-    // Add "scrolled" class when user scrolls past hero
     function onScroll() {
-        if (window.scrollY > 60) {
-            nav.classList.add('scrolled');
-        } else {
-            nav.classList.remove('scrolled');
-        }
+        nav.classList.toggle('scrolled', window.scrollY > 60);
     }
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
@@ -314,29 +272,40 @@ function initMobileMenu() {
 }
 
 // ============================================
-// RECRUITER MODE TOGGLE
+// PARALLAX-LITE (large headings only, desktop)
 // ============================================
-function initRecruiterMode() {
-    const toggle = document.getElementById('recruiter-toggle');
-    if (!toggle) return;
+function initParallaxLite() {
+    // Skip on mobile and reduced-motion
+    if (window.matchMedia('(max-width: 767px)').matches) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-    // Sync button state from html class (set by inline script in <head>)
-    function syncToggleState() {
-        const active = document.documentElement.classList.contains('recruiter-mode');
-        toggle.classList.toggle('active', active);
-        toggle.setAttribute('aria-pressed', active ? 'true' : 'false');
-        toggle.textContent = active ? 'Recruiter Mode ✓' : 'Recruiter Mode';
+    const elements = document.querySelectorAll('[data-parallax]');
+    if (!elements.length) return;
+
+    let ticking = false;
+
+    function applyParallax() {
+        const scrollY = window.scrollY;
+        elements.forEach(el => {
+            const rect = el.getBoundingClientRect();
+            const viewportCenter = window.innerHeight / 2;
+            const elementCenter = rect.top + rect.height / 2;
+            const distance = elementCenter - viewportCenter;
+            // Factor 0.04 → max ±10px at typical distances
+            const offset = Math.max(-10, Math.min(10, distance * 0.04));
+            el.style.transform = `translateY(${offset}px)`;
+        });
+        ticking = false;
     }
 
-    syncToggleState();
+    window.addEventListener('scroll', () => {
+        if (!ticking) {
+            requestAnimationFrame(applyParallax);
+            ticking = true;
+        }
+    }, { passive: true });
 
-    toggle.addEventListener('click', () => {
-        const isActive = document.documentElement.classList.toggle('recruiter-mode');
-        try {
-            localStorage.setItem('recruiterMode', isActive ? 'true' : 'false');
-        } catch (e) { }
-        syncToggleState();
-    });
+    applyParallax();
 }
 
 // ============================================
@@ -371,7 +340,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initBackgroundImages();
     initMatrixBackground();
     initCustomCursor();
-    initTypingAnimation();
     init3DTilt();
     initMagneticEffect();
     initScrollAnimations();
@@ -380,7 +348,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initStickyNav();
     initActiveSection();
     initMobileMenu();
-    initRecruiterMode();
+    initParallaxLite();
 });
 
 // ============================================

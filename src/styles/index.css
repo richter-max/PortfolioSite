@@ -211,54 +211,69 @@ body {
 }
 
 .hero-name {
-  font-size: var(--font-6xl);
+  font-size: clamp(3rem, 8vw, 5.5rem);
   font-weight: 800;
   letter-spacing: -0.03em;
-  margin-bottom: var(--space-md);
+  line-height: 1.0;
+  margin-bottom: var(--space-lg);
   background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   position: relative;
+  will-change: transform;
 }
 
-.hero-name:hover {
-  animation: subtle-glitch 0.3s ease;
-}
-
-@keyframes subtle-glitch {
-
-  0%,
-  100% {
-    transform: translate(0);
-  }
-
-  33% {
-    transform: translate(-1px, 1px);
-  }
-
-  66% {
-    transform: translate(1px, -1px);
-  }
-}
-
-.typing-text {
-  font-size: var(--font-2xl);
-  color: var(--text-secondary);
-  margin-bottom: var(--space-md);
-  min-height: 3rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.hero-role {
-  font-size: var(--font-lg);
-  color: var(--neon-cyan);
+.hero-position {
+  font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+  color: var(--text-primary);
   font-weight: 500;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  margin-bottom: var(--space-sm);
+  letter-spacing: -0.01em;
+  opacity: 0.9;
 }
+
+.hero-support {
+  font-size: clamp(0.9rem, 1.6vw, 1.05rem);
+  color: var(--text-secondary);
+  font-weight: 400;
+  line-height: 1.6;
+  max-width: 58ch;
+  margin: 0 auto;
+}
+
+/* Hero entrance animation */
+@keyframes heroEnter {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-enter>* {
+    opacity: 0;
+    animation: heroEnter 500ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  }
+
+  .hero-enter>*:nth-child(1) {
+    animation-delay: 0ms;
+  }
+
+  .hero-enter>*:nth-child(2) {
+    animation-delay: 130ms;
+  }
+
+  .hero-enter>*:nth-child(3) {
+    animation-delay: 260ms;
+  }
+}
+
 
 .scroll-indicator {
   position: absolute;
@@ -1024,9 +1039,14 @@ body {
     transition-duration: 0.01ms !important;
   }
 
-  .scroll-arrow,
-  .typing-text {
+  .scroll-arrow {
     animation: none;
+  }
+
+  /* Reveal is opacity-only when motion is reduced */
+  .reveal {
+    transform: none !important;
+    transition: opacity 200ms linear;
   }
 }
 
@@ -1441,14 +1461,6 @@ html.recruiter-mode [data-recruiter-alt] {
   color: var(--neon-blue);
 }
 
-/* ============================================
-   TYPOGRAPHY IMPROVEMENTS
-   ============================================ */
-/* Tighter hero headline */
-.hero-name {
-  line-height: 1.0;
-}
-
 /* Optimal reading line length for long prose */
 .about-main p,
 .flagship-section p {
@@ -1459,11 +1471,6 @@ html.recruiter-mode [data-recruiter-alt] {
 .about-main p {
   font-size: var(--font-lg);
   line-height: 1.75;
-}
-
-/* Section heading consistent size (fix duplicate font-size in source) */
-.section-heading {
-  font-size: var(--font-sm) !important;
 }
 
 /* Unified project link hover */
@@ -1477,4 +1484,92 @@ html.recruiter-mode [data-recruiter-alt] {
 .section+.section,
 .section+footer {
   border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* ============================================
+   BACKGROUND DEPTH (desktop only)
+   ============================================ */
+@media (min-width: 1024px) {
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 800px;
+    height: 600px;
+    background: radial-gradient(ellipse at center top,
+        rgba(0, 212, 255, 0.04) 0%,
+        transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+}
+
+/* ============================================
+   PROJECT INPUT→OUTPUT LINE
+   ============================================ */
+.project-io {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--text-tertiary);
+  letter-spacing: 0.06em;
+  margin-bottom: var(--space-md);
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+/* ============================================
+   BUTTON / LINK HOVER REFINEMENT
+   ============================================ */
+.project-link,
+.github-primary-link,
+.ci-link {
+  transition: transform 150ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 150ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    color var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.project-link:hover,
+.github-primary-link:hover {
+  transform: translateY(-2px);
+}
+
+.ci-link:hover {
+  transform: translateY(-2px);
+  border-color: var(--neon-blue);
+  color: var(--neon-blue);
+}
+
+/* ============================================
+   AEGIS ELEVATION
+   ============================================ */
+.aegis-headline {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.0;
+  background: linear-gradient(135deg, var(--text-primary) 0%, var(--neon-cyan) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: var(--space-sm);
+}
+
+.flagship-project {
+  padding-block: var(--space-3xl);
+}
+
+.highlight-item {
+  border-left: 2px solid var(--neon-cyan);
+  padding-left: var(--space-md);
+}
+
+/* ============================================
+   SECTION TITLE ELEVATION
+   ============================================ */
+.section-title {
+  font-size: clamp(1.75rem, 4vw, var(--font-4xl));
+  margin-bottom: var(--space-3xl);
 }
