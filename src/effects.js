@@ -7,7 +7,6 @@ function initMatrixBackground() {
 
     const ctx = canvas.getContext('2d');
 
-    // Set canvas size
     function resizeCanvas() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
@@ -15,18 +14,20 @@ function initMatrixBackground() {
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
-    // Matrix characters - security themed
     const chars = '01{}[]<>$#@!0xABCDEF'.split('');
     const fontSize = 14;
-    const columns = canvas.width / fontSize;
-    const drops = Array(Math.floor(columns)).fill(1);
+    let columns = canvas.width / fontSize;
+    let drops = Array(Math.floor(columns)).fill(1);
+
+    window.addEventListener('resize', () => {
+        columns = canvas.width / fontSize;
+        drops = Array(Math.floor(columns)).fill(1);
+    });
 
     function draw() {
-        // Fade effect
         ctx.fillStyle = 'rgba(10, 10, 10, 0.05)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Draw characters
         ctx.fillStyle = '#00ff9f';
         ctx.font = `${fontSize}px monospace`;
 
@@ -34,13 +35,8 @@ function initMatrixBackground() {
             const text = chars[Math.floor(Math.random() * chars.length)];
             const x = i * fontSize;
             const y = drops[i] * fontSize;
-
             ctx.fillText(text, x, y);
-
-            // Reset drop to top randomly
-            if (y > canvas.height && Math.random() > 0.975) {
-                drops[i] = 0;
-            }
+            if (y > canvas.height && Math.random() > 0.975) drops[i] = 0;
             drops[i]++;
         }
     }
@@ -53,46 +49,30 @@ function initMatrixBackground() {
 // ============================================
 function initCustomCursor() {
     const cursor = document.querySelector('.cursor');
-    if (!cursor) return;
+    if (!cursor || window.matchMedia('(pointer: coarse)').matches) return;
 
     const cursorDot = document.querySelector('.cursor-dot');
-    let mouseX = 0;
-    let mouseY = 0;
-    let cursorX = 0;
-    let cursorY = 0;
+    let mouseX = 0, mouseY = 0;
+    let cursorX = 0, cursorY = 0;
 
-    // Track mouse position
     document.addEventListener('mousemove', (e) => {
         mouseX = e.clientX;
         mouseY = e.clientY;
     });
 
-    // Smooth cursor movement
     function updateCursor() {
-        const dx = mouseX - cursorX;
-        const dy = mouseY - cursorY;
-
-        cursorX += dx * 0.2;
-        cursorY += dy * 0.2;
-
+        cursorX += (mouseX - cursorX) * 0.2;
+        cursorY += (mouseY - cursorY) * 0.2;
         cursor.style.left = `${cursorX}px`;
         cursor.style.top = `${cursorY}px`;
-
         requestAnimationFrame(updateCursor);
     }
     updateCursor();
 
-    // Hover effects
     const interactiveElements = document.querySelectorAll('a, button, .magnetic, .bento-card');
-
     interactiveElements.forEach(el => {
-        el.addEventListener('mouseenter', () => {
-            cursor.classList.add('hover');
-        });
-
-        el.addEventListener('mouseleave', () => {
-            cursor.classList.remove('hover');
-        });
+        el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+        el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
     });
 }
 
@@ -109,13 +89,10 @@ function initTypingAnimation() {
         'Security engineering over theoretical abstractions.'
     ];
 
-    let messageIndex = 0;
-    let charIndex = 0;
-    let isDeleting = false;
+    let messageIndex = 0, charIndex = 0, isDeleting = false;
 
     function type() {
         const currentMessage = messages[messageIndex];
-
         if (isDeleting) {
             typingElement.textContent = currentMessage.substring(0, charIndex - 1);
             charIndex--;
@@ -125,20 +102,17 @@ function initTypingAnimation() {
         }
 
         let typeSpeed = isDeleting ? 30 : 80;
-
         if (!isDeleting && charIndex === currentMessage.length) {
-            typeSpeed = 2000; // Pause at end
+            typeSpeed = 2000;
             isDeleting = true;
         } else if (isDeleting && charIndex === 0) {
             isDeleting = false;
             messageIndex = (messageIndex + 1) % messages.length;
-            typeSpeed = 500; // Pause before next message
+            typeSpeed = 500;
         }
-
         setTimeout(type, typeSpeed);
     }
 
-    // Start typing after a short delay
     setTimeout(type, 1000);
 }
 
@@ -146,29 +120,21 @@ function initTypingAnimation() {
 // 3D CARD TILT EFFECT
 // ============================================
 function init3DTilt() {
-    const cards = document.querySelectorAll('[data-tilt]');
+    if (window.matchMedia('(pointer: coarse)').matches) return;
 
+    const cards = document.querySelectorAll('[data-tilt]');
     cards.forEach(card => {
         card.addEventListener('mousemove', (e) => {
             const rect = card.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
-
             const centerX = rect.width / 2;
             const centerY = rect.height / 2;
-
-            // Further reduced rotation intensity from /8 to /40 for very gentle movement
             const rotateX = (y - centerY) / 40;
             const rotateY = (centerX - x) / 40;
 
-            card.style.transform = `
-        perspective(1000px)
-        rotateX(${rotateX}deg)
-        rotateY(${rotateY}deg)
-        scale3d(1.005, 1.005, 1.005)
-      `;
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.005, 1.005, 1.005)`;
 
-            // Update spotlight position
             const mouseXPercent = (x / rect.width) * 100;
             const mouseYPercent = (y / rect.height) * 100;
             card.style.setProperty('--mouse-x', `${mouseXPercent}%`);
@@ -185,19 +151,16 @@ function init3DTilt() {
 // MAGNETIC EFFECT
 // ============================================
 function initMagneticEffect() {
-    const magneticElements = document.querySelectorAll('.magnetic');
+    if (window.matchMedia('(pointer: coarse)').matches) return;
 
+    const magneticElements = document.querySelectorAll('.magnetic');
     magneticElements.forEach(el => {
         el.addEventListener('mousemove', (e) => {
             const rect = el.getBoundingClientRect();
             const x = e.clientX - rect.left - rect.width / 2;
             const y = e.clientY - rect.top - rect.height / 2;
-
-            const strength = 0.3;
-
-            el.style.transform = `translate(${x * strength}px, ${y * strength}px)`;
+            el.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`;
         });
-
         el.addEventListener('mouseleave', () => {
             el.style.transform = 'translate(0, 0)';
         });
@@ -205,29 +168,37 @@ function initMagneticEffect() {
 }
 
 // ============================================
-// SCROLL ANIMATIONS
+// SCROLL REVEAL ANIMATIONS
 // ============================================
 function initScrollAnimations() {
-    const observerOptions = {
-        root: null,
-        rootMargin: '0px',
-        threshold: 0.1
-    };
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
+        entries.forEach((entry, i) => {
             if (entry.isIntersecting) {
-                entry.target.classList.add('fade-in');
+                entry.target.classList.add('visible');
                 observer.unobserve(entry.target);
             }
         });
-    }, observerOptions);
+    }, {
+        root: null,
+        rootMargin: '0px 0px -8% 0px',
+        threshold: 0.06
+    });
 
-    // Observe all bento cards
-    const cards = document.querySelectorAll('.bento-card');
-    cards.forEach(card => {
-        card.style.opacity = '0';
-        observer.observe(card);
+    // Apply staggered transition-delay based on position within parent
+    const revealEls = document.querySelectorAll('.reveal');
+    revealEls.forEach((el) => {
+        // If the element has an explicit inline transition-delay already set, respect it
+        if (!el.style.transitionDelay) {
+            // Stagger siblings within the same parent grid/flex container
+            const siblings = Array.from(el.parentElement.querySelectorAll(':scope > .reveal'));
+            const idx = siblings.indexOf(el);
+            if (idx > 0 && idx < 6) {
+                el.style.transitionDelay = `${idx * 60}ms`;
+            }
+        }
+        observer.observe(el);
     });
 }
 
@@ -240,28 +211,132 @@ function initSmoothScroll() {
             e.preventDefault();
             const target = document.querySelector(this.getAttribute('href'));
             if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
+                // Close mobile nav if open
+                const navLinks = document.getElementById('nav-links');
+                const hamburger = document.getElementById('nav-hamburger');
+                if (navLinks && navLinks.classList.contains('open')) {
+                    navLinks.classList.remove('open');
+                    hamburger.setAttribute('aria-expanded', 'false');
+                    hamburger.setAttribute('aria-label', 'Open menu');
+                }
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         });
     });
 }
 
 // ============================================
-// ACCESSIBILITY: REDUCED MOTION
+// SCROLL PROGRESS BAR
 // ============================================
-function checkReducedMotion() {
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function initScrollProgress() {
+    const bar = document.getElementById('scroll-progress');
+    if (!bar) return;
 
-    if (prefersReducedMotion) {
-        document.body.classList.add('reduced-motion');
-        // Disable custom cursor for reduced motion
-        const cursor = document.querySelector('.cursor');
-        if (cursor) cursor.style.display = 'none';
-        document.body.style.cursor = 'auto';
+    function updateProgress() {
+        const scrollTop = window.scrollY;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+        bar.style.width = `${Math.min(progress, 100)}%`;
     }
+
+    window.addEventListener('scroll', updateProgress, { passive: true });
+    updateProgress();
+}
+
+// ============================================
+// STICKY NAV — scrolled class + active section
+// ============================================
+function initStickyNav() {
+    const nav = document.getElementById('site-nav');
+    if (!nav) return;
+
+    // Add "scrolled" class when user scrolls past hero
+    function onScroll() {
+        if (window.scrollY > 60) {
+            nav.classList.add('scrolled');
+        } else {
+            nav.classList.remove('scrolled');
+        }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+}
+
+// ============================================
+// ACTIVE SECTION TRACKING
+// ============================================
+function initActiveSection() {
+    const navLinks = document.querySelectorAll('.nav-link[href^="#"]');
+    if (!navLinks.length) return;
+
+    const sectionIds = Array.from(navLinks).map(l => l.getAttribute('href').slice(1));
+    const sections = sectionIds.map(id => document.getElementById(id)).filter(Boolean);
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const id = entry.target.id;
+                navLinks.forEach(link => {
+                    link.classList.toggle('active', link.getAttribute('href') === `#${id}`);
+                });
+            }
+        });
+    }, {
+        rootMargin: '-20% 0px -70% 0px',
+        threshold: 0
+    });
+
+    sections.forEach(section => observer.observe(section));
+}
+
+// ============================================
+// MOBILE HAMBURGER MENU
+// ============================================
+function initMobileMenu() {
+    const hamburger = document.getElementById('nav-hamburger');
+    const navLinks = document.getElementById('nav-links');
+    if (!hamburger || !navLinks) return;
+
+    hamburger.addEventListener('click', () => {
+        const isOpen = navLinks.classList.toggle('open');
+        hamburger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        hamburger.setAttribute('aria-label', isOpen ? 'Close menu' : 'Open menu');
+    });
+
+    // Close on outside click
+    document.addEventListener('click', (e) => {
+        if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) {
+            navLinks.classList.remove('open');
+            hamburger.setAttribute('aria-expanded', 'false');
+            hamburger.setAttribute('aria-label', 'Open menu');
+        }
+    });
+}
+
+// ============================================
+// RECRUITER MODE TOGGLE
+// ============================================
+function initRecruiterMode() {
+    const toggle = document.getElementById('recruiter-toggle');
+    if (!toggle) return;
+
+    // Sync button state from html class (set by inline script in <head>)
+    function syncToggleState() {
+        const active = document.documentElement.classList.contains('recruiter-mode');
+        toggle.classList.toggle('active', active);
+        toggle.setAttribute('aria-pressed', active ? 'true' : 'false');
+        toggle.textContent = active ? 'Recruiter Mode ✓' : 'Recruiter Mode';
+    }
+
+    syncToggleState();
+
+    toggle.addEventListener('click', () => {
+        const isActive = document.documentElement.classList.toggle('recruiter-mode');
+        try {
+            localStorage.setItem('recruiterMode', isActive ? 'true' : 'false');
+        } catch (e) { }
+        syncToggleState();
+    });
 }
 
 // ============================================
@@ -271,10 +346,21 @@ function initBackgroundImages() {
     const elementsWithBg = document.querySelectorAll('[data-bg]');
     elementsWithBg.forEach(element => {
         const bgUrl = element.getAttribute('data-bg');
-        if (bgUrl) {
-            element.style.backgroundImage = `url('${bgUrl}')`;
-        }
+        if (bgUrl) element.style.backgroundImage = `url('${bgUrl}')`;
     });
+}
+
+// ============================================
+// ACCESSIBILITY: REDUCED MOTION
+// ============================================
+function checkReducedMotion() {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) {
+        document.body.classList.add('reduced-motion');
+        const cursor = document.querySelector('.cursor');
+        if (cursor) cursor.style.display = 'none';
+        document.body.style.cursor = 'auto';
+    }
 }
 
 // ============================================
@@ -290,8 +376,11 @@ document.addEventListener('DOMContentLoaded', () => {
     initMagneticEffect();
     initScrollAnimations();
     initSmoothScroll();
-
-    console.log('🔒 Portfolio initialized - Security Engineer Mode');
+    initScrollProgress();
+    initStickyNav();
+    initActiveSection();
+    initMobileMenu();
+    initRecruiterMode();
 });
 
 // ============================================

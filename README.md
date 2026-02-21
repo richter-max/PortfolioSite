@@ -33,10 +33,47 @@ Modern, interactive portfolio showcasing security engineering projects, technica
 ## Tech Stack
 
 - **Frontend:** HTML5, CSS3, JavaScript (ES6+)
-- **Build Tool:** Vite 6.4.1
-- **Design:** Custom CSS with glassmorphism and 3D transforms
-- **Animations:** Canvas API (matrix background), Intersection Observer
+- **Build Tool:** Vite 6
+- **Design:** Custom CSS with glassmorphism, sticky nav, scroll reveals
+- **Animations:** Canvas API (matrix background), IntersectionObserver, CSS transitions
 - **Typography:** Google Fonts (Inter, JetBrains Mono)
+
+## Site UX / Recruiter Mode
+
+### Recruiter Mode
+
+A toggle in the top navigation marked **"Recruiter Mode"** switches the site into a condensed, skimmable layout:
+- Shorter introductory paragraphs surface key facts immediately
+- AEGIS flagship project shows prominent **GitHub** and **CI/Actions** proof links
+- Evidence cards (CI/CD, testing, security scanning) remain fully visible
+- Toggle state is persisted in `localStorage` and applied before first paint (no flash)
+
+> Keyboard accessible: toggle is keyboard-focusable and announces state via `aria-pressed`.
+
+### Scroll Animations
+
+Elements reveal as they enter the viewport using **IntersectionObserver + CSS transitions** (no Framer Motion, no heavy library):
+- Opacity: `0 → 1`
+- Y-translate: `12px → 0` (desktop) / `6px → 0` (mobile)
+- Duration: `300ms`, easing: `cubic-bezier(0.2, 0.8, 0.2,1)`
+- Each element fires **once** (observer is disconnected after trigger — no re-trigger on scroll up)
+- Sibling elements stagger by `60ms` for natural cascade
+
+### Disabling Motion (`prefers-reduced-motion`)
+
+All animations respect the OS/browser reduced-motion preference:
+
+```
+# macOS: System Settings → Accessibility → Display → Reduce Motion
+# Windows: Settings → Ease of Access → Display → Show animations
+# Chrome DevTools: Rendering panel → Emulate CSS media: prefers-reduced-motion: reduce
+```
+
+When `prefers-reduced-motion: reduce` is active:
+- Translate is removed entirely (opacity-only fade)
+- Typing animation and scroll arrow animation are disabled
+- Custom cursor animations stop
+- Matrix background canvas still runs (visual noise, not motion-dependent)
 
 ## Installation
 

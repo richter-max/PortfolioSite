@@ -25,16 +25,56 @@
 
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="stylesheet" href="/src/styles/index.css">
+
+  <!-- Recruiter mode: apply class before first paint to avoid FOUC -->
+  <script>
+    (function () {
+      try {
+        if (localStorage.getItem('recruiterMode') === 'true') {
+          document.documentElement.classList.add('recruiter-mode');
+        }
+      } catch (e) { }
+    })();
+  </script>
 </head>
 
 <body>
+  <!-- Skip to content (a11y) -->
+  <a class="skip-link" href="#about">Skip to content</a>
+
+  <!-- Scroll progress bar -->
+  <div id="scroll-progress" role="progressbar" aria-label="Page scroll progress"></div>
+
+  <!-- Sticky Navigation -->
+  <nav id="site-nav" aria-label="Main navigation">
+    <div class="nav-inner">
+      <span class="nav-brand">MR<span class="nav-brand-dot">//</span></span>
+
+      <button class="nav-hamburger" id="nav-hamburger" aria-label="Open menu" aria-expanded="false"
+        aria-controls="nav-links">
+        <span></span><span></span><span></span>
+      </button>
+
+      <div class="nav-links" id="nav-links" role="list">
+        <a href="#about" class="nav-link" role="listitem">About</a>
+        <a href="#projects" class="nav-link" role="listitem">Projects</a>
+        <a href="#stack" class="nav-link" role="listitem">Skills</a>
+        <a href="#discipline" class="nav-link" role="listitem">Discipline</a>
+        <a href="#contact" class="nav-link" role="listitem">Contact</a>
+        <button class="recruiter-toggle" id="recruiter-toggle" aria-pressed="false">
+          Recruiter Mode
+        </button>
+      </div>
+    </div>
+  </nav>
+
   <!-- Custom Cursor -->
-  <div class="cursor">
+  <div class="cursor" aria-hidden="true">
     <div class="cursor-dot"></div>
   </div>
 
   <!-- Matrix Background (more subtle) -->
-  <canvas id="matrix-bg" class="matrix-background"></canvas>
+  <canvas id="matrix-bg" class="matrix-background" aria-hidden="true"></canvas>
 
   <!-- Hero Section -->
   <section id="hero" class="hero">
@@ -54,18 +94,29 @@
   <!-- About & Philosophy Section -->
   <section id="about" class="section">
     <div class="container">
-      <h2 class="section-title">About</h2>
+      <h2 class="section-title reveal">About</h2>
       <div class="about-grid">
-        <div class="about-main glass-card tilt-card" data-tilt>
-          <p>Software Developer focused on <span class="highlight">Security & AI</span>. Recent graduate (Jan 2026) with
-            professional experience at <span class="highlight">Bosch</span>.</p>
-          <p>Current focus: <span class="highlight">AI Agent Robustness</span> and <span class="highlight">Prompt
-              Injection defense</span> — understanding attack surfaces in emerging systems where traditional security
-            models don't cleanly apply.</p>
-          <p>I prioritize hands-on security engineering over theoretical frameworks. I learn quickly, build
-            deliberately, and value long-term consistency over short-term wins.</p>
+        <div class="about-main glass-card tilt-card reveal" data-tilt>
+          <!-- Full version -->
+          <div data-detail>
+            <p>Software Developer focused on <span class="highlight">Security & AI</span>. Recent graduate (Jan 2026)
+              with
+              professional experience at <span class="highlight">Bosch</span>.</p>
+            <p>Current focus: <span class="highlight">AI Agent Robustness</span> and <span class="highlight">Prompt
+                Injection defense</span> — understanding attack surfaces in emerging systems where traditional security
+              models don't cleanly apply.</p>
+            <p>I prioritize hands-on security engineering over theoretical frameworks. I learn quickly, build
+              deliberately, and value long-term consistency over short-term wins.</p>
+          </div>
+          <!-- Recruiter condensed version -->
+          <div data-recruiter-alt>
+            <p>Security Engineer · Recent grad (Jan 2026) · Professional experience at <span
+                class="highlight">Bosch</span>.</p>
+            <p>Focus: <span class="highlight">AI Agent Robustness</span> &amp; <span class="highlight">Prompt Injection
+                defense</span>. Hands-on builder with a bias for real-world attack paths over theory.</p>
+          </div>
         </div>
-        <div class="philosophy-card glass-card tilt-card" data-tilt>
+        <div class="philosophy-card glass-card tilt-card reveal" data-tilt style="transition-delay: 80ms">
           <h3 class="card-subtitle">Philosophy</h3>
           <ul class="philosophy-list">
             <li><span class="bullet">→</span>Secure systems over features</li>
@@ -81,79 +132,170 @@
   <!-- Projects Section -->
   <section id="projects" class="section section-dark">
     <div class="container">
-      <h2 class="section-title">Projects</h2>
+      <h2 class="section-title reveal">Projects</h2>
 
       <!-- AEGIS - Flagship Project -->
-      <div class="flagship-project glass-card">
+      <div class="flagship-project glass-card reveal" id="aegis">
         <div class="flagship-header">
           <div class="flagship-badge">Flagship Project</div>
           <div class="flagship-title-section">
             <h3 class="flagship-title">AEGIS</h3>
-            <p class="flagship-subtitle">Security evaluation & policy framework for analyzing system and LLM behavior
-            </p>
+            <p class="flagship-subtitle">Security evaluation &amp; policy framework for analyzing system and LLM
+              behavior</p>
             <p class="flagship-tech">Python • FastAPI • SQLite • Next.js • Docker • CI/CD</p>
           </div>
           <div class="flagship-links">
             <a href="https://github.com/cleamax/aegis" class="github-primary-link" target="_blank"
               rel="noopener noreferrer">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <path
                   d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
               </svg>
               View Repository
             </a>
+            <a href="https://github.com/cleamax/aegis/actions" class="ci-link" target="_blank"
+              rel="noopener noreferrer">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z" />
+              </svg>
+              CI / Actions
+            </a>
           </div>
         </div>
 
+        <!-- Aegis jump links -->
+        <nav class="aegis-jumplinks" aria-label="AEGIS section navigation">
+          <a href="#aegis-problem">Problem</a>
+          <a href="#aegis-approach">Approach</a>
+          <a href="#aegis-architecture">Architecture</a>
+          <a href="#aegis-evidence">Evidence</a>
+          <a href="#aegis-next">What's Next</a>
+        </nav>
+
         <div class="flagship-content">
-          <div class="flagship-section">
+          <div class="flagship-section" id="aegis-problem">
             <h4 class="section-heading">Problem</h4>
-            <p>Traditional security tools lack visibility into LLM and agentic system behavior. Existing solutions focus
+            <!-- Full version -->
+            <p data-detail>Traditional security tools lack visibility into LLM and agentic system behavior. Existing
+              solutions focus
               on static analysis or basic prompt filtering, missing runtime policy violations, unexpected tool usage,
               and behavioral anomalies in production systems.</p>
+            <!-- Recruiter condensed -->
+            <p data-recruiter-alt>Security tooling has no visibility into LLM runtime behavior — policy violations and
+              behavioral anomalies go undetected.</p>
           </div>
 
-          <div class="flagship-section">
+          <div class="flagship-section" id="aegis-approach">
             <h4 class="section-heading">Approach</h4>
-            <p>Trace-based evaluation framework that captures execution context, tool invocations, and decision paths.
-              Policy engine evaluates behavior against defined rules with full audit trails. Designed for deterministic,
-              reproducible security assessments.</p>
-          </div>
-
-          <div class="flagship-section">
-            <h4 class="section-heading">Key Features</h4>
             <ul class="feature-list">
-              <li>Real-time detection engine with rule-based pattern matching</li>
-              <li>Event normalization pipeline for heterogeneous log sources</li>
-              <li>Evidence collection and alert triage dashboard</li>
-              <li>Comprehensive test coverage with fuzzing and property-based testing</li>
-              <li>Production-ready CI/CD with security scanning and supply chain verification</li>
+              <li>Trace-based evaluation captures execution context, tool invocations, and decision paths</li>
+              <li>Policy engine evaluates runtime behavior against versioned rules with full audit trails</li>
+              <li>Event normalization pipeline ingests heterogeneous log sources into a unified schema</li>
+              <li>Rule-based detection engine with evidence-backed alerting and triage UI</li>
+              <li>Designed for deterministic, reproducible security assessments</li>
             </ul>
           </div>
 
-          <div class="flagship-section">
-            <h4 class="section-heading">Engineering Focus</h4>
+          <div class="flagship-section" id="aegis-architecture">
+            <h4 class="section-heading">Architecture</h4>
+            <!-- Lightweight inline SVG architecture diagram -->
+            <div class="arch-diagram" role="img"
+              aria-label="AEGIS data flow: Log Sources → Event Normalizer → Detection Engine → Alert Store → Triage UI">
+              <svg viewBox="0 0 700 120" xmlns="http://www.w3.org/2000/svg" class="arch-svg">
+                <!-- Boxes -->
+                <rect x="4" y="34" width="120" height="52" rx="8" fill="rgba(0,212,255,0.08)"
+                  stroke="rgba(0,212,255,0.4)" stroke-width="1.5" />
+                <rect x="158" y="34" width="120" height="52" rx="8" fill="rgba(0,212,255,0.08)"
+                  stroke="rgba(0,212,255,0.4)" stroke-width="1.5" />
+                <rect x="312" y="34" width="140" height="52" rx="8" fill="rgba(0,255,159,0.08)"
+                  stroke="rgba(0,255,159,0.5)" stroke-width="1.5" />
+                <rect x="486" y="34" width="100" height="52" rx="8" fill="rgba(0,212,255,0.08)"
+                  stroke="rgba(0,212,255,0.4)" stroke-width="1.5" />
+                <rect x="604" y="34" width="92" height="52" rx="8" fill="rgba(168,85,247,0.08)"
+                  stroke="rgba(168,85,247,0.4)" stroke-width="1.5" />
+                <!-- Arrows -->
+                <line x1="124" y1="60" x2="156" y2="60" stroke="rgba(0,212,255,0.5)" stroke-width="1.5"
+                  marker-end="url(#arr)" />
+                <line x1="278" y1="60" x2="310" y2="60" stroke="rgba(0,212,255,0.5)" stroke-width="1.5"
+                  marker-end="url(#arr)" />
+                <line x1="452" y1="60" x2="484" y2="60" stroke="rgba(0,255,159,0.5)" stroke-width="1.5"
+                  marker-end="url(#arr2)" />
+                <line x1="586" y1="60" x2="602" y2="60" stroke="rgba(0,212,255,0.5)" stroke-width="1.5"
+                  marker-end="url(#arr)" />
+                <!-- Labels -->
+                <text x="64" y="57" text-anchor="middle" fill="#a8a8a8" font-size="11"
+                  font-family="Inter,sans-serif">Log</text>
+                <text x="64" y="72" text-anchor="middle" fill="#a8a8a8" font-size="11"
+                  font-family="Inter,sans-serif">Sources</text>
+                <text x="218" y="57" text-anchor="middle" fill="#a8a8a8" font-size="11"
+                  font-family="Inter,sans-serif">Event</text>
+                <text x="218" y="72" text-anchor="middle" fill="#a8a8a8" font-size="11"
+                  font-family="Inter,sans-serif">Normalizer</text>
+                <text x="382" y="54" text-anchor="middle" fill="#00ff9f" font-size="11" font-family="Inter,sans-serif"
+                  font-weight="600">Detection</text>
+                <text x="382" y="69" text-anchor="middle" fill="#00ff9f" font-size="11" font-family="Inter,sans-serif"
+                  font-weight="600">Engine</text>
+                <text x="536" y="57" text-anchor="middle" fill="#a8a8a8" font-size="11"
+                  font-family="Inter,sans-serif">Alert</text>
+                <text x="536" y="72" text-anchor="middle" fill="#a8a8a8" font-size="11"
+                  font-family="Inter,sans-serif">Store</text>
+                <text x="650" y="57" text-anchor="middle" fill="#c084fc" font-size="11"
+                  font-family="Inter,sans-serif">Triage</text>
+                <text x="650" y="72" text-anchor="middle" fill="#c084fc" font-size="11"
+                  font-family="Inter,sans-serif">UI</text>
+                <!-- Arrowhead markers -->
+                <defs>
+                  <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="rgba(0,212,255,0.6)" />
+                  </marker>
+                  <marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="rgba(0,255,159,0.6)" />
+                  </marker>
+                </defs>
+              </svg>
+            </div>
+          </div>
+
+          <div class="flagship-section" id="aegis-evidence">
+            <h4 class="section-heading">Evidence</h4>
             <div class="engineering-highlights">
               <div class="highlight-item">
-                <span class="highlight-label">Explainability</span>
-                <span class="highlight-desc">Full trace context for every detection</span>
+                <span class="highlight-label">CI/CD Pipelines</span>
+                <span class="highlight-desc">GitHub Actions: security scan, quality, supply-chain, fuzz workflows</span>
+                <a href="https://github.com/cleamax/aegis/actions" class="evidence-link" target="_blank"
+                  rel="noopener noreferrer">View Workflows →</a>
               </div>
               <div class="highlight-item">
-                <span class="highlight-label">Determinism</span>
-                <span class="highlight-desc">Reproducible evaluations with versioned policies</span>
+                <span class="highlight-label">Testing</span>
+                <span class="highlight-desc">Comprehensive test suite: pytest, property-based tests, fuzzing with
+                  Hypothesis</span>
+                <a href="https://github.com/cleamax/aegis" class="evidence-link" target="_blank"
+                  rel="noopener noreferrer">View Repository →</a>
               </div>
               <div class="highlight-item">
-                <span class="highlight-label">Production-Ready</span>
-                <span class="highlight-desc">Docker containerization, CI/CD, comprehensive testing</span>
+                <span class="highlight-label">Security Scanning</span>
+                <span class="highlight-desc">Bandit static analysis, pip-audit supply chain verification, SBOM
+                  generation</span>
               </div>
             </div>
+          </div>
+
+          <div class="flagship-section" id="aegis-next">
+            <h4 class="section-heading">What's Next</h4>
+            <ul class="feature-list">
+              <li>SIGMA rule integration for standardized detection patterns</li>
+              <li>LLM prompt injection detection heuristics layer</li>
+              <li>Rate-of-change anomaly scoring across trace windows</li>
+            </ul>
           </div>
 
           <!-- Visual Demonstration -->
           <div class="flagship-section demo-section">
             <h4 class="section-heading">Dashboard</h4>
             <div class="demo-container">
-              <img src="/aegis-dashboard.png" alt="AEGIS Security Command Center Dashboard" class="demo-image" />
+              <img src="/aegis-dashboard.png"
+                alt="AEGIS Security Command Center showing real-time analytics, incident trace logs, and event distribution"
+                class="demo-image" loading="lazy" />
               <p class="demo-caption">Security Command Center showing real-time analytics, incident trace logs, and
                 event distribution patterns</p>
             </div>
@@ -162,10 +304,10 @@
       </div>
 
       <!-- Other Projects Grid -->
-      <h3 class="subsection-title">Additional Projects</h3>
+      <h3 class="subsection-title reveal">Additional Projects</h3>
       <div class="projects-grid">
 
-        <!-- Attack Surface Scanner -->
+        <!-- Attack Surface Scanner (note: line numbers may shift with prior edits) -->
         <div class="project-card glass-card tilt-card" data-tilt>
           <h3 class="project-title">Attack Surface Scanner</h3>
           <p class="project-tech">Python • Certificate Transparency • TLS</p>
@@ -278,7 +420,7 @@
   <!-- Technical Stack Section -->
   <section id="stack" class="section">
     <div class="container">
-      <h2 class="section-title">Technical Stack</h2>
+      <h2 class="section-title reveal">Technical Stack</h2>
       <div class="stack-grid">
         <div class="stack-category glass-card tilt-card" data-tilt>
           <h3 class="category-title">Languages</h3>
@@ -328,8 +470,8 @@
   <!-- Discipline Section -->
   <section id="discipline" class="section section-dark">
     <div class="container">
-      <h2 class="section-title">Discipline & Performance</h2>
-      <p class="section-description">Long-term consistency, performance under stress, structured execution.</p>
+      <h2 class="section-title reveal">Discipline &amp; Performance</h2>
+      <p class="section-description reveal">Long-term consistency, performance under stress, structured execution.</p>
       <div class="discipline-grid">
         <div class="discipline-card glass-card tilt-card" data-tilt data-bg="/tabletennis.png">
           <div class="discipline-icon">🏓</div>
@@ -355,10 +497,10 @@
     </div>
   </section>
 
-  <!-- Terminal Footer -->
-  <footer class="footer">
+  <!-- Contact / Terminal Footer -->
+  <footer class="footer" id="contact">
     <div class="container">
-      <div class="footer-terminal">
+      <div class="footer-terminal reveal">
         <div class="terminal-line">
           <span class="prompt">$</span>
           <span class="command">connect --with max</span>
