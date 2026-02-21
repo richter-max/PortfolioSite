@@ -26,16 +26,7 @@
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="stylesheet" href="/src/styles/index.css">
 
-  <!-- Recruiter mode: apply class before first paint to avoid FOUC -->
-  <script>
-    (function () {
-      try {
-        if (localStorage.getItem('recruiterMode') === 'true') {
-          document.documentElement.classList.add('recruiter-mode');
-        }
-      } catch (e) { }
-    })();
-  </script>
+
 </head>
 
 <body>
@@ -61,9 +52,6 @@
         <a href="#stack" class="nav-link" role="listitem">Skills</a>
         <a href="#discipline" class="nav-link" role="listitem">Discipline</a>
         <a href="#contact" class="nav-link" role="listitem">Contact</a>
-        <button class="recruiter-toggle" id="recruiter-toggle" aria-pressed="false">
-          Recruiter Mode
-        </button>
       </div>
     </div>
   </nav>
@@ -97,24 +85,13 @@
       <h2 class="section-title reveal">About</h2>
       <div class="about-grid">
         <div class="about-main glass-card tilt-card reveal" data-tilt>
-          <!-- Full version -->
-          <div data-detail>
-            <p>Software Developer focused on <span class="highlight">Security & AI</span>. Recent graduate (Jan 2026)
-              with
-              professional experience at <span class="highlight">Bosch</span>.</p>
-            <p>Current focus: <span class="highlight">AI Agent Robustness</span> and <span class="highlight">Prompt
-                Injection defense</span> — understanding attack surfaces in emerging systems where traditional security
-              models don't cleanly apply.</p>
-            <p>I prioritize hands-on security engineering over theoretical frameworks. I learn quickly, build
-              deliberately, and value long-term consistency over short-term wins.</p>
-          </div>
-          <!-- Recruiter condensed version -->
-          <div data-recruiter-alt>
-            <p>Security Engineer · Recent grad (Jan 2026) · Professional experience at <span
-                class="highlight">Bosch</span>.</p>
-            <p>Focus: <span class="highlight">AI Agent Robustness</span> &amp; <span class="highlight">Prompt Injection
-                defense</span>. Hands-on builder with a bias for real-world attack paths over theory.</p>
-          </div>
+          <p>Software Developer focused on <span class="highlight">Security &amp; AI</span>. Recent graduate (Jan 2026)
+            with professional experience at <span class="highlight">Bosch</span>.</p>
+          <p>Current focus: <span class="highlight">AI Agent Robustness</span> and <span class="highlight">Prompt
+              Injection defense</span> — understanding attack surfaces in emerging systems where traditional security
+            models don't cleanly apply.</p>
+          <p>I prioritize hands-on security engineering over theoretical frameworks. I learn quickly, build
+            deliberately, and value long-term consistency over short-term wins.</p>
         </div>
         <div class="philosophy-card glass-card tilt-card reveal" data-tilt style="transition-delay: 80ms">
           <h3 class="card-subtitle">Philosophy</h3>
@@ -175,14 +152,9 @@
         <div class="flagship-content">
           <div class="flagship-section" id="aegis-problem">
             <h4 class="section-heading">Problem</h4>
-            <!-- Full version -->
-            <p data-detail>Traditional security tools lack visibility into LLM and agentic system behavior. Existing
-              solutions focus
+            <p>Traditional security tools lack visibility into LLM and agentic system behavior. Existing solutions focus
               on static analysis or basic prompt filtering, missing runtime policy violations, unexpected tool usage,
               and behavioral anomalies in production systems.</p>
-            <!-- Recruiter condensed -->
-            <p data-recruiter-alt>Security tooling has no visibility into LLM runtime behavior — policy violations and
-              behavioral anomalies go undetected.</p>
           </div>
 
           <div class="flagship-section" id="aegis-approach">
