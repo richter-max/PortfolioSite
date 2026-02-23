@@ -75,6 +75,16 @@
         <p class="hero-support">Practical defenses for real-world attack paths. I build tooling that translates security
           research into measurable system constraints.
         </p>
+        <div class="hero-badges reveal">
+          <img
+            src="https://img.shields.io/github/last-commit/richter-max/aegis?style=flat&color=00ff9f&label=Latest%20Commit&logo=github&labelColor=141414"
+            alt="AEGIS Last Commit">
+          <img
+            src="https://img.shields.io/github/actions/workflow/status/richter-max/aegis/quality.yml?branch=main&style=flat&color=00ff9f&label=CI%20Status&logo=github-actions&labelColor=141414"
+            alt="AEGIS CI Status">
+          <img src="https://img.shields.io/badge/Evaluation-Deterministic-00ff9f?style=flat&labelColor=141414"
+            alt="Evaluation Deterministic">
+        </div>
       </div>
       <div class="scroll-indicator">
         <div class="scroll-arrow"></div>
@@ -162,85 +172,45 @@
 
         <div class="projects-grid">
           <!-- Project 1: Attack Surface Scanner -->
-          <div class="project-card glass-card reveal" data-tilt>
+          <div class="project-card glass-card reveal">
             <div class="project-content">
               <h3 class="project-title">Attack Surface Scanner</h3>
-              <p class="project-io">CT logs + TLS handshakes → Structured asset inventory + risk scores</p>
+              <p class="project-io">Passive asset discovery through Certificate Transparency logs.</p>
 
-              <div class="project-accordion">
-                <button class="accordion-trigger" aria-expanded="false">
-                  <span>Technical Deep Dive</span>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="6 9 12 15 18 9"></polyline>
-                  </svg>
-                </button>
-                <div class="accordion-content">
-                  <div class="accordion-inner">
-                    <div class="deep-dive-item">
-                      <span class="deep-dive-label">Problem</span>
-                      <p>Modern SaaS environments have invisible sprawl. Manually tracking every subdomain and TLS
-                        config is impossible at scale.</p>
-                    </div>
-                    <div class="deep-dive-item">
-                      <span class="deep-dive-label">Approach</span>
-                      <p>Built a passive discovery engine that consumes Certificate Transparency logs to find assets
-                        before attackers do.</p>
-                    </div>
-                    <div class="deep-dive-item">
-                      <span class="deep-dive-label">Next Steps</span>
-                      <p>Integrate with AWS Route53 APIs to correlate public DNS with internal VPC configurations.</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <ul class="project-highlights">
+                <li>Automated subdomain discovery via CT logs</li>
+                <li>TLS posture assessment and risk scoring</li>
+                <li>Structured asset inventory generation</li>
+              </ul>
 
-              <div class="project-tech">Go • PostgreSQL • Docker</div>
-              <div class="project-links">
-                <a href="https://github.com/cleamax/attack-surface-scanner" class="project-link magnetic"
+              <div class="project-tech">Go &bull; PostgreSQL &bull; Docker</div>
+
+              <div class="project-actions">
+                <a href="https://github.com/cleamax/attack-surface-scanner" class="button-primary magnetic"
                   target="_blank" rel="noopener noreferrer">View Repository</a>
+                <a href="#projects" class="link-secondary">Detailed Specs</a>
               </div>
             </div>
           </div>
 
           <!-- Project 2: SignalForge -->
-          <div class="project-card glass-card reveal" data-tilt>
+          <div class="project-card glass-card reveal">
             <div class="project-content">
               <h3 class="project-title">SignalForge</h3>
-              <p class="project-io">Raw service logs → Normalized events + rule-matched alerts</p>
+              <p class="project-io">Raw service log normalization and deterministic alert engine.</p>
 
-              <div class="project-accordion">
-                <button class="accordion-trigger" aria-expanded="false">
-                  <span>Technical Deep Dive</span>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="6 9 12 15 18 9"></polyline>
-                  </svg>
-                </button>
-                <div class="accordion-content">
-                  <div class="accordion-inner">
-                    <div class="deep-dive-item">
-                      <span class="deep-dive-label">Problem</span>
-                      <p>Security logs are noisy and heterogeneous. Teams struggle to correlate raw events into
-                        meaningful attack paths.</p>
-                    </div>
-                    <div class="deep-dive-item">
-                      <span class="deep-dive-label">Approach</span>
-                      <p>Designed a normalization layer that maps diverse logs into a common schema for deterministic
-                        rule matching.</p>
-                    </div>
-                    <div class="deep-dive-item">
-                      <span class="deep-dive-label">Next Steps</span>
-                      <p>Add support for streaming ingestion via Kafka and real-time behavioral clustering.</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <ul class="project-highlights">
+                <li>Common schema for heterogeneous log sources</li>
+                <li>Deterministic rule-based detection engine</li>
+                <li>Interactive triage and evidence dashboard</li>
+              </ul>
 
-              <div class="project-tech">Python • FastAPI • Detection Engineering</div>
-              <div class="project-links">
-                <a href="https://github.com/cleamax/signalforge" class="project-link magnetic" target="_blank"
+              <div class="project-tech">Python &bull; FastAPI &bull; Detection Engineering</div>
+
+              <div class="project-actions">
+                <a href="https://github.com/cleamax/signalforge" class="button-primary magnetic" target="_blank"
                   rel="noopener noreferrer">View Repository</a>
+                <a href="#projects" class="link-secondary">Read Docs</a>
               </div>
             </div>
           </div>
@@ -257,17 +227,23 @@
           <div class="flagship-header">
             <div class="flagship-title-section">
               <h3 class="flagship-title aegis-headline">AEGIS</h3>
+              <div class="product-badges">
+                <span class="product-badge blue">Security Product</span>
+                <span class="product-badge green">Evaluation Engine</span>
+              </div>
               <p class="flagship-subtitle">Policy enforcement engine for deterministic system and LLM behavior analysis
               </p>
               <p class="flagship-tech">Python • FastAPI • SQLite • Next.js • Docker • CI/CD</p>
             </div>
             <div class="flagship-links">
-              <a href="https://github.com/richter-max/aegis" class="github-primary-link" target="_blank"
+              <a href="https://github.com/richter-max/aegis" class="button-primary magnetic" target="_blank"
                 rel="noopener noreferrer">View Repository</a>
+              <a href="#threat-model" class="link-secondary">Read Threat Model</a>
             </div>
           </div>
           <div class="flagship-section">
-            <h4 class="section-heading">Behavioral Policy Engine</h4>
+            <h4 class="section-heading">Behavioral Policy Engine <span class="repro-badge">Reproducible</span></h4>
+            <p class="section-subtitle">One command &rarr; measurable result.</p>
             <p>AEGIS enforces security boundaries by analyzing system traces in real-time. Choose a command below to see
               the engine in action:</p>
 
@@ -696,48 +672,71 @@ Build Status:     PASSING</code></pre>
       </div>
     </section>
 
+    <!-- (f.2) Currently Building -->
+    <section id="currently-building" class="section narrative-item">
+      <div class="narrative-label">06.2 // Active</div>
+      <div class="container narrative-content">
+        <div class="building-block glass-card reveal">
+          <div class="building-header">
+            <h2 class="section-title" style="margin-bottom: var(--space-xs)">Currently Building</h2>
+            <span class="product-badge green">Active Development</span>
+          </div>
+          <p class="section-description">Lightweight security systems for measurable AI agent evaluation.</p>
+          <div class="building-actions">
+            <a href="#aegis-deep-dive" class="button-primary magnetic">View Flagship Project</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- (g) Strategic Connect / Collaboration -->
     <footer class="footer narrative-item" id="contact">
       <div class="narrative-label">07 // Connect</div>
       <div class="container narrative-content">
-        <h2 class="section-title reveal">Let’s Build Secure Systems</h2>
+        <h2 class="section-title reveal">Connect & Collaboration</h2>
         <p class="section-description reveal">I’m building deterministic security tooling and evaluation systems. If
           you're working on similar problems — or want to — let’s connect.</p>
 
         <div class="connect-grid reveal" style="margin-top: var(--space-2xl)">
           <!-- Block 1: Recruiting -->
           <div class="connect-card glass-card">
-            <h3 class="connect-card-title">Recruiting & Engineering</h3>
+            <div class="connect-card-header">
+              <h3 class="connect-card-title">Recruiting & Engineering</h3>
+            </div>
             <p class="connect-card-desc">For engineering, security, or system design discussions regarding senior roles.
             </p>
             <div class="connect-actions">
-              <a href="mailto:max@richtermax.com" class="button-primary">Email</a>
+              <a href="mailto:max@richtermax.com" class="button-primary">Get in Touch</a>
               <a href="https://www.linkedin.com/in/maximilian-richter-40697a298" target="_blank"
-                rel="noopener noreferrer" class="link-secondary">LinkedIn</a>
+                rel="noopener noreferrer" class="link-secondary">LinkedIn Profile</a>
             </div>
           </div>
 
           <!-- Block 2: SaaS & Founder -->
           <div class="connect-card glass-card">
-            <h3 class="connect-card-title">SaaS & Founder Collaboration</h3>
+            <div class="connect-card-header">
+              <h3 class="connect-card-title">SaaS & Founder Collaboration</h3>
+            </div>
             <p class="connect-card-desc">Interested in building security tooling, testing early products, or exploring
               partnerships?</p>
             <div class="connect-actions">
               <a href="mailto:max@richtermax.com?subject=SaaS%20Collaboration" class="button-primary">Connect</a>
-              <a href="#aegis-deep-dive" class="link-secondary">Flagship Project</a>
+              <a href="#aegis-deep-dive" class="link-secondary">View Project</a>
             </div>
           </div>
 
           <!-- Block 3: OSS -->
           <div class="connect-card glass-card">
-            <h3 class="connect-card-title">Open Source & Technical</h3>
+            <div class="connect-card-header">
+              <h3 class="connect-card-title">Open Source / Technical</h3>
+            </div>
             <p class="connect-card-desc">Working on agent security, guardrails, or evaluation frameworks? Let’s
               collaborate.</p>
             <div class="connect-actions">
               <a href="https://github.com/richter-max" target="_blank" rel="noopener noreferrer"
-                class="button-primary">GitHub</a>
+                class="button-primary">GitHub Profile</a>
               <a href="https://www.linkedin.com/in/maximilian-richter-40697a298" target="_blank"
-                rel="noopener noreferrer" class="link-secondary">LinkedIn</a>
+                rel="noopener noreferrer" class="link-secondary">Connect</a>
             </div>
           </div>
         </div>
