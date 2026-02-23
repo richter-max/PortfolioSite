@@ -1,50 +1,5 @@
 import { aegisDemos, securityChallenge } from './data/demos.js';
 
-// ============================================
-// MATRIX BACKGROUND ANIMATION
-// ============================================
-function initMatrixBackground() {
-    const canvas = document.getElementById('matrix-bg');
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
-
-    function resizeCanvas() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    }
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-
-    const chars = '01{}[]<>$#@!0xABCDEF'.split('');
-    const fontSize = 14;
-    let columns = canvas.width / fontSize;
-    let drops = Array(Math.floor(columns)).fill(1);
-
-    window.addEventListener('resize', () => {
-        columns = canvas.width / fontSize;
-        drops = Array(Math.floor(columns)).fill(1);
-    });
-
-    function draw() {
-        ctx.fillStyle = 'rgba(10, 10, 10, 0.05)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        ctx.fillStyle = '#00ff9f';
-        ctx.font = `${fontSize}px monospace`;
-
-        for (let i = 0; i < drops.length; i++) {
-            const text = chars[Math.floor(Math.random() * chars.length)];
-            const x = i * fontSize;
-            const y = drops[i] * fontSize;
-            ctx.fillText(text, x, y);
-            if (y > canvas.height && Math.random() > 0.975) drops[i] = 0;
-            drops[i]++;
-        }
-    }
-
-    setInterval(draw, 50);
-}
 
 // ============================================
 // TERMINAL DEMO
@@ -425,7 +380,6 @@ function handleReducedMotion() {
 document.addEventListener('DOMContentLoaded', () => {
     handleReducedMotion();
     initBackgroundImages();
-    initMatrixBackground();
     init3DTilt();
     initMagneticEffect();
     initScrollAnimations();
