@@ -47,449 +47,712 @@
       </button>
 
       <div class="nav-links" id="nav-links" role="list">
-        <a href="#about" class="nav-link" role="listitem">About</a>
-        <a href="#projects" class="nav-link" role="listitem">Projects</a>
-        <a href="#stack" class="nav-link" role="listitem">Skills</a>
-        <a href="#discipline" class="nav-link" role="listitem">Discipline</a>
+        <a href="#hero" class="nav-link" role="listitem">Identity</a>
+        <a href="#origin" class="nav-link" role="listitem">Origin</a>
+        <a href="#principles" class="nav-link" role="listitem">Principles</a>
+        <a href="#projects" class="nav-link" role="listitem">Portfolio</a>
+        <a href="#aegis-deep-dive" class="nav-link" role="listitem">Flagship</a>
+        <a href="#proof" class="nav-link" role="listitem">Proof</a>
         <a href="#contact" class="nav-link" role="listitem">Contact</a>
       </div>
     </div>
   </nav>
 
-  <!-- Custom Cursor -->
-  <div class="cursor" aria-hidden="true">
-    <div class="cursor-dot"></div>
-  </div>
+
 
   <!-- Matrix Background (more subtle) -->
   <canvas id="matrix-bg" class="matrix-background" aria-hidden="true"></canvas>
 
-  <!-- Hero Section -->
-  <section id="hero" class="hero">
-    <div class="hero-content hero-enter">
-      <h1 class="hero-name" data-parallax>Maximilian Richter</h1>
-      <p class="hero-position">Security Engineer — systems, not slogans.</p>
-      <p class="hero-support">Practical defenses for real attack paths. I build tooling that makes risk measurable.</p>
-    </div>
-    <div class="scroll-indicator">
-      <div class="scroll-arrow"></div>
-    </div>
-  </section>
+  <div class="grid-bg" aria-hidden="true"></div>
 
-  <!-- About & Philosophy Section -->
-  <section id="about" class="section">
-    <div class="container">
-      <h2 class="section-title reveal">About</h2>
-      <div class="about-grid">
-        <div class="about-main glass-card tilt-card reveal" data-tilt>
-          <p>Security Engineer focused on <span class="highlight">AI Agent Robustness</span> and <span
-              class="highlight">Prompt Injection defense</span>. Recent graduate (Jan 2026) with professional experience
-            at <span class="highlight">Bosch</span>.</p>
-          <p>Current focus: understanding attack surfaces in LLM and agentic systems where traditional security models
-            don't cleanly apply — and building tooling to make that behavior measurable.</p>
-        </div>
-        <div class="philosophy-card glass-card tilt-card reveal" data-tilt style="transition-delay: 80ms">
-          <h3 class="card-subtitle">Philosophy</h3>
-          <ul class="philosophy-list">
-            <li><span class="bullet">→</span>Secure systems over features</li>
-            <li><span class="bullet">→</span>Real-world attack paths</li>
-            <li><span class="bullet">→</span>Clarity through tooling</li>
-            <li><span class="bullet">→</span>Practical over theoretical</li>
-          </ul>
-        </div>
+  <main class="narrative-container">
+    <!-- (a) Hero / Identity -->
+    <section id="hero" class="hero narrative-item active">
+      <div class="narrative-label">01 // Identity</div>
+      <div class="hero-content hero-enter narrative-content">
+        <h1 class="hero-name" data-parallax>Maximilian Richter</h1>
+        <p class="hero-position">Security Systems Engineer — engineering resilient boundaries.</p>
+        <p class="hero-support">Practical defenses for real-world attack paths. I build tooling that translates security
+          research into measurable system constraints.
+        </p>
       </div>
-    </div>
-  </section>
+      <div class="scroll-indicator">
+        <div class="scroll-arrow"></div>
+      </div>
+    </section>
 
-  <!-- Projects Section -->
-  <section id="projects" class="section section-dark">
-    <div class="container">
-      <h2 class="section-title reveal">Projects</h2>
-
-      <!-- AEGIS - Flagship Project -->
-      <div class="flagship-project glass-card reveal" id="aegis">
-        <div class="flagship-header">
-          <div class="flagship-badge">Flagship Project</div>
-          <div class="flagship-title-section">
-            <h3 class="flagship-title aegis-headline" data-parallax>AEGIS</h3>
-            <p class="flagship-subtitle">Security evaluation &amp; policy framework for analyzing system and LLM
-              behavior</p>
-            <p class="flagship-tech">Python • FastAPI • SQLite • Next.js • Docker • CI/CD</p>
+    <!-- (b) Origin / How I think -->
+    <section id="origin" class="section narrative-item">
+      <div class="narrative-label">02 // Origin</div>
+      <div class="container narrative-content">
+        <h2 class="section-title reveal">Thinking in Attack Paths</h2>
+        <div class="about-grid">
+          <div class="about-main glass-card tilt-card reveal" data-tilt>
+            <p>Security Engineer focused on <span class="highlight">AI Agent Robustness</span> and <span
+                class="highlight">Prompt Injection defense</span>. Recent graduate (Jan 2026) with professional
+              experience
+              at <span class="highlight">Bosch</span>.</p>
+            <p>Current focus: understanding attack surfaces in LLM and agentic systems where traditional security models
+              don't cleanly apply — and building tooling to make that behavior measurable.</p>
           </div>
-          <div class="flagship-links">
-            <a href="https://github.com/richter-max/aegis" class="github-primary-link" target="_blank"
-              rel="noopener noreferrer">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path
-                  d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-              </svg>
-              View Repository
-            </a>
-            <a href="https://github.com/richter-max/aegis/actions" class="ci-link" target="_blank"
-              rel="noopener noreferrer">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z" />
-              </svg>
-              CI / Actions
-            </a>
-          </div>
-        </div>
-
-        <!-- Aegis jump links -->
-        <nav class="aegis-jumplinks" aria-label="AEGIS section navigation">
-          <a href="#aegis-problem">Problem</a>
-          <a href="#aegis-approach">Approach</a>
-          <a href="#aegis-architecture">Architecture</a>
-          <a href="#aegis-evidence">Evidence</a>
-          <a href="#aegis-next">What's Next</a>
-        </nav>
-
-        <div class="flagship-content">
-          <div class="flagship-section" id="aegis-problem">
-            <h4 class="section-heading">Problem</h4>
-            <p>Traditional security tools lack visibility into LLM and agentic system behavior. Existing solutions focus
-              on static analysis or basic prompt filtering, missing runtime policy violations, unexpected tool usage,
-              and behavioral anomalies in production systems.</p>
-          </div>
-
-          <div class="flagship-section" id="aegis-approach">
-            <h4 class="section-heading">Approach</h4>
-            <ul class="feature-list">
-              <li>Trace-based evaluation captures execution context, tool invocations, and decision paths</li>
-              <li>Policy engine evaluates runtime behavior against versioned rules with full audit trails</li>
-              <li>Event normalization pipeline ingests heterogeneous log sources into a unified schema</li>
-              <li>Rule-based detection engine with evidence-backed alerting and triage UI</li>
-              <li>Designed for deterministic, reproducible security assessments</li>
+          <div class="philosophy-card glass-card tilt-card reveal" data-tilt style="transition-delay: 80ms">
+            <h3 class="card-subtitle">Philosophy</h3>
+            <ul class="philosophy-list">
+              <li><span class="bullet">→</span>Secure systems over features</li>
+              <li><span class="bullet">→</span>Real-world attack paths</li>
+              <li><span class="bullet">→</span>Clarity through tooling</li>
+              <li><span class="bullet">→</span>Practical over theoretical</li>
             </ul>
           </div>
+        </div>
+      </div>
+    </section>
 
-          <div class="flagship-section" id="aegis-architecture">
-            <h4 class="section-heading">Architecture</h4>
-            <!-- Lightweight inline SVG architecture diagram -->
-            <div class="arch-diagram" role="img"
-              aria-label="AEGIS data flow: Log Sources → Event Normalizer → Detection Engine → Alert Store → Triage UI">
-              <svg viewBox="0 0 700 120" xmlns="http://www.w3.org/2000/svg" class="arch-svg">
-                <!-- Boxes -->
-                <rect x="4" y="34" width="120" height="52" rx="8" fill="rgba(0,212,255,0.08)"
-                  stroke="rgba(0,212,255,0.4)" stroke-width="1.5" />
-                <rect x="158" y="34" width="120" height="52" rx="8" fill="rgba(0,212,255,0.08)"
-                  stroke="rgba(0,212,255,0.4)" stroke-width="1.5" />
-                <rect x="312" y="34" width="140" height="52" rx="8" fill="rgba(0,255,159,0.08)"
-                  stroke="rgba(0,255,159,0.5)" stroke-width="1.5" />
-                <rect x="486" y="34" width="100" height="52" rx="8" fill="rgba(0,212,255,0.08)"
-                  stroke="rgba(0,212,255,0.4)" stroke-width="1.5" />
-                <rect x="604" y="34" width="92" height="52" rx="8" fill="rgba(168,85,247,0.08)"
-                  stroke="rgba(168,85,247,0.4)" stroke-width="1.5" />
-                <!-- Arrows -->
-                <line x1="124" y1="60" x2="156" y2="60" stroke="rgba(0,212,255,0.5)" stroke-width="1.5"
-                  marker-end="url(#arr)" />
-                <line x1="278" y1="60" x2="310" y2="60" stroke="rgba(0,212,255,0.5)" stroke-width="1.5"
-                  marker-end="url(#arr)" />
-                <line x1="452" y1="60" x2="484" y2="60" stroke="rgba(0,255,159,0.5)" stroke-width="1.5"
-                  marker-end="url(#arr2)" />
-                <line x1="586" y1="60" x2="602" y2="60" stroke="rgba(0,212,255,0.5)" stroke-width="1.5"
-                  marker-end="url(#arr)" />
-                <!-- Labels -->
-                <text x="64" y="57" text-anchor="middle" fill="#a8a8a8" font-size="11"
-                  font-family="Inter,sans-serif">Log</text>
-                <text x="64" y="72" text-anchor="middle" fill="#a8a8a8" font-size="11"
-                  font-family="Inter,sans-serif">Sources</text>
-                <text x="218" y="57" text-anchor="middle" fill="#a8a8a8" font-size="11"
-                  font-family="Inter,sans-serif">Event</text>
-                <text x="218" y="72" text-anchor="middle" fill="#a8a8a8" font-size="11"
-                  font-family="Inter,sans-serif">Normalizer</text>
-                <text x="382" y="54" text-anchor="middle" fill="#00ff9f" font-size="11" font-family="Inter,sans-serif"
-                  font-weight="600">Detection</text>
-                <text x="382" y="69" text-anchor="middle" fill="#00ff9f" font-size="11" font-family="Inter,sans-serif"
-                  font-weight="600">Engine</text>
-                <text x="536" y="57" text-anchor="middle" fill="#a8a8a8" font-size="11"
-                  font-family="Inter,sans-serif">Alert</text>
-                <text x="536" y="72" text-anchor="middle" fill="#a8a8a8" font-size="11"
-                  font-family="Inter,sans-serif">Store</text>
-                <text x="650" y="57" text-anchor="middle" fill="#c084fc" font-size="11"
-                  font-family="Inter,sans-serif">Triage</text>
-                <text x="650" y="72" text-anchor="middle" fill="#c084fc" font-size="11"
-                  font-family="Inter,sans-serif">UI</text>
-                <!-- Arrowhead markers -->
-                <defs>
-                  <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-                    <path d="M0,0 L0,6 L8,3 z" fill="rgba(0,212,255,0.6)" />
-                  </marker>
-                  <marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-                    <path d="M0,0 L0,6 L8,3 z" fill="rgba(0,255,159,0.6)" />
-                  </marker>
-                </defs>
-              </svg>
+    <!-- (c) Principles (Personality-first) -->
+    <section id="principles" class="section narrative-item">
+      <div class="narrative-label">03 // Principles</div>
+      <div class="container narrative-content">
+        <h2 class="section-title reveal">Engineering Principles</h2>
+        <div class="principles-grid">
+          <!-- Principle 1 -->
+          <div class="principle-card reveal">
+            <div class="principle-toggle">
+              <span class="active">Deterministic</span>
+              <span class="vs">vs</span>
+              <span>Heuristic</span>
+            </div>
+            <h3 class="principle-title">Systems over Guesses</h3>
+            <p class="principle-desc">I prefer defensive architectures that fail closed by design rather than
+              probabilistic layers that might catch the 80% but leak the 20%.</p>
+          </div>
+
+          <!-- Principle 2 -->
+          <div class="principle-card reveal" style="transition-delay: 100ms">
+            <div class="principle-toggle">
+              <span class="active">Practical</span>
+              <span class="vs">vs</span>
+              <span>Theoretical</span>
+            </div>
+            <h3 class="principle-title">Implementation over Specification</h3>
+            <p class="principle-desc">A perfect security policy is worthless if it's too complex to implement at scale.
+              I build tooling that prioritizes integration into existing engineering workflows.
+            </p>
+          </div>
+
+          <!-- Principle 3 -->
+          <div class="principle-card reveal" style="transition-delay: 200ms">
+            <div class="principle-toggle">
+              <span class="active">Offensive</span>
+              <span class="vs">vs</span>
+              <span>Reactive</span>
+            </div>
+            <h3 class="principle-title">Offensive-Informed Engineering</h3>
+            <p class="principle-desc">Understanding exactly how a system breaks is the prerequisite for resilience. I
+              use offensive research to define rigorous defensive constraints.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- (d) Projects overview -->
+    <section id="projects" class="section section-dark narrative-item">
+      <div class="narrative-label">04 // Portfolio</div>
+      <div class="container narrative-content">
+        <h2 class="section-title reveal">Built for Clarity</h2>
+
+        <div class="projects-grid">
+          <!-- Project 1: Attack Surface Scanner -->
+          <div class="project-card glass-card reveal" data-tilt>
+            <div class="project-content">
+              <h3 class="project-title">Attack Surface Scanner</h3>
+              <p class="project-io">CT logs + TLS handshakes → Structured asset inventory + risk scores</p>
+
+              <div class="project-accordion">
+                <button class="accordion-trigger" aria-expanded="false">
+                  <span>Technical Deep Dive</span>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </button>
+                <div class="accordion-content">
+                  <div class="accordion-inner">
+                    <div class="deep-dive-item">
+                      <span class="deep-dive-label">Problem</span>
+                      <p>Modern SaaS environments have invisible sprawl. Manually tracking every subdomain and TLS
+                        config is impossible at scale.</p>
+                    </div>
+                    <div class="deep-dive-item">
+                      <span class="deep-dive-label">Approach</span>
+                      <p>Built a passive discovery engine that consumes Certificate Transparency logs to find assets
+                        before attackers do.</p>
+                    </div>
+                    <div class="deep-dive-item">
+                      <span class="deep-dive-label">Next Steps</span>
+                      <p>Integrate with AWS Route53 APIs to correlate public DNS with internal VPC configurations.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="project-tech">Go • PostgreSQL • Docker</div>
+              <div class="project-links">
+                <a href="https://github.com/cleamax/attack-surface-scanner" class="project-link magnetic"
+                  target="_blank" rel="noopener noreferrer">View Repository</a>
+              </div>
             </div>
           </div>
 
-          <div class="flagship-section" id="aegis-evidence">
+          <!-- Project 2: SignalForge -->
+          <div class="project-card glass-card reveal" data-tilt>
+            <div class="project-content">
+              <h3 class="project-title">SignalForge</h3>
+              <p class="project-io">Raw service logs → Normalized events + rule-matched alerts</p>
+
+              <div class="project-accordion">
+                <button class="accordion-trigger" aria-expanded="false">
+                  <span>Technical Deep Dive</span>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </button>
+                <div class="accordion-content">
+                  <div class="accordion-inner">
+                    <div class="deep-dive-item">
+                      <span class="deep-dive-label">Problem</span>
+                      <p>Security logs are noisy and heterogeneous. Teams struggle to correlate raw events into
+                        meaningful attack paths.</p>
+                    </div>
+                    <div class="deep-dive-item">
+                      <span class="deep-dive-label">Approach</span>
+                      <p>Designed a normalization layer that maps diverse logs into a common schema for deterministic
+                        rule matching.</p>
+                    </div>
+                    <div class="deep-dive-item">
+                      <span class="deep-dive-label">Next Steps</span>
+                      <p>Add support for streaming ingestion via Kafka and real-time behavioral clustering.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="project-tech">Python • FastAPI • Detection Engineering</div>
+              <div class="project-links">
+                <a href="https://github.com/cleamax/signalforge" class="project-link magnetic" target="_blank"
+                  rel="noopener noreferrer">View Repository</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- (e) Deep dive highlight (AEGIS as flagship) -->
+    <section id="aegis-deep-dive" class="section narrative-item">
+      <div class="narrative-label">05 // Flagship</div>
+      <div class="container narrative-content">
+        <h2 class="section-title reveal">Flagship: AEGIS</h2>
+        <div class="flagship-project glass-card reveal" id="aegis">
+          <div class="flagship-header">
+            <div class="flagship-title-section">
+              <h3 class="flagship-title aegis-headline">AEGIS</h3>
+              <p class="flagship-subtitle">Policy enforcement engine for deterministic system and LLM behavior analysis
+              </p>
+              <p class="flagship-tech">Python • FastAPI • SQLite • Next.js • Docker • CI/CD</p>
+            </div>
+            <div class="flagship-links">
+              <a href="https://github.com/richter-max/aegis" class="github-primary-link" target="_blank"
+                rel="noopener noreferrer">View Repository</a>
+            </div>
+          </div>
+          <div class="flagship-section">
+            <h4 class="section-heading">Behavioral Policy Engine</h4>
+            <p>AEGIS enforces security boundaries by analyzing system traces in real-time. Choose a command below to see
+              the engine in action:</p>
+
+            <div class="terminal-demo-container reveal">
+              <div class="terminal-tabs" role="tablist">
+                <button class="terminal-tab active" data-cmd="tool_exfiltration" role="tab"
+                  aria-selected="true">Scenario: Egress</button>
+                <button class="terminal-tab" data-cmd="core_bench" role="tab" aria-selected="false">Bench:
+                  Performance</button>
+                <button class="terminal-tab" data-cmd="eval_trace" role="tab" aria-selected="false">Eval: Trace
+                  Scan</button>
+              </div>
+              <div class="terminal-window">
+                <div class="terminal-header">
+                  <div class="terminal-dots"><span></span><span></span><span></span></div>
+                  <div class="terminal-title">aegis --cli</div>
+                </div>
+                <div class="terminal-body" id="aegis-terminal-output">
+                  <div class="terminal-line typing" id="terminal-command-line">
+                    <span class="prompt">rick@aegis:~$</span> <span class="command-text">aegis run --scenario
+                      tool_exfiltration --policy strict</span>
+                  </div>
+                  <pre class="terminal-output" id="terminal-result-text">
+[INIT] Loading scenario: tool_exfiltration
+[POLICY] Using policy: strict_v2.1
+[RUN] Trace started...
+[EVENT] Tool: 'curl' invoked with destination: '10.0.8.2'
+[ANALYSIS] Destination not in allowed egress list.
+[POLICY_V] Violation: Unsanctioned_Egress (Severity: HIGH)
+[ACTION] Blocking request... DONE
+[REPORT] Trace complete. Policy violations found: 1</pre>
+                </div>
+              </div>
+              <div class="terminal-context" id="terminal-explanation">
+                <h5 class="context-title">What this demonstrates</h5>
+                <p class="context-text">Demonstrates AEGIS's ability to monitor runtime tool usage and block
+                  unsanctioned network egress based on strict behavioral policies.</p>
+              </div>
+            </div>
+
+            <div class="flagship-links-row reveal">
+              <a href="#threat-model" class="secondary-link">Read Threat Model</a>
+              <span class="separator">/</span>
+              <a href="#traces" class="secondary-link">See Sample Traces</a>
+            </div>
+          </div>
+
+          <div class="flagship-section">
+            <h4 class="section-heading">System Architecture</h4>
+            <div class="architecture-diagram-container reveal">
+              <svg viewBox="0 0 800 120" xmlns="http://www.w3.org/2000/svg" class="architecture-svg">
+                <!-- Nodes -->
+                <g class="arch-node" data-node="input">
+                  <rect x="10" y="35" width="80" height="50" rx="4" class="arch-rect" />
+                  <text x="50" y="65" text-anchor="middle" class="arch-text">Input</text>
+                </g>
+                <g class="arch-node" data-node="agent">
+                  <rect x="130" y="35" width="80" height="50" rx="4" class="arch-rect" />
+                  <text x="170" y="65" text-anchor="middle" class="arch-text">Agent</text>
+                </g>
+                <g class="arch-node" data-node="tools">
+                  <rect x="250" y="35" width="80" height="50" rx="4" class="arch-rect" />
+                  <text x="290" y="65" text-anchor="middle" class="arch-text">Tools</text>
+                </g>
+                <g class="arch-node" data-node="trace">
+                  <rect x="370" y="35" width="80" height="50" rx="4" class="arch-rect" />
+                  <text x="410" y="65" text-anchor="middle" class="arch-text">Trace</text>
+                </g>
+                <g class="arch-node" data-node="eval">
+                  <rect x="490" y="35" width="80" height="50" rx="4" class="arch-rect" />
+                  <text x="530" y="65" text-anchor="middle" class="arch-text">Evaluator</text>
+                </g>
+                <g class="arch-node" data-node="score">
+                  <rect x="610" y="35" width="80" height="50" rx="4" class="arch-rect" />
+                  <text x="650" y="65" text-anchor="middle" class="arch-text">Score</text>
+                </g>
+                <g class="arch-node" data-node="report">
+                  <rect x="710" y="35" width="80" height="50" rx="4" class="arch-rect" />
+                  <text x="750" y="65" text-anchor="middle" class="arch-text">Report</text>
+                </g>
+
+                <!-- Connectors -->
+                <path d="M90 60 H130" class="arch-link" />
+                <path d="M210 60 H250" class="arch-link" />
+                <path d="M330 60 H370" class="arch-link" />
+                <path d="M450 60 H490" class="arch-link" />
+                <path d="M570 60 H610" class="arch-link" />
+                <path d="M690 60 H710" class="arch-link" />
+              </svg>
+            </div>
+            <div class="arch-explanation reveal">
+              <h5 class="context-title">What this architecture optimizes for</h5>
+              <ul class="arch-optimizations">
+                <li><strong>Determinism</strong>: Fixed evaluation logic ensures consistent results across identical
+                  traces.</li>
+                <li><strong>Reproducibility</strong>: Trace-based analysis allows for exact reconstruction of
+                  adversarial sessions.</li>
+                <li><strong>Measurable risk reduction</strong>: Scoring engine provides a quantifiable KPIs for security
+                  posture.</li>
+                <li><strong>Controlled failure surfaces</strong>: Tool-wrapping ensures explicit boundaries for external
+                  interactions.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="flagship-section">
+            <h4 class="section-heading">Risk Map Visualization</h4>
+            <div class="risk-map-container reveal">
+              <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" class="risk-map-svg">
+                <!-- Base Grid -->
+                <path d="M50 150 L350 150 M50 50 L50 150" stroke="var(--text-secondary)" stroke-width="1"
+                  opacity="0.3" />
+
+                <!-- Nodes -->
+                <circle cx="100" cy="130" r="4" fill="var(--neon-cyan)" />
+                <circle cx="180" cy="90" r="4" fill="var(--neon-cyan)" />
+                <circle cx="260" cy="110" r="4" fill="var(--neon-cyan)" />
+                <circle cx="340" cy="60" r="6" fill="var(--neon-blue)" />
+
+                <!-- Paths -->
+                <path d="M100 130 Q 140 130 180 90" stroke="var(--neon-cyan)" stroke-width="1.5" fill="none"
+                  class="risk-path" />
+                <path d="M180 90 Q 220 50 340 60" stroke="var(--neon-blue)" stroke-width="1.5" fill="none"
+                  class="risk-path" />
+                <path d="M260 110 Q 300 110 340 60" stroke="var(--neon-blue)" stroke-width="1.5" fill="none"
+                  class="risk-path" opacity="0.5" />
+
+                <!-- Labels -->
+                <text x="50" y="165" fill="var(--text-secondary)" font-size="8">Trace Start</text>
+                <text x="340" y="50" fill="var(--neon-blue)" font-size="10" text-anchor="middle"
+                  font-weight="bold">Policy Violation</text>
+              </svg>
+              <p class="demo-caption">Visualizing attack paths and behavioral anomalies detected by the AEGIS policy
+                engine.</p>
+            </div>
+          </div>
+          <div class="flagship-section">
             <h4 class="section-heading">Evidence</h4>
             <div class="engineering-highlights">
               <div class="highlight-item">
                 <span class="highlight-label">CI/CD Pipelines</span>
-                <span class="highlight-desc">GitHub Actions: security scan, quality, supply-chain, fuzz workflows</span>
-                <a href="https://github.com/cleamax/aegis/actions" class="evidence-link" target="_blank"
-                  rel="noopener noreferrer">View Workflows →</a>
+                <span class="highlight-desc">GitHub Actions: security, quality, supply-chain, fuzzing</span>
               </div>
               <div class="highlight-item">
                 <span class="highlight-label">Testing</span>
-                <span class="highlight-desc">Comprehensive test suite: pytest, property-based tests, fuzzing with
-                  Hypothesis</span>
-                <a href="https://github.com/cleamax/aegis" class="evidence-link" target="_blank"
-                  rel="noopener noreferrer">View Repository →</a>
+                <span class="highlight-desc">Pytest, property-based tests, Hypothesis fuzzing</span>
               </div>
-              <div class="highlight-item">
-                <span class="highlight-label">Security Scanning</span>
-                <span class="highlight-desc">Bandit static analysis, pip-audit supply chain verification, SBOM
-                  generation</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+    </section>
+
+    <!-- (e.1) Engineering Decisions & Tradeoffs -->
+    <section id="decisions" class="section section-dark narrative-item">
+      <div class="narrative-label">05.2 // Reasoning</div>
+      <div class="container narrative-content">
+        <h2 class="section-title reveal">Engineering Decisions & Tradeoffs</h2>
+        <p class="section-description reveal">Security engineering is about making explicit choices. Here is the
+          technical reasoning behind the AEGIS architecture.</p>
+
+        <div class="decisions-grid reveal">
+          <!-- Decision 1 -->
+          <div class="decision-accordion-item glass-card">
+            <button class="accordion-trigger" aria-expanded="false">
+              <span>Rule-based vs ML Evaluation</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <div class="accordion-content">
+              <div class="accordion-inner">
+                <div class="decision-block">
+                  <div class="decision-meta">
+                    <span class="meta-label">Decision</span>
+                    <p>Rule-matched policies as primary evaluation layer.</p>
+                  </div>
+                  <div class="decision-meta">
+                    <span class="meta-label">Why</span>
+                    <p>Explainability is paramount. Rules provide a clear audit trail for why a violation was triggered.
+                    </p>
+                  </div>
+                  <div class="decision-meta">
+                    <span class="meta-label">Alternative</span>
+                    <p>Direct LLM evaluation.</p>
+                  </div>
+                  <div class="decision-meta">
+                    <span class="meta-label">Tradeoff</span>
+                    <p>Accepted higher manual effort in rule definition for 100% predictable and reproducible results.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
-          <div class="flagship-section" id="aegis-next">
-            <h4 class="section-heading">What's Next</h4>
-            <ul class="feature-list">
-              <li>SIGMA rule integration for standardized detection patterns</li>
-              <li>LLM prompt injection detection heuristics layer</li>
-              <li>Rate-of-change anomaly scoring across trace windows</li>
-            </ul>
+          <!-- Decision 2 -->
+          <div class="decision-accordion-item glass-card">
+            <button class="accordion-trigger" aria-expanded="false">
+              <span>Spec-driven Scoring Engine</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <div class="accordion-content">
+              <div class="accordion-inner">
+                <div class="decision-block">
+                  <div class="decision-meta">
+                    <span class="meta-label">Decision</span>
+                    <p>Schema-validated risk scoring system (1-100).</p>
+                  </div>
+                  <div class="decision-meta">
+                    <span class="meta-label">Why</span>
+                    <p>Consistency across different trace types. Provides quantifiable metrics for security posture.</p>
+                  </div>
+                  <div class="decision-meta">
+                    <span class="meta-label">Alternative</span>
+                    <p>Ad-hoc severity labels (Low/Medium/High).</p>
+                  </div>
+                  <div class="decision-meta">
+                    <span class="meta-label">Tradeoff</span>
+                    <p>Higher upfront effort defining weightings; enables automated CI/CD gating based on thresholds.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <!-- Visual Demonstration -->
-          <div class="flagship-section demo-section">
-            <h4 class="section-heading">Dashboard</h4>
-            <div class="demo-container">
-              <img src="/aegis-dashboard.png"
-                alt="AEGIS Security Command Center showing real-time analytics, incident trace logs, and event distribution"
-                class="demo-image" loading="lazy" />
-              <p class="demo-caption">Security Command Center showing real-time analytics, incident trace logs, and
-                event distribution patterns</p>
+          <!-- Decision 3 -->
+          <div class="decision-accordion-item glass-card">
+            <button class="accordion-trigger" aria-expanded="false">
+              <span>CLI-first Architecture</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <div class="accordion-content">
+              <div class="accordion-inner">
+                <div class="decision-block">
+                  <div class="decision-meta">
+                    <span class="meta-label">Decision</span>
+                    <p>Prioritized CLI as the core interaction point.</p>
+                  </div>
+                  <div class="decision-meta">
+                    <span class="meta-label">Why</span>
+                    <p>Security tools must be pipeline-native. CLI ensures easy integration into GitHub Actions and dev
+                      scripts.</p>
+                  </div>
+                  <div class="decision-meta">
+                    <span class="meta-label">Alternative</span>
+                    <p>GUI/Dashboard-first approach.</p>
+                  </div>
+                  <div class="decision-meta">
+                    <span class="meta-label">Tradeoff</span>
+                    <p>Steeper learning curve for non-engineers, but higher utility for lead engineering users.</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
+    </section>
 
-      <!-- Other Projects Grid -->
-      <h3 class="subsection-title reveal">Additional Projects</h3>
-      <div class="projects-grid">
-
-        <!-- Attack Surface Scanner (note: line numbers may shift with prior edits) -->
-        <div class="project-card glass-card tilt-card" data-tilt>
-          <h3 class="project-title">Attack Surface Scanner</h3>
-          <p class="project-io">CT logs + TLS handshakes → Structured asset inventory + risk scores</p>
-          <p class="project-tech">Python • Certificate Transparency • TLS</p>
-          <p class="project-description">Non-intrusive attack surface scanner for SaaS environments. Passive asset
-            discovery via Certificate Transparency logs, TLS configuration analysis, security header validation, and
-            deterministic risk scoring.</p>
-
-          <div class="engineering-highlights-compact">
-            <h4 class="highlights-heading">Engineering Highlights</h4>
-            <ul class="highlights-list">
-              <li>Zero-touch reconnaissance using CT logs and passive DNS</li>
-              <li>TLS cipher suite analysis with known-weak detection</li>
-              <li>Deterministic scoring model for consistent risk assessment</li>
-            </ul>
+    <!-- (e.2) How I Build Systems -->
+    <section id="engineering-philosophy" class="section narrative-item">
+      <div class="narrative-label">05.3 // Philosophy</div>
+      <div class="container narrative-content">
+        <h2 class="section-title reveal">How I Build Systems</h2>
+        <div class="philosophy-grid">
+          <div class="philosophy-item reveal">
+            <h3 class="philosophy-title">Deterministic testing before optimization</h3>
+            <p class="philosophy-desc">I ensure a baseline of correctness through property-based and integration tests
+              before addressing performance bottlenecks.</p>
           </div>
-
-          <a href="https://github.com/cleamax/attack-surface-scanner" class="project-link magnetic" target="_blank"
-            rel="noopener noreferrer">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <path
-                d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-            </svg>
-            View Repository
-          </a>
-        </div>
-
-        <!-- Cloud Signal Engine -->
-        <div class="project-card glass-card tilt-card" data-tilt>
-          <h3 class="project-title">Cloud Signal Engine</h3>
-          <p class="project-io">Raw service logs → Normalized events + rule-matched alerts</p>
-          <p class="project-tech">Python • FastAPI • Detection Engineering</p>
-          <p class="project-description">Production-style security detection and abuse monitoring system. Ingests and
-            normalizes logs, runs rule-based detections, generates alerts with evidence, and provides triage UI.</p>
-
-          <div class="engineering-highlights-compact">
-            <h4 class="highlights-heading">Engineering Highlights</h4>
-            <ul class="highlights-list">
-              <li>Event normalization pipeline for heterogeneous sources</li>
-              <li>Rule-based detection engine with pattern matching</li>
-              <li>Evidence-based alerting with full context preservation</li>
-            </ul>
+          <div class="philosophy-item reveal">
+            <h3 class="philosophy-title">Spec-driven development</h3>
+            <p class="philosophy-desc">Defining clear interfaces and schemas upfront minimizes integration friction and
+              enables parallel engineering efforts.</p>
           </div>
-
-          <a href="https://github.com/cleamax/signalforge" class="project-link magnetic" target="_blank"
-            rel="noopener noreferrer">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <path
-                d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-            </svg>
-            View Repository
-          </a>
-        </div>
-
-        <!-- Cloud Pentest Lab -->
-        <div class="project-card glass-card tilt-card" data-tilt>
-          <h3 class="project-title">Cloud Pentest Lab</h3>
-          <p class="project-io">Terraform config → Reproducible AWS attack surface + documented exploit chains</p>
-          <p class="project-tech">Terraform • Python • AWS • IAM</p>
-          <p class="project-description">Reproducible AWS penetration testing environment with intentionally vulnerable
-            configurations. Demonstrates realistic attack chains from initial access to privilege escalation.</p>
-
-          <div class="engineering-highlights-compact">
-            <h4 class="highlights-heading">Engineering Highlights</h4>
-            <ul class="highlights-list">
-              <li>Infrastructure-as-code for reproducible vulnerable environments</li>
-              <li>Multi-stage attack chain: S3 exposure → SSRF → privilege escalation</li>
-              <li>Automated teardown to prevent cost accumulation</li>
-            </ul>
+          <div class="philosophy-item reveal">
+            <h3 class="philosophy-title">Small composable modules</h3>
+            <p class="philosophy-desc">Designing systems as a collection of decoupled, single-purpose modules reduces
+              complexity and simplifies security reviews.</p>
           </div>
-
-          <a href="https://github.com/cleamax/CloudPentestLab" class="project-link magnetic" target="_blank"
-            rel="noopener noreferrer">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <path
-                d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-            </svg>
-            View Repository
-          </a>
-        </div>
-
-        <!-- WebSec Playground -->
-        <div class="project-card glass-card tilt-card" data-tilt>
-          <h3 class="project-title">WebSec Playground</h3>
-          <p class="project-io">Flask app → OWASP Top 10 scenarios + guided exploitation walkthroughs</p>
-          <p class="project-tech">Flask • OWASP • Web Security</p>
-          <p class="project-description">Deliberately vulnerable web application demonstrating OWASP Top 10
-            vulnerabilities. Educational resource for understanding common web security flaws and exploitation
-            techniques.</p>
-
-          <div class="engineering-highlights-compact">
-            <h4 class="highlights-heading">Engineering Highlights</h4>
-            <ul class="highlights-list">
-              <li>Realistic implementations of SQLi, XSS, IDOR, and CSRF</li>
-              <li>Isolated environment with clear exploitation paths</li>
-              <li>Educational focus with vulnerability explanations</li>
-            </ul>
+          <div class="philosophy-item reveal">
+            <h3 class="philosophy-title">Explicit threat modeling</h3>
+            <p class="philosophy-desc">Integrating STRIDE and attack-path analysis into the design phase to identify and
+              mitigate risks before a single line of code is written.</p>
           </div>
-
-          <a href="https://github.com/cleamax/websec-playground" class="project-link magnetic" target="_blank"
-            rel="noopener noreferrer">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <path
-                d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-            </svg>
-            View Repository
-          </a>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- Technical Stack Section -->
-  <section id="stack" class="section">
-    <div class="container">
-      <h2 class="section-title reveal">Technical Stack</h2>
-      <div class="stack-grid">
-        <div class="stack-category glass-card tilt-card" data-tilt>
-          <h3 class="category-title">Languages</h3>
-          <div class="stack-tags">
-            <span class="stack-tag">Python</span>
-            <span class="stack-tag">TypeScript</span>
-            <span class="stack-tag">Solidity</span>
-            <span class="stack-tag">HCL</span>
+          <div class="philosophy-item reveal">
+            <h3 class="philosophy-title">CI & validation mindset</h3>
+            <p class="philosophy-desc">Automating security linting, static analysis, and regression testing is
+              non-negotiable for maintaining production-grade reliability.</p>
           </div>
-        </div>
-
-        <div class="stack-category glass-card tilt-card" data-tilt>
-          <h3 class="category-title">Security</h3>
-          <div class="stack-tags">
-            <span class="stack-tag">TLS Analysis</span>
-            <span class="stack-tag">Certificate Transparency</span>
-            <span class="stack-tag">OWASP</span>
-            <span class="stack-tag">AWS Security</span>
-            <span class="stack-tag">Smart Contract Auditing</span>
+          <div class="philosophy-item reveal">
+            <h3 class="philosophy-title">Failure-mode thinking</h3>
+            <p class="philosophy-desc">Prioritizing how a system handles edge cases and adversarial inputs over the
+              'happy path' feature set.</p>
           </div>
-        </div>
-
-        <div class="stack-category glass-card tilt-card" data-tilt>
-          <h3 class="category-title">Cloud & Infrastructure</h3>
-          <div class="stack-tags">
-            <span class="stack-tag">AWS</span>
-            <span class="stack-tag">IAM</span>
-            <span class="stack-tag">Terraform</span>
-            <span class="stack-tag">Docker</span>
-          </div>
-        </div>
-
-        <div class="stack-category glass-card tilt-card" data-tilt>
-          <h3 class="category-title">DevOps & Tools</h3>
-          <div class="stack-tags">
-            <span class="stack-tag">GitHub Actions</span>
-            <span class="stack-tag">CI/CD</span>
-            <span class="stack-tag">Pydantic</span>
-            <span class="stack-tag">Flask</span>
-            <span class="stack-tag">boto3</span>
+          <div class="philosophy-item reveal">
+            <h3 class="philosophy-title">Minimal external dependencies</h3>
+            <p class="philosophy-desc">Reducing the supply-chain attack surface by leveraging core libraries and
+              building thin, well-understood abstraction layers.</p>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Discipline Section -->
-  <section id="discipline" class="section section-dark">
-    <div class="container">
-      <h2 class="section-title reveal">Discipline &amp; Performance</h2>
-      <p class="section-description reveal">Long-term consistency, performance under stress, structured execution.</p>
-      <div class="discipline-grid">
-        <div class="discipline-card glass-card tilt-card" data-tilt data-bg="/tabletennis.png">
-          <div class="discipline-icon">🏓</div>
-          <h3 class="discipline-title">Youth Table Tennis Coach</h3>
-          <p class="discipline-desc">Leadership, responsibility, and mentoring. Teaching technique and competitive
-            mindset to young athletes.</p>
-        </div>
+    <!-- (e) Micro-challenge: Find the Flaw -->
+    <section id="challenge" class="section section-dark narrative-item">
+      <div class="narrative-label">05.1 // Challenge</div>
+      <div class="container narrative-content">
+        <h2 class="section-title reveal">Thinking Like a Defender</h2>
+        <p class="section-description reveal">Security is about spotting the edge cases before they become exploits. Can
+          you find the flaw in this LLM-tool configuration?</p>
 
-        <div class="discipline-card glass-card tilt-card" data-tilt>
-          <div class="discipline-icon">🏊</div>
-          <h3 class="discipline-title">Ironman 70.3 — 2026</h3>
-          <p class="discipline-desc">Long-distance endurance preparation. 1.9km swim, 90km bike, 21.1km run. Sustained
-            effort and recovery management.</p>
-        </div>
-
-        <div class="discipline-card glass-card tilt-card" data-tilt data-bg="/running.png">
-          <div class="discipline-icon">🏃</div>
-          <h3 class="discipline-title">Berlin Marathon — 2026</h3>
-          <p class="discipline-desc">42.2km of execution. Structured training blocks, progressive overload, and race-day
-            discipline.</p>
+        <div class="challenge-container glass-card reveal">
+          <div class="challenge-header">
+            <span class="challenge-badge">Scenario: Support Bot</span>
+          </div>
+          <div class="challenge-snippet-wrapper">
+            <pre class="challenge-snippet" id="challenge-snippet-code"><code>// Scenario: LLM-powered support bot
+// Policy allows using the 'KnowledgeBase' tool only.
+const response = await llm.generate({
+  prompt: userInput,
+  tools: ['KnowledgeBase', 'DirectDatabaseQuery']
+});</code></pre>
+          </div>
+          <div class="challenge-question-box">
+            <h3 class="challenge-question" id="challenge-question-text">Where is the risk in this tool configuration?
+            </h3>
+            <div class="challenge-options" id="challenge-options-container">
+              <button class="challenge-option" data-choice="overprivilege">Over-privileged tool access</button>
+              <button class="challenge-option" data-choice="latency">Performance latency</button>
+              <button class="challenge-option" data-choice="parsing">JSON parsing error</button>
+            </div>
+            <div class="challenge-result hidden" id="challenge-result-box">
+              <div class="result-status"></div>
+              <p class="result-explanation"></p>
+              <a href="#" class="result-link" target="_blank">Read relevant documentation →</a>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Contact / Terminal Footer -->
-  <footer class="footer" id="contact">
-    <div class="container">
-      <div class="footer-terminal reveal">
-        <div class="terminal-line">
-          <span class="prompt">$</span>
-          <span class="command">connect --with max</span>
+    <!-- (f) Proof / credibility -->
+    <section id="proof" class="section narrative-item">
+      <div class="narrative-label">06 // Proof</div>
+      <div class="container narrative-content">
+        <h2 class="section-title reveal">Discipline & Proof</h2>
+
+        <!-- Stack Grid -->
+        <div class="stack-grid reveal">
+          <div class="stack-category glass-card tilt-card" data-tilt>
+            <h3 class="category-title">Security Engineering</h3>
+            <div class="stack-tags">
+              <span class="stack-tag">AI Robustness</span>
+              <span class="stack-tag">TLS Analysis</span>
+              <span class="stack-tag">AWS IAM</span>
+              <span class="stack-tag">CI/CD Security</span>
+            </div>
+          </div>
+          <div class="stack-category glass-card tilt-card" data-tilt>
+            <h3 class="category-title">Execution</h3>
+            <div class="stack-tags">
+              <span class="stack-tag">Python</span>
+              <span class="stack-tag">Terraform</span>
+              <span class="stack-tag">Docker</span>
+              <span class="stack-tag">TypeScript</span>
+            </div>
+          </div>
         </div>
-        <div class="terminal-line output">
-          <a href="https://github.com/richter-max" target="_blank" rel="noopener noreferrer"
-            class="terminal-link magnetic">GitHub</a>
-          <span class="separator">|</span>
-          <a href="https://www.linkedin.com/in/maximilian-richter-40697a298" target="_blank" rel="noopener noreferrer"
-            class="terminal-link magnetic">LinkedIn</a>
+
+        <!-- (f.1) Measured, Not Assumed -->
+        <div class="robustness-block glass-card reveal">
+          <div class="robustness-header">
+            <h3 class="robustness-title">Measured, Not Assumed</h3>
+            <span class="robustness-badge">Stability Verifier</span>
+          </div>
+          <div class="robustness-content">
+            <div class="robustness-text">
+              <p>My engineering philosophy centers on <strong>verifiable correctness</strong>. I build systems where
+                every security claim is backed by deterministic benchmarks and automated regression suites.</p>
+              <ul class="robustness-list">
+                <li>Strict guardrail enforcement via schema-validated policies.</li>
+                <li>Comprehensive test coverage: Unit, Integration, and Fuzzing.</li>
+                <li>Zero-trust dependency management.</li>
+              </ul>
+              <div class="robustness-links">
+                <a href="https://github.com/richter-max/aegis#testing" class="secondary-link">View Testing Docs</a>
+                <span class="separator">/</span>
+                <a href="https://github.com/richter-max/aegis#ci-cd" class="secondary-link">CI/CD Workflow</a>
+              </div>
+            </div>
+            <div class="robustness-bench">
+              <div class="bench-header">Benchmark Output (Static)</div>
+              <pre class="bench-output"><code>[BENCH] AEGIS Policy Engine
+----------------------------
+Avg Latency:      1.42ms
+Peak Memory:      42MB
+Policy Matches:   1k+ / sec
+Test Coverage:    94.5%
+Build Status:     PASSING</code></pre>
+            </div>
+          </div>
         </div>
-        <div class="terminal-line copyright">
-          <span class="prompt">$</span>
-          <span class="command">© 2026 Maximilian Richter</span>
+        <div class="discipline-grid reveal" style="margin-top: var(--space-2xl)">
+          <div class="discipline-card glass-card tilt-card" data-tilt data-bg="/tabletennis.png">
+            <div class="discipline-icon">🏓</div>
+            <h3 class="discipline-title">Coach</h3>
+            <p class="discipline-desc">Mentoring and leadership through table tennis coaching.</p>
+          </div>
+          <div class="discipline-card glass-card tilt-card" data-tilt>
+            <div class="discipline-icon">🏊</div>
+            <h3 class="discipline-title">Endurance</h3>
+            <p class="discipline-desc">Ironman 70.3 & Berlin Marathon — disciplined execution.</p>
+          </div>
         </div>
       </div>
-    </div>
-  </footer>
+    </section>
+
+    <!-- (g) Strategic Connect / Collaboration -->
+    <footer class="footer narrative-item" id="contact">
+      <div class="narrative-label">07 // Connect</div>
+      <div class="container narrative-content">
+        <h2 class="section-title reveal">Let’s Build Secure Systems</h2>
+        <p class="section-description reveal">I’m building deterministic security tooling and evaluation systems. If
+          you're working on similar problems — or want to — let’s connect.</p>
+
+        <div class="connect-grid reveal" style="margin-top: var(--space-2xl)">
+          <!-- Block 1: Recruiting -->
+          <div class="connect-card glass-card">
+            <h3 class="connect-card-title">Recruiting & Engineering</h3>
+            <p class="connect-card-desc">For engineering, security, or system design discussions regarding senior roles.
+            </p>
+            <div class="connect-actions">
+              <a href="mailto:max@richtermax.com" class="button-primary">Email</a>
+              <a href="https://www.linkedin.com/in/maximilian-richter-40697a298" target="_blank"
+                rel="noopener noreferrer" class="link-secondary">LinkedIn</a>
+            </div>
+          </div>
+
+          <!-- Block 2: SaaS & Founder -->
+          <div class="connect-card glass-card">
+            <h3 class="connect-card-title">SaaS & Founder Collaboration</h3>
+            <p class="connect-card-desc">Interested in building security tooling, testing early products, or exploring
+              partnerships?</p>
+            <div class="connect-actions">
+              <a href="mailto:max@richtermax.com?subject=SaaS%20Collaboration" class="button-primary">Connect</a>
+              <a href="#aegis-deep-dive" class="link-secondary">Flagship Project</a>
+            </div>
+          </div>
+
+          <!-- Block 3: OSS -->
+          <div class="connect-card glass-card">
+            <h3 class="connect-card-title">Open Source & Technical</h3>
+            <p class="connect-card-desc">Working on agent security, guardrails, or evaluation frameworks? Let’s
+              collaborate.</p>
+            <div class="connect-actions">
+              <a href="https://github.com/richter-max" target="_blank" rel="noopener noreferrer"
+                class="button-primary">GitHub</a>
+              <a href="https://www.linkedin.com/in/maximilian-richter-40697a298" target="_blank"
+                rel="noopener noreferrer" class="link-secondary">LinkedIn</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="founder-signal reveal">
+          <p>Currently building: lightweight security systems for measurable AI agent evaluation // <a
+              href="https://github.com/richter-max/aegis" class="signal-link">View AEGIS</a></p>
+        </div>
+
+        <div class="footer-bottom">
+          <p class="copyright">© 2026 Maximilian Richter — System Architecture & Security</p>
+        </div>
+      </div>
+    </footer>
+  </main>
 
   <script type="module" src="/src/main.js"></script>
   <script type="module" src="/src/effects.js"></script>

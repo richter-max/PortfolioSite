@@ -1,3 +1,5 @@
+import { aegisDemos, securityChallenge } from './data/demos.js';
+
 // ============================================
 // MATRIX BACKGROUND ANIMATION
 // ============================================
@@ -45,33 +47,127 @@ function initMatrixBackground() {
 }
 
 // ============================================
-// CUSTOM CURSOR
+// TERMINAL DEMO
 // ============================================
-function initCustomCursor() {
-    const cursor = document.querySelector('.cursor');
-    if (!cursor || window.matchMedia('(pointer: coarse)').matches) return;
+function initTerminalDemo() {
+    const tabs = document.querySelectorAll('.terminal-tab');
+    const commandLine = document.querySelector('#terminal-command-line .command-text');
+    const resultText = document.getElementById('terminal-result-text');
+    const explanationText = document.querySelector('#terminal-explanation .context-text');
 
-    let mouseX = 0, mouseY = 0;
-    let cursorX = 0, cursorY = 0;
+    if (!tabs.length || !commandLine || !resultText || !explanationText) return;
 
-    document.addEventListener('mousemove', (e) => {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-    });
+    let isTyping = false;
 
-    function updateCursor() {
-        cursorX += (mouseX - cursorX) * 0.2;
-        cursorY += (mouseY - cursorY) * 0.2;
-        cursor.style.left = `${cursorX}px`;
-        cursor.style.top = `${cursorY}px`;
-        requestAnimationFrame(updateCursor);
+    async function runCommand(cmdId) {
+        if (isTyping) return;
+        isTyping = true;
+
+        const demo = aegisDemos.scenarios.find(s => s.id === cmdId);
+        if (!demo) return;
+
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        // Reset display
+        commandLine.parentElement.classList.add('typing');
+        commandLine.textContent = '';
+        resultText.style.opacity = '0';
+        resultText.style.animation = 'none';
+
+        if (prefersReducedMotion) {
+            commandLine.textContent = demo.command;
+        } else {
+            // Typewriter effect for command
+            const fullCommand = demo.command;
+            for (let i = 0; i <= fullCommand.length; i++) {
+                commandLine.textContent = fullCommand.slice(0, i);
+                await new Promise(resolve => setTimeout(resolve, 30));
+            }
+        }
+
+        commandLine.parentElement.classList.remove('typing');
+
+        // Show output
+        resultText.textContent = demo.output;
+        resultText.style.animation = 'fade-in 0.5s ease forwards';
+
+        // Update context
+        explanationText.textContent = demo.explanation;
+
+        isTyping = false;
     }
-    updateCursor();
 
-    const interactiveElements = document.querySelectorAll('a, button, .magnetic, .bento-card');
-    interactiveElements.forEach(el => {
-        el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
-        el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            if (tab.classList.contains('active')) return;
+
+            tabs.forEach(t => {
+                t.classList.remove('active');
+                t.setAttribute('aria-selected', 'false');
+            });
+            tab.classList.add('active');
+            tab.setAttribute('aria-selected', 'true');
+
+            runCommand(tab.dataset.cmd);
+        });
+    });
+}
+
+// ============================================
+// SECURITY CHALLENGE
+// ============================================
+function initSecurityChallenge() {
+    const options = document.querySelectorAll('.challenge-option');
+    const resultBox = document.getElementById('challenge-result-box');
+    const resultStatus = resultBox?.querySelector('.result-status');
+    const resultDetails = resultBox?.querySelector('.result-explanation');
+    const resultLink = resultBox?.querySelector('.result-link');
+
+    if (!options.length || !resultBox) return;
+
+    options.forEach(option => {
+        option.addEventListener('click', () => {
+            if (resultBox.classList.contains('correct-revealed')) return;
+
+            const choiceId = option.dataset.choice;
+            const choice = securityChallenge.choices.find(c => c.id === choiceId);
+
+            if (!choice) return;
+
+            options.forEach(opt => opt.classList.remove('correct', 'wrong'));
+
+            resultBox.classList.remove('hidden');
+            resultDetails.textContent = choice.explanation;
+            resultLink.href = choice.docLink;
+
+            if (choice.isCorrect) {
+                option.classList.add('correct');
+                resultStatus.textContent = "Correct Selection";
+                resultStatus.style.color = "var(--neon-cyan)";
+                resultBox.style.borderLeftColor = "var(--neon-cyan)";
+                resultBox.classList.add('correct-revealed');
+                options.forEach(opt => opt.style.pointerEvents = 'none');
+            } else {
+                option.classList.add('wrong');
+                resultStatus.textContent = "Incorrect Analysis";
+                resultStatus.style.color = "#ff5f56";
+                resultBox.style.borderLeftColor = "#ff5f56";
+            }
+        });
+    });
+}
+
+// ============================================
+// PROJECT ACCORDIONS
+// ============================================
+function initProjectAccordions() {
+    const triggers = document.querySelectorAll('.accordion-trigger');
+
+    triggers.forEach(trigger => {
+        trigger.addEventListener('click', () => {
+            const isExpanded = trigger.getAttribute('aria-expanded') === 'true';
+            trigger.setAttribute('aria-expanded', !isExpanded);
+        });
     });
 }
 
@@ -127,7 +223,7 @@ function initMagneticEffect() {
 }
 
 // ============================================
-// SCROLL REVEAL — section-level + child stagger
+// SCROLL REVEAL
 // ============================================
 function initScrollAnimations() {
     const observer = new IntersectionObserver((entries) => {
@@ -137,7 +233,6 @@ function initScrollAnimations() {
                 el.classList.add('visible');
                 observer.unobserve(el);
 
-                // Stagger direct children marked with .reveal-child
                 const children = el.querySelectorAll('.reveal-child');
                 children.forEach((child, i) => {
                     child.style.transitionDelay = `${(i + 1) * 70}ms`;
@@ -151,7 +246,6 @@ function initScrollAnimations() {
         threshold: 0.06
     });
 
-    // Apply stagger delay for sibling .reveal elements in the same parent
     const revealEls = document.querySelectorAll('.reveal');
     revealEls.forEach((el) => {
         if (!el.style.transitionDelay) {
@@ -174,7 +268,6 @@ function initSmoothScroll() {
             e.preventDefault();
             const target = document.querySelector(this.getAttribute('href'));
             if (target) {
-                // Close mobile nav if open
                 const navLinks = document.getElementById('nav-links');
                 const hamburger = document.getElementById('nav-hamburger');
                 if (navLinks && navLinks.classList.contains('open')) {
@@ -207,7 +300,7 @@ function initScrollProgress() {
 }
 
 // ============================================
-// STICKY NAV — scrolled class
+// STICKY NAV
 // ============================================
 function initStickyNav() {
     const nav = document.getElementById('site-nav');
@@ -261,7 +354,6 @@ function initMobileMenu() {
         hamburger.setAttribute('aria-label', isOpen ? 'Close menu' : 'Open menu');
     });
 
-    // Close on outside click
     document.addEventListener('click', (e) => {
         if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) {
             navLinks.classList.remove('open');
@@ -272,10 +364,9 @@ function initMobileMenu() {
 }
 
 // ============================================
-// PARALLAX-LITE (large headings only, desktop)
+// PARALLAX-LITE
 // ============================================
 function initParallaxLite() {
-    // Skip on mobile and reduced-motion
     if (window.matchMedia('(max-width: 767px)').matches) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
@@ -291,7 +382,6 @@ function initParallaxLite() {
             const viewportCenter = window.innerHeight / 2;
             const elementCenter = rect.top + rect.height / 2;
             const distance = elementCenter - viewportCenter;
-            // Factor 0.04 → max ±10px at typical distances
             const offset = Math.max(-10, Math.min(10, distance * 0.04));
             el.style.transform = `translateY(${offset}px)`;
         });
@@ -322,13 +412,10 @@ function initBackgroundImages() {
 // ============================================
 // ACCESSIBILITY: REDUCED MOTION
 // ============================================
-function checkReducedMotion() {
+function handleReducedMotion() {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (prefersReducedMotion) {
-        document.body.classList.add('reduced-motion');
-        const cursor = document.querySelector('.cursor');
-        if (cursor) cursor.style.display = 'none';
-        document.body.style.cursor = 'auto';
+        document.documentElement.classList.add('reduce-motion');
     }
 }
 
@@ -336,10 +423,9 @@ function checkReducedMotion() {
 // INITIALIZE ALL EFFECTS
 // ============================================
 document.addEventListener('DOMContentLoaded', () => {
-    checkReducedMotion();
+    handleReducedMotion();
     initBackgroundImages();
     initMatrixBackground();
-    initCustomCursor();
     init3DTilt();
     initMagneticEffect();
     initScrollAnimations();
@@ -349,6 +435,9 @@ document.addEventListener('DOMContentLoaded', () => {
     initActiveSection();
     initMobileMenu();
     initParallaxLite();
+    initTerminalDemo();
+    initSecurityChallenge();
+    initProjectAccordions();
 });
 
 // ============================================
