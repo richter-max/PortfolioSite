@@ -375,6 +375,36 @@ function handleReducedMotion() {
 }
 
 // ============================================
+// JSON INSPECTOR — TAB SWITCHING
+// ============================================
+function initJsonInspector() {
+    const tabs = document.querySelectorAll('.json-tab');
+    const outputs = document.querySelectorAll('.json-output');
+
+    if (!tabs.length) return;
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            if (tab.classList.contains('active')) return;
+
+            // Switch tab active state
+            tabs.forEach(t => {
+                t.classList.remove('active');
+                t.setAttribute('aria-selected', 'false');
+            });
+            tab.classList.add('active');
+            tab.setAttribute('aria-selected', 'true');
+
+            // Switch output panel
+            const policy = tab.dataset.policy;
+            outputs.forEach(out => out.classList.remove('active'));
+            const target = document.getElementById(`json-${policy}`);
+            if (target) target.classList.add('active');
+        });
+    });
+}
+
+// ============================================
 // INITIALIZE ALL EFFECTS
 // ============================================
 document.addEventListener('DOMContentLoaded', () => {
@@ -392,6 +422,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initTerminalDemo();
     initSecurityChallenge();
     initProjectAccordions();
+    initJsonInspector();
 });
 
 // ============================================

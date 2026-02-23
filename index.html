@@ -311,31 +311,30 @@
 
           <div class="flagship-section">
             <h4 class="section-heading">Behavioral Policy Engine <span class="repro-badge">Reproducible</span></h4>
-            <p
-              style="font-size: var(--text-sm); color: var(--text-muted); margin-bottom: var(--s-4); font-family: var(--font-mono);">
-              One command → measurable result. Select a scenario:</p>
 
-            <div class="terminal-demo-container reveal">
-              <div class="terminal-tabs" role="tablist">
-                <button class="terminal-tab active" data-cmd="tool_exfiltration" role="tab"
-                  aria-selected="true">Scenario: Egress</button>
-                <button class="terminal-tab" data-cmd="core_bench" role="tab" aria-selected="false">Bench:
-                  Performance</button>
-                <button class="terminal-tab" data-cmd="eval_trace" role="tab" aria-selected="false">Eval: Trace
-                  Scan</button>
-              </div>
-              <div class="terminal-window">
-                <div class="terminal-header">
-                  <div class="terminal-dots"><span></span><span></span><span></span></div>
-                  <div class="terminal-title">aegis --cli</div>
+            <!-- 3-panel: terminal left | explanation right -->
+            <div class="aegis-demo-layout reveal">
+
+              <!-- LEFT: Terminal -->
+              <div class="aegis-terminal-col">
+                <div class="terminal-tabs" role="tablist">
+                  <button class="terminal-tab active" data-cmd="tool_exfiltration" role="tab"
+                    aria-selected="true">Egress</button>
+                  <button class="terminal-tab" data-cmd="core_bench" role="tab" aria-selected="false">Bench</button>
+                  <button class="terminal-tab" data-cmd="eval_trace" role="tab" aria-selected="false">Trace
+                    Scan</button>
                 </div>
-                <div class="terminal-body" id="aegis-terminal-output">
-                  <div class="terminal-line typing" id="terminal-command-line">
-                    <span class="prompt">rick@aegis:~$</span> <span class="command-text">aegis run --scenario
-                      tool_exfiltration --policy strict</span>
+                <div class="terminal-window">
+                  <div class="terminal-header">
+                    <div class="terminal-dots"><span></span><span></span><span></span></div>
+                    <div class="terminal-title">aegis --cli</div>
                   </div>
-                  <pre class="terminal-output" id="terminal-result-text">
-[INIT] Loading scenario: tool_exfiltration
+                  <div class="terminal-body" id="aegis-terminal-output">
+                    <div class="terminal-line typing" id="terminal-command-line">
+                      <span class="prompt">rick@aegis:~$</span> <span class="command-text">aegis run --scenario
+                        tool_exfiltration --policy strict</span>
+                    </div>
+                    <pre class="terminal-output" id="terminal-result-text">[INIT] Loading scenario: tool_exfiltration
 [POLICY] Using policy: strict_v2.1
 [RUN] Trace started...
 [EVENT] Tool: 'curl' invoked with destination: '10.0.8.2'
@@ -343,18 +342,68 @@
 [POLICY_V] Violation: Unsanctioned_Egress (Severity: HIGH)
 [ACTION] Blocking request... DONE
 [REPORT] Trace complete. Policy violations found: 1</pre>
+                  </div>
                 </div>
               </div>
-              <div class="terminal-context" id="terminal-explanation">
-                <h5 class="context-title">What this demonstrates</h5>
-                <p class="context-text">Demonstrates AEGIS's ability to monitor runtime tool usage and block
-                  unsanctioned network egress based on strict behavioral policies.</p>
+
+              <!-- RIGHT: Explanation panel -->
+              <div class="aegis-panel-col">
+                <p class="aegis-panel-headline">One command. One reproducible result.</p>
+                <ul class="aegis-panel-bullets" id="terminal-explanation">
+                  <li id="aegis-bullet-1">Monitors real-time tool usage against a strict behavioral policy.</li>
+                  <li id="aegis-bullet-2">Blocks unsanctioned egress attempts before they complete.</li>
+                  <li id="aegis-bullet-3">Generates a structured trace report on every run.</li>
+                </ul>
+                <div class="aegis-panel-links">
+                  <a href="https://github.com/richter-max/aegis" class="button-primary magnetic" target="_blank"
+                    rel="noopener noreferrer">View Repository</a>
+                  <a href="https://github.com/richter-max/aegis/blob/main/THREAT_MODEL.md" class="link-secondary"
+                    target="_blank" rel="noopener noreferrer">Threat Model</a>
+                  <a href="https://github.com/richter-max/aegis#bench" class="link-secondary" target="_blank"
+                    rel="noopener noreferrer">Bench Report</a>
+                </div>
               </div>
+
             </div>
 
-            <div class="flagship-links-row reveal">
-              <a href="https://github.com/richter-max/aegis#traces" class="secondary-link">See Sample Traces</a>
+            <!-- BELOW: JSON Inspector -->
+            <div class="json-inspector reveal" id="aegis-json-inspector">
+              <div class="json-inspector-header">
+                <span class="json-inspector-label">Output Inspector</span>
+                <div class="json-tabs" role="tablist">
+                  <button class="json-tab active" data-policy="strict" role="tab" aria-selected="true">strict</button>
+                  <button class="json-tab" data-policy="permissive" role="tab" aria-selected="false">permissive</button>
+                </div>
+              </div>
+              <!-- strict output -->
+              <pre class="json-output active" id="json-strict"><code><span class="json-brace">{</span>
+  <span class="json-key">"scenario"</span><span class="json-brace">:</span> <span class="json-string">"tool_exfiltration"</span><span class="json-brace">,</span>
+  <span class="json-key">"policy"</span><span class="json-brace">:</span> <span class="json-string">"strict_v2.1"</span><span class="json-brace">,</span>
+  <span class="json-key">"trace_events"</span><span class="json-brace">:</span> <span class="json-number">12</span><span class="json-brace">,</span>
+  <span class="json-key">"violations"</span><span class="json-brace">: [</span>
+    <span class="json-brace">{</span>
+      <span class="json-key">"type"</span><span class="json-brace">:</span> <span class="json-string">"Unsanctioned_Egress"</span><span class="json-brace">,</span>
+      <span class="json-key">"severity"</span><span class="json-brace">:</span> <span class="json-string">"HIGH"</span><span class="json-brace">,</span>
+      <span class="json-key">"tool"</span><span class="json-brace">:</span> <span class="json-string">"curl"</span><span class="json-brace">,</span>
+      <span class="json-key">"destination"</span><span class="json-brace">:</span> <span class="json-string">"10.0.8.2"</span><span class="json-brace">,</span>
+      <span class="json-key">"action"</span><span class="json-brace">:</span> <span class="json-string">"BLOCKED"</span>
+    <span class="json-brace">}</span>
+  <span class="json-brace">],</span>
+  <span class="json-key">"risk_score"</span><span class="json-brace">:</span> <span class="json-number">87</span><span class="json-brace">,</span>
+  <span class="json-key">"passed"</span><span class="json-brace">:</span> <span class="json-bool">false</span>
+<span class="json-brace">}</span></code></pre>
+              <!-- permissive output -->
+              <pre class="json-output" id="json-permissive"><code><span class="json-brace">{</span>
+  <span class="json-key">"scenario"</span><span class="json-brace">:</span> <span class="json-string">"tool_exfiltration"</span><span class="json-brace">,</span>
+  <span class="json-key">"policy"</span><span class="json-brace">:</span> <span class="json-string">"permissive_v1.0"</span><span class="json-brace">,</span>
+  <span class="json-key">"trace_events"</span><span class="json-brace">:</span> <span class="json-number">12</span><span class="json-brace">,</span>
+  <span class="json-key">"violations"</span><span class="json-brace">: [],</span>
+  <span class="json-key">"risk_score"</span><span class="json-brace">:</span> <span class="json-number">24</span><span class="json-brace">,</span>
+  <span class="json-key">"passed"</span><span class="json-brace">:</span> <span class="json-bool">true</span><span class="json-brace">,</span>
+  <span class="json-key">"note"</span><span class="json-brace">:</span> <span class="json-string">"Permissive policy allowed egress — no violation flagged."</span>
+<span class="json-brace">}</span></code></pre>
             </div>
+
           </div>
 
           <div class="flagship-section">
