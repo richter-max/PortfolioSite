@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useEffect } from 'react';
+import { useEffect, useRef, Suspense } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
@@ -28,9 +28,9 @@ const OBJECTS: {
     id: 'computer',
     model: '/assets/computer.glb',
     fallback: 'box',
-    position: [0.3, 1.1, 0],
-    rotation: [0, -0.2, 0],
-    scale: 1.0,
+    position: [0, 1.4, 0],
+    rotation: [0, 0, 0],
+    scale: 2.0,
     fallbackColor: '#4a9eff',
     fallbackSize: [1.5, 0.12, 1.0],
   },
@@ -38,9 +38,9 @@ const OBJECTS: {
     id: 'book',
     model: '/assets/thin-book.glb',
     fallback: 'box',
-    position: [-2.2, 0.95, 0.5],
+    position: [-2.5, 1.4, 0.8],
     rotation: [0, 0.3, 0],
-    scale: 0.9,
+    scale: 1.5,
     fallbackColor: '#8b6b3d',
     fallbackSize: [0.8, 0.12, 1.1],
   },
@@ -48,9 +48,9 @@ const OBJECTS: {
     id: 'stickynotes',
     model: '/assets/sticky-notes.glb',
     fallback: 'box',
-    position: [2.2, 0.95, -0.2],
-    rotation: [0, -0.25, 0],
-    scale: 0.85,
+    position: [2.5, 1.4, 0.5],
+    rotation: [0, -0.3, 0],
+    scale: 1.2,
     fallbackColor: '#f5e642',
     fallbackSize: [0.7, 0.08, 0.7],
   },
@@ -58,9 +58,9 @@ const OBJECTS: {
     id: 'trophy',
     model: '/assets/trophy.glb',
     fallback: 'cylinder',
-    position: [-2.0, 0.95, -1.6],
+    position: [-2.2, 1.4, -2.0],
     rotation: [0, 0.5, 0],
-    scale: 0.75,
+    scale: 1.2,
     fallbackColor: '#f0a832',
     fallbackSize: [0.35, 0.35, 0.9],
   },
@@ -68,9 +68,9 @@ const OBJECTS: {
     id: 'flashdrive',
     model: '/assets/flash-drive.glb',
     fallback: 'box',
-    position: [2.5, 0.95, -1.5],
+    position: [2.8, 1.4, -1.8],
     rotation: [0, -0.6, 0],
-    scale: 0.8,
+    scale: 1.2,
     fallbackColor: '#00d4aa',
     fallbackSize: [0.5, 0.25, 0.18],
   },
@@ -78,9 +78,9 @@ const OBJECTS: {
     id: 'coffeecup',
     model: '/assets/coffee-cup.glb',
     fallback: 'cylinder',
-    position: [-1.0, 0.95, -2.0],
+    position: [2.0, 1.4, -2.5],
     rotation: [0, 0.1, 0],
-    scale: 0.8,
+    scale: 1.4,
     fallbackColor: '#c8841a',
     fallbackSize: [0.22, 0.22, 0.45],
   },
@@ -88,9 +88,9 @@ const OBJECTS: {
     id: 'phone',
     model: '/assets/phone.glb',
     fallback: 'box',
-    position: [1.8, 0.95, 1.6],
+    position: [1.8, 1.4, 1.6],
     rotation: [0, -0.8, 0],
-    scale: 0.85,
+    scale: 1.4,
     fallbackColor: '#1a1a2e',
     fallbackSize: [0.38, 0.08, 0.75],
   },
@@ -99,8 +99,8 @@ const OBJECTS: {
 export default function DeskScene({ mouse, selected, onSelect }: DeskSceneProps) {
   const { camera } = useThree();
   const mouseRef = useRef(mouse);
-  const basePos = useRef<THREE.Vector3>(new THREE.Vector3(0, 8, 12));
-  const targetPos = useRef<THREE.Vector3>(new THREE.Vector3(0, 8, 12));
+  const basePos = useRef<THREE.Vector3>(new THREE.Vector3(0, 15, 20));
+  const targetPos = useRef<THREE.Vector3>(new THREE.Vector3(0, 15, 20));
   const groupRef = useRef<THREE.Group>(null);
 
   useEffect(() => {
@@ -119,47 +119,22 @@ export default function DeskScene({ mouse, selected, onSelect }: DeskSceneProps)
     );
 
     (camera as THREE.PerspectiveCamera).position.lerp(targetPos.current, delta * 1.5);
-    camera.lookAt(0, 0.5, -1.0);
+    camera.lookAt(0, 0, 0);
   });
 
-  // Try to load desk GLB — fallback to plane if missing
-  const deskGLB = useSafeGLTF('/assets/adjustable-desk.glb');
-
+  // Floor plane
+  // Floor plane
   return (
     <group ref={groupRef}>
       {/* Lighting */}
-      <ambientLight intensity={0.5} color="#ffe4c4" />
-      {/* Warm key light from top-left */}
-      <pointLight
-        position={[-5, 10, 4]}
-        intensity={30}
-        color="#ffcc88"
-        castShadow
-        shadow-mapSize={[1024, 1024]}
-      />
-      {/* Soft cool fill */}
-      <pointLight position={[6, 5, 6]} intensity={8} color="#aaddff" />
-      {/* Subtle rim from back */}
-      <pointLight position={[0, 3, -8]} intensity={4} color="#ff8833" />
+      <ambientLight intensity={1.5} color="#ffe4c4" />
+      <directionalLight position={[-5, 10, 5]} intensity={3.5} castShadow />
+      <pointLight position={[5, 5, 5]} intensity={1.5} color="#aaddff" />
 
-      {/* Floor plane */}
-      <mesh receiveShadow position={[0, -0.05, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[30, 30]} />
-        <meshStandardMaterial color="#0d0d18" roughness={0.9} />
-      </mesh>
-
-      {/* Desk base */}
-      {deskGLB ? (
-        <primitive
-          object={deskGLB.scene.clone()}
-          position={[0, 0, 0]}
-          scale={1.0}
-          castShadow
-          receiveShadow
-        />
-      ) : (
-        <DeskFallback />
-      )}
+      {/* Desk base with Suspense */}
+      <Suspense fallback={<DeskFallback />}>
+        <DeskModel />
+      </Suspense>
 
       {/* Interactive objects */}
       {OBJECTS.map((obj) => (
@@ -181,33 +156,32 @@ export default function DeskScene({ mouse, selected, onSelect }: DeskSceneProps)
   );
 }
 
-// Safe GLB loader — returns null if file not found
-function useSafeGLTF(path: string) {
-  try {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    return useGLTF(path);
-  } catch {
-    return null;
-  }
+function DeskModel() {
+  const { scene } = useGLTF('/assets/adjustable-desk.glb');
+  const clone = scene.clone();
+  
+  clone.traverse((node) => {
+    if ((node as THREE.Mesh).isMesh) {
+      node.castShadow = true;
+      node.receiveShadow = true;
+    }
+  });
+
+  return (
+    <primitive
+      object={clone}
+      position={[0, -0.5, 0]}
+      scale={8.0}
+    />
+  );
 }
 
-// Fallback desk geometry
 function DeskFallback() {
   return (
-    <group position={[0, 0, 0]}>
-      {/* Desk surface */}
-      <mesh receiveShadow castShadow position={[0, 0.9, 0]}>
-        <boxGeometry args={[7.5, 0.08, 4.5]} />
-        <meshStandardMaterial color="#3d2b1a" roughness={0.6} metalness={0.05} />
-      </mesh>
-      {/* Desk legs */}
-      {[[-3.4, -2.8], [3.4, -2.8], [-3.4, 2.3], [3.4, 2.3]].map(([x, z], i) => (
-        <mesh key={i} castShadow position={[x, 0.45, z]}>
-          <boxGeometry args={[0.12, 0.9, 0.12]} />
-          <meshStandardMaterial color="#2a1f14" roughness={0.7} />
-        </mesh>
-      ))}
-    </group>
+    <mesh position={[0, -5, 0]} receiveShadow>
+      <boxGeometry args={[40, 10, 25]} />
+      <meshStandardMaterial color="#221100" />
+    </mesh>
   );
 }
 

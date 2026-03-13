@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef, useState, Suspense } from 'react';
 import { ThreeEvent, useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
@@ -89,9 +89,6 @@ export default function DeskObjectMesh({
     }
   });
 
-  // Try to load GLB, use fallback if not available
-  const glb = useSafeGLTF(modelPath);
-
   const handlePointerOver = (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation();
     setHovered(true);
@@ -118,9 +115,7 @@ export default function DeskObjectMesh({
       onPointerOut={handlePointerOut}
       onClick={handleClick}
     >
-      {glb ? (
-        <GLBModel glb={glb} hovered={hovered} isSelected={isSelected} />
-      ) : (
+      <Suspense fallback={
         <FallbackMesh
           type={fallbackType}
           color={fallbackColor}
@@ -128,7 +123,9 @@ export default function DeskObjectMesh({
           hovered={hovered}
           isSelected={isSelected}
         />
-      )}
+      }>
+        <GLBModel modelPath={modelPath} hovered={hovered} isSelected={isSelected} />
+      </Suspense>
 
       {/* Coffee cup steam particles */}
       {id === 'coffeecup' && <SteamEffect />}
@@ -139,12 +136,13 @@ export default function DeskObjectMesh({
   );
 }
 
-// GLB model with non-destructive highlight
-function GLBModel({ glb, hovered, isSelected }: {
-  glb: any;
+// GLB model component that uses standard useGLTF hook
+function GLBModel({ modelPath, hovered, isSelected }: {
+  modelPath: string;
   hovered: boolean;
   isSelected: boolean;
 }) {
+  const glb = useGLTF(modelPath);
   if (!glb || !glb.scene) return null;
   const clone = glb.scene.clone();
 
@@ -260,12 +258,3 @@ function PhoneScreen({ hovered }: { hovered: boolean }) {
   );
 }
 
-// Safe GLB loader hook
-function useSafeGLTF(path: string): ReturnType<typeof useGLTF> | null {
-  try {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    return useGLTF(path);
-  } catch {
-    return null;
-  }
-}

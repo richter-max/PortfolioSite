@@ -59,8 +59,8 @@ export default function DeskSection() {
       <div className={styles.canvasWrap}>
         <Canvas
           shadows
-          camera={{ position: [0, 8, 12], fov: 40, near: 0.1, far: 100 }}
-          gl={{ antialias: true, alpha: false }}
+          camera={{ position: [0, 10, 20], fov: 45 }}
+          gl={{ antialias: true, alpha: true }}
           style={{ background: 'transparent' }}
         >
           <Suspense fallback={null}>
