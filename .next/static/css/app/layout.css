@@ -1,0 +1,154 @@
+/*!*****************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[12].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[12].use[3]!./src/app/globals.css ***!
+  \*****************************************************************************************************************************************************************************************************************************************************************/
+/* ============================================================
+   GLOBAL STYLES — Max Richter 3D Portfolio
+   ============================================================ */
+
+:root {
+  /* Colors */
+  --bg-primary: #09090f;
+  --bg-secondary: #0f0f1a;
+  --accent-amber: #f0a832;
+  --accent-amber-dim: #c8841a;
+  --accent-blue: #4a9eff;
+  --accent-cyan: #00d4aa;
+  --text-primary: #f0ede8;
+  --text-secondary: #a09a8f;
+  --text-muted: #5a5550;
+  --border: rgba(240, 168, 50, 0.12);
+  --border-hover: rgba(240, 168, 50, 0.35);
+  --panel-bg: rgba(9, 9, 15, 0.92);
+  --panel-border: rgba(74, 158, 255, 0.2);
+  --glass: rgba(15, 15, 26, 0.7);
+
+  /* Typography */
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Spacing */
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-lg: 20px;
+}
+
+/* === Reset & Base === */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-snap-type: y mandatory;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* === Scrollbar === */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--accent-amber-dim);
+  border-radius: 2px;
+}
+
+/* === Selection === */
+::selection {
+  background: rgba(240, 168, 50, 0.25);
+  color: var(--text-primary);
+}
+
+/* === Utility Classes === */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.section-snap {
+  scroll-snap-align: start;
+  min-height: 100vh;
+}
+
+/* === Animations === */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(240, 168, 50, 0.1); }
+  50% { box-shadow: 0 0 40px rgba(240, 168, 50, 0.3); }
+}
+
+@keyframes steam {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scaleX(1);
+  }
+  30% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-20px) scaleX(2);
+  }
+}
+
+@keyframes spin-slow {
+  from { transform: rotateY(0deg); }
+  to { transform: rotateY(360deg); }
+}
+
+@keyframes blink-cursor {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+/* === Page cursor === */
+.cursor-pointer-override {
+  cursor: pointer !important;
+}
+
+/* === Canvas container === */
+.canvas-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+}
+
