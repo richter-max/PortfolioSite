@@ -26,7 +26,7 @@ const OBJECTS: {
 }[] = [
   {
     id: 'computer',
-    model: '/assets/Computer.glb',
+    model: '/assets/computer.glb',
     fallback: 'box',
     position: [0.3, 1.1, 0],
     rotation: [0, -0.2, 0],
@@ -36,7 +36,7 @@ const OBJECTS: {
   },
   {
     id: 'book',
-    model: '/assets/Thin Book.glb',
+    model: '/assets/thin-book.glb',
     fallback: 'box',
     position: [-2.2, 0.95, 0.5],
     rotation: [0, 0.3, 0],
@@ -46,7 +46,7 @@ const OBJECTS: {
   },
   {
     id: 'stickynotes',
-    model: '/assets/Sticky Notes.glb',
+    model: '/assets/sticky-notes.glb',
     fallback: 'box',
     position: [2.2, 0.95, -0.2],
     rotation: [0, -0.25, 0],
@@ -56,7 +56,7 @@ const OBJECTS: {
   },
   {
     id: 'trophy',
-    model: '/assets/Trophy.glb',
+    model: '/assets/trophy.glb',
     fallback: 'cylinder',
     position: [-2.0, 0.95, -1.6],
     rotation: [0, 0.5, 0],
@@ -66,7 +66,7 @@ const OBJECTS: {
   },
   {
     id: 'flashdrive',
-    model: '/assets/Flash drive.glb',
+    model: '/assets/flash-drive.glb',
     fallback: 'box',
     position: [2.5, 0.95, -1.5],
     rotation: [0, -0.6, 0],
@@ -76,7 +76,7 @@ const OBJECTS: {
   },
   {
     id: 'coffeecup',
-    model: '/assets/Coffee cup.glb',
+    model: '/assets/coffee-cup.glb',
     fallback: 'cylinder',
     position: [-1.0, 0.95, -2.0],
     rotation: [0, 0.1, 0],
@@ -86,7 +86,7 @@ const OBJECTS: {
   },
   {
     id: 'phone',
-    model: '/assets/Phone.glb',
+    model: '/assets/phone.glb',
     fallback: 'box',
     position: [1.8, 0.95, 1.6],
     rotation: [0, -0.8, 0],
@@ -123,7 +123,7 @@ export default function DeskScene({ mouse, selected, onSelect }: DeskSceneProps)
   });
 
   // Try to load desk GLB — fallback to plane if missing
-  const deskGLB = useSafeGLTF('/assets/Adjustable Desk.glb');
+  const deskGLB = useSafeGLTF('/assets/adjustable-desk.glb');
 
   return (
     <group ref={groupRef}>
@@ -215,4 +215,4 @@ function DeskFallback() {
 OBJECTS.forEach((o) => {
   try { useGLTF.preload(o.model); } catch { /* ignore */ }
 });
-try { useGLTF.preload('/assets/Adjustable Desk.glb'); } catch { /* ignore */ }
+try { useGLTF.preload('/assets/adjustable-desk.glb'); } catch { /* ignore */ }
