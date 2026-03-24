@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>From Apprentice to ??? — Maximilian Richter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Outfit:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root { --bg-deep: #08080a; --bg-tech: #0a0a0f; --text-primary: #e8e8ed; --text-secondary: #8a8a98; --text-dim: #3a3a48; --accent-tech: #00d4ff; --accent-athlete: #ff3c3c; --border-subtle: rgba(255,255,255,0.04); --border-tech: rgba(0,212,255,0.12); --mono: 'JetBrains Mono', monospace; --display: 'Outfit', sans-serif; }
+html { scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: #222 #08080a; }
+body { background: var(--bg-deep); color: var(--text-primary); font-family: var(--display); -webkit-font-smoothing: antialiased; }
+body::after { content: ''; position: fixed; inset: 0; z-index: 9999; pointer-events: none; opacity: 0.022; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+.blog-nav { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 5vw; border-bottom: 1px solid var(--border-subtle); position: sticky; top: 0; z-index: 100; background: rgba(8,8,10,0.9); backdrop-filter: blur(12px); }
+.blog-nav a { text-decoration: none; }
+.blog-nav .back { font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent-tech); transition: opacity 0.3s; }
+.blog-nav .back:hover { opacity: 0.7; }
+.blog-nav .name { font-family: var(--display); font-weight: 700; font-size: 0.8rem; color: var(--text-primary); letter-spacing: 0.1em; text-transform: uppercase; }
+.blog-hero { max-width: 720px; margin: 0 auto; padding: 6rem 2rem 3rem; }
+.blog-hero .tag { font-family: var(--mono); font-size: 0.55rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 1.5rem; }
+.blog-hero h1 { font-family: var(--display); font-weight: 800; font-size: clamp(2rem, 4vw, 3rem); line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 1.5rem; }
+.blog-hero .meta { font-family: var(--mono); font-size: 0.6rem; color: var(--text-dim); letter-spacing: 0.1em; }
+.blog-content { max-width: 720px; margin: 0 auto; padding: 2rem 2rem 6rem; }
+.blog-content p { font-weight: 300; font-size: 1.02rem; line-height: 1.85; color: var(--text-secondary); margin-bottom: 1.8rem; }
+.blog-content h2 { font-family: var(--display); font-weight: 700; font-size: 1.4rem; margin: 3rem 0 1.2rem; letter-spacing: -0.02em; color: var(--text-primary); }
+.blog-content strong { color: var(--text-primary); font-weight: 500; }
+.blog-content em { color: var(--accent-tech); font-style: normal; }
+.blog-content .separator { width: 40px; height: 1px; background: linear-gradient(90deg, var(--accent-tech), var(--accent-athlete)); margin: 3rem auto; }
+.blog-content .path-block { background: rgba(255,255,255,0.015); border: 1px solid var(--border-subtle); padding: 1.5rem; margin: 2rem 0; }
+.blog-content .path-block .path-label { font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.8rem; }
+.blog-content .path-block .path-label.a { color: var(--accent-tech); }
+.blog-content .path-block .path-label.b { color: var(--accent-athlete); }
+.blog-content .path-block p { font-size: 0.9rem; margin-bottom: 0.8rem; }
+.blog-footer { max-width: 720px; margin: 0 auto; padding: 2rem 2rem 4rem; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; }
+.blog-footer a { font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-tech); text-decoration: none; padding: 0.6rem 1.2rem; border: 1px solid var(--border-tech); transition: all 0.3s; }
+.blog-footer a:hover { background: rgba(0,212,255,0.06); border-color: var(--accent-tech); }
+</style>
+</head>
+<body>
+
+<nav class="blog-nav">
+  <a href="/" class="back">← Back</a>
+  <a href="/" class="name">Maximilian Richter</a>
+</nav>
+
+<header class="blog-hero">
+  <div class="tag">Career · Roadmap</div>
+  <h1>From Apprentice to ???: My Career Roadmap</h1>
+  <div class="meta">Maximilian Richter · 10 min read</div>
+</header>
+
+<article class="blog-content">
+  <p>I don't have a traditional background. No university degree (yet). No Silicon Valley internship. I started as an apprentice at Bosch — a <em>Fachinformatiker für Anwendungsentwicklung</em> — which is a uniquely German path into tech that most international recruiters have never heard of. It's a three-year program that combines full-time work with vocational school. You learn by building real things for a real company.</p>
+
+  <p>That apprenticeship taught me more about shipping software than any bootcamp could. But it also made me realize: to get where I want to go, I need to think in decades, not quarters.</p>
+
+  <p>This post is my career roadmap. It's public because I believe in building in the open. And because I want to look back in five years and see how wrong (or right) I was.</p>
+
+  <h2>Where I Am Now (2026)</h2>
+
+  <p>I'm a software developer at Bosch in Stuttgart. My day job is application development, but my real focus — the thing I spend evenings and weekends on — is security. I've built four projects in the security space: AEGIS (an AI agent security framework), an Attack Surface Scanner, a security tool for SMBs, and VendorQ (a B2B SaaS for security questionnaires).</p>
+
+  <p>In October 2026, I'm starting a dual-degree program in Computer Science with a Cybersecurity focus. This means I'll be working and studying simultaneously for the next three years. It's going to be intense, but it fills the biggest gap in my profile: a formal CS education.</p>
+
+  <h2>The Two Paths</h2>
+
+  <p>I see two possible futures for myself, and I'm genuinely uncertain which one I'll pursue. That's the "???" in the title. Both are exciting. Both are viable. The next 2-3 years will determine which one wins.</p>
+
+  <div class="path-block">
+    <div class="path-label a">Path A — Big Tech Security Engineer</div>
+    <p>Join Google, Microsoft, or a comparable company in Zurich as a Security Engineer. Work on problems at a scale that few companies can offer. Learn from the best. Build a network. Gain credibility that opens every door in the industry.</p>
+    <p><strong>Timeline:</strong> 2029-2030, after completing the dual-degree program.</p>
+    <p><strong>What I need:</strong> CS degree (in progress), strong portfolio (building it), relevant certifications (planned: OSCP, cloud security certs), and the ability to pass Big Tech interviews.</p>
+  </div>
+
+  <div class="path-block">
+    <div class="path-label b">Path B — Founder</div>
+    <p>Take one of my current projects — most likely VendorQ or a evolution of the SMB Security Tool — and turn it into a real company. The security market for small and medium businesses is massively underserved. The tools that exist are either too expensive, too complex, or both. There's a gap, and I have the technical skills to fill it.</p>
+    <p><strong>Timeline:</strong> Could start during the dual-degree program if a product gains traction. Or after 2-3 years at Big Tech if I go Path A first.</p>
+    <p><strong>What I need:</strong> Product-market fit for one of my projects, initial revenue, and the conviction to bet on myself.</p>
+  </div>
+
+  <h2>The Stepping Stones</h2>
+
+  <p>Regardless of which path I take, the next moves are the same:</p>
+
+  <p><strong>2026-2029: Dual-degree + building.</strong> Complete the CS program while continuing to ship security projects. The degree gives me the theoretical foundation and the credential. The projects give me the portfolio and the proof of execution. Both matter.</p>
+
+  <p><strong>Side projects as job applications.</strong> Every project I build is a signal. AEGIS tells security teams I understand AI threats. The Attack Surface Scanner shows I can build offensive security tools. VendorQ proves I can build SaaS products. These aren't hobby projects — they're my interview portfolio, assembled over years instead of weeks.</p>
+
+  <p><strong>Community presence.</strong> I'm starting to write (you're reading it), contribute to open source security projects, and engage with the security community. In security, reputation matters more than almost any other field. The network you build is the career you build.</p>
+
+  <h2>Why Zurich</h2>
+
+  <p>Zurich is the target location regardless of the path. Google and Microsoft both have major engineering offices there. The startup ecosystem is growing, backed by ETH Zurich and serious venture capital. The quality of life is exceptional. And practically speaking, it's close enough to Stuttgart that the transition doesn't feel like moving to another planet.</p>
+
+  <p>Zurich also has one of the highest concentrations of security talent in Europe. Being in that ecosystem, surrounded by people working on the hardest problems in the field, is where I want to be.</p>
+
+  <h2>What Could Go Wrong</h2>
+
+  <p>I think it's important to be honest about the risks. The dual-degree program could be harder than I expect. One of the paths might close if the market shifts. I might discover that Big Tech culture doesn't suit me, or that running a startup is more lonely than I imagined. My side projects might not gain traction despite years of work.</p>
+
+  <p>I'm okay with all of these possibilities because the fundamental strategy is resilient: <strong>build skills, ship projects, stay adaptable</strong>. Even if the specific destination changes, those three things compound regardless of where I end up.</p>
+
+  <h2>The Question Mark</h2>
+
+  <p>The "???" in the title is deliberate. I don't know where I'll be in five years. I know where I want to be — running security for a major product, or building a security company that makes the internet safer for small businesses. But the specific path will emerge from the work itself.</p>
+
+  <p>What I do know: I'll be further than I am today. Because the system is in place, the work is happening every day, and the direction is clear even if the destination isn't.</p>
+
+  <div class="separator"></div>
+
+  <p>If you're reading this and you took an unconventional path into tech — no CS degree, apprenticeship, bootcamp, self-taught — know that the path matters less than the trajectory. Build things. Ship them. Let the work speak louder than the credentials. The rest follows.</p>
+</article>
+
+<div class="blog-footer">
+  <a href="blog-ironman-training.html">← Previous Article</a>
+  <a href="blog-endurance-roadmap.html">Next Article →</a>
+</div>
+
+</body>
+</html>

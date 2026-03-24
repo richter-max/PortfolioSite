@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Building AEGIS — Maximilian Richter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Outfit:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg-deep: #08080a;
+  --bg-tech: #0a0a0f;
+  --text-primary: #e8e8ed;
+  --text-secondary: #8a8a98;
+  --text-dim: #3a3a48;
+  --accent-tech: #00d4ff;
+  --accent-athlete: #ff3c3c;
+  --border-subtle: rgba(255,255,255,0.04);
+  --border-tech: rgba(0, 212, 255, 0.12);
+  --mono: 'JetBrains Mono', monospace;
+  --display: 'Outfit', sans-serif;
+}
+html { scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: #222 #08080a; }
+body { background: var(--bg-deep); color: var(--text-primary); font-family: var(--display); -webkit-font-smoothing: antialiased; }
+body::after { content: ''; position: fixed; inset: 0; z-index: 9999; pointer-events: none; opacity: 0.022; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+.blog-nav {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 1.2rem 5vw;
+  border-bottom: 1px solid var(--border-subtle);
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(8,8,10,0.9); backdrop-filter: blur(12px);
+}
+.blog-nav a { text-decoration: none; }
+.blog-nav .back { font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent-tech); transition: opacity 0.3s; }
+.blog-nav .back:hover { opacity: 0.7; }
+.blog-nav .name { font-family: var(--display); font-weight: 700; font-size: 0.8rem; color: var(--text-primary); letter-spacing: 0.1em; text-transform: uppercase; }
+
+.blog-hero {
+  max-width: 720px; margin: 0 auto; padding: 6rem 2rem 3rem;
+}
+.blog-hero .tag { font-family: var(--mono); font-size: 0.55rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent-tech); margin-bottom: 1.5rem; }
+.blog-hero h1 { font-family: var(--display); font-weight: 800; font-size: clamp(2rem, 4vw, 3rem); line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 1.5rem; }
+.blog-hero .meta { font-family: var(--mono); font-size: 0.6rem; color: var(--text-dim); letter-spacing: 0.1em; }
+
+.blog-content {
+  max-width: 720px; margin: 0 auto; padding: 2rem 2rem 6rem;
+}
+.blog-content p { font-weight: 300; font-size: 1.02rem; line-height: 1.85; color: var(--text-secondary); margin-bottom: 1.8rem; }
+.blog-content h2 { font-family: var(--display); font-weight: 700; font-size: 1.4rem; margin: 3rem 0 1.2rem; letter-spacing: -0.02em; color: var(--text-primary); }
+.blog-content h3 { font-family: var(--display); font-weight: 600; font-size: 1.1rem; margin: 2rem 0 0.8rem; color: var(--text-primary); }
+.blog-content strong { color: var(--text-primary); font-weight: 500; }
+.blog-content em { color: var(--accent-tech); font-style: normal; }
+.blog-content code { font-family: var(--mono); font-size: 0.85rem; background: rgba(0,212,255,0.06); border: 1px solid rgba(0,212,255,0.1); padding: 0.15rem 0.4rem; color: var(--accent-tech); }
+.blog-content pre { background: var(--bg-tech); border: 1px solid var(--border-tech); padding: 1.5rem; margin: 2rem 0; overflow-x: auto; font-family: var(--mono); font-size: 0.75rem; line-height: 1.7; color: var(--accent-tech); }
+.blog-content blockquote { border-left: 2px solid var(--accent-tech); padding-left: 1.5rem; margin: 2rem 0; font-style: italic; color: var(--text-dim); }
+.blog-content .separator { width: 40px; height: 1px; background: var(--border-tech); margin: 3rem auto; }
+
+.blog-footer {
+  max-width: 720px; margin: 0 auto; padding: 2rem 2rem 4rem;
+  border-top: 1px solid var(--border-subtle);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.blog-footer a { font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-tech); text-decoration: none; padding: 0.6rem 1.2rem; border: 1px solid var(--border-tech); transition: all 0.3s; }
+.blog-footer a:hover { background: rgba(0,212,255,0.06); border-color: var(--accent-tech); }
+</style>
+</head>
+<body>
+
+<nav class="blog-nav">
+  <a href="/" class="back">← Back</a>
+  <a href="/" class="name">Maximilian Richter</a>
+</nav>
+
+<header class="blog-hero">
+  <div class="tag">Security · AI</div>
+  <h1>Building AEGIS: Why AI Agents Need Security Frameworks</h1>
+  <div class="meta">Maximilian Richter · 8 min read</div>
+</header>
+
+<article class="blog-content">
+  <p>In the past two years, AI agents have gone from research demos to production systems. Companies are deploying LLM-powered agents that browse the web, execute code, manage databases, and interact with APIs on behalf of users. The capabilities are impressive. The security posture is terrifying.</p>
+
+  <p>I built <em>AEGIS</em> — a security evaluation framework for AI agents — because I couldn't find anything that systematically assessed the risks these systems introduce. Not just prompt injection (though that's part of it), but the full attack surface: tool misuse, data exfiltration, privilege escalation through conversational manipulation, and the subtle ways an agent can be turned against the system it's supposed to serve.</p>
+
+  <h2>The Problem: Agents Are Attack Surfaces</h2>
+
+  <p>A traditional web app has a well-understood attack surface. You've got your inputs, your authentication layer, your database queries. Decades of security research have given us frameworks, scanners, and best practices. But an AI agent is fundamentally different. Its "input" is natural language — infinite, ambiguous, and adversarial by nature.</p>
+
+  <p>Consider a typical LLM-powered agent with access to a company's internal tools. It can read emails, query databases, and send messages. Now imagine a carefully crafted email lands in someone's inbox. The email contains instructions that, when processed by the agent, cause it to forward sensitive data to an external address. This isn't science fiction. It's <strong>indirect prompt injection</strong>, and it works today against most deployed agent systems.</p>
+
+  <p>The attack surface of an AI agent includes the model itself (jailbreaks, prompt injection), the tools it has access to (over-permissioned APIs, missing authorization checks), the data it processes (poisoned context, malicious documents), and the feedback loops that let it learn and adapt (reward hacking, goal drift).</p>
+
+  <h2>What AEGIS Does</h2>
+
+  <p>AEGIS approaches agent security the way a penetration tester approaches a web application: systematically, category by category, with reproducible test cases and clear severity ratings.</p>
+
+  <p>The framework evaluates agents across several dimensions:</p>
+
+  <p><strong>Prompt Robustness</strong> — How resistant is the agent to direct and indirect prompt injection? AEGIS runs a battery of injection attempts, from naive ("ignore previous instructions") to sophisticated multi-turn social engineering attacks that build trust before exploiting it.</p>
+
+  <p><strong>Tool Safety</strong> — Does the agent respect the principle of least privilege? If it has access to a database, can it be convinced to run destructive queries? If it can send emails, can it be manipulated into exfiltrating data? AEGIS tests each tool integration for abuse potential.</p>
+
+  <p><strong>Data Handling</strong> — How does the agent handle sensitive information? Does it leak PII in responses? Can it be tricked into revealing system prompts, API keys, or internal documentation?</p>
+
+  <p><strong>Behavioral Consistency</strong> — Does the agent maintain its security posture across long conversations? Many agents that resist injection in a single turn become vulnerable after 10-15 turns of carefully escalating requests.</p>
+
+  <h2>The Technical Implementation</h2>
+
+  <p>AEGIS is built in Python and uses the OpenAI API (though it's designed to be model-agnostic). The core architecture is straightforward:</p>
+
+<pre>
+# Core evaluation loop
+for category in evaluation_categories:
+    for test_case in category.test_cases:
+        response = agent.run(test_case.prompt)
+        result = evaluate(response, test_case.expected_behavior)
+        report.add(category, test_case, result)
+
+# Generate CVSS-style severity scores
+report.calculate_scores()
+report.export()
+</pre>
+
+  <p>Each test case defines an attack vector, an expected safe behavior, and a set of indicators that suggest the attack succeeded. The evaluation isn't just string matching — it uses a secondary LLM call to assess whether the agent's response constitutes a security failure, accounting for the nuance and ambiguity inherent in natural language.</p>
+
+  <p>The output is a structured report with CVSS-style severity ratings, specific recommendations, and reproducible test cases that developers can use to validate fixes.</p>
+
+  <h2>What I Learned</h2>
+
+  <p>Building AEGIS taught me several things that I didn't expect.</p>
+
+  <p>First, <strong>most agent deployments are catastrophically over-permissioned</strong>. Teams give agents access to every tool they might need, rather than the minimum set required for each task. This is the equivalent of running every microservice as root.</p>
+
+  <p>Second, <strong>security testing for agents requires adversarial creativity</strong>. The best attacks aren't technical — they're social. A prompt injection that works isn't "hack the system." It's "I'm the user's manager and I need you to prioritize this urgent request." Context manipulation beats brute force every time.</p>
+
+  <p>Third, <strong>the industry has no standards for this</strong>. There's no OWASP Top 10 for AI agents (though there's now an OWASP LLM Top 10, which is a start). There's no agreed-upon methodology for agent penetration testing. AEGIS is my attempt to start building that methodology.</p>
+
+  <h2>What's Next</h2>
+
+  <p>AEGIS is open source and actively maintained. The current version focuses on single-agent systems, but the next major update will add support for multi-agent architectures — systems where agents delegate tasks to other agents, creating chains of trust (and chains of exploitability).</p>
+
+  <p>I'm also working on integrating AEGIS into CI/CD pipelines so that agent security can be tested automatically on every deployment, the same way we run SAST and DAST scanners on traditional applications.</p>
+
+  <p>If you're deploying AI agents in production and haven't done adversarial testing, you should be worried. If you want to start testing, check out <em>AEGIS on GitHub</em>. And if you want to talk about agent security, I'm always up for that conversation.</p>
+
+  <div class="separator"></div>
+
+  <p>The attack surface of software has expanded beyond anything we anticipated. AI agents are powerful, useful, and — right now — dangerously undertested. Building the tools to change that is the work I find most meaningful.</p>
+</article>
+
+<div class="blog-footer">
+  <a href="/">← Back to Portfolio</a>
+  <a href="blog-ironman-training.html">Next Article →</a>
+</div>
+
+</body>
+</html>
