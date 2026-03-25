@@ -131,4 +131,7 @@ const bo=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting)x.target.
 document.getElementById('cs').addEventListener('click',()=>{const n=document.getElementById('cn').value,e=document.getElementById('ce').value,m=document.getElementById('cm').value;if(!n||!e||!m)return alert('Please fill all fields.');location.href=`mailto:max.richter.dev@proton.me?subject=Contact from ${n}&body=${encodeURIComponent(m)}%0A%0AFrom: ${n} (${e})`});
 
 // Easter eggs: Konami + sudo/help
-const sq=['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','KeyB','KeyA'];let p=0;const eg=document.getElementById('egg');document.addEventListener('keydown',e=>{e.code===sq[p]?++p===sq.length&&(eg.classList.add('on'),p=0):p=0});eg.addEventListener('click',()=>eg.classList.remove('on'));let tp='';document.addEventListene
+const sq=['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','KeyB','KeyA'];let p=0;const eg=document.getElementById('egg');document.addEventListener('keydown',e=>{e.code===sq[p]?++p===sq.length&&(eg.classList.add('on'),p=0):p=0});eg.addEventListener('click',()=>eg.classList.remove('on'));let tp='';document.addEventListener('keypress',e=>{if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName))return;tp+=e.key;(tp.includes('sudo')||tp.includes('help'))&&(eg.classList.add('on'),tp='');tp.length>10&&(tp=tp.slice(-10))});
+</script>
+</body>
+</html>
