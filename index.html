@@ -33,21 +33,14 @@
 #boot-bar{width:500px;max-width:90vw;height:2px;background:rgba(255,255,255,.06);margin-top:2rem;border-radius:1px;overflow:hidden}
 #boot-bar-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--cy),var(--rd));border-radius:1px;transition:width .15s linear}
 
-/* HERO NAME — dramatic entrance after boot */
-.hn{position:absolute;top:22%;left:50%;transform:translate(-50%,-50%);z-index:200;text-align:center;pointer-events:none;transition:all .4s cubic-bezier(.16,1,.3,1)}
-.hn .fn{font-family:var(--s);font-weight:800;font-size:clamp(2.8rem,5.5vw,5rem);letter-spacing:-.02em;text-transform:uppercase;line-height:1.05;color:var(--tx);opacity:0;display:block}
-.hn .ln{font-family:var(--s);font-weight:800;font-size:clamp(2.8rem,5.5vw,5rem);letter-spacing:-.02em;text-transform:uppercase;line-height:1.05;opacity:0;display:block;background:linear-gradient(90deg,var(--cy),var(--rd));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.hn .fn{animation:none}.hn .ln{animation:none}
-#hero.on .hn .fn{animation:nameReveal 1s cubic-bezier(.16,1,.3,1) forwards .2s}
-#hero.on .hn .ln{animation:nameReveal 1s cubic-bezier(.16,1,.3,1) forwards .5s}
-@keyframes nameReveal{
-0%{opacity:0;transform:translateY(40px) scale(.9);filter:blur(12px);letter-spacing:.15em}
-60%{opacity:1;filter:blur(0);letter-spacing:-.01em}
-80%{transform:translateY(-3px) scale(1.02);letter-spacing:-.02em}
-100%{opacity:1;transform:translateY(0) scale(1);filter:blur(0);letter-spacing:-.02em}
-}
-/* Name shrink into navbar */
+/* HERO NAME — Particle Canvas */
+.hn{position:absolute;top:12%;left:50%;transform:translateX(-50%);z-index:200;pointer-events:auto;transition:opacity .4s}
+#name-canvas{display:block}
 .hn.scrolled{opacity:0;pointer-events:none}
+.hn-fallback{display:none;text-align:center}
+.hn-fallback .fn{font-family:var(--s);font-weight:800;font-size:2.5rem;text-transform:uppercase;color:var(--tx);display:block}
+.hn-fallback .ln{font-family:var(--s);font-weight:800;font-size:2.5rem;text-transform:uppercase;display:block;color:var(--cy)}
+@media(max-width:768px){#name-canvas{display:none}.hn-fallback{display:block}.hn{position:relative;top:auto;left:auto;transform:none;padding:2rem 1rem}.hn.scrolled{display:none}}
 
 /* HERO */
 #hero{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;position:relative;overflow:hidden;opacity:0;transition:opacity .5s;padding-top:68px}#hero.on{opacity:1}
@@ -235,7 +228,7 @@ footer{display:flex;justify-content:space-between;align-items:center;padding:2.5
 
 <div id="boot" aria-hidden="true"><div id="bl"><div class="l">[sys] initializing split_signal v3.0...</div><div class="l">[sys] loading modules: security, endurance, resolve</div><div class="l t">[tech] projects: AEGIS, ASScanner, SMB, VendorQ → loaded</div><div class="l a">[athlete] targets: ironman sub5:00 | marathon sub3:00 | tt_1800</div><div class="l">[sys] dual_signal: LOCKED</div><div class="l b">[sys] identity confirmed → launching portfolio</div></div><div id="boot-bar"><div id="boot-bar-fill"></div></div></div>
 
-<header id="hero"><div class="hpl" aria-hidden="true"></div><div class="hn" id="hero-name"><span class="fn">Maximilian</span><span class="ln">Richter</span></div><div class="hh tc"><div class="ht">// Software Engineer</div><h1>Build.<br>Break.<br>Secure.</h1><p class="hp">Security Engineer building AI-powered defense tools. Next.js, Python, Supabase. Dual-degree CS + Cybersecurity starting Oct 2026.</p></div><div class="hh at"><div class="ht">// Endurance Athlete</div><h1>Build.<br>Peak.<br>Race.</h1><p class="hp">Ironman 70.3 · Marathon · Table Tennis. Same discipline, same obsession — different playing field.</p></div></header>
+<header id="hero"><div class="hpl" aria-hidden="true"></div><div class="hn" id="hero-name"><canvas id="name-canvas" width="1000" height="260"></canvas><div class="hn-fallback"><span class="fn">Maximilian</span><span class="ln">Richter</span></div></div><div class="hh tc"><div class="ht">// Software Engineer</div><h1>Build.<br>Break.<br>Secure.</h1><p class="hp">Security Engineer building AI-powered defense tools. Next.js, Python, Supabase. Dual-degree CS + Cybersecurity starting Oct 2026.</p></div><div class="hh at"><div class="ht">// Endurance Athlete</div><h1>Build.<br>Peak.<br>Race.</h1><p class="hp">Ironman 70.3 · Marathon · Table Tennis. Same discipline, same obsession — different playing field.</p></div></header>
 
 <div class="mt" aria-label="Key metrics"><div class="mc"><div class="mv c" data-count="4">0</div><div class="ml">Projects</div></div><div class="mc"><div class="mv c">Bosch</div><div class="ml">Employer</div></div><div class="mc"><div class="mv c" data-count="2026">0</div><div class="ml">CS Start</div></div><div class="mc"><div class="mv r">≤5:00</div><div class="ml">IM 70.3</div></div><div class="mc"><div class="mv r">≤3:00</div><div class="ml">Marathon</div></div><div class="mc"><div class="mv r" data-count="1800">0</div><div class="ml">TT Rating</div></div></div>
 
@@ -264,7 +257,119 @@ footer{display:flex;justify-content:space-between;align-items:center;padding:2.5
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // Boot with loading bar
-!function(){const l=document.querySelectorAll('#bl .l'),h=document.getElementById('hero'),bar=document.getElementById('boot-bar-fill');let i=0;const total=l.length;const iv=setInterval(()=>{if(i<l.length){l[i].classList.add('on');i++;bar.style.width=((i/total)*80)+'%'}else{clearInterval(iv);bar.style.width='100%';setTimeout(()=>{document.getElementById('boot').classList.add('done');h.classList.add('on')},800)}},200)}();
+!function(){const l=document.querySelectorAll('#bl .l'),h=document.getElementById('hero'),bar=document.getElementById('boot-bar-fill');let i=0;const total=l.length;const iv=setInterval(()=>{if(i<l.length){l[i].classList.add('on');i++;bar.style.width=((i/total)*80)+'%'}else{clearInterval(iv);bar.style.width='100%';setTimeout(()=>{document.getElementById('boot').classList.add('done');h.classList.add('on');initParticleName()},800)}},200)}();
+
+// ── PARTICLE NAME SYSTEM ──
+function initParticleName(){
+const canvas=document.getElementById('name-canvas');
+if(!canvas||window.innerWidth<769)return;
+const ctx=canvas.getContext('2d');
+const dpr=window.devicePixelRatio||1;
+const W=1000,H=260;
+canvas.width=W*dpr;canvas.height=H*dpr;
+canvas.style.width=W+'px';canvas.style.height=H+'px';
+ctx.scale(dpr,dpr);
+
+// Sample text pixels
+function getTextPixels(text,fontSize,yOffset,color){
+ctx.clearRect(0,0,W,H);
+ctx.fillStyle=color;
+ctx.font='800 '+fontSize+'px Outfit,sans-serif';
+ctx.textAlign='center';
+ctx.textBaseline='middle';
+ctx.fillText(text,W/2,yOffset);
+const data=ctx.getImageData(0,0,W*dpr,H*dpr).data;
+const points=[];
+const gap=2;
+for(let y=0;y<H*dpr;y+=gap){
+for(let x=0;x<W*dpr;x+=gap){
+const i=(y*W*dpr+x)*4;
+if(data[i+3]>128){points.push({x:x/dpr,y:y/dpr,color:color})}
+}}
+ctx.clearRect(0,0,W,H);
+return points;
+}
+
+const p1=getTextPixels('MAXIMILIAN',62,85,'#ffffff');
+const p2raw=getTextPixels('RICHTER',62,185,'#00d4ff');
+// Apply gradient color to Richter based on x position
+const p2=p2raw.map(p=>{
+const ratio=p.x/W;
+const r=Math.round(ratio*255);
+const g=Math.round(220*(1-ratio)+40*ratio);
+const b=Math.round(255*(1-ratio)+40*ratio);
+return{x:p.x,y:p.y,color:'rgb('+r+','+g+','+b+')'};
+});
+const allTargets=[...p1,...p2];
+
+// Create particles
+class Particle{
+constructor(tx,ty,color){
+this.tx=tx;this.ty=ty;this.color=color;
+// Start near target with slight offset — elegant materialization
+this.x=tx+(Math.random()-.5)*40;
+this.y=ty+(Math.random()-.5)*40;
+this.vx=0;this.vy=0;
+this.size=Math.random()*2.2+1.2;
+this.friction=.12+Math.random()*.04;
+this.ease=.08+Math.random()*.04;
+this.alpha=0;
+this.fadeIn=.01+Math.random()*.02;
+}
+update(mx,my,mouseActive){
+// Repel from mouse
+if(mouseActive){
+const dx=this.x-mx;
+const dy=this.y-my;
+const dist=Math.sqrt(dx*dx+dy*dy);
+const radius=80;
+if(dist<radius){
+const force=(radius-dist)/radius;
+const angle=Math.atan2(dy,dx);
+this.vx+=Math.cos(angle)*force*4;
+this.vy+=Math.sin(angle)*force*4;
+}
+}
+// Spring back to target
+this.vx+=(this.tx-this.x)*this.ease;
+this.vy+=(this.ty-this.y)*this.ease;
+this.vx*=(1-this.friction);
+this.vy*=(1-this.friction);
+this.x+=this.vx;
+this.y+=this.vy;
+}
+draw(ctx){
+if(this.alpha<1)this.alpha=Math.min(1,this.alpha+this.fadeIn);
+const speed=Math.sqrt(this.vx*this.vx+this.vy*this.vy);
+const alpha=this.alpha*Math.min(1,.7+speed*.1);
+ctx.globalAlpha=alpha;
+ctx.fillStyle=speed>3?'#ffffff':this.color;
+ctx.fillRect(this.x-.5,this.y-.5,this.size,this.size);
+}
+}
+
+const particles=allTargets.map(t=>new Particle(t.x,t.y,t.color));
+
+let mx=-999,my=-999,mouseActive=false;
+canvas.addEventListener('mousemove',e=>{
+const r=canvas.getBoundingClientRect();
+mx=(e.clientX-r.left)*(W/r.width);
+my=(e.clientY-r.top)*(H/r.height);
+mouseActive=true;
+});
+canvas.addEventListener('mouseleave',()=>{mouseActive=false});
+
+let started=false;
+function animate(){
+ctx.clearRect(0,0,W,H);
+particles.forEach(p=>{p.update(mx,my,mouseActive);p.draw(ctx)});
+ctx.globalAlpha=1;
+requestAnimationFrame(animate);
+}
+
+// Delay start slightly for dramatic effect
+setTimeout(()=>{animate()},300);
+}
 
 // Nav toggle (mobile)
 const nt=document.getElementById('nt'),navLinks=document.getElementById('nav-links');nt.addEventListener('click',()=>{navLinks.classList.toggle('open');nt.textContent=navLinks.classList.contains('open')?'[×]':'[nav]'});
@@ -506,7 +611,7 @@ document.addEventListener('click',e=>{
 if(['INPUT','TEXTAREA','BUTTON','A'].includes(e.target.tagName))return;
 clicks++;if(timer)clearTimeout(timer);
 timer=setTimeout(()=>clicks=0,600);
-if(clicks>=3&&!running){clicks=0;startMatrix()}
+if(clicks>=5&&!running){clicks=0;startMatrix()}
 });
 function startMatrix(){
 running=true;canvas.classList.add('on');
