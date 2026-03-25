@@ -21,21 +21,51 @@
 /* NAV */
 #nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(8,8,10,.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--bd)}#nav-in{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:68px;position:relative}.nav-logo{font-family:var(--m);font-size:1rem;font-weight:700;color:var(--tx);letter-spacing:.08em;text-decoration:none}.nav-center{position:absolute;left:50%;transform:translateX(-50%);font-family:var(--s);font-weight:700;font-size:1rem;color:var(--tx);letter-spacing:.06em;text-transform:uppercase;opacity:0;transition:opacity .4s;pointer-events:none;white-space:nowrap}.nav-center .nc-ln{color:var(--cy)}.nav-center.show{opacity:1}.nav-links{display:flex;gap:0;padding-left:14rem}.nav-links a{font-family:var(--m);font-size:.75rem;letter-spacing:.05em;color:var(--tx3);text-decoration:none;padding:.35rem .45rem;transition:color .2s;white-space:nowrap}.nav-links a:hover,.nav-links a.act{color:var(--cy)}#sp{position:fixed;top:68px;left:0;height:2px;z-index:1001;background:linear-gradient(90deg,var(--cy),var(--rd));width:0%;transition:width .1s linear}#nt{display:none;background:none;border:none;color:var(--tx3);font-family:var(--m);font-size:.7rem;cursor:pointer;padding:.4rem}@media(max-width:768px){#nt{display:block}.nav-links{display:none;position:absolute;top:68px;left:0;right:0;background:rgba(8,8,10,.95);backdrop-filter:blur(16px);flex-direction:column;padding:1rem 2rem;border-bottom:1px solid var(--bd)}.nav-links.open{display:flex}.nav-links a{padding:.6rem 0}.nav-center{display:none}}
 
-/* BOOT */
-#boot{position:fixed;inset:0;z-index:10000;background:#000;display:flex;align-items:center;justify-content:center;flex-direction:column;transition:opacity .6s,visibility .6s}#boot.done{opacity:0;visibility:hidden;pointer-events:none}#bl{font-family:var(--m);font-size:.65rem;color:#333;width:380px;max-width:90vw}#bl .l{opacity:0;margin-bottom:.25rem;transition:opacity .12s}#bl .l.on{opacity:1}#bl .t{color:var(--cy)}#bl .a{color:var(--rd)}#bl .b{color:var(--tx);font-weight:600}
+/* BOOT — Loading Screen */
+#boot{position:fixed;inset:0;z-index:10000;background:#000;display:flex;align-items:center;justify-content:center;flex-direction:column;transition:opacity .8s,visibility .8s}
+#boot.done{opacity:0;visibility:hidden;pointer-events:none}
+#bl{font-family:var(--m);font-size:.82rem;color:#333;width:500px;max-width:90vw;letter-spacing:.03em;line-height:1.9}
+#bl .l{opacity:0;margin-bottom:.3rem;transition:opacity .15s}
+#bl .l.on{opacity:1}
+#bl .t{color:var(--cy)}
+#bl .a{color:var(--rd)}
+#bl .b{color:var(--tx);font-weight:700;font-size:.9rem}
+#boot-bar{width:500px;max-width:90vw;height:2px;background:rgba(255,255,255,.06);margin-top:2rem;border-radius:1px;overflow:hidden}
+#boot-bar-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--cy),var(--rd));border-radius:1px;transition:width .15s linear}
 
-/* HERO */
-#hero{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;position:relative;overflow:hidden;opacity:0;transition:opacity .5s;padding-top:68px}#hero.on{opacity:1}.hh{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:4rem 3vw;position:relative;z-index:2}.hh.tc{background:rgba(10,10,15,.5)}.hh.at{background:rgba(10,12,10,.5)}.ht{font-family:var(--m);font-size:.7rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;margin-bottom:1.5rem;opacity:0;animation:fu .6s ease forwards}.tc .ht{color:var(--cy);animation-delay:.3s}.at .ht{color:var(--rd);animation-delay:.4s}.hh h1{font-family:var(--s);font-weight:800;font-size:clamp(2.4rem,4.5vw,4.2rem);line-height:.95;letter-spacing:-.03em;margin-bottom:1.5rem;opacity:0;animation:fu .6s ease forwards}.tc h1{animation-delay:.5s}.at h1{animation-delay:.6s}.hp{font-weight:300;font-size:clamp(.85rem,1vw,1rem);line-height:1.7;color:var(--tx2);max-width:360px;opacity:0;animation:fu .6s ease forwards}.tc .hp{animation-delay:.7s}.at .hp{animation-delay:.8s}
-
-/* HERO NAME - large centered */
-.hn{position:absolute;top:22%;left:50%;transform:translate(-50%,-50%);z-index:200;text-align:center;pointer-events:none;transition:all .4s cubic-bezier(.16,1,.3,1)}.hn .fn{font-family:var(--s);font-weight:800;font-size:clamp(2.8rem,5.5vw,5rem);letter-spacing:-.02em;text-transform:uppercase;line-height:1.05;color:var(--tx);opacity:0;display:block}.hn .ln{font-family:var(--s);font-weight:800;font-size:clamp(2.8rem,5.5vw,5rem);letter-spacing:-.02em;text-transform:uppercase;line-height:1.05;opacity:0;display:block;background:linear-gradient(90deg,var(--cy),var(--rd));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}.hn .fn{animation:nameIn .8s cubic-bezier(.16,1,.3,1) forwards .9s}.hn .ln{animation:nameIn .8s cubic-bezier(.16,1,.3,1) forwards 1.1s}
-
+/* HERO NAME — dramatic entrance after boot */
+.hn{position:absolute;top:22%;left:50%;transform:translate(-50%,-50%);z-index:200;text-align:center;pointer-events:none;transition:all .4s cubic-bezier(.16,1,.3,1)}
+.hn .fn{font-family:var(--s);font-weight:800;font-size:clamp(2.8rem,5.5vw,5rem);letter-spacing:-.02em;text-transform:uppercase;line-height:1.05;color:var(--tx);opacity:0;display:block}
+.hn .ln{font-family:var(--s);font-weight:800;font-size:clamp(2.8rem,5.5vw,5rem);letter-spacing:-.02em;text-transform:uppercase;line-height:1.05;opacity:0;display:block;background:linear-gradient(90deg,var(--cy),var(--rd));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hn .fn{animation:none}.hn .ln{animation:none}
+#hero.on .hn .fn{animation:nameReveal 1s cubic-bezier(.16,1,.3,1) forwards .2s}
+#hero.on .hn .ln{animation:nameReveal 1s cubic-bezier(.16,1,.3,1) forwards .5s}
+@keyframes nameReveal{
+0%{opacity:0;transform:translateY(40px) scale(.9);filter:blur(12px);letter-spacing:.15em}
+60%{opacity:1;filter:blur(0);letter-spacing:-.01em}
+80%{transform:translateY(-3px) scale(1.02);letter-spacing:-.02em}
+100%{opacity:1;transform:translateY(0) scale(1);filter:blur(0);letter-spacing:-.02em}
+}
 /* Name shrink into navbar */
 .hn.scrolled{opacity:0;pointer-events:none}
 
-@keyframes nameIn{from{opacity:0;transform:translateY(30px) scale(.95);filter:blur(8px)}to{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}}
-
-.hpl{position:absolute;left:50%;top:0;bottom:0;width:1px;z-index:100;background:linear-gradient(to bottom,transparent,rgba(255,60,60,.15) 30%,rgba(255,60,60,.15) 70%,transparent);transform:translateX(-50%)}@keyframes fu{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}@keyframes fi{from{opacity:0}to{opacity:1}}
+/* HERO */
+#hero{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;position:relative;overflow:hidden;opacity:0;transition:opacity .5s;padding-top:68px}#hero.on{opacity:1}
+.hh{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:4rem 3vw;position:relative;z-index:2}
+.hh.tc{background:rgba(10,10,15,.5)}.hh.at{background:rgba(10,12,10,.5)}
+.ht{font-family:var(--m);font-size:.7rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;margin-bottom:1.5rem;opacity:0}
+#hero.on .tc .ht{animation:fu .6s ease forwards .8s}
+#hero.on .at .ht{animation:fu .6s ease forwards .9s}
+.tc .ht{color:var(--cy)}.at .ht{color:var(--rd)}
+.hh h1{font-family:var(--s);font-weight:800;font-size:clamp(2.4rem,4.5vw,4.2rem);line-height:.95;letter-spacing:-.03em;margin-bottom:1.5rem;opacity:0}
+#hero.on .tc h1{animation:fu .6s ease forwards 1s}
+#hero.on .at h1{animation:fu .6s ease forwards 1.1s}
+.hp{font-weight:300;font-size:clamp(.85rem,1vw,1rem);line-height:1.7;color:var(--tx2);max-width:360px;opacity:0}
+#hero.on .tc .hp{animation:fu .6s ease forwards 1.2s}
+#hero.on .at .hp{animation:fu .6s ease forwards 1.3s}
+.hpl{position:absolute;left:50%;top:0;bottom:0;width:1px;z-index:100;background:linear-gradient(to bottom,transparent,rgba(255,60,60,.15) 30%,rgba(255,60,60,.15) 70%,transparent);transform:translateX(-50%)}
+@keyframes fu{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fi{from{opacity:0}to{opacity:1}}
 
 /* METRICS */
 .mt{display:grid;grid-template-columns:repeat(6,1fr);border-top:1px solid var(--bd);border-bottom:1px solid var(--bd)}.mc{padding:1.4rem 1.2rem;border-right:1px solid var(--bd);text-align:center}.mc:last-child{border-right:none}.mv{font-family:var(--m);font-weight:600;font-size:clamp(1.1rem,1.6vw,1.6rem);letter-spacing:-.02em}.mv.c{color:var(--cy)}.mv.r{color:var(--rd)}.ml{font-family:var(--m);font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--tx3);margin-top:.3rem}@media(max-width:768px){.mt{grid-template-columns:repeat(3,1fr)}}
@@ -203,7 +233,7 @@ footer{display:flex;justify-content:space-between;align-items:center;padding:2.5
 <canvas id="matrix" aria-hidden="true"></canvas>
 <canvas id="ambient" aria-hidden="true"></canvas>
 
-<div id="boot" aria-hidden="true"><div id="bl"><div class="l">[sys] initializing split_signal v3.0...</div><div class="l">[sys] loading modules: security, endurance, resolve</div><div class="l t">[tech] projects: AEGIS, ASScanner, SMB, VendorQ → loaded</div><div class="l a">[athlete] targets: ironman sub5:00 | marathon sub3:00 | tt_1800</div><div class="l">[sys] dual_signal: LOCKED</div><div class="l b">[sys] identity confirmed → launching</div></div></div>
+<div id="boot" aria-hidden="true"><div id="bl"><div class="l">[sys] initializing split_signal v3.0...</div><div class="l">[sys] loading modules: security, endurance, resolve</div><div class="l t">[tech] projects: AEGIS, ASScanner, SMB, VendorQ → loaded</div><div class="l a">[athlete] targets: ironman sub5:00 | marathon sub3:00 | tt_1800</div><div class="l">[sys] dual_signal: LOCKED</div><div class="l b">[sys] identity confirmed → launching portfolio</div></div><div id="boot-bar"><div id="boot-bar-fill"></div></div></div>
 
 <header id="hero"><div class="hpl" aria-hidden="true"></div><div class="hn" id="hero-name"><span class="fn">Maximilian</span><span class="ln">Richter</span></div><div class="hh tc"><div class="ht">// Software Engineer</div><h1>Build.<br>Break.<br>Secure.</h1><p class="hp">Security Engineer building AI-powered defense tools. Next.js, Python, Supabase. Dual-degree CS + Cybersecurity starting Oct 2026.</p></div><div class="hh at"><div class="ht">// Endurance Athlete</div><h1>Build.<br>Peak.<br>Race.</h1><p class="hp">Ironman 70.3 · Marathon · Table Tennis. Same discipline, same obsession — different playing field.</p></div></header>
 
@@ -233,8 +263,8 @@ footer{display:flex;justify-content:space-between;align-items:center;padding:2.5
  ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝</pre><div class="em">You found the <span>easter egg</span>.<br><br>If you're a recruiter reading this —<br>you're exactly who I want to work with.<br><br><a href="/cdn-cgi/l/email-protection#771a160f37051e141f0312051a160f5914181a" style="color:var(--cy)"><span class="__cf_email__" data-cfemail="4c212d340c3e252f2438293e212d34622f2321">[email&#160;protected]</span></a></div><div class="ec">click anywhere to close</div></div>
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-// Boot
-!function(){const l=document.querySelectorAll('#bl .l'),h=document.getElementById('hero');let i=0;const iv=setInterval(()=>{i<l.length?l[i++].classList.add('on'):(clearInterval(iv),setTimeout(()=>{document.getElementById('boot').classList.add('done');h.classList.add('on')},600))},150)}();
+// Boot with loading bar
+!function(){const l=document.querySelectorAll('#bl .l'),h=document.getElementById('hero'),bar=document.getElementById('boot-bar-fill');let i=0;const total=l.length;const iv=setInterval(()=>{if(i<l.length){l[i].classList.add('on');i++;bar.style.width=((i/total)*80)+'%'}else{clearInterval(iv);bar.style.width='100%';setTimeout(()=>{document.getElementById('boot').classList.add('done');h.classList.add('on')},800)}},200)}();
 
 // Nav toggle (mobile)
 const nt=document.getElementById('nt'),navLinks=document.getElementById('nav-links');nt.addEventListener('click',()=>{navLinks.classList.toggle('open');nt.textContent=navLinks.classList.contains('open')?'[×]':'[nav]'});
