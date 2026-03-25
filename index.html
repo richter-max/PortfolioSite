@@ -175,29 +175,12 @@ textarea.cnt-input{resize:vertical;min-height:100px;line-height:1.6}
 /* FOOTER */
 footer{display:flex;justify-content:space-between;align-items:center;padding:2.5rem 2rem;border-top:1px solid var(--bd);max-width:1200px;margin:0 auto}footer span,footer a{font-family:var(--m);font-size:.68rem;letter-spacing:.08em;color:var(--tx3)}footer a{text-decoration:none;transition:color .2s}footer a:hover{color:var(--cy)}.fl{display:flex;gap:1.5rem}.sdot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--gn);margin-right:.4rem;animation:pu 2s infinite}@keyframes pu{0%,100%{opacity:1}50%{opacity:.4}}
 
-/* CUSTOM CURSOR */
-.cursor-ring{position:fixed;width:28px;height:28px;border:1.5px solid var(--cy);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .3s,height .3s,border-color .3s,background .3s,opacity .3s;opacity:0;mix-blend-mode:difference}
-.cursor-ring.vis{opacity:.7}
-.cursor-ring.hover{width:50px;height:50px;background:rgba(0,212,255,.06);border-color:var(--cy)}
-.cursor-ring.ath-zone{border-color:var(--rd)}
-.cursor-ring.ath-zone.hover{background:rgba(255,60,60,.06);border-color:var(--rd)}
-@media(max-width:768px){.cursor-ring{display:none}}
-body.has-cursor{cursor:none}
-body.has-cursor a,body.has-cursor button,body.has-cursor input,body.has-cursor textarea{cursor:none}
-
-/* NAVBAR SLIDING UNDERLINE */
-.nav-slider{position:absolute;bottom:0;height:2px;background:var(--cy);border-radius:1px;transition:left .4s cubic-bezier(.16,1,.3,1),width .4s cubic-bezier(.16,1,.3,1);opacity:0;box-shadow:0 0 8px rgba(0,212,255,.4)}
-.nav-slider.vis{opacity:1}
-
-/* 3D TILT on project cards */
-.tilt-card{transform-style:preserve-3d;transition:transform .15s ease}
-
 /* MATRIX RAIN */
 #matrix{position:fixed;inset:0;z-index:19999;pointer-events:none;opacity:0;transition:opacity .5s}
 #matrix.on{opacity:1}
 
 /* AMBIENT PARTICLES */
-#ambient{position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.5}
+#ambient{position:fixed;inset:0;pointer-events:none;z-index:1;opacity:1}
 
 /* TYPING SECTION TITLES */
 .type-title{overflow:hidden;white-space:nowrap;border-right:2px solid var(--cy);width:0;transition:none;display:inline-block}
@@ -214,9 +197,9 @@ body.has-cursor a,body.has-cursor button,body.has-cursor input,body.has-cursor t
 </head>
 <body>
 
-<nav id="nav" role="navigation" aria-label="Main navigation"><div id="nav-in"><a href="#hero" class="nav-logo">MR</a><div class="nav-center" id="nav-center">Maximilian <span class="nc-ln">Richter</span></div><button id="nt" aria-label="Toggle navigation">[nav]</button><div class="nav-links" id="nav-links"><a href="#proj">Projects</a><a href="#dmo">Demo</a><a href="#wrt">Writing</a><a href="#tln">Timeline</a><a href="#stk">Stack</a><a href="#cnt">Contact</a><div class="nav-slider" id="nav-slider"></div></div></div></nav>
+<nav id="nav" role="navigation" aria-label="Main navigation"><div id="nav-in"><a href="#hero" class="nav-logo">MR</a><div class="nav-center" id="nav-center">Maximilian <span class="nc-ln">Richter</span></div><button id="nt" aria-label="Toggle navigation">[nav]</button><div class="nav-links" id="nav-links"><a href="#proj">Projects</a><a href="#dmo">Demo</a><a href="#wrt">Writing</a><a href="#tln">Timeline</a><a href="#stk">Stack</a><a href="#cnt">Contact</a></div></div></nav>
 <div id="sp" aria-hidden="true"></div>
-<div class="cursor-ring" id="cursor"></div>
+
 <canvas id="matrix" aria-hidden="true"></canvas>
 <canvas id="ambient" aria-hidden="true"></canvas>
 
@@ -484,51 +467,6 @@ else{btn.textContent='[ERROR]';btn.style.color='var(--rd)';setTimeout(()=>{btn.t
 }catch(err){btn.textContent='[ERROR]';btn.style.color='var(--rd)';setTimeout(()=>{btn.textContent='[SEND]';btn.style.color='';btn.style.borderColor='';btn.disabled=false},2000)}
 });
 
-// ── CUSTOM CURSOR ──
-!function(){
-const c=document.getElementById('cursor');if(!c||window.innerWidth<769)return;
-document.body.classList.add('has-cursor');
-let mx=0,my=0,cx=0,cy=0;
-document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;c.classList.add('vis')});
-document.addEventListener('mouseleave',()=>c.classList.remove('vis'));
-!function loop(){cx+=(mx-cx)*.15;cy+=(my-cy)*.15;c.style.left=cx+'px';c.style.top=cy+'px';requestAnimationFrame(loop)}();
-document.querySelectorAll('a,button,.pj,.rc,.bc,.stg,.tl-card,.cnt-btn,.train-item').forEach(el=>{
-el.addEventListener('mouseenter',()=>c.classList.add('hover'));
-el.addEventListener('mouseleave',()=>c.classList.remove('hover'))});
-// Athlete zone detection
-const athEls=document.querySelectorAll('.rc,.train-item,.route-stop:nth-child(even)');
-athEls.forEach(el=>{el.addEventListener('mouseenter',()=>c.classList.add('ath-zone'));el.addEventListener('mouseleave',()=>c.classList.remove('ath-zone'))});
-}();
-
-// ── NAVBAR SLIDING UNDERLINE ──
-!function(){
-const slider=document.getElementById('nav-slider'),links=document.getElementById('nav-links');
-if(!slider||!links)return;
-function moveSlider(){
-const active=links.querySelector('.act');
-if(active){const r=active.getBoundingClientRect(),p=links.getBoundingClientRect();slider.style.left=(r.left-p.left)+'px';slider.style.width=r.width+'px';slider.classList.add('vis')}
-else{slider.classList.remove('vis')}}
-const mo=new MutationObserver(moveSlider);
-links.querySelectorAll('a').forEach(a=>mo.observe(a,{attributes:true,attributeFilter:['class']}));
-window.addEventListener('resize',moveSlider);
-setTimeout(moveSlider,500);
-}();
-
-// ── 3D TILT ON PROJECT CARDS ──
-!function(){
-if(window.innerWidth<769)return;
-document.querySelectorAll('.pj,.rc,.bc').forEach(card=>{
-card.classList.add('tilt-card');
-card.addEventListener('mousemove',e=>{
-const r=card.getBoundingClientRect();
-const x=(e.clientX-r.left)/r.width-.5;
-const y=(e.clientY-r.top)/r.height-.5;
-card.style.transform=`perspective(600px) rotateY(${x*6}deg) rotateX(${-y*6}deg) translateY(-2px)`;
-});
-card.addEventListener('mouseleave',()=>{card.style.transform=''});
-});
-}();
-
 // ── MATRIX RAIN EASTER EGG ──
 !function(){
 const canvas=document.getElementById('matrix');if(!canvas)return;
@@ -569,11 +507,11 @@ let w,h,particles=[];
 function resize(){w=canvas.width=window.innerWidth;h=canvas.height=window.innerHeight}
 resize();window.addEventListener('resize',resize);
 class P{constructor(){this.reset()}
-reset(){this.x=Math.random()*w;this.y=Math.random()*h;this.s=Math.random()*1.5+.3;this.vx=(Math.random()-.5)*.15;this.vy=(Math.random()-.5)*.15;this.o=Math.random()*.04+.01;
+reset(){this.x=Math.random()*w;this.y=Math.random()*h;this.s=Math.random()*2+.5;this.vx=(Math.random()-.5)*.2;this.vy=(Math.random()-.5)*.2;this.o=Math.random()*.06+.02;
 this.cy=this.y<h*.4}
 update(){this.x+=this.vx;this.y+=this.vy;if(this.x<-5||this.x>w+5||this.y<-5||this.y>h+5)this.reset()}
 draw(){ctx.globalAlpha=this.o;ctx.fillStyle=this.cy?'#00d4ff':'#ff3c3c';ctx.beginPath();ctx.arc(this.x,this.y,this.s,0,Math.PI*2);ctx.fill()}}
-for(let i=0;i<40;i++)particles.push(new P());
+for(let i=0;i<70;i++)particles.push(new P());
 !function loop(){ctx.clearRect(0,0,w,h);particles.forEach(p=>{p.update();p.draw()});requestAnimationFrame(loop)}();
 }();
 
