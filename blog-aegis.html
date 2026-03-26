@@ -36,9 +36,6 @@ body::after{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;o
 .blog-content pre{background:#282c34;border:1px solid rgba(97,175,239,.12);padding:1.5rem;margin:2rem 0;overflow-x:auto;font-family:var(--m);font-size:.75rem;line-height:1.7;color:#abb2bf;border-radius:6px}
 .blog-content blockquote{border-left:2px solid var(--accent);padding-left:1.5rem;margin:2rem 0;font-style:italic;color:var(--tx3)}
 .blog-content .separator{width:60px;height:2px;background:linear-gradient(90deg,var(--accent),transparent);margin:3.5rem 0}
-.pull-quote{margin:3rem -2rem;padding:2.5rem 3rem;position:relative;border-top:1px solid var(--bd);border-bottom:1px solid var(--bd)}
-.pull-quote p{font-family:var(--s);font-weight:600;font-size:1.4rem;line-height:1.5;color:var(--tx);margin:0;letter-spacing:-.01em}
-.pull-quote::before{content:'"';position:absolute;top:-.2rem;left:2rem;font-family:var(--s);font-size:4rem;font-weight:800;color:var(--accent);opacity:.2;line-height:1}
 .week-block{font-family:var(--m);font-size:.85rem;line-height:2.2;color:var(--tx2);margin:1.5rem 0 2rem;padding:1.5rem 2rem;background:#282c34;border:1px solid rgba(97,175,239,.12);border-radius:6px}
 .week-block .day{color:var(--accent);font-weight:600}
 .blog-footer{max-width:900px;margin:0 auto;padding:2rem 2rem 4rem;border-top:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center}
@@ -59,7 +56,7 @@ body::after{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;o
 
   <h2>The Problem: Agents Are Attack Surfaces</h2>
 
-  <p>A traditional web app has a well-understood attack surface. You've got your inputs, your authentication layer, your database queries. Decades of security research have given us frameworks, scanners, and best practices. But an AI agent is fundamentally different. Its "input" is natural language — infinite, ambiguous, and adversarial by nature.</p>
+  <p>A traditional web app has a well-understood attack surface. You've got your inputs, your authentication layer, your database queries. Decades of security research have given us frameworks, scanners, and best practices. But an AI agent is completely different. Its "input" is natural language — infinite, ambiguous, and adversarial by nature.</p>
 
   <p>Consider a typical LLM-powered agent with access to a company's internal tools. It can read emails, query databases, and send messages. Now imagine a carefully crafted email lands in someone's inbox. The email contains instructions that, when processed by the agent, cause it to forward sensitive data to an external address. This isn't science fiction. It's <strong>indirect prompt injection</strong>, and it works today against most deployed agent systems.</p>
 
@@ -120,8 +117,7 @@ report.export()
 
   <div class="separator"></div>
 
-  <div class="pull-quote"><p>AI agents are powerful, useful, and — right now — dangerously undertested.</p></div>
-  <p>The attack surface of software has expanded beyond anything we anticipated. AI agents are powerful, useful, and — right now — dangerously undertested. Building the tools to change that is the work I find most meaningful.</p>
+  <p>The attack surface of software is way bigger than anyone expected. AI agents are powerful, useful, and — right now — dangerously undertested. Building tools to fix that is what I care about most right now.</p>
 
 </article>
 <div class="blog-footer"><a href="/">← Previous Article</a><a href="blog-ironman-training.html">Next Article →</a></div>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Why I Set Extreme Goals at 21 — Maximilian Richter</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Outfit:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#08080a;--tx:#e8e8ed;--tx2:#8a8a98;--tx3:#4a4a58;--accent:#ff3c3c;--cy:#00d4ff;--rd:#ff3c3c;--bd:rgba(255,255,255,.06);--m:'JetBrains Mono',monospace;--s:'Outfit',sans-serif}
+html{scroll-behavior:smooth;scrollbar-width:thin;scrollbar-color:#222 var(--bg)}
+body{background:var(--bg);color:var(--tx);font-family:var(--s);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body::after{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:.022;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.blog-nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 5vw;border-bottom:1px solid var(--bd);position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(8,8,10,.9);backdrop-filter:blur(12px)}
+.blog-nav a{text-decoration:none}
+.blog-nav .back{font-family:var(--m);font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);transition:opacity .3s}
+.blog-nav .back:hover{opacity:.7}
+.blog-nav .name{font-family:var(--s);font-weight:700;font-size:.8rem;color:var(--tx);letter-spacing:.1em;text-transform:uppercase}
+#read-progress{position:fixed;top:52px;left:0;height:2px;z-index:101;background:linear-gradient(90deg,var(--accent),var(--cy));width:0%;transition:width .1s linear}
+.blog-banner{position:relative;width:100%;min-height:340px;overflow:hidden;margin-top:52px;background:radial-gradient(ellipse at 30% 70%,rgba(255,60,60,.06) 0%,transparent 60%),radial-gradient(ellipse at 70% 30%,rgba(0,212,255,.04) 0%,transparent 60%),var(--bg);display:flex;align-items:flex-end}
+.blog-banner-content{max-width:900px;margin:0 auto;padding:4rem 2rem 3rem;width:100%}
+.blog-banner-tag{font-family:var(--m);font-size:.6rem;letter-spacing:.25em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem}
+.blog-banner-title{font-family:var(--s);font-weight:800;font-size:clamp(2rem,4vw,3.2rem);line-height:1.1;letter-spacing:-.03em;margin-bottom:1rem}
+.blog-banner-meta{font-family:var(--m);font-size:.62rem;color:var(--tx3);letter-spacing:.1em}
+.blog-content{max-width:900px;margin:0 auto;padding:3rem 2rem 6rem}
+.blog-content p{font-weight:300;font-size:1.05rem;line-height:1.9;color:var(--tx2);margin-bottom:1.8rem}
+.blog-content h2{font-family:var(--s);font-weight:700;font-size:1.5rem;margin:3.5rem 0 1.2rem;letter-spacing:-.02em;color:var(--tx);position:relative;padding-left:1rem;border-left:3px solid var(--accent)}
+.blog-content strong{color:var(--tx);font-weight:500}
+.blog-content em{color:var(--accent);font-style:normal}
+.blog-content .separator{width:60px;height:2px;background:linear-gradient(90deg,var(--accent),transparent);margin:3.5rem 0}
+.timeline-block{font-family:var(--m);font-size:.85rem;line-height:2.4;color:var(--tx2);margin:2rem 0 2.5rem;padding:1.8rem 2rem;background:rgba(255,60,60,.02);border:1px solid rgba(255,60,60,.1);border-radius:6px}
+.timeline-block .age{color:var(--accent);font-weight:600}
+.blog-footer{max-width:900px;margin:0 auto;padding:2rem 2rem 4rem;border-top:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center}
+.blog-footer a{font-family:var(--m);font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);text-decoration:none;padding:.6rem 1.2rem;border:1px solid rgba(255,255,255,.08);transition:all .3s}
+.blog-footer a:hover{background:rgba(255,255,255,.03);border-color:var(--accent)}
+@media(max-width:768px){.blog-banner{min-height:260px}.blog-content{padding:2rem 1.5rem 4rem}.timeline-block{padding:1.2rem 1.5rem}}
+</style>
+</head>
+<body>
+<nav class="blog-nav"><a href="/" class="back">← Back</a><a href="/" class="name">Maximilian Richter</a></nav>
+<div id="read-progress"></div>
+<div class="blog-banner"><div class="blog-banner-content"><div class="blog-banner-tag">Mindset · Endurance</div><h1 class="blog-banner-title">Why I Set Extreme Goals at 21</h1><div class="blog-banner-meta">March 2026 · 6 min read</div></div></div>
+<article class="blog-content">
+  <p>At 21, I signed up for Ironman 70.3. At 22, I'm going for a sub-3 marathon. After that, a full Ironman 140.6. Then a 100km ultra. I grew up playing table tennis and football — I had zero endurance background. I couldn't swim properly a year ago.</p>
+
+  <p>People in my life react to this in different ways. Some think it's cool. Some think it's a phase. Some just don't understand why anyone would voluntarily do this to themselves. And honestly, I get it. From the outside, it probably looks a bit insane.</p>
+
+  <p>But there's a reason behind it. And it's not about fitness or health or looking good. It's about something bigger.</p>
+
+  <h2>The Real Reason</h2>
+
+  <p>Here's what I actually believe: <strong>if I can do this, I can do anything else in life too.</strong></p>
+
+  <p>That's it. That's the core of it. Not complicated, not philosophical. Just a simple conviction. If I can train my body to swim 1.9km, bike 90km, and run a half marathon — back to back, in one day — then I can handle whatever comes at me in my career, my relationships, my finances, my life. If I can run 42km in under 3 hours, I can sit through any hard conversation, push through any difficult project, deal with any setback.</p>
+
+  <p>And it's not just about sport. I have high goals for my life in general — career, financially, relationships, family, all of it. The athletic goals are the mental foundation for everything else. If I prove to myself that I can handle the hardest physical challenges I can find, then the rest feels achievable. The Ironman isn't the goal. It's the proof that I can reach any goal.</p>
+
+  <h2>Choosing What Scares You</h2>
+
+  <p>I played table tennis and football my whole life. Ball sports. Short bursts, reactions, technique. Endurance was never my thing. Swimming was basically non-existent. When I first got in the pool for triathlon training, I couldn't do 50 meters without stopping.</p>
+
+  <p>That's exactly why I chose endurance. Not because I liked it — I didn't, at first. But because it was the one area where I had the most to learn. You don't grow by repeating what you're already good at. You grow by doing the thing that feels uncomfortable every single day until it doesn't anymore.</p>
+
+  <p>Swimming is still my weakest discipline. But every week it gets a little better. And the feeling of improving at something that used to feel impossible — that's addictive in the best way.</p>
+
+  <h2>The Timeline</h2>
+
+  <p>When I write it out, the progression looks aggressive. Because it is.</p>
+
+  <div class="timeline-block">
+    <span class="age">Age 21</span> — Ironman 70.3 Kraichgau (May 2026)<br>
+    <span class="age">Age 22</span> — Berlin Marathon sub 3:00 (Sep 2026)<br>
+    <span class="age">Age 22</span> — Full Ironman 140.6 (Spring 2027)<br>
+    <span class="age">Age 23</span> — 100km Ultra Run (Fall 2027)<br>
+    <span class="age">Age 23-24</span> — Backyard Ultra
+  </div>
+
+  <p>Each step builds on the last. The 70.3 proves I can do multi-sport endurance. The marathon proves I can go fast over distance. The full Ironman proves I can go long. The ultra proves I can go beyond what most people consider reasonable. And somewhere along that path, something shifts inside you. The limits you thought were real start to feel arbitrary.</p>
+
+  <h2>It Transfers to Everything</h2>
+
+  <p>This isn't just about sport. That's the whole point.</p>
+
+  <p>I'm building security tools, applying for a dual CS degree, working full-time at Bosch, maintaining side projects. These are all hard things. They all require consistency, patience, and the ability to keep going when it gets uncomfortable. And the confidence I get from endurance training — from knowing that I can push through 4 hours on a bike when I'd rather stop — that directly carries over into everything else I do.</p>
+
+  <p>When I sit down to work on a project and I hit a wall, I don't panic. I've been at kilometer 35 of a long run where every part of my body wanted to stop. A coding problem doesn't scare me after that.</p>
+
+  <p>When I think about my career goals — Security Engineer at a top company, or building my own product — those feel big. But not as big as they felt before I started training. Because now I have proof that I can set a goal that seems crazy, build a plan, and execute it over months. That proof changes how you see everything.</p>
+
+  <h2>Why Now</h2>
+
+  <p>There's a timing element too. Right now I'm 21. No kids, no family obligations, a schedule I can control. I can train 15-20 hours a week because my life allows it. That won't always be the case. At some point priorities will shift — and that's fine. But the window for doing the most extreme version of this is now.</p>
+
+  <p>I'd rather look back at 30 and know I used this time to find out what I'm capable of, than wonder what would've happened if I'd tried.</p>
+
+  <h2>What People Don't See</h2>
+
+  <p>It's not all hype and motivation. Most of training is boring. It's Tuesday evening, you're tired from work, and you still have an interval session and table tennis ahead of you. It's Saturday morning at 6, getting in the pool when you'd rather sleep. It's saying no to things because you need to recover.</p>
+
+  <p>The people who think it's crazy — they're not wrong. It is a bit crazy. But the alternative is staying comfortable. And comfortable has never gotten anyone anywhere interesting.</p>
+
+  <div class="separator"></div>
+
+  <p>I'm writing this because friends and family keep asking me why. And I wanted to answer it properly, here, in my own words. So here it is: because I want to know what happens when I don't hold back. Because if I can cross a finish line after 5+ hours of swimming, biking, and running — then nothing else in life feels impossible anymore. That's the trade. And to me, it's worth every early morning, every hard session, and every time someone tells me I'm crazy.</p>
+</article>
+<div class="blog-footer"><a href="blog-china-exchange.html">← Previous Article</a><a href="/">Back to Portfolio →</a></div>
+<script>window.addEventListener('scroll',()=>{const h=document.documentElement.scrollHeight-window.innerHeight;document.getElementById('read-progress').style.width=(window.scrollY/h*100)+'%'},{passive:true});</script>
+</body>
+</html>
