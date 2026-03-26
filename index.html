@@ -83,6 +83,24 @@
 .ach-label{font-family:var(--m);font-size:.5rem;letter-spacing:.15em;text-transform:uppercase;color:var(--tx3)}
 .ach-name{font-family:var(--s);font-weight:600;font-size:.85rem;color:var(--tx)}
 
+/* ACHIEVEMENTS PANEL */
+#ach-btn{position:fixed;bottom:2rem;left:2rem;z-index:998;width:40px;height:40px;border-radius:8px;background:rgba(8,8,10,.85);backdrop-filter:blur(12px);border:1px solid var(--bd);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem;transition:all .3s;box-shadow:0 4px 16px rgba(0,0,0,.3)}
+#ach-btn:hover{border-color:rgba(255,255,255,.12);transform:scale(1.05)}
+#ach-btn .ach-count{position:absolute;top:-4px;right:-4px;font-family:var(--m);font-size:.5rem;font-weight:700;background:var(--cy);color:#000;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+#ach-panel{position:fixed;bottom:5rem;left:2rem;z-index:997;width:280px;background:rgba(8,8,10,.95);backdrop-filter:blur(16px);border:1px solid var(--bd);border-radius:10px;padding:1.2rem;opacity:0;transform:translateY(10px) scale(.95);pointer-events:none;transition:all .3s cubic-bezier(.16,1,.3,1);box-shadow:0 8px 32px rgba(0,0,0,.5)}
+#ach-panel.open{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
+.ach-panel-title{font-family:var(--m);font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--tx3);margin-bottom:1rem}
+.ach-row{display:flex;align-items:center;gap:.6rem;padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,.03)}
+.ach-row:last-child{border-bottom:none}
+.ach-row-icon{font-size:1rem;width:28px;text-align:center;filter:grayscale(1) opacity(.3);transition:all .3s}
+.ach-row.done .ach-row-icon{filter:none;opacity:1}
+.ach-row-info{flex:1}
+.ach-row-name{font-family:var(--m);font-size:.68rem;color:var(--tx3);transition:color .3s}
+.ach-row.done .ach-row-name{color:var(--tx)}
+.ach-row-hint{font-family:var(--m);font-size:.5rem;color:var(--tx3);opacity:.5;margin-top:.1rem}
+.ach-row.done .ach-row-hint{color:var(--gn);opacity:1}
+@media(max-width:768px){#ach-btn{bottom:1rem;left:1rem}#ach-panel{bottom:4rem;left:1rem;width:260px}}
+
 /* SECTIONS */
 section{padding:5rem 2rem;max-width:1200px;margin:0 auto;position:relative}section.fw{max-width:none;padding:5rem 5vw}.sl{font-family:var(--m);font-size:.72rem;font-weight:500;letter-spacing:.25em;text-transform:uppercase;color:var(--tx3);margin-bottom:.8rem}.st{font-family:var(--s);font-weight:700;font-size:clamp(1.8rem,3vw,3rem);letter-spacing:-.03em;line-height:1.1;margin-bottom:2.5rem}.sr{opacity:0;transform:translateY(24px);transition:all .7s cubic-bezier(.16,1,.3,1)}.sr.v{opacity:1;transform:translateY(0)}
 /* Depth Zoom */
@@ -265,6 +283,9 @@ footer{display:flex;justify-content:space-between;align-items:center;padding:2.5
 <div class="next-race" id="next-race"><div class="next-race-label">Next Race</div><div><span class="next-race-name" id="nr-name">Ironman 70.3 Kraichgau</span><span class="next-race-time" id="nr-time">--d --h --m --s</span></div></div>
 
 <div class="ach-toast" id="ach-toast"><div class="ach-icon" id="ach-icon"></div><div class="ach-info"><div class="ach-label">Achievement Unlocked</div><div class="ach-name" id="ach-name"></div></div></div>
+
+<div id="ach-btn" title="Achievements">🏆<span class="ach-count" id="ach-count">0</span></div>
+<div id="ach-panel"><div class="ach-panel-title">Achievements <span id="ach-score">0/7</span></div><div id="ach-list"></div></div>
 
 <main id="main-content">
 <section id="proj" class="fw dz" aria-label="Projects and races"><div><div class="sl sr" style="color:var(--cy)">// Projects</div><h2 class="st sr">What I build.</h2><div class="pj sr"><div class="pjh"><span class="pjn">AEGIS</span><span class="badge li">Live</span></div><div class="pjt">Security Framework</div><div class="pjd">Security evaluation framework for AI agents. Automated assessment of security risks in AI-powered systems.</div><div class="pji">→ Tested across multiple agent architectures, identifying key vulnerability patterns</div><div class="tags"><span class="tg">Python</span><span class="tg">OpenAI API</span><span class="tg">AI Security</span></div><a href="https://github.com/richter-max/aegis" class="pjl" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>GitHub</a></div><div class="pj sr"><div class="pjh"><span class="pjn">Attack Surface Scanner</span><span class="badge li">Live</span></div><div class="pjt">CLI Tool</div><div class="pjd">Python CLI for automated external attack surface discovery. Domain enumeration, port scanning, vulnerability detection.</div><div class="pji">→ Full scan in &lt;30s — covers DNS, ports, subdomains, security headers</div><div class="tags"><span class="tg">Python</span><span class="tg">CLI</span><span class="tg">Offensive Sec</span></div><a href="https://github.com/richter-max/attack-surface-scanner" class="pjl" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>GitHub</a></div><div class="pj sr"><div class="pjh"><span class="pjn">SMB Security Tool</span><span class="badge dv">In Dev</span></div><div class="pjt">Security Product</div><div class="pjd">Security solution for small and medium businesses. Simple configuration, automated scans, easy-to-understand reports.</div><div class="pji">→ Targeting the underserved SMB security market</div><div class="tags"><span class="tg">Next.js</span><span class="tg">Tailwind</span><span class="tg">Python</span></div></div><div class="pj sr"><div class="pjh"><span class="pjn">VendorQ</span><span class="badge bt">Beta</span></div><div class="pjt">B2B SaaS</div><div class="pjd">Automated security questionnaires for enterprises. AI-powered answer generation from existing documentation.</div><div class="pji">→ Reduces questionnaire response time by ~70%</div><div class="tags"><span class="tg">Next.js</span><span class="tg">TypeScript</span><span class="tg">Supabase</span></div></div></div><div class="proj-divider"></div><div><div class="sl sr" style="color:var(--rd)">// Races</div><h2 class="st sr" style="color:#e8e8ed">What I race.</h2><div class="rc sr"><div class="rn">Ironman 70.3 Kraichgau</div><div class="rd">May 31, 2026</div><div class="rg"><div><div class="rv">1.9 km</div><div class="rl">Swim</div></div><div><div class="rv">90 km</div><div class="rl">Bike</div></div><div><div class="rv">21.1 km</div><div class="rl">Run</div></div><div><div class="rv">≤5:00</div><div class="rl">Target</div></div></div><div class="rb"><div class="rbf" data-w="35"></div></div><div class="cd" data-target="2026-05-31T09:00:00"></div></div><div class="rc sr"><div class="rn">Berlin Marathon</div><div class="rd">September 27, 2026</div><div class="rg"><div><div class="rv">42.195 km</div><div class="rl">Distance</div></div><div><div class="rv">≤3:00:00</div><div class="rl">Target</div></div><div><div class="rv">4:16</div><div class="rl">Min/km</div></div><div><div class="rv">WR Course</div><div class="rl">Course</div></div></div><div class="rb"><div class="rbf" data-w="75"></div></div><div class="cd" data-target="2026-09-27T09:30:00"></div></div><div class="rc sr"><div class="rn">Table Tennis</div><div class="rd">Ongoing · Landesliga 2025/26</div><div class="rg"><div><div class="rv">1740</div><div class="rl">Current</div></div><div><div class="rv">1800</div><div class="rl">Target</div></div></div><div class="rb"><div class="rbf" data-w="97"></div></div></div></div></section>
@@ -771,15 +792,49 @@ setTimeout(()=>nrEl.classList.add('vis'),100);
 
 // ── ACHIEVEMENT SYSTEM ──
 !function(){
-const toast=document.getElementById('ach-toast'),icon=document.getElementById('ach-icon'),name=document.getElementById('ach-name');
-if(!toast)return;
+const toast=document.getElementById('ach-toast'),toastIcon=document.getElementById('ach-icon'),toastName=document.getElementById('ach-name');
+const panel=document.getElementById('ach-panel'),btn=document.getElementById('ach-btn'),list=document.getElementById('ach-list'),scoreEl=document.getElementById('ach-score'),countEl=document.getElementById('ach-count');
+if(!toast||!panel)return;
+
+const allAch=[
+{id:'explorer',icon:'🗺️',name:'Explorer',hint:'???'},
+{id:'hacker',icon:'💻',name:'Hacker',hint:'???'},
+{id:'nightowl',icon:'🦉',name:'Night Owl',hint:'???'},
+{id:'speedreader',icon:'⚡',name:'Speed Reader',hint:'???'},
+{id:'detective',icon:'🔍',name:'Detective',hint:'???'},
+{id:'shortcutpro',icon:'⌨️',name:'Shortcut Pro',hint:'???'},
+{id:'firstcontact',icon:'📨',name:'First Contact',hint:'???'}
+];
+
 const achieved=new Set(JSON.parse(sessionStorage.getItem('ach')||'[]'));
 let queue=[];let showing=false;
 
-function showAch(emoji,title){
-if(achieved.has(title))return;
-achieved.add(title);
+// Build panel rows
+function renderPanel(){
+list.innerHTML='';
+let doneCount=0;
+allAch.forEach(a=>{
+const done=achieved.has(a.id);
+if(done)doneCount++;
+const row=document.createElement('div');
+row.className='ach-row'+(done?' done':'');
+row.innerHTML='<div class="ach-row-icon">'+a.icon+'</div><div class="ach-row-info"><div class="ach-row-name">'+a.name+'</div><div class="ach-row-hint">'+(done?'Unlocked':a.hint)+'</div></div>';
+list.appendChild(row);
+});
+scoreEl.textContent=doneCount+'/'+allAch.length;
+countEl.textContent=doneCount;
+}
+renderPanel();
+
+// Toggle panel
+btn.addEventListener('click',()=>panel.classList.toggle('open'));
+document.addEventListener('click',e=>{if(!panel.contains(e.target)&&!btn.contains(e.target))panel.classList.remove('open')});
+
+function showAch(id,emoji,title){
+if(achieved.has(id))return;
+achieved.add(id);
 sessionStorage.setItem('ach',JSON.stringify([...achieved]));
+renderPanel();
 queue.push({emoji,title});
 processQueue();
 }
@@ -787,8 +842,8 @@ function processQueue(){
 if(showing||!queue.length)return;
 showing=true;
 const a=queue.shift();
-icon.textContent=a.emoji;
-name.textContent=a.title;
+toastIcon.textContent=a.emoji;
+toastName.textContent=a.title;
 toast.classList.add('show');
 setTimeout(()=>{toast.classList.remove('show');setTimeout(()=>{showing=false;processQueue()},500)},3000);
 }
@@ -797,45 +852,37 @@ setTimeout(()=>{toast.classList.remove('show');setTimeout(()=>{showing=false;pro
 const allSections=['proj','dmo','wrt','tln','stk','cnt'];
 const visited=new Set();
 const secOb=new IntersectionObserver(e=>e.forEach(x=>{
-if(x.isIntersecting){
-visited.add(x.target.id);
-if(visited.size>=allSections.length)showAch('🗺️','Explorer — Visited all sections');
-}
+if(x.isIntersecting){visited.add(x.target.id);if(visited.size>=allSections.length)showAch('explorer','🗺️','Explorer — Visited all sections')}
 }),{threshold:.2});
 allSections.forEach(id=>{const el=document.getElementById(id);if(el)secOb.observe(el)});
 
 // Achievement: Hacker — used the demo terminal
 const cmd=document.getElementById('cmd');
-if(cmd)cmd.addEventListener('keydown',function handler(e){
-if(e.key==='Enter'&&cmd.value.trim()){showAch('💻','Hacker — Used the terminal');cmd.removeEventListener('keydown',handler)}
-});
+if(cmd)cmd.addEventListener('keydown',function handler(e){if(e.key==='Enter'&&cmd.value.trim()){showAch('hacker','💻','Hacker — Used the terminal');cmd.removeEventListener('keydown',handler)}});
 
 // Achievement: Night Owl — visiting between 22:00-06:00
 const hr=new Date().getHours();
-if(hr>=22||hr<6)setTimeout(()=>showAch('🦉','Night Owl — Late night visitor'),4000);
+if(hr>=22||hr<6)setTimeout(()=>showAch('nightowl','🦉','Night Owl — Late night visitor'),4000);
 
 // Achievement: Speed Reader — reached footer in under 45 seconds
 const startTime=Date.now();
-const footerOb=new IntersectionObserver(e=>e.forEach(x=>{
-if(x.isIntersecting&&(Date.now()-startTime)<45000)showAch('⚡','Speed Reader — That was fast');
-}),{threshold:.1});
+const footerOb=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting&&(Date.now()-startTime)<45000)showAch('speedreader','⚡','Speed Reader — That was fast')}),{threshold:.1});
 const footer=document.querySelector('footer');
 if(footer)footerOb.observe(footer);
 
-// Achievement: Detective — found any easter egg (konami or matrix)
-const origEggOn=Object.getOwnPropertyDescriptor(HTMLElement.prototype,'className');
+// Achievement: Detective — found any easter egg
 const eggEl=document.getElementById('egg');
 const matEl=document.getElementById('matrix');
-if(eggEl){new MutationObserver(()=>{if(eggEl.classList.contains('on'))showAch('🔍','Detective — Found a secret')}).observe(eggEl,{attributes:true,attributeFilter:['class']})}
-if(matEl){new MutationObserver(()=>{if(matEl.classList.contains('on'))showAch('🔍','Detective — Found a secret')}).observe(matEl,{attributes:true,attributeFilter:['class']})}
+if(eggEl){new MutationObserver(()=>{if(eggEl.classList.contains('on'))showAch('detective','🔍','Detective — Found a secret')}).observe(eggEl,{attributes:true,attributeFilter:['class']})}
+if(matEl){new MutationObserver(()=>{if(matEl.classList.contains('on'))showAch('detective','🔍','Detective — Found a secret')}).observe(matEl,{attributes:true,attributeFilter:['class']})}
 
 // Achievement: Shortcut Pro — used keyboard shortcuts
 const scEl=document.getElementById('shortcuts');
-if(scEl){new MutationObserver(()=>{if(scEl.classList.contains('on'))showAch('⌨️','Shortcut Pro — Press ? anytime')}).observe(scEl,{attributes:true,attributeFilter:['class']})}
+if(scEl){new MutationObserver(()=>{if(scEl.classList.contains('on'))showAch('shortcutpro','⌨️','Shortcut Pro — Press ? anytime')}).observe(scEl,{attributes:true,attributeFilter:['class']})}
 
 // Achievement: First Contact — submitted contact form
 const csBtn=document.getElementById('cs');
-if(csBtn)csBtn.addEventListener('click',function handler(){showAch('📨','First Contact — Message sent');csBtn.removeEventListener('click',handler)});
+if(csBtn)csBtn.addEventListener('click',function handler(){showAch('firstcontact','📨','First Contact — Message sent');csBtn.removeEventListener('click',handler)});
 }();
 
 // Auto copyright year
