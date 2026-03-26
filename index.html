@@ -22,6 +22,7 @@
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}:root{--bg:#08080a;--bg2:#0c0c10;--bg3:#111116;--tx:#e8e8ed;--tx2:#8a8a98;--tx3:#4a4a58;--cy:#00d4ff;--rd:#ff3c3c;--gn:#22c55e;--yl:#f59e0b;--bd:rgba(255,255,255,.06);--cyb:rgba(0,212,255,.15);--rdb:rgba(255,60,60,.15);--m:'JetBrains Mono',monospace;--s:'Outfit',sans-serif}html{scroll-behavior:smooth;scrollbar-width:thin;scrollbar-color:#222 var(--bg)}body{background:var(--bg);color:var(--tx);font-family:var(--s);-webkit-font-smoothing:antialiased;overflow-x:hidden}body::after{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:.02;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 
+.skip-link:focus{left:0!important;top:0!important;padding:.5rem 1rem}
 /* NAV */
 #nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(8,8,10,.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--bd)}#nav-in{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:68px;position:relative}.nav-logo{font-family:var(--m);font-size:1rem;font-weight:700;color:var(--tx);letter-spacing:.08em;text-decoration:none}.nav-center{position:absolute;left:50%;transform:translateX(-50%);font-family:var(--s);font-weight:700;font-size:1rem;color:var(--tx);letter-spacing:.06em;text-transform:uppercase;opacity:0;transition:opacity .4s;pointer-events:none;white-space:nowrap}.nav-center .nc-ln{color:var(--cy)}.nav-center.show{opacity:1}.nav-links{display:flex;gap:.4rem;padding-left:10rem}.nav-links a{font-family:var(--m);font-size:.75rem;letter-spacing:.05em;color:var(--tx3);text-decoration:none;padding:.35rem .45rem;transition:color .2s;white-space:nowrap}.nav-links a:hover,.nav-links a.act{color:var(--cy)}#sp{position:fixed;top:68px;left:0;height:2px;z-index:1001;background:linear-gradient(90deg,var(--cy),var(--rd));width:0%;transition:width .1s linear}#nt{display:none;background:none;border:none;color:var(--tx3);font-family:var(--m);font-size:.7rem;cursor:pointer;padding:.4rem}@media(max-width:768px){#nt{display:block}.nav-links{display:none;position:absolute;top:68px;left:0;right:0;background:rgba(8,8,10,.95);backdrop-filter:blur(16px);flex-direction:column;padding:1rem 2rem;border-bottom:1px solid var(--bd)}.nav-links.open{display:flex}.nav-links a{padding:.6rem 0}.nav-center{display:none}}
 
@@ -66,6 +67,21 @@
 
 /* METRICS */
 .mt{display:grid;grid-template-columns:repeat(6,1fr);border-top:1px solid var(--bd);border-bottom:1px solid var(--bd)}.mc{padding:1.8rem 1.4rem;border-right:1px solid var(--bd);text-align:center}.mc:last-child{border-right:none}.mv{font-family:var(--m);font-weight:700;font-size:clamp(1.3rem,1.8vw,1.9rem);letter-spacing:-.02em}.mv.c{color:var(--cy)}.mv.r{color:var(--rd)}.ml{font-family:var(--m);font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--tx3);margin-top:.3rem}@media(max-width:768px){.mt{grid-template-columns:repeat(3,1fr)}}
+
+/* NEXT RACE COUNTDOWN */
+.next-race{background:linear-gradient(90deg,rgba(255,60,60,.04),rgba(0,212,255,.04));border-bottom:1px solid var(--bd);padding:1rem 2rem;text-align:center;opacity:0;transform:translateY(5px);transition:all .8s cubic-bezier(.16,1,.3,1) 2s}
+.next-race.vis{opacity:1;transform:translateY(0)}
+.next-race-label{font-family:var(--m);font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--tx3);margin-bottom:.4rem}
+.next-race-name{font-family:var(--s);font-weight:700;font-size:1rem;color:var(--tx);display:inline}
+.next-race-time{font-family:var(--m);font-weight:600;font-size:1rem;color:var(--rd);display:inline;margin-left:.8rem}
+
+/* ACHIEVEMENT TOASTS */
+.ach-toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(80px);z-index:15000;background:rgba(8,8,10,.92);backdrop-filter:blur(16px);border:1px solid var(--bd);border-radius:8px;padding:.8rem 1.5rem;display:flex;align-items:center;gap:.8rem;opacity:0;transition:all .5s cubic-bezier(.16,1,.3,1);pointer-events:none;white-space:nowrap}
+.ach-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.ach-icon{font-size:1.2rem}
+.ach-info{display:flex;flex-direction:column}
+.ach-label{font-family:var(--m);font-size:.5rem;letter-spacing:.15em;text-transform:uppercase;color:var(--tx3)}
+.ach-name{font-family:var(--s);font-weight:600;font-size:.85rem;color:var(--tx)}
 
 /* SECTIONS */
 section{padding:5rem 2rem;max-width:1200px;margin:0 auto;position:relative}section.fw{max-width:none;padding:5rem 5vw}.sl{font-family:var(--m);font-size:.72rem;font-weight:500;letter-spacing:.25em;text-transform:uppercase;color:var(--tx3);margin-bottom:.8rem}.st{font-family:var(--s);font-weight:700;font-size:clamp(1.8rem,3vw,3rem);letter-spacing:-.03em;line-height:1.1;margin-bottom:2.5rem}.sr{opacity:0;transform:translateY(24px);transition:all .7s cubic-bezier(.16,1,.3,1)}.sr.v{opacity:1;transform:translateY(0)}
@@ -212,6 +228,21 @@ footer{display:flex;justify-content:space-between;align-items:center;padding:2.5
 .type-title.typing{transition:width 1s steps(20)}
 .type-title.typed{border-color:transparent}
 
+/* KEYBOARD SHORTCUTS OVERLAY */
+#shortcuts{position:fixed;inset:0;z-index:18000;background:rgba(0,0,0,.88);backdrop-filter:blur(16px);display:none;align-items:center;justify-content:center;cursor:pointer}
+#shortcuts.on{display:flex}
+.sc-box{background:var(--bg);border:1px solid var(--bd);border-radius:12px;padding:2.5rem;max-width:520px;width:90vw;cursor:default;position:relative}
+.sc-title{font-family:var(--s);font-weight:700;font-size:1.3rem;margin-bottom:.4rem}
+.sc-sub{font-family:var(--m);font-size:.62rem;color:var(--tx3);margin-bottom:2rem;letter-spacing:.05em}
+.sc-row{display:flex;justify-content:space-between;align-items:center;padding:.7rem 0;border-bottom:1px solid var(--bd)}
+.sc-row:last-child{border-bottom:none}
+.sc-keys{display:flex;gap:.3rem}
+.sc-key{font-family:var(--m);font-size:.65rem;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:4px;padding:.25rem .5rem;color:var(--tx2);min-width:28px;text-align:center}
+.sc-desc{font-family:var(--m);font-size:.7rem;color:var(--tx2)}
+.sc-close{position:absolute;top:1rem;right:1.2rem;font-family:var(--m);font-size:.7rem;color:var(--tx3);cursor:pointer;transition:color .2s}
+.sc-close:hover{color:var(--tx)}
+.sc-hint{text-align:center;margin-top:1.5rem;font-family:var(--m);font-size:.55rem;color:var(--tx3);letter-spacing:.08em}
+
 /* EGG */
 #egg{position:fixed;inset:0;z-index:20000;background:rgba(0,0,0,.95);display:none;align-items:center;justify-content:center;flex-direction:column;cursor:pointer}#egg.on{display:flex}#egg pre{font-family:var(--m);font-size:.7rem;line-height:1.1;color:var(--cy);text-shadow:0 0 10px rgba(0,212,255,.5);margin-bottom:1.5rem}#egg .em{font-family:var(--m);font-size:.85rem;color:var(--tx2);text-align:center;line-height:1.8}#egg .em span{color:var(--cy)}#egg .ec{font-family:var(--m);font-size:.65rem;color:var(--tx3);margin-top:1.5rem}
 
@@ -220,17 +251,20 @@ footer{display:flex;justify-content:space-between;align-items:center;padding:2.5
 </head>
 <body>
 
-<nav id="nav" role="navigation" aria-label="Main navigation"><a href="#proj" class="skip-link" style="position:absolute;left:-9999px;top:0;padding:.5rem 1rem;background:var(--cy);color:#000;font-family:var(--m);font-size:.7rem;z-index:9999;focus:left:0">Skip to content</a><div id="nav-in"><a href="#hero" class="nav-logo">MR</a><div class="nav-center" id="nav-center">Maximilian <span class="nc-ln">Richter</span></div><button id="nt" aria-label="Toggle navigation">[nav]</button><div class="nav-links" id="nav-links"><a href="#proj">Projects</a><a href="#dmo">Demo</a><a href="#wrt">Writing</a><a href="#tln">Timeline</a><a href="#stk">Stack</a><a href="#cnt">Contact</a></div></div></nav>
+<nav id="nav" role="navigation" aria-label="Main navigation"><a href="#proj" class="skip-link" style="position:absolute;left:-9999px;top:0;padding:.5rem 1rem;background:var(--cy);color:#000;font-family:var(--m);font-size:.7rem;z-index:9999">Skip to content</a><div id="nav-in"><a href="#hero" class="nav-logo">MR</a><div class="nav-center" id="nav-center">Maximilian <span class="nc-ln">Richter</span></div><button id="nt" aria-label="Toggle navigation">[nav]</button><div class="nav-links" id="nav-links"><a href="#proj">Projects</a><a href="#dmo">Demo</a><a href="#wrt">Writing</a><a href="#tln">Timeline</a><a href="#stk">Stack</a><a href="#cnt">Contact</a></div></div></nav>
 <div id="sp" aria-hidden="true"></div>
 
 <canvas id="matrix" aria-hidden="true"></canvas>
 <canvas id="ambient" aria-hidden="true"></canvas>
 
-<div id="boot" aria-hidden="true"><div id="bl"><div class="l">[sys] initializing split_signal v3.0...</div><div class="l">[sys] loading modules: security, endurance, resolve</div><div class="l t">[tech] projects: AEGIS, ASScanner, SMB, VendorQ → loaded</div><div class="l a">[athlete] targets: ironman sub5:00 | marathon sub3:00 | tt_1800</div><div class="l">[sys] dual_signal: LOCKED</div><div class="l b">[sys] identity confirmed → launching portfolio</div></div><div id="boot-bar"><div id="boot-bar-fill"></div></div><div id="boot-skip" style="font-family:var(--m);font-size:.6rem;color:var(--tx3);margin-top:1.5rem;cursor:pointer;opacity:0;transition:opacity .3s;letter-spacing:.1em">press any key to skip</div></div>
+<div id="boot" aria-hidden="true"><div id="bl"><div class="l">[sys] initializing split_signal v3.0...</div><div class="l">[sys] loading modules: security, endurance, resolve</div><div class="l t">[tech] projects: AEGIS, ASScanner, SMB, VendorQ → loaded</div><div class="l a">[athlete] targets: ironman sub5:00 | marathon sub3:00 | tt_1800</div><div class="l">[sys] dual_signal: LOCKED</div><div class="l" id="visitor-line">[sys] visitor #---- connected</div><div class="l b">[sys] identity confirmed → launching portfolio</div></div><div id="boot-bar"><div id="boot-bar-fill"></div></div><div id="boot-skip" style="font-family:var(--m);font-size:.6rem;color:var(--tx3);margin-top:1.5rem;cursor:pointer;opacity:0;transition:opacity .3s;letter-spacing:.1em">press any key to skip</div></div>
 
 <header id="hero"><div class="hpl" aria-hidden="true"></div><div class="hn" id="hero-name"><canvas id="name-canvas" width="1000" height="260"></canvas><div class="hn-fallback"><span class="fn">Maximilian</span><span class="ln">Richter</span></div></div><div class="hh tc"><div class="ht">// Software Engineer</div><h1>Build.<br>Break.<br>Secure.</h1><p class="hp">Security Engineer building AI-powered defense tools. Next.js, Python, Supabase. Dual-degree CS + Cybersecurity starting Oct 2026.</p></div><div class="hh at"><div class="ht">// Endurance Athlete</div><h1>Build.<br>Peak.<br>Race.</h1><p class="hp">Ironman 70.3 · Marathon · Table Tennis. Same discipline, same obsession — different playing field.</p></div></header>
 
 <div class="mt" aria-label="Key metrics" style="opacity:0;transform:translateY(10px);transition:all .8s cubic-bezier(.16,1,.3,1) 1.5s" id="metrics"><div class="mc"><div class="mv c" data-count="4">0</div><div class="ml">Projects</div></div><div class="mc"><div class="mv c">Bosch</div><div class="ml">Employer</div></div><div class="mc"><div class="mv c" data-count="2026">0</div><div class="ml">CS Start</div></div><div class="mc"><div class="mv r">≤5:00</div><div class="ml">IM 70.3</div></div><div class="mc"><div class="mv r">≤3:00</div><div class="ml">Marathon</div></div><div class="mc"><div class="mv r" data-count="1800">0</div><div class="ml">TT Rating</div></div></div>
+<div class="next-race" id="next-race"><div class="next-race-label">Next Race</div><div><span class="next-race-name" id="nr-name">Ironman 70.3 Kraichgau</span><span class="next-race-time" id="nr-time">--d --h --m --s</span></div></div>
+
+<div class="ach-toast" id="ach-toast"><div class="ach-icon" id="ach-icon"></div><div class="ach-info"><div class="ach-label">Achievement Unlocked</div><div class="ach-name" id="ach-name"></div></div></div>
 
 <main id="main-content">
 <section id="proj" class="fw dz" aria-label="Projects and races"><div><div class="sl sr" style="color:var(--cy)">// Projects</div><h2 class="st sr">What I build.</h2><div class="pj sr"><div class="pjh"><span class="pjn">AEGIS</span><span class="badge li">Live</span></div><div class="pjt">Security Framework</div><div class="pjd">Security evaluation framework for AI agents. Automated assessment of security risks in AI-powered systems.</div><div class="pji">→ Tested across multiple agent architectures, identifying key vulnerability patterns</div><div class="tags"><span class="tg">Python</span><span class="tg">OpenAI API</span><span class="tg">AI Security</span></div><a href="https://github.com/richter-max/aegis" class="pjl" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>GitHub</a></div><div class="pj sr"><div class="pjh"><span class="pjn">Attack Surface Scanner</span><span class="badge li">Live</span></div><div class="pjt">CLI Tool</div><div class="pjd">Python CLI for automated external attack surface discovery. Domain enumeration, port scanning, vulnerability detection.</div><div class="pji">→ Full scan in &lt;30s — covers DNS, ports, subdomains, security headers</div><div class="tags"><span class="tg">Python</span><span class="tg">CLI</span><span class="tg">Offensive Sec</span></div><a href="https://github.com/richter-max/attack-surface-scanner" class="pjl" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>GitHub</a></div><div class="pj sr"><div class="pjh"><span class="pjn">SMB Security Tool</span><span class="badge dv">In Dev</span></div><div class="pjt">Security Product</div><div class="pjd">Security solution for small and medium businesses. Simple configuration, automated scans, easy-to-understand reports.</div><div class="pji">→ Targeting the underserved SMB security market</div><div class="tags"><span class="tg">Next.js</span><span class="tg">Tailwind</span><span class="tg">Python</span></div></div><div class="pj sr"><div class="pjh"><span class="pjn">VendorQ</span><span class="badge bt">Beta</span></div><div class="pjt">B2B SaaS</div><div class="pjd">Automated security questionnaires for enterprises. AI-powered answer generation from existing documentation.</div><div class="pji">→ Reduces questionnaire response time by ~70%</div><div class="tags"><span class="tg">Next.js</span><span class="tg">TypeScript</span><span class="tg">Supabase</span></div></div></div><div class="proj-divider"></div><div><div class="sl sr" style="color:var(--rd)">// Races</div><h2 class="st sr" style="color:#e8e8ed">What I race.</h2><div class="rc sr"><div class="rn">Ironman 70.3 Kraichgau</div><div class="rd">May 31, 2026</div><div class="rg"><div><div class="rv">1.9 km</div><div class="rl">Swim</div></div><div><div class="rv">90 km</div><div class="rl">Bike</div></div><div><div class="rv">21.1 km</div><div class="rl">Run</div></div><div><div class="rv">≤5:00</div><div class="rl">Target</div></div></div><div class="rb"><div class="rbf" data-w="35"></div></div><div class="cd" data-target="2026-05-31T09:00:00"></div></div><div class="rc sr"><div class="rn">Berlin Marathon</div><div class="rd">September 27, 2026</div><div class="rg"><div><div class="rv">42.195 km</div><div class="rl">Distance</div></div><div><div class="rv">≤3:00:00</div><div class="rl">Target</div></div><div><div class="rv">4:16</div><div class="rl">Min/km</div></div><div><div class="rv">WR Course</div><div class="rl">Course</div></div></div><div class="rb"><div class="rbf" data-w="75"></div></div><div class="cd" data-target="2026-09-27T09:30:00"></div></div><div class="rc sr"><div class="rn">Table Tennis</div><div class="rd">Ongoing · Landesliga 2025/26</div><div class="rg"><div><div class="rv">1740</div><div class="rl">Current</div></div><div><div class="rv">1800</div><div class="rl">Target</div></div></div><div class="rb"><div class="rbf" data-w="97"></div></div></div></div></section>
@@ -250,16 +284,28 @@ footer{display:flex;justify-content:space-between;align-items:center;padding:2.5
 </main>
 <footer style="max-width:1200px;margin:0 auto;padding:4rem 3rem;border-top:1px solid var(--bd)"><div style="display:grid;grid-template-columns:1fr auto 1fr;gap:6rem;align-items:start"><div style="padding-right:2rem"><div style="font-family:var(--s);font-weight:800;font-size:1.2rem;margin-bottom:.6rem;letter-spacing:-.01em">Maximilian Richter</div><div style="font-family:var(--m);font-size:.7rem;color:var(--tx2);line-height:2">Software Developer @ Bosch</div><div style="font-family:var(--m);font-size:.7rem;color:var(--tx2);line-height:2">Security Engineer in training</div><div style="font-family:var(--m);font-size:.7rem;color:var(--tx2);line-height:2">Endurance Athlete</div><div style="font-family:var(--m);font-size:.6rem;color:var(--tx3);margin-top:1.5rem">© <span id="copy-year">2026</span> Maximilian Richter</div></div><div style="text-align:center"><div style="font-family:var(--m);font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--tx3);margin-bottom:1.2rem">Connect</div><div style="display:flex;flex-direction:column;gap:.8rem;align-items:center"><a href="https://github.com/richter-max" target="_blank" rel="noopener" style="font-family:var(--m);font-size:.75rem;color:var(--tx2);text-decoration:none;transition:color .2s">GitHub ↗</a><a href="https://www.linkedin.com/in/maximilian-richter-40697a298" target="_blank" rel="noopener" style="font-family:var(--m);font-size:.75rem;color:var(--tx2);text-decoration:none;transition:color .2s">LinkedIn ↗</a><a href="https://strava.app.link/mIlXsvnJL1b" target="_blank" rel="noopener" style="font-family:var(--m);font-size:.75rem;color:var(--tx2);text-decoration:none;transition:color .2s">Strava ↗</a></div></div><div style="text-align:right;padding-left:2rem"><div style="font-family:var(--m);font-size:.72rem;color:var(--tx2);margin-bottom:.8rem"><span class="sdot"></span>Open to opportunities</div><div style="font-family:var(--m);font-size:.72rem;color:var(--tx3);margin-bottom:1.2rem">Germany</div><div style="font-family:var(--m);font-size:.68rem;color:var(--tx3);line-height:1.7;font-style:italic;opacity:.6">The best systems are built by<br>those who know how to break them.</div></div></div></footer>
 
+<div id="shortcuts" aria-hidden="true"><div class="sc-box"><div class="sc-close" id="sc-close">ESC</div><div class="sc-title">Keyboard Shortcuts</div><div class="sc-sub">Navigate like a developer.</div><div class="sc-row"><div class="sc-desc">Show this menu</div><div class="sc-keys"><div class="sc-key">?</div></div></div><div class="sc-row"><div class="sc-desc">Go to Projects</div><div class="sc-keys"><div class="sc-key">G</div><div class="sc-key">P</div></div></div><div class="sc-row"><div class="sc-desc">Go to Demo</div><div class="sc-keys"><div class="sc-key">G</div><div class="sc-key">D</div></div></div><div class="sc-row"><div class="sc-desc">Go to Writing</div><div class="sc-keys"><div class="sc-key">G</div><div class="sc-key">W</div></div></div><div class="sc-row"><div class="sc-desc">Go to Timeline</div><div class="sc-keys"><div class="sc-key">G</div><div class="sc-key">T</div></div></div><div class="sc-row"><div class="sc-desc">Go to Contact</div><div class="sc-keys"><div class="sc-key">G</div><div class="sc-key">C</div></div></div><div class="sc-row"><div class="sc-desc">Back to top</div><div class="sc-keys"><div class="sc-key">G</div><div class="sc-key">G</div></div></div><div class="sc-row"><div class="sc-desc">Konami code</div><div class="sc-keys"><div class="sc-key">↑↑↓↓←→←→BA</div></div></div><div class="sc-row"><div class="sc-desc">Matrix rain</div><div class="sc-keys"><div class="sc-key">5× click</div></div></div><div class="sc-hint">Press ? or ESC to close</div></div></div>
+
 <div id="egg" aria-hidden="true"><pre> ███╗   ███╗ █████╗ ██╗  ██╗
  ████╗ ████║██╔══██╗╚██╗██╔╝
  ██╔████╔██║███████║ ╚███╔╝
  ██║╚██╔╝██║██╔══██║ ██╔██╗
  ██║ ╚═╝ ██║██║  ██║██╔╝ ██╗
- ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝</pre><div class="em">You found the <span>easter egg</span>.<br><br>If you're a recruiter reading this —<br>you're exactly who I want to work with.<br><br><a href="/cdn-cgi/l/email-protection#771a160f37051e141f0312051a160f5914181a" style="color:var(--cy)" id="egg-email"><span id="egg-email-text">loading...</span></a></div><div class="ec">click anywhere to close</div></div>
+ ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝</pre><div class="em">You found the <span>easter egg</span>.<br><br>If you're a recruiter reading this —<br>you're exactly who I want to work with.<br><br><a href="#" id="egg-email-link" style="color:var(--cy)" id="egg-email"><span id="egg-email-text">loading...</span></a></div><div class="ec">click anywhere to close</div></div>
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // Scroll to top on load
 window.scrollTo(0,0);history.scrollRestoration='manual';
+
+// Visitor counter
+!function(){
+const vl=document.getElementById('visitor-line');
+const offset=1700;
+fetch('https://api.counterapi.dev/v1/richtermax-com/visits/up')
+.then(r=>r.json())
+.then(d=>{if(vl&&d.count)vl.textContent='[sys] visitor #'+(d.count+offset).toLocaleString()+' connected'})
+.catch(()=>{if(vl)vl.textContent='[sys] visitor #'+offset+' connected'});
+}();
 
 // Boot with loading bar + skip
 !function(){
@@ -700,9 +746,149 @@ titles.forEach(t=>tObs.observe(t));
 // Easter eggs: Konami + sudo/help
 const sq=['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','KeyB','KeyA'];let p=0;const eg=document.getElementById('egg');
 // Set email dynamically to bypass CF obfuscation
-!function(){const e=document.getElementById('egg-email'),t=document.getElementById('egg-email-text');if(e&&t){const a='max.richter'+'.'+'dev@'+'proton.me';t.textContent=a;e.href='mailto:'+a}}();document.addEventListener('keydown',e=>{e.code===sq[p]?++p===sq.length&&(eg.classList.add('on'),p=0):p=0});eg.addEventListener('click',()=>eg.classList.remove('on'));let tp='';document.addEventListener('keypress',e=>{if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName))return;tp+=e.key;(tp.includes('sudo')||tp.includes('help'))&&(eg.classList.add('on'),tp='');tp.length>10&&(tp=tp.slice(-10))});
+!function(){const e=document.getElementById('egg-email'),t=document.getElementById('egg-email-text');if(e&&t){const a='max.richter'+'.'+'dev@'+'proton.me';t.textContent=a;e.href='mailto:'+a;var el2=document.getElementById('egg-email-link');if(el2)el2.href='mailto:'+a}}();document.addEventListener('keydown',e=>{e.code===sq[p]?++p===sq.length&&(eg.classList.add('on'),p=0):p=0});eg.addEventListener('click',()=>eg.classList.remove('on'));let tp='';document.addEventListener('keypress',e=>{if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName))return;tp+=e.key;(tp.includes('sudo')||tp.includes('help'))&&(eg.classList.add('on'),tp='');tp.length>10&&(tp=tp.slice(-10))});
+// ── NEXT RACE COUNTDOWN (live ticker) ──
+!function(){
+const races=[
+{name:'Ironman 70.3 Kraichgau',date:new Date('2026-05-31T09:00:00')},
+{name:'Berlin Marathon',date:new Date('2026-09-27T09:30:00')}
+];
+const nrEl=document.getElementById('next-race'),nrName=document.getElementById('nr-name'),nrTime=document.getElementById('nr-time');
+if(!nrEl)return;
+function update(){
+const now=Date.now();
+let next=null;
+for(const r of races){if(r.date.getTime()>now){next=r;break}}
+if(!next){nrName.textContent='Season Complete';nrTime.textContent='';return}
+nrName.textContent=next.name;
+const diff=next.date.getTime()-now;
+const d=Math.floor(diff/864e5),h=Math.floor(diff%864e5/36e5),m=Math.floor(diff%36e5/6e4),s=Math.floor(diff%6e4/1e3);
+nrTime.textContent=d+'d '+h+'h '+m+'m '+s+'s';
+}
+update();setInterval(update,1000);
+setTimeout(()=>nrEl.classList.add('vis'),100);
+}();
+
+// ── ACHIEVEMENT SYSTEM ──
+!function(){
+const toast=document.getElementById('ach-toast'),icon=document.getElementById('ach-icon'),name=document.getElementById('ach-name');
+if(!toast)return;
+const achieved=new Set(JSON.parse(sessionStorage.getItem('ach')||'[]'));
+let queue=[];let showing=false;
+
+function showAch(emoji,title){
+if(achieved.has(title))return;
+achieved.add(title);
+sessionStorage.setItem('ach',JSON.stringify([...achieved]));
+queue.push({emoji,title});
+processQueue();
+}
+function processQueue(){
+if(showing||!queue.length)return;
+showing=true;
+const a=queue.shift();
+icon.textContent=a.emoji;
+name.textContent=a.title;
+toast.classList.add('show');
+setTimeout(()=>{toast.classList.remove('show');setTimeout(()=>{showing=false;processQueue()},500)},3000);
+}
+
+// Achievement: Explorer — scrolled to all sections
+const allSections=['proj','dmo','wrt','tln','stk','cnt'];
+const visited=new Set();
+const secOb=new IntersectionObserver(e=>e.forEach(x=>{
+if(x.isIntersecting){
+visited.add(x.target.id);
+if(visited.size>=allSections.length)showAch('🗺️','Explorer — Visited all sections');
+}
+}),{threshold:.2});
+allSections.forEach(id=>{const el=document.getElementById(id);if(el)secOb.observe(el)});
+
+// Achievement: Hacker — used the demo terminal
+const cmd=document.getElementById('cmd');
+if(cmd)cmd.addEventListener('keydown',function handler(e){
+if(e.key==='Enter'&&cmd.value.trim()){showAch('💻','Hacker — Used the terminal');cmd.removeEventListener('keydown',handler)}
+});
+
+// Achievement: Night Owl — visiting between 22:00-06:00
+const hr=new Date().getHours();
+if(hr>=22||hr<6)setTimeout(()=>showAch('🦉','Night Owl — Late night visitor'),4000);
+
+// Achievement: Speed Reader — reached footer in under 45 seconds
+const startTime=Date.now();
+const footerOb=new IntersectionObserver(e=>e.forEach(x=>{
+if(x.isIntersecting&&(Date.now()-startTime)<45000)showAch('⚡','Speed Reader — That was fast');
+}),{threshold:.1});
+const footer=document.querySelector('footer');
+if(footer)footerOb.observe(footer);
+
+// Achievement: Detective — found any easter egg (konami or matrix)
+const origEggOn=Object.getOwnPropertyDescriptor(HTMLElement.prototype,'className');
+const eggEl=document.getElementById('egg');
+const matEl=document.getElementById('matrix');
+if(eggEl){new MutationObserver(()=>{if(eggEl.classList.contains('on'))showAch('🔍','Detective — Found a secret')}).observe(eggEl,{attributes:true,attributeFilter:['class']})}
+if(matEl){new MutationObserver(()=>{if(matEl.classList.contains('on'))showAch('🔍','Detective — Found a secret')}).observe(matEl,{attributes:true,attributeFilter:['class']})}
+
+// Achievement: Shortcut Pro — used keyboard shortcuts
+const scEl=document.getElementById('shortcuts');
+if(scEl){new MutationObserver(()=>{if(scEl.classList.contains('on'))showAch('⌨️','Shortcut Pro — Press ? anytime')}).observe(scEl,{attributes:true,attributeFilter:['class']})}
+
+// Achievement: First Contact — submitted contact form
+const csBtn=document.getElementById('cs');
+if(csBtn)csBtn.addEventListener('click',function handler(){showAch('📨','First Contact — Message sent');csBtn.removeEventListener('click',handler)});
+}();
+
 // Auto copyright year
 document.getElementById('copy-year').textContent=new Date().getFullYear();
+
+// ── KEYBOARD SHORTCUTS ──
+!function(){
+const sc=document.getElementById('shortcuts');
+let gPressed=false,gTimer=null;
+
+function toggleSC(){sc.classList.toggle('on')}
+function closeSC(){sc.classList.remove('on')}
+function goTo(id){closeSC();const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth'})}
+
+sc.addEventListener('click',e=>{if(e.target===sc)closeSC()});
+document.getElementById('sc-close').addEventListener('click',closeSC);
+
+document.addEventListener('keydown',e=>{
+if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName))return;
+const k=e.key.toLowerCase();
+
+// ? toggles shortcuts
+if(k==='?'||e.key==='?'){e.preventDefault();toggleSC();return}
+
+// ESC closes
+if(k==='escape'){closeSC();return}
+
+// G + second key navigation
+if(k==='g'&&!gPressed){
+gPressed=true;
+if(gTimer)clearTimeout(gTimer);
+gTimer=setTimeout(()=>{
+// GG = go to top
+if(gPressed){window.scrollTo({top:0,behavior:'smooth'});closeSC()}
+gPressed=false;
+},300);
+return;
+}
+
+if(gPressed){
+gPressed=false;
+if(gTimer)clearTimeout(gTimer);
+if(k==='p')goTo('proj');
+else if(k==='d')goTo('dmo');
+else if(k==='w')goTo('wrt');
+else if(k==='t')goTo('tln');
+else if(k==='c')goTo('cnt');
+else if(k==='g'){window.scrollTo({top:0,behavior:'smooth'});closeSC()}
+return;
+}
+});
+}();
+
 </script>
 </body>
 </html>
