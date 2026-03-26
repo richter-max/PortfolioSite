@@ -21,9 +21,9 @@ body::after{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;o
 .blog-nav .back:hover{opacity:.7}
 .blog-nav .name{font-family:var(--s);font-weight:700;font-size:.8rem;color:var(--tx);letter-spacing:.1em;text-transform:uppercase}
 #read-progress{position:fixed;top:52px;left:0;height:2px;z-index:101;background:linear-gradient(90deg,var(--accent),var(--rd));width:0%;transition:width .1s linear}
-.blog-banner{position:relative;width:100%;height:60vh;min-height:400px;overflow:hidden;margin-top:52px}
-.blog-banner img{width:100%;height:100%;object-fit:cover;object-position:center 30%}
-.blog-banner::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,var(--bg) 0%,rgba(8,8,10,.6) 40%,rgba(8,8,10,.3) 100%)}
+.blog-banner{position:relative;width:100%;height:55vh;min-height:380px;overflow:hidden;margin-top:52px}
+.blog-banner img{width:100%;height:100%;object-fit:cover;object-position:center 40%}
+.blog-banner::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,var(--bg) 0%,rgba(8,8,10,.5) 50%,rgba(8,8,10,.2) 100%)}
 .blog-banner-content{position:absolute;bottom:0;left:0;right:0;z-index:2;max-width:900px;margin:0 auto;padding:3rem 2rem}
 .blog-banner-tag{font-family:var(--m);font-size:.6rem;letter-spacing:.25em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem}
 .blog-banner-title{font-family:var(--s);font-weight:800;font-size:clamp(2rem,4vw,3.2rem);line-height:1.1;letter-spacing:-.03em;margin-bottom:1rem}
@@ -34,9 +34,6 @@ body::after{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;o
 .blog-content strong{color:var(--tx);font-weight:500}
 .blog-content em{color:var(--accent);font-style:normal}
 .blog-content .separator{width:60px;height:2px;background:linear-gradient(90deg,var(--accent),transparent);margin:3.5rem 0}
-.pull-quote{margin:3rem -2rem;padding:2.5rem 3rem;position:relative;border-top:1px solid var(--bd);border-bottom:1px solid var(--bd)}
-.pull-quote p{font-family:var(--s);font-weight:600;font-size:1.4rem;line-height:1.5;color:var(--tx);margin:0;letter-spacing:-.01em}
-.pull-quote::before{content:'"';position:absolute;top:-.2rem;left:2rem;font-family:var(--s);font-size:4rem;font-weight:800;color:var(--accent);opacity:.2;line-height:1}
 .blog-photo{margin:2.5rem -4rem;border-radius:8px;overflow:hidden}
 .blog-photo img{width:100%;display:block}
 .blog-photo-caption{font-family:var(--m);font-size:.62rem;color:var(--tx3);padding:.8rem 1rem;letter-spacing:.05em}
@@ -47,42 +44,67 @@ body::after{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;o
 .blog-footer{max-width:900px;margin:0 auto;padding:2rem 2rem 4rem;border-top:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center}
 .blog-footer a{font-family:var(--m);font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);text-decoration:none;padding:.6rem 1.2rem;border:1px solid rgba(245,158,11,.12);transition:all .3s}
 .blog-footer a:hover{background:rgba(245,158,11,.06);border-color:var(--accent)}
-@media(max-width:768px){.blog-banner{height:40vh;min-height:280px}.blog-content{padding:2rem 1.5rem 4rem}.pull-quote{margin:2rem 0;padding:1.5rem}.pull-quote p{font-size:1.15rem}.blog-photo{margin:2rem -.5rem}.side-facts{flex-direction:column;gap:.8rem}}
+@media(max-width:768px){.blog-banner{height:40vh;min-height:280px}.blog-content{padding:2rem 1.5rem 4rem}.blog-photo{margin:2rem -.5rem}.side-facts{flex-direction:column;gap:.8rem}}
 </style>
 </head>
 <body>
 <nav class="blog-nav"><a href="/" class="back">← Back</a><a href="/" class="name">Maximilian Richter</a></nav>
 <div id="read-progress"></div>
-<div class="blog-banner"><img src="china-friends.jpg" alt="Shenzhen skyline at night"><div class="blog-banner-content"><div class="blog-banner-tag">Travel · Culture</div><h1 class="blog-banner-title">Two Weeks in Shenzhen: The Exchange That Changed My Perspective</h1><div class="blog-banner-meta">March 2026 · 7 min read</div></div></div>
+<div class="blog-banner"><img src="china-skyline.jpg" alt="Shenzhen skyline at night"><div class="blog-banner-content"><div class="blog-banner-tag">Travel · Culture</div><h1 class="blog-banner-title">Two Weeks in Shenzhen</h1><div class="blog-banner-meta">March 2026 · 7 min read</div></div></div>
 <article class="blog-content">
   <div class="side-facts"><div class="side-fact"><div class="side-fact-label">Location</div><div class="side-fact-value">Shenzhen, China</div></div><div class="side-fact"><div class="side-fact-label">Duration</div><div class="side-fact-value">2 Weeks</div></div><div class="side-fact"><div class="side-fact-label">Institution</div><div class="side-fact-value">SZIIT</div></div><div class="side-fact"><div class="side-fact-label">Outcome</div><div class="side-fact-value">Drone License ✓</div></div></div>
-  <p>I've been to a few countries before. I've seen different cultures, tried different foods, met different people. But nothing — and I mean nothing — prepared me for two weeks in Shenzhen, China. This wasn't just a trip. This was, without exaggeration, one of the highlights of my last few years.</p>
-  <p>The exchange was organized through Bosch in partnership with the <strong>Shenzhen Institute of Information Technology</strong>. Two weeks on campus, staying in a hotel right on university grounds. The official purpose: <strong>get a drone pilot license</strong>. The real outcome: something much bigger than that.</p>
+
+  <p>I've traveled a bit before this. Seen a few countries, tried different food, met different people. But Shenzhen was something else entirely. Two weeks in southern China, and it turned out to be one of the best experiences I've had in years. Not exaggerating.</p>
+
+  <p>The whole thing was an exchange program through Bosch, in partnership with the <strong>Shenzhen Institute of Information Technology</strong>. We stayed in a hotel right on the university campus. The official reason for going? <strong>Getting a drone pilot license.</strong> But what actually made the trip special had very little to do with drones.</p>
+
   <h2>The Drone License</h2>
-  <p>Let's start with the technical part. The program was structured around obtaining a certified drone pilot license — theory sessions on regulations, airspace rules, and flight safety, followed by hands-on practical training with actual drones. The theory was dense but well-taught, and the practical sessions were where it got exciting. There's something about actually flying a drone through an obstacle course that no simulator can replicate.</p>
-  <p>I passed. License in hand. But honestly, that was the least memorable part of the entire trip.</p>
+
+  <p>The training itself was solid. Theory sessions on regulations, airspace, safety — pretty dense stuff. Then practical flight training where we actually got to fly drones through courses. That part was fun. There's a big difference between reading about drone flight and actually doing it.</p>
+
+  <p>I passed and got the license. Cool to have, but honestly — it's the least interesting thing I brought home from this trip.</p>
+
   <h2>The Culture Program</h2>
-  <p>Outside of the drone training, the university had organized an incredible cultural program. We got to try <strong>traditional Chinese archery</strong>, martial arts, paddle sports, and — of course — <em>table tennis</em>. Playing table tennis with Chinese students hit different. The level, the intensity, the way they approach the sport. As someone who plays competitively in the Landesliga back home, this was pure gold.</p>
-  <div class="blog-photo"><img src="china-tabletennis.jpg" alt="Table tennis session with Chinese students" loading="lazy"><div class="blog-photo-caption">Table tennis session at the university — competing with local players was an absolute highlight.</div></div>
-  <p>We also had workshops on traditional clothing, calligraphy, and Chinese music. These weren't surface-level tourist experiences — they were genuine, immersive sessions led by people who cared about sharing their culture.</p>
-  <div class="blog-photo"><img src="china-art.jpg" alt="Traditional Chinese calligraphy workshop" loading="lazy"><div class="blog-photo-caption">Cultural workshop — creating traditional Chinese calligraphy and art. That's my piece on the right.</div></div>
-  <div class="pull-quote"><p>These weren't surface-level tourist experiences — they were genuine, immersive sessions led by people who cared about sharing their culture.</p></div>
+
+  <p>Outside of the drone stuff, the university had put together a whole cultural program for us. We did <strong>traditional Chinese archery</strong>, tried martial arts, played paddle sports, and — obviously — <em>table tennis</em>. Playing TT with Chinese students was a different level. The speed, the spin, the way they train. As someone who plays Landesliga back in Germany, I loved every second of it.</p>
+
+  <div class="blog-photo"><img src="china-tabletennis.jpg" alt="Table tennis session with Chinese students" loading="lazy"><div class="blog-photo-caption">Table tennis at the university. The level here was insane.</div></div>
+
+  <p>We also did calligraphy workshops, learned about traditional clothing, listened to Chinese music. And these weren't just quick tourist activities — they were real, hands-on sessions with people who were excited to teach us. You could feel that.</p>
+
+  <div class="blog-photo"><img src="china-art.jpg" alt="Traditional Chinese calligraphy workshop" loading="lazy"><div class="blog-photo-caption">Calligraphy and art workshop. My piece is on the right.</div></div>
+
   <h2>The Food</h2>
-  <p>I'll be honest: I went in with some concerns. Different country, completely different cuisine, not sure how my stomach would handle it. Within 48 hours, those concerns were gone. The food was <strong>incredible</strong>. Every single meal. Breakfast, lunch, dinner — it didn't matter. The variety, the flavors, the sheer amount of food on the table at every sitting. I've never eaten this well for two straight weeks.</p>
-  <div class="blog-photo"><img src="china-food.jpg" alt="Traditional Chinese dinner spread" loading="lazy"><div class="blog-photo-caption">A typical dinner. And yes, every meal looked like this.</div></div>
-  <p>Chinese food culture is something else. It's not just about the food itself — it's about sharing, about sitting around a table together, about trying everything. That communal aspect of eating together became one of my favorite parts of the daily routine.</p>
+
+  <p>Not gonna lie, I was a bit nervous about the food before going. Different continent, completely different cuisine, no idea if my stomach would be okay with it. Turns out that was all for nothing. The food was <strong>amazing</strong>. Like genuinely, every single meal. Breakfast, lunch, dinner — all incredible. The variety, the flavors, the amount of dishes on the table at any given time. I've never eaten this well for two straight weeks.</p>
+
+  <div class="blog-photo"><img src="china-food.jpg" alt="Traditional Chinese dinner" loading="lazy"><div class="blog-photo-caption">This was a normal dinner. Every. Single. Day.</div></div>
+
+  <p>What I liked most was the communal aspect. Everyone shares everything, you try a bit of each dish, you sit together. It's not just eating — it's a social thing. That became one of my favorite parts of the daily routine there.</p>
+
   <h2>The People</h2>
-  <p>This is the part that matters most. The part that actually changed something in me.</p>
-  <p>The level of <strong>hospitality</strong> I experienced in Shenzhen was unlike anything I've encountered before. And I don't say that lightly. The students, the faculty, random people we met — everyone was open, warm, genuinely curious about who we were and where we came from. The connections happened fast and naturally, without any of the awkwardness you sometimes get in cross-cultural situations.</p>
-  <div class="pull-quote"><p>The more genuinely curious you are about someone else's world, the more they open up theirs to you.</p></div>
-  <p>I made friendships in those two weeks that felt like they'd been building for months. There's something about being in a completely foreign environment that strips away the small talk and gets you to the real stuff faster. Shared meals, shared training sessions, shared laughs about language barriers — it all adds up quickly.</p>
-  <div class="blog-photo"><img src="china-group.jpg" alt="Group photo of exchange students" loading="lazy"><div class="blog-photo-caption">Part of our exchange group. Two weeks that felt like two months.</div></div>
+
+  <p>This is the part I care about most. And the part that actually stayed with me.</p>
+
+  <p>I've never experienced this level of <strong>hospitality</strong> anywhere. The students we met, the teachers, even random people — everyone was so open and welcoming. Not in a polite-but-distant way, but genuinely interested. They wanted to know about us, our lives, our culture, and they were happy to share theirs. It was the most natural, easy connection I've had in any country I've visited.</p>
+
+  <div class="blog-photo"><img src="china-friends.jpg" alt="With friends in Shenzhen at night" loading="lazy"><div class="blog-photo-caption">With two people I got really close to during the trip. Shenzhen skyline behind us.</div></div>
+
+  <p>I made real friendships in those two weeks. The kind that usually take months. But when you're in a foreign country, sharing every meal, training together, laughing about the language barrier — it all happens way faster. There's less small talk and more real stuff.</p>
+
+  <div class="blog-photo"><img src="china-group.jpg" alt="Group photo of exchange students" loading="lazy"><div class="blog-photo-caption">Part of the group. Two weeks that honestly felt way longer.</div></div>
+
   <h2>What I Took Home</h2>
-  <p>A drone license, sure. But more importantly: a completely shifted perspective. I went to Shenzhen expecting a technical training program with some cultural extras on the side. What I got was an experience that made me rethink how I approach new environments, new people, and new cultures.</p>
-  <p>The biggest lesson was simple: <strong>openness is reciprocal</strong>. The more genuinely curious you are about someone else's world, the more they open up theirs to you. The Chinese students I met weren't just being polite — they were genuinely interested in exchange. And when that energy is mutual, the result is something you can't manufacture.</p>
-  <p>I've been to other countries. I'll go to more. But Shenzhen set a benchmark. For the intensity of the experience, for the depth of the connections, and for how much you can grow in just two weeks when you're fully immersed in something unfamiliar.</p>
+
+  <p>A drone license, yeah. But more than that — a different perspective. I went there expecting some technical training with a bit of culture on the side. What I got was an experience that changed how I think about new environments and meeting new people.</p>
+
+  <p>The biggest thing I learned is simple: if you're genuinely curious about someone else's world, they'll open up theirs to you. That's it. No trick to it. The Chinese students I met weren't just being friendly out of obligation — they actually wanted to connect. And when both sides feel that, something really good happens.</p>
+
+  <p>I've been to other countries before and I'll go to more. But Shenzhen set the bar. For how intense an experience can be, how fast you can connect with people, and how much you can grow in just two weeks when you actually throw yourself into something new.</p>
+
   <div class="separator"></div>
-  <p>If you ever get the chance to do an exchange program — especially one that puts you somewhere you'd never normally go — take it. Don't overthink it. The things that scare you about it beforehand are usually the things that make it unforgettable.</p>
+
+  <p>If you ever get the chance to do something like this — an exchange program, especially to somewhere you'd never normally go — just do it. Don't overthink it. The things that make you nervous beforehand are usually the same things that make it unforgettable.</p>
 </article>
 <div class="blog-footer"><a href="blog-endurance-roadmap.html">← Previous Article</a><a href="/">Back to Portfolio →</a></div>
 <script>window.addEventListener('scroll',()=>{const h=document.documentElement.scrollHeight-window.innerHeight;document.getElementById('read-progress').style.width=(window.scrollY/h*100)+'%'},{passive:true});</script>
