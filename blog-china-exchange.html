@@ -21,9 +21,9 @@ body::after{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;o
 .blog-nav .back:hover{opacity:.7}
 .blog-nav .name{font-family:var(--s);font-weight:700;font-size:.8rem;color:var(--tx);letter-spacing:.1em;text-transform:uppercase}
 #read-progress{position:fixed;top:52px;left:0;height:2px;z-index:101;background:linear-gradient(90deg,var(--accent),var(--rd));width:0%;transition:width .1s linear}
-.blog-banner{position:relative;width:100%;height:55vh;min-height:380px;overflow:hidden;margin-top:52px}
-.blog-banner img{width:100%;height:100%;object-fit:cover;object-position:center 40%}
-.blog-banner::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,var(--bg) 0%,rgba(8,8,10,.5) 50%,rgba(8,8,10,.2) 100%)}
+.blog-banner{position:relative;width:100%;height:70vh;min-height:450px;overflow:hidden;margin-top:52px}
+.blog-banner img{width:100%;height:100%;object-fit:cover;object-position:center 60%}
+.blog-banner::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,var(--bg) 0%,rgba(8,8,10,.4) 30%,rgba(8,8,10,.1) 60%,rgba(8,8,10,.05) 100%)}
 .blog-banner-content{position:absolute;bottom:0;left:0;right:0;z-index:2;max-width:900px;margin:0 auto;padding:3rem 2rem}
 .blog-banner-tag{font-family:var(--m);font-size:.6rem;letter-spacing:.25em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem}
 .blog-banner-title{font-family:var(--s);font-weight:800;font-size:clamp(2rem,4vw,3.2rem);line-height:1.1;letter-spacing:-.03em;margin-bottom:1rem}
@@ -44,7 +44,7 @@ body::after{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;o
 .blog-footer{max-width:900px;margin:0 auto;padding:2rem 2rem 4rem;border-top:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center}
 .blog-footer a{font-family:var(--m);font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);text-decoration:none;padding:.6rem 1.2rem;border:1px solid rgba(245,158,11,.12);transition:all .3s}
 .blog-footer a:hover{background:rgba(245,158,11,.06);border-color:var(--accent)}
-@media(max-width:768px){.blog-banner{height:40vh;min-height:280px}.blog-content{padding:2rem 1.5rem 4rem}.blog-photo{margin:2rem -.5rem}.side-facts{flex-direction:column;gap:.8rem}}
+@media(max-width:768px){.blog-banner{height:50vh;min-height:320px}.blog-content{padding:2rem 1.5rem 4rem}.blog-photo{margin:2rem -.5rem}.side-facts{flex-direction:column;gap:.8rem}}
 </style>
 </head>
 <body>
