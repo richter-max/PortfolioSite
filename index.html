@@ -277,7 +277,7 @@ footer{display:flex;justify-content:space-between;align-items:center;padding:2.5
 
 <div id="boot" aria-hidden="true"><div id="bl"><div class="l">[sys] initializing split_signal v3.0...</div><div class="l">[sys] loading modules: security, endurance, resolve</div><div class="l t">[tech] projects: AEGIS, ASScanner, SMB, VendorQ → loaded</div><div class="l a">[athlete] targets: ironman sub5:00 | marathon sub3:00 | tt_1800</div><div class="l">[sys] dual_signal: LOCKED</div><div class="l" id="visitor-line">[sys] visitor #---- connected</div><div class="l b">[sys] identity confirmed → launching portfolio</div></div><div id="boot-bar"><div id="boot-bar-fill"></div></div><div id="boot-skip" style="font-family:var(--m);font-size:.6rem;color:var(--tx3);margin-top:1.5rem;cursor:pointer;opacity:0;transition:opacity .3s;letter-spacing:.1em">press any key to skip</div></div>
 
-<header id="hero"><div class="hpl" aria-hidden="true"></div><div class="hn" id="hero-name"><canvas id="name-canvas" width="1000" height="260"></canvas><div class="hn-fallback"><span class="fn">Maximilian</span><span class="ln">Richter</span></div></div><div class="hh tc"><div class="ht">// Software Engineer</div><h1>Build.<br>Break.<br>Secure.</h1><p class="hp">Security Engineer building AI-powered defense tools. Next.js, Python, Supabase. Dual-degree CS + Cybersecurity starting Oct 2026.</p></div><div class="hh at"><div class="ht">// Endurance Athlete</div><h1>Build.<br>Peak.<br>Race.</h1><p class="hp">Ironman 70.3 · Marathon · Table Tennis. Same discipline, same obsession — different playing field.</p></div></header>
+<header id="hero"><div class="hpl" aria-hidden="true"></div><div class="hn" id="hero-name"><canvas id="name-canvas" width="1000" height="260"></canvas><div id="greeting" style="font-family:var(--m);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--tx3);text-align:center;margin-top:.5rem;opacity:0;transition:opacity .6s"></div><div class="hn-fallback"><span class="fn">Maximilian</span><span class="ln">Richter</span></div></div><div class="hh tc"><div class="ht">// Software Engineer</div><h1>Build.<br>Break.<br>Secure.</h1><p class="hp">Security Engineer building AI-powered defense tools. Next.js, Python, Supabase. Dual-degree CS + Cybersecurity starting Oct 2026.</p></div><div class="hh at"><div class="ht">// Endurance Athlete</div><h1>Build.<br>Peak.<br>Race.</h1><p class="hp">Ironman 70.3 · Marathon · Table Tennis. Same discipline, same obsession — different playing field.</p></div></header>
 
 <div class="mt" aria-label="Key metrics" style="opacity:0;transform:translateY(10px);transition:all .8s cubic-bezier(.16,1,.3,1) 1.5s" id="metrics"><div class="mc"><div class="mv c" data-count="4">0</div><div class="ml">Projects</div></div><div class="mc"><div class="mv c">Bosch</div><div class="ml">Employer</div></div><div class="mc"><div class="mv c" data-count="2026">0</div><div class="ml">CS Start</div></div><div class="mc"><div class="mv r">≤5:00</div><div class="ml">IM 70.3</div></div><div class="mc"><div class="mv r">≤3:00</div><div class="ml">Marathon</div></div><div class="mc"><div class="mv r" data-count="1800">0</div><div class="ml">TT Rating</div></div></div>
 <div class="next-race" id="next-race"><div class="next-race-label">Next Race</div><div><span class="next-race-name" id="nr-name">Ironman 70.3 Kraichgau</span><span class="next-race-time" id="nr-time">--d --h --m --s</span></div></div>
@@ -326,6 +326,19 @@ fetch('https://api.counterapi.dev/v1/richtermax-com/visits/up')
 .then(r=>r.json())
 .then(d=>{if(vl&&d.count)vl.textContent='[sys] visitor #'+(d.count+offset).toLocaleString()+' connected'})
 .catch(()=>{if(vl)vl.textContent='[sys] visitor #'+offset+' connected'});
+}();
+
+// Time-based greeting
+!function(){
+const el=document.getElementById('greeting');if(!el)return;
+const h=new Date().getHours();
+let msg='';
+if(h>=5&&h<12)msg='Good morning — hope your day is off to a great start.';
+else if(h>=12&&h<17)msg='Good afternoon — glad you stopped by.';
+else if(h>=17&&h<22)msg='Good evening — thanks for checking in.';
+else msg='Late night, huh? — glad you found your way here.';
+el.textContent=msg;
+setTimeout(()=>el.style.opacity='1',1800);
 }();
 
 // Boot with loading bar + skip
