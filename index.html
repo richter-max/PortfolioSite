@@ -130,13 +130,13 @@ section{padding:7rem 2rem;max-width:1200px;margin:0 auto;position:relative;conte
 .sec-div::after{content:'';position:absolute;left:50%;top:-1px;transform:translateX(-50%);width:120px;height:3px;background:linear-gradient(90deg,transparent,var(--cy),var(--rd),transparent);border-radius:2px;opacity:.4;filter:blur(1px)}
 .sec-div.rd-accent::after{background:linear-gradient(90deg,transparent,var(--rd),var(--cy),transparent)}
 
-/* Breathing Quote — rhythm break with scroll-coupled scale */
+/* Breathing Quote — rhythm break between sections */
 .breather{max-width:900px;margin:0 auto;padding:6rem 2rem;text-align:center;position:relative}
-.breather-text{font-family:var(--s);font-weight:300;font-size:clamp(1.4rem,2.5vw,2rem);line-height:1.5;color:var(--tx);letter-spacing:-.01em;opacity:0;transform:scale(.92);transition:opacity .6s;transform-origin:center}
-.breather-text.v{opacity:1}
+.breather-text{font-family:var(--s);font-weight:300;font-size:clamp(1.4rem,2.5vw,2rem);line-height:1.5;color:var(--tx);letter-spacing:-.01em;opacity:0;transform:translateY(20px);transition:opacity 1s,transform 1s cubic-bezier(.22,1,.36,1)}
+.breather-text.v{opacity:1;transform:translateY(0)}
 .breather-text em{font-style:normal;background:linear-gradient(135deg,var(--cy),var(--rd));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:600}
-.breather-attr{font-family:var(--m);font-size:.65rem;color:var(--tx3);letter-spacing:.15em;text-transform:uppercase;margin-top:1.5rem;opacity:0;transition:opacity .8s .3s}
-.breather-attr.v{opacity:1}
+.breather-attr{font-family:var(--m);font-size:.65rem;color:var(--tx3);letter-spacing:.15em;text-transform:uppercase;margin-top:1.5rem;opacity:0;transform:translateY(10px);transition:opacity .8s .3s,transform .8s .3s cubic-bezier(.22,1,.36,1)}
+.breather-attr.v{opacity:1;transform:translateY(0)}
 
 /* Base reveal — all elements start hidden */
 .sr{opacity:0;transform:translateY(24px);transition:opacity .7s,transform .7s cubic-bezier(.16,1,.3,1)}.sr.v{opacity:1;transform:translateY(0)}
@@ -257,17 +257,15 @@ section{padding:7rem 2rem;max-width:1200px;margin:0 auto;position:relative;conte
 /* DEMO */
 .dw{max-width:700px;margin:0 auto}.dm{background:#282c34;border:1px solid rgba(97,175,239,.12);border-radius:10px;overflow:hidden;box-shadow:0 16px 48px rgba(0,0,0,.4)}.db{display:flex;align-items:center;gap:.5rem;padding:.6rem 1rem;background:rgba(255,255,255,.04);border-bottom:1px solid var(--bd)}.dd{width:8px;height:8px;border-radius:50%}.dd:nth-child(1){background:#ff5f57}.dd:nth-child(2){background:#ffbd2e}.dd:nth-child(3){background:#28c840}.dtl{font-family:var(--m);font-size:.55rem;color:var(--tx3);margin-left:.5rem}.dbo{padding:1.3rem 1.6rem;min-height:300px;max-height:400px;overflow-y:auto;font-family:var(--m);font-size:.75rem;line-height:1.8;color:#abb2bf;scrollbar-width:thin;scrollbar-color:#222 transparent}.dl{margin-bottom:.1rem}.dp{color:#c678dd;font-weight:600}.dc{color:var(--tx)}.dok{color:#98c379}.dw2{color:#e5c07b}.der{color:#e06c75}.din{color:#61afef}.di{display:flex;align-items:center;margin-top:.2rem}.di .dp{margin-right:.4rem;white-space:nowrap}#cmd{background:transparent;border:none;color:var(--tx);font-family:var(--m);font-size:.75rem;outline:none;flex:1;caret-color:#61afef}
 
-/* BLOG — Horizontal Scroll Track */
-.wrt-pin{position:relative;overflow:hidden}
-.bg{display:flex;gap:1.5rem;flex-wrap:nowrap;padding-right:4rem}
-.bg .bc{min-width:340px;max-width:380px;flex-shrink:0}
-.bg .bc.featured{min-width:600px;max-width:650px;display:grid;grid-template-columns:1fr 1fr;gap:2rem;padding:2rem;border-color:rgba(0,212,255,.2);background:linear-gradient(135deg,rgba(0,212,255,.03),rgba(0,15,30,.3))}
+/* BLOG */
+.bg{display:grid;grid-template-columns:repeat(2,1fr);gap:1.2rem}
+.bc.featured{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:2rem;padding:2rem;border-color:rgba(0,212,255,.2);background:linear-gradient(135deg,rgba(0,212,255,.03),rgba(0,15,30,.3))}
 .bc.featured .btg{font-size:.65rem}
 .bc.featured .btt{font-size:1.3rem;margin-bottom:.8rem}
 .bc.featured .bex{font-size:.9rem}
 .bc.featured .featured-meta{display:flex;align-items:center;gap:1.5rem;margin-top:auto}
 .bc.featured .featured-badge{font-family:var(--m);font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--cy);border:1px solid rgba(0,212,255,.25);padding:.2rem .6rem;border-radius:3px}
-.bc{display:block;text-decoration:none;color:inherit;border:1px solid var(--bd);padding:1.5rem;transition:transform .5s,border-color .3s cubic-bezier(.22,1,.36,1);position:relative;overflow:hidden;transform-style:preserve-3d}.bc::before{content:'';position:absolute;top:0;left:0;width:0;height:2px;transition:width .6s cubic-bezier(.22,1,.36,1)}.bc:nth-child(1)::before{background:var(--cy)}.bc:nth-child(2)::before,.bc:nth-child(4)::before,.bc:nth-child(6)::before{background:var(--rd)}.bc:nth-child(3)::before,.bc:nth-child(5)::before{background:var(--yl)}.bc:hover::before{width:100%}.bc:hover{border-color:rgba(255,255,255,.1);transform:translateY(-2px)}.btg{font-family:var(--m);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:.6rem}.bc:nth-child(1) .btg{color:var(--cy);background:rgba(0,212,255,.08);padding:.2rem .5rem;display:inline-block;border-radius:2px}.bc:nth-child(2) .btg,.bc:nth-child(4) .btg,.bc:nth-child(6) .btg{color:var(--rd);background:rgba(255,60,60,.08);padding:.2rem .5rem;display:inline-block;border-radius:2px}.bc:nth-child(3) .btg,.bc:nth-child(5) .btg{color:var(--yl);background:rgba(245,158,11,.08);padding:.2rem .5rem;display:inline-block;border-radius:2px}.btt{font-weight:600;font-size:1.05rem;line-height:1.3;margin-bottom:.5rem}.bex{font-weight:300;font-size:.85rem;line-height:1.6;color:var(--tx2);margin-bottom:.8rem}.bme{font-family:var(--m);font-size:.6rem;color:var(--tx3)}@media(max-width:768px){.bg{flex-direction:column;padding-right:0}.bg .bc,.bg .bc.featured{min-width:100%;max-width:100%}.bc.featured{grid-template-columns:1fr}.bc.featured div:last-child{display:none}}
+.bc{display:block;text-decoration:none;color:inherit;border:1px solid var(--bd);padding:1.5rem;transition:transform .5s,border-color .3s cubic-bezier(.22,1,.36,1);position:relative;overflow:hidden;transform-style:preserve-3d}.bc::before{content:'';position:absolute;top:0;left:0;width:0;height:2px;transition:width .6s cubic-bezier(.22,1,.36,1)}.bc:nth-child(1)::before{background:var(--cy)}.bc:nth-child(2)::before,.bc:nth-child(4)::before,.bc:nth-child(6)::before{background:var(--rd)}.bc:nth-child(3)::before,.bc:nth-child(5)::before{background:var(--yl)}.bc:hover::before{width:100%}.bc:hover{border-color:rgba(255,255,255,.1);transform:translateY(-2px)}.btg{font-family:var(--m);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:.6rem}.bc:nth-child(1) .btg{color:var(--cy);background:rgba(0,212,255,.08);padding:.2rem .5rem;display:inline-block;border-radius:2px}.bc:nth-child(2) .btg,.bc:nth-child(4) .btg,.bc:nth-child(6) .btg{color:var(--rd);background:rgba(255,60,60,.08);padding:.2rem .5rem;display:inline-block;border-radius:2px}.bc:nth-child(3) .btg,.bc:nth-child(5) .btg{color:var(--yl);background:rgba(245,158,11,.08);padding:.2rem .5rem;display:inline-block;border-radius:2px}.btt{font-weight:600;font-size:1.05rem;line-height:1.3;margin-bottom:.5rem}.bex{font-weight:300;font-size:.85rem;line-height:1.6;color:var(--tx2);margin-bottom:.8rem}.bme{font-family:var(--m);font-size:.6rem;color:var(--tx3)}@media(max-width:768px){.bg{grid-template-columns:1fr}.bc.featured{grid-template-columns:1fr}.bc.featured div:last-child{display:none}}
 
 
 /* CONTACT — Premium Card */
@@ -427,9 +425,7 @@ textarea.cnt-input{resize:vertical;min-height:100px;line-height:1.6}
 
 <div class="sec-div"></div>
 
-<div class="wrt-pin" id="wrt-pin">
-<section id="wrt" class="anim-cascade" style="content-visibility:visible;max-width:none;padding:7rem 5vw" aria-label="Blog"><div class="sl sr">// Writing</div><h2 class="st sr">Thoughts & insights.</h2><div class="bg" id="blog-track"><a href="blog-aegis.html" target="_blank" rel="noopener" class="bc featured fade-card"><div><div class="btg">Security</div><div class="btt">Building AEGIS: Why AI Agents Need Security Frameworks</div><div class="bex">AI agents can browse the web, execute code, and access databases. But who's testing whether they can be manipulated into doing it wrong? I built AEGIS to find out.</div><div class="featured-meta"><span class="featured-badge">Featured</span><span class="bme">8 min read</span></div></div><div style="display:flex;align-items:center;justify-content:center;font-family:var(--m);font-size:3rem;opacity:.08;letter-spacing:-.05em;text-align:center;color:var(--cy)">{ }</div></a><a href="blog-ironman-training.html" target="_blank" rel="noopener" class="bc fade-card"><div class="btg">Endurance</div><div class="btt">Training for Ironman While Working Full-Time at Bosch</div><div class="bex">How I fit 15+ hours of swim/bike/run into weeks already packed with a full-time dev job and 4 side projects.</div><div class="bme">6 min read</div></a><a href="blog-career-roadmap.html" target="_blank" rel="noopener" class="bc fade-card"><div class="btg">Career</div><div class="btt">From Apprentice to ???: My Career Roadmap</div><div class="bex">No CS degree (yet). Started as an apprentice. Here's the plan to get to Big Tech — or build something bigger.</div><div class="bme">10 min read</div></a><a href="blog-endurance-roadmap.html" target="_blank" rel="noopener" class="bc fade-card"><div class="btg">Endurance</div><div class="btt">The Endurance Roadmap: What's Next After 70.3</div><div class="bex">Full Ironman, 100km ultra, Backyard Ultra — the next chapter.</div><div class="bme">5 min read</div></a><a href="blog-china-exchange.html" target="_blank" rel="noopener" class="bc fade-card"><div class="btg">Travel</div><div class="btt">Two Weeks in Shenzhen: The Exchange That Changed My Perspective</div><div class="bex">Drone license, table tennis with locals, and the most intense cultural experience of my life.</div><div class="bme">7 min read</div></a><a href="blog-extreme-goals.html" target="_blank" rel="noopener" class="bc fade-card"><div class="btg">Mindset</div><div class="btt">Why I Set Extreme Goals at 21</div><div class="bex">Most people my age are figuring out what to do. I decided to do everything at once — and document why.</div><div class="bme">6 min read</div></a></div></section>
-</div>
+<section id="wrt" class="dz anim-cascade" aria-label="Blog"><div class="sl sr">// Writing</div><h2 class="st sr">Thoughts & insights.</h2><div class="bg"><a href="blog-aegis.html" target="_blank" rel="noopener" class="bc featured fade-card"><div><div class="btg">Security</div><div class="btt">Building AEGIS: Why AI Agents Need Security Frameworks</div><div class="bex">AI agents can browse the web, execute code, and access databases. But who's testing whether they can be manipulated into doing it wrong? I built AEGIS to find out.</div><div class="featured-meta"><span class="featured-badge">Featured</span><span class="bme">8 min read</span></div></div><div style="display:flex;align-items:center;justify-content:center;font-family:var(--m);font-size:3rem;opacity:.08;letter-spacing:-.05em;text-align:center;color:var(--cy)">{ }</div></a><a href="blog-ironman-training.html" target="_blank" rel="noopener" class="bc fade-card"><div class="btg">Endurance</div><div class="btt">Training for Ironman While Working Full-Time at Bosch</div><div class="bex">How I fit 15+ hours of swim/bike/run into weeks already packed with a full-time dev job and 4 side projects.</div><div class="bme">6 min read</div></a><a href="blog-career-roadmap.html" target="_blank" rel="noopener" class="bc fade-card"><div class="btg">Career</div><div class="btt">From Apprentice to ???: My Career Roadmap</div><div class="bex">No CS degree (yet). Started as an apprentice. Here's the plan to get to Big Tech — or build something bigger.</div><div class="bme">10 min read</div></a><a href="blog-endurance-roadmap.html" target="_blank" rel="noopener" class="bc fade-card"><div class="btg">Endurance</div><div class="btt">The Endurance Roadmap: What's Next After 70.3</div><div class="bex">Full Ironman, 100km ultra, Backyard Ultra — the next chapter.</div><div class="bme">5 min read</div></a><a href="blog-china-exchange.html" target="_blank" rel="noopener" class="bc fade-card"><div class="btg">Travel</div><div class="btt">Two Weeks in Shenzhen: The Exchange That Changed My Perspective</div><div class="bex">Drone license, table tennis with locals, and the most intense cultural experience of my life.</div><div class="bme">7 min read</div></a><a href="blog-extreme-goals.html" target="_blank" rel="noopener" class="bc fade-card"><div class="btg">Mindset</div><div class="btt">Why I Set Extreme Goals at 21</div><div class="bex">Most people my age are figuring out what to do. I decided to do everything at once — and document why.</div><div class="bme">6 min read</div></a></div></section>
 
 <div class="sec-div rd-accent"></div>
 
@@ -668,29 +664,9 @@ const spEl=document.getElementById('sp');
 const heroEl=document.getElementById('hero');
 const docH=()=>document.documentElement.scrollHeight-innerHeight;
 
-// Single scroll handler via Lenis — no native scroll listener needed
-// Includes: nav, parallax titles, breather scale, horizontal blog scroll
-const allST=document.querySelectorAll('.st');
-const breatherText=document.querySelector('.breather-text');
-const blogTrack=document.getElementById('blog-track');
-const wrtPin=document.getElementById('wrt-pin');
-const wrtSection=document.getElementById('wrt');
-const isMobile=window.innerWidth<769;
-
-// Calculate blog horizontal scroll dimensions
-let blogScrollWidth=0,blogPinHeight=0;
-function calcBlogDims(){
-  if(!blogTrack||!wrtPin||isMobile)return;
-  blogScrollWidth=blogTrack.scrollWidth-wrtPin.offsetWidth;
-  blogPinHeight=blogScrollWidth+window.innerHeight;
-  wrtPin.style.height=blogPinHeight+'px';
-}
-calcBlogDims();
-window.addEventListener('resize',calcBlogDims);
-
+// Single scroll handler via Lenis
 lenis.on('scroll',({scroll})=>{
 const sy=scroll;
-const vh=window.innerHeight;
 // Name morph
 const heroH=heroEl.offsetHeight;
 const trigger=heroH*0.5;
@@ -699,49 +675,6 @@ else if(sy<=trigger&&nameScrolled){nameScrolled=false;heroName.classList.remove(
 // Active nav + progress bar
 let c='';secs.forEach(s=>{if(s.offsetTop-200<=sy)c=s.id});nks.forEach(a=>a.classList.toggle('act',a.getAttribute('href')==='#'+c));
 spEl.style.width=(sy/docH()*100)+'%';
-
-// ── PARALLAX SECTION TITLES ──
-if(!isMobile){
-  allST.forEach(el=>{
-    if(!el.classList.contains('v')&&!el.closest('.dz-in'))return;
-    const rect=el.getBoundingClientRect();
-    if(rect.top<vh&&rect.bottom>0){
-      const offset=(rect.top-vh*0.5)*-0.06;
-      el.style.transform='translateY('+offset+'px)';
-    }
-  });
-}
-
-// ── BREATHER QUOTE SCALE ──
-if(breatherText){
-  const bRect=breatherText.getBoundingClientRect();
-  if(bRect.top<vh&&bRect.bottom>0){
-    const progress=Math.max(0,Math.min(1,(vh-bRect.top)/(vh+bRect.height)));
-    const scale=0.92+progress*0.08;
-    breatherText.style.transform='scale('+scale+')';
-  }
-}
-
-// ── HORIZONTAL BLOG SCROLL (pin and slide) ──
-if(!isMobile&&wrtPin&&wrtSection&&blogTrack&&blogScrollWidth>0){
-  const pinRect=wrtPin.getBoundingClientRect();
-  const pinTop=wrtPin.offsetTop;
-  const pinEnd=pinTop+blogPinHeight-vh;
-  if(sy>=pinTop&&sy<=pinEnd){
-    // Pinned state — section sticks, cards scroll horizontally
-    wrtSection.style.position='sticky';
-    wrtSection.style.top='0';
-    wrtSection.style.paddingTop='7rem';
-    const scrollInPin=sy-pinTop;
-    const hProgress=Math.max(0,Math.min(1,scrollInPin/(blogPinHeight-vh)));
-    blogTrack.style.transform='translateX('+(-(hProgress*blogScrollWidth))+'px)';
-  } else{
-    wrtSection.style.position='';
-    wrtSection.style.top='';
-    if(sy<pinTop){blogTrack.style.transform='translateX(0)'}
-    else{blogTrack.style.transform='translateX('+(-blogScrollWidth)+'px)'}
-  }
-}
 });
 
 // ── PREMIUM SCROLL REVEAL SYSTEM ──
