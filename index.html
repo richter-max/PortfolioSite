@@ -26,7 +26,7 @@
 
 .skip-link:focus{left:0!important;top:0!important;padding:.5rem 1rem}
 /* NAV */
-#nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(8,8,10,.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--bd)}#nav-in{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:68px;position:relative}.nav-logo{font-family:var(--m);font-size:1rem;font-weight:700;color:var(--tx);letter-spacing:.08em;text-decoration:none}.nav-center{position:absolute;left:50%;transform:translateX(-50%);font-family:var(--s);font-weight:700;font-size:1rem;color:var(--tx);letter-spacing:.06em;text-transform:uppercase;opacity:0;transition:opacity .4s;pointer-events:none;white-space:nowrap}.nav-center .nc-ln{color:var(--cy)}.nav-center.show{opacity:1}.nav-links{display:flex;gap:.4rem;padding-left:10rem}.nav-links a{font-family:var(--m);font-size:.75rem;letter-spacing:.05em;color:var(--tx3);text-decoration:none;padding:.35rem .45rem;transition:color .2s;white-space:nowrap}.nav-links a:hover,.nav-links a.act{color:var(--cy)}#sp{position:fixed;top:68px;left:0;height:2px;z-index:1001;background:linear-gradient(90deg,var(--cy),var(--rd));width:0%;transition:width .1s linear}#nt{display:none;background:none;border:none;color:var(--tx3);font-family:var(--m);font-size:.7rem;cursor:pointer;padding:.4rem}@media(max-width:768px){#nt{display:block}.nav-links{display:none;position:absolute;top:68px;left:0;right:0;background:rgba(8,8,10,.95);backdrop-filter:blur(16px);flex-direction:column;padding:1rem 2rem;border-bottom:1px solid var(--bd)}.nav-links.open{display:flex}.nav-links a{padding:.6rem 0}.nav-center{display:none}}
+#nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(8,8,10,.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--bd)}#nav-in{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:68px;position:relative}.nav-logo{font-family:var(--m);font-size:1rem;font-weight:700;color:var(--tx);letter-spacing:.08em;text-decoration:none}.nav-center{position:absolute;left:50%;transform:translateX(-50%);font-family:var(--s);font-weight:700;font-size:1rem;color:var(--tx);letter-spacing:.06em;text-transform:uppercase;opacity:0;transition:opacity .4s;pointer-events:none;white-space:nowrap}.nav-center .nc-ln{color:var(--cy)}.nav-center.show{opacity:1}.nav-links{display:flex;gap:.4rem;padding-left:10rem}.nav-links a{font-family:var(--m);font-size:.75rem;letter-spacing:.05em;color:var(--tx3);text-decoration:none;padding:.35rem .45rem;transition:color .2s;white-space:nowrap;position:relative}.nav-links a::after{content:'';position:absolute;bottom:2px;left:.45rem;right:.45rem;height:1px;background:var(--cy);transform:scaleX(0);transform-origin:right;transition:transform .3s cubic-bezier(.22,1,.36,1)}.nav-links a:hover::after,.nav-links a.act::after{transform:scaleX(1);transform-origin:left}.nav-links a:hover,.nav-links a.act{color:var(--cy)}#sp{position:fixed;top:68px;left:0;height:2px;z-index:1001;background:linear-gradient(90deg,var(--cy),var(--rd));width:0%;transition:width .1s linear}#nt{display:none;background:none;border:none;color:var(--tx3);font-family:var(--m);font-size:.7rem;cursor:pointer;padding:.4rem}@media(max-width:768px){#nt{display:block}.nav-links{display:none;position:absolute;top:68px;left:0;right:0;background:rgba(8,8,10,.95);backdrop-filter:blur(16px);flex-direction:column;padding:1rem 2rem;border-bottom:1px solid var(--bd)}.nav-links.open{display:flex}.nav-links a{padding:.6rem 0}.nav-center{display:none}}
 
 /* BOOT — Loading Screen with CRT effect */
 #boot{position:fixed;inset:0;z-index:10000;background:#000;display:flex;align-items:center;justify-content:center;flex-direction:column;transition:opacity .8s,visibility .8s}
@@ -119,13 +119,24 @@
 @media(max-width:768px){#ach-btn{bottom:1rem;left:1rem}#ach-panel{bottom:4rem;left:1rem;width:260px}}
 
 /* SECTIONS — Premium Scroll Animations */
-section{padding:7rem 2rem;max-width:1200px;margin:0 auto;position:relative;content-visibility:auto;contain-intrinsic-size:auto 800px}section.fw{max-width:none;padding:7rem 5vw}.sl{font-family:var(--m);font-size:.72rem;font-weight:500;letter-spacing:.25em;text-transform:uppercase;color:var(--tx3);margin-bottom:.8rem}.st{font-family:var(--s);font-weight:700;font-size:clamp(1.8rem,3vw,3rem);letter-spacing:-.03em;line-height:1.1;margin-bottom:2.5rem}
+section{padding:7rem 2rem;max-width:1200px;margin:0 auto;position:relative;content-visibility:auto;contain-intrinsic-size:auto 800px}section.fw{max-width:none;padding:7rem 5vw}
+.sl{font-family:var(--m);font-size:.68rem;font-weight:500;letter-spacing:.25em;text-transform:uppercase;color:var(--tx3);margin-bottom:1rem;display:flex;align-items:center;gap:.8rem}
+.sl::after{content:'';flex:1;max-width:60px;height:1px;background:linear-gradient(90deg,var(--tx3),transparent)}
+.st{font-family:var(--s);font-weight:800;font-size:clamp(2.2rem,4vw,3.8rem);letter-spacing:-.04em;line-height:1;margin-bottom:3rem;position:relative}
 
 /* Section dividers — glowing horizontal lines between sections */
 .sec-div{position:relative;max-width:1200px;margin:0 auto;height:1px;overflow:visible}
 .sec-div::before{content:'';position:absolute;left:10%;right:10%;top:0;height:1px;background:linear-gradient(90deg,transparent,var(--bd) 20%,var(--bd) 80%,transparent)}
 .sec-div::after{content:'';position:absolute;left:50%;top:-1px;transform:translateX(-50%);width:120px;height:3px;background:linear-gradient(90deg,transparent,var(--cy),var(--rd),transparent);border-radius:2px;opacity:.4;filter:blur(1px)}
 .sec-div.rd-accent::after{background:linear-gradient(90deg,transparent,var(--rd),var(--cy),transparent)}
+
+/* Breathing Quote — rhythm break between sections */
+.breather{max-width:900px;margin:0 auto;padding:5rem 2rem;text-align:center;position:relative}
+.breather-text{font-family:var(--s);font-weight:300;font-size:clamp(1.4rem,2.5vw,2rem);line-height:1.5;color:var(--tx);letter-spacing:-.01em;opacity:0;transform:translateY(20px);transition:opacity 1s,transform 1s cubic-bezier(.22,1,.36,1)}
+.breather-text.v{opacity:1;transform:translateY(0)}
+.breather-text em{font-style:normal;background:linear-gradient(135deg,var(--cy),var(--rd));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:600}
+.breather-attr{font-family:var(--m);font-size:.65rem;color:var(--tx3);letter-spacing:.15em;text-transform:uppercase;margin-top:1.5rem;opacity:0;transform:translateY(10px);transition:opacity .8s .3s,transform .8s .3s cubic-bezier(.22,1,.36,1)}
+.breather-attr.v{opacity:1;transform:translateY(0)}
 
 /* Base reveal — all elements start hidden */
 .sr{opacity:0;transform:translateY(24px);transition:opacity .7s,transform .7s cubic-bezier(.16,1,.3,1)}.sr.v{opacity:1;transform:translateY(0)}
@@ -281,8 +292,8 @@ textarea.cnt-input{resize:vertical;min-height:100px;line-height:1.6}
 .cnt-or{text-align:center;margin-top:1.8rem;padding-top:1.5rem;border-top:1px solid var(--bd)}
 .cnt-or-label{font-family:var(--m);font-size:.58rem;color:var(--tx3);letter-spacing:.1em;margin-bottom:.8rem}
 .cnt-socials{display:flex;justify-content:center;gap:1.5rem}
-.cnt-socials a{font-family:var(--m);font-size:.68rem;color:var(--tx2);text-decoration:none;transition:all .3s;padding:.4rem .8rem;border:1px solid transparent;border-radius:4px}
-.cnt-socials a:hover{color:var(--cy);border-color:rgba(0,212,255,.15);background:rgba(0,212,255,.03)}
+.cnt-socials a{font-family:var(--m);font-size:.68rem;color:var(--tx2);text-decoration:none;transition:color .3s,border-color .3s,background .3s;padding:.4rem .8rem;border:1px solid transparent;border-radius:4px;position:relative}
+.cnt-socials a:hover{color:var(--cy);border-color:rgba(0,212,255,.15);background:rgba(0,212,255,.03);box-shadow:0 0 15px rgba(0,212,255,.08)}
 
 /* FOOTER — Premium Statement */
 .footer-wrap{max-width:1200px;margin:0 auto;padding:0 2rem}
@@ -295,8 +306,10 @@ textarea.cnt-input{resize:vertical;min-height:100px;line-height:1.6}
 .footer-bottom{display:flex;justify-content:space-between;align-items:center;padding:2rem 0;border-top:1px solid var(--bd)}
 .footer-bottom-left{font-family:var(--m);font-size:.62rem;color:var(--tx3);letter-spacing:.05em}
 .footer-links{display:flex;gap:1.5rem}
-.footer-links a{font-family:var(--m);font-size:.65rem;color:var(--tx3);text-decoration:none;transition:color .2s;letter-spacing:.05em}
+.footer-links a{font-family:var(--m);font-size:.65rem;color:var(--tx3);text-decoration:none;transition:color .2s;letter-spacing:.05em;position:relative}
+.footer-links a::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:1px;background:var(--cy);transform:scaleX(0);transition:transform .3s cubic-bezier(.22,1,.36,1)}
 .footer-links a:hover{color:var(--cy)}
+.footer-links a:hover::after{transform:scaleX(1)}
 .footer-status{display:flex;align-items:center;gap:.5rem;font-family:var(--m);font-size:.62rem;color:var(--tx3)}
 .sdot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--gn);animation:pu 2s infinite}@keyframes pu{0%,100%{opacity:1}50%{opacity:.6}}
 @media(max-width:768px){.footer-bottom{flex-direction:column;gap:1.5rem;text-align:center}}
@@ -407,6 +420,8 @@ textarea.cnt-input{resize:vertical;min-height:100px;line-height:1.6}
 <div class="sec-div"></div>
 
 <section id="dmo" class="dz anim-split" aria-label="Interactive demo"><div class="sl sr">// Live Demo</div><h2 class="st sr">Try it yourself.</h2><div class="dw"><div class="dm sr"><div class="db"><div class="dd"></div><div class="dd"></div><div class="dd"></div><div class="dtl">attack-surface-scanner — bash</div></div><div class="dbo" id="out"><div class="dl"><span class="din">Attack Surface Scanner v2.0 — Live Demo</span></div><div class="dl"><span style="color:var(--tx2)">This scanner performs real DNS lookups and security header analysis.</span></div><div class="dl"><span style="color:var(--tx2)">Type 'scan richtermax.com' to try it, or 'help' for all commands.</span></div><div class="dl">&nbsp;</div><div class="di"><span class="dp">scanner $</span><input type="text" id="cmd" autocomplete="off" spellcheck="false" aria-label="Terminal input"></div></div></div><div style="text-align:center;margin-top:1.2rem;font-family:var(--m);font-size:.75rem;color:var(--tx2);line-height:1.7">Simplified demo version — real DNS via Google DoH, real security headers via HTTP fetch.<br>The full <a href="https://github.com/richter-max/attack-surface-scanner" target="_blank" rel="noopener" style="color:var(--cy);text-decoration:none">Attack Surface Scanner</a> includes port scanning, subdomain enumeration, and more.</div></div></section>
+
+<div class="breather"><div class="breather-text sr">The best security systems are built by people who know <em>how to break them</em> — and have the endurance to keep going.</div><div class="breather-attr sr">— My operating principle</div></div>
 
 <div class="sec-div"></div>
 
