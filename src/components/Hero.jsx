@@ -105,15 +105,15 @@ export default function HeroScene() {
       // ── Scene + Fog ────────────────────────────────────────────────
       const scene = new THREE.Scene();
       scene.background = new THREE.Color('#050506');
-      scene.fog = new THREE.FogExp2('#060610', 0.008);
+      scene.fog = new THREE.FogExp2('#060610', 0.003);
 
       // ── Camera ─────────────────────────────────────────────────────
       // Slight downward tilt, positioned at "standing" eye height
       const camera = new THREE.PerspectiveCamera(
         45, width / height, 0.1, 2000
       );
-      camera.position.set(0, 12, 80);
-      camera.lookAt(0, 10, 0);
+      camera.position.set(0, 22, 80);
+      camera.lookAt(0, 28, 0);
 
       // ── Renderer ───────────────────────────────────────────────────
       const renderer = new THREE.WebGLRenderer({
@@ -175,11 +175,12 @@ export default function HeroScene() {
       }
       starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
       const starMat = new THREE.PointsMaterial({
-        color: '#C8D0E0',
-        size: 1.4,
-        sizeAttenuation: true,
+        color: '#E8E5DC',
+        size: 2.2,
+        sizeAttenuation: false,
         transparent: true,
-        opacity: 0.7,
+        opacity: 0.85,
+        fog: false,
       });
       const stars = new THREE.Points(starGeo, starMat);
       scene.add(stars);
@@ -234,11 +235,11 @@ export default function HeroScene() {
 
       // Five ridges from far to near, each darker toward camera
       const ridges = [
-        makeRidge({ distance: 280, height: 44, variation: 16, color: '#1a2035' }),
-        makeRidge({ distance: 220, height: 32, variation: 14, color: '#151a2a' }),
-        makeRidge({ distance: 160, height: 24, variation: 12, color: '#0e1220' }),
-        makeRidge({ distance: 110, height: 16, variation: 10, color: '#080a14' }),
-        makeRidge({ distance: 60,  height:  8, variation:  6, color: '#040509' }),
+        makeRidge({ distance: 320, height: 58, variation: 22, color: '#2a3350' }),
+        makeRidge({ distance: 240, height: 48, variation: 20, color: '#1e2540' }),
+        makeRidge({ distance: 170, height: 38, variation: 18, color: '#141a30' }),
+        makeRidge({ distance: 110, height: 28, variation: 14, color: '#0b0f20' }),
+        makeRidge({ distance: 60,  height: 18, variation: 10, color: '#05070f' }),
       ];
       ridges.forEach(r => scene.add(r));
 
@@ -279,8 +280,8 @@ export default function HeroScene() {
       // ── Runner silhouette (from .glb) ──────────────────────────────
       // Loads in background, appears once ready.
       let runner = null;
-      let runnerStartZ = -90;   // where runner spawns
-      let runnerEndZ   = -60;   // where runner ends
+      let runnerStartZ = -50;   // where runner spawns (in front of closest ridge)
+      let runnerEndZ   = -30;   // where runner ends
       let runnerBaseY  = 0;
 
       const loader = new GLTFLoader();
@@ -304,7 +305,7 @@ export default function HeroScene() {
           const box    = new THREE.Box3().setFromObject(runner);
           const size   = box.getSize(new THREE.Vector3());
           const center = box.getCenter(new THREE.Vector3());
-          const scale  = 14 / size.y; // 14 units tall in world space
+          const scale  = 22 / size.y; // 22 units tall in world space
           runner.scale.setScalar(scale);
 
           // Center horizontally, ground feet
@@ -334,11 +335,11 @@ export default function HeroScene() {
 
         // Camera dolly — moves forward + slightly up on scroll
         camera.position.z = 80 - p * 40;  // 80 → 40
-        camera.position.y = 12 + p * 6;   // 12 → 18
-        camera.lookAt(0, 10 + p * 2, -20);
+        camera.position.y = 22 + p * 8;   // 22 → 30
+        camera.lookAt(0, 28 + p * 4, -20);
 
-        // Fog thickens on scroll
-        scene.fog.density = 0.008 + p * 0.006;
+        // Fog thickens slightly on scroll
+        scene.fog.density = 0.003 + p * 0.003;
 
         // Stars: slow drift
         stars.rotation.y = t * 0.003;
@@ -359,7 +360,7 @@ export default function HeroScene() {
           // X position: enters from left, walks across
           // Scroll 0.1 → 0.7 is the "active walk" window
           const walkP = Math.min(Math.max((p - 0.1) / 0.6, 0), 1);
-          runner.position.x = -60 + walkP * 120; // -60 → 60
+          runner.position.x = -40 + walkP * 80; // -40 → 40
           runner.position.z = runnerStartZ + walkP * (runnerEndZ - runnerStartZ);
 
           // Subtle bob to simulate stride (since model is static)
