@@ -1,6 +1,7 @@
 ---
 // WorkSection.astro
-// Header pinnt zuerst an der Decke — Karten stacken sich darunter auf.
+// Original large-header design — header is sticky so cards start stacking
+// the moment "01 WORK" pins at the top, not when the first card hits the ceiling.
 
 const projects = [
   {
@@ -44,48 +45,31 @@ const projects = [
     tag: 'In Development',
   },
 ];
-
-// Pixel-Höhe des Headers — Karten starten direkt darunter.
-// Passt sich per JS dynamisch an, dieser Wert ist nur der CSS-Fallback.
-const HEADER_H = 72;
 ---
 
 <section id="work" class="work-section">
 
-  <!-- ── Sticky header — pinnt wenn die Section oben ankommt ── -->
+  <!-- ── Header: sticky so the moment it pins, cards start stacking ── -->
   <div class="work-header" id="work-header">
-    <div class="work-header__inner">
-      <div class="work-header__label">
-        <span class="work-header__num">01</span>
-        <span class="work-header__rule"></span>
-        <span class="work-header__title">WORK</span>
-      </div>
-      <div class="work-header__right">
-        <h2 class="work-header__headline">Systems that cannot fail.</h2>
-        <p class="work-header__sub">
-          Production security engineering. Threat modeling, hardening, incident response.
-        </p>
-      </div>
-      <!-- Card counter: 01 / 04 -->
-      <div class="work-header__counter" id="work-counter">
-        <span id="work-counter-current">01</span>
-        <span class="work-header__counter-sep">/</span>
-        <span>{String(projects.length).padStart(2, '0')}</span>
-      </div>
+    <div class="work-header__label">
+      <span class="work-header__num">01</span>
+      <span class="work-header__rule"></span>
+      <span class="work-header__title">WORK</span>
     </div>
-    <!-- Progress line at bottom of header -->
-    <div class="work-header__progress-track">
-      <div class="work-header__progress-fill" id="work-progress-fill"></div>
-    </div>
+    <h2 class="work-header__headline">Systems that<br />cannot fail.</h2>
+    <p class="work-header__sub">
+      Production security engineering. Threat modeling,<br />
+      hardening, incident response. Selected engagements below.
+    </p>
   </div>
 
-  <!-- ── Stack — Karten stacken sich unter dem Header auf ── -->
+  <!-- ── Cards stack directly beneath the pinned header ── -->
   <div class="work-stack" id="work-stack">
     {projects.map((p, i) => (
       <div
         class="work-card"
         data-card-index={i}
-        style={`z-index: ${10 + i}; top: calc(${HEADER_H}px + ${i * 14}px);`}
+        style={`z-index: ${10 + i};`}
       >
         <a href={p.href} class="work-card__inner" data-cursor-hover>
 
@@ -132,33 +116,32 @@ const HEADER_H = 72;
 <style>
   .work-section {
     position: relative;
-    border-top: 1px solid rgba(243, 241, 236, 0.08);
   }
 
-  /* ── Sticky header ───────────────────────────────────────────────────── */
+  /* ── Header: sticky, background covers cards scrolling beneath ───────── */
   .work-header {
     position: sticky;
     top: 0;
     z-index: 50;
-    /* Matcht den Body-Hintergrund — so deckt er die stackenden Karten ab */
-    background: #050506;
-    border-bottom: 1px solid rgba(243, 241, 236, 0.07);
+    background: #050506; /* match body bg */
+    padding: 128px 40px 80px;
+    /* No max-width here — bg must cover full width */
   }
 
-  .work-header__inner {
+  /* Inner content constrained to 1440 */
+  .work-header__label,
+  .work-header__headline,
+  .work-header__sub {
     max-width: 1440px;
-    margin: 0 auto;
-    padding: 18px 40px;
-    display: flex;
-    align-items: center;
-    gap: 32px;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .work-header__label {
     display: flex;
     align-items: center;
-    gap: 12px;
-    flex-shrink: 0;
+    gap: 16px;
+    margin-bottom: 40px;
     font-family: var(--font-mono);
     font-size: 11px;
     letter-spacing: 0.2em;
@@ -172,85 +155,43 @@ const HEADER_H = 72;
 
   .work-header__rule {
     display: block;
-    width: 24px;
+    width: 32px;
     height: 1px;
     background: rgba(243, 241, 236, 0.16);
   }
 
-  .work-header__right {
-    display: flex;
-    align-items: baseline;
-    gap: 28px;
-    flex: 1;
-  }
-
   .work-header__headline {
+    display: block;
     font-family: var(--font-display);
     font-weight: 500;
-    font-size: clamp(15px, 1.6vw, 20px);
-    line-height: 1;
-    letter-spacing: -0.02em;
+    font-size: clamp(48px, 7vw, 96px);
+    line-height: 0.98;
+    letter-spacing: -0.04em;
     color: var(--ink);
-    margin: 0;
-    white-space: nowrap;
+    margin: 0 auto 28px;
   }
 
   .work-header__sub {
+    display: block;
     font-family: var(--font-display);
-    font-size: 12px;
-    line-height: 1.4;
-    color: var(--ink-low);
-    margin: 0;
-    letter-spacing: -0.003em;
-  }
-
-  /* Card counter — top right of header */
-  .work-header__counter {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.14em;
-    color: var(--ink-low);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-left: auto;
-    flex-shrink: 0;
-  }
-
-  #work-counter-current {
-    color: var(--ink);
-    transition: opacity 0.2s ease;
-  }
-
-  .work-header__counter-sep {
-    opacity: 0.3;
-  }
-
-  /* Progress line */
-  .work-header__progress-track {
-    height: 1px;
-    width: 100%;
-    background: rgba(243, 241, 236, 0.06);
-  }
-
-  .work-header__progress-fill {
-    height: 100%;
-    width: 0%;
-    background: #2E6BFF;
-    transition: width 80ms linear;
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--ink-mid);
+    margin: 0 auto;
+    letter-spacing: -0.005em;
   }
 
   /* ── Stack ───────────────────────────────────────────────────────────── */
   .work-stack {
+    padding: 20px 40px 120px;
     max-width: 1440px;
     margin: 0 auto;
-    padding: 20px 40px 120px;
   }
 
   /* ── Card ────────────────────────────────────────────────────────────── */
   .work-card {
     position: sticky;
-    /* top set inline: header height + stagger per card */
+    /* top is set by JS = header.offsetHeight + i * 14px stagger */
     margin-bottom: 20px;
     will-change: transform;
     transform-origin: top center;
@@ -434,8 +375,7 @@ const HEADER_H = 72;
     .work-card__inner { grid-template-columns: 1fr; }
     .work-card__image-wrap { height: 200px; }
     .work-stack { padding: 16px 16px 80px; }
-    .work-header__right { display: none; }
-    .work-header__inner { padding: 14px 16px; }
+    .work-header { padding: 80px 16px 48px; }
   }
 </style>
 
@@ -445,46 +385,31 @@ const HEADER_H = 72;
 
   gsap.registerPlugin(ScrollTrigger);
 
-  const section      = document.getElementById('work') as HTMLElement;
-  const header       = document.getElementById('work-header') as HTMLElement;
-  const progressFill = document.getElementById('work-progress-fill') as HTMLElement;
-  const counterEl    = document.getElementById('work-counter-current') as HTMLElement;
-  const cards        = document.querySelectorAll<HTMLElement>('.work-card');
+  const header = document.getElementById('work-header') as HTMLElement;
+  const cards  = document.querySelectorAll<HTMLElement>('.work-card');
 
-  if (!section || !header || !cards.length) throw new Error('WorkSection: missing elements');
+  if (!header || !cards.length) throw new Error('WorkSection: missing elements');
 
-  // ── Update card top offsets dynamically based on real header height ────
-  // CSS uses the fallback value; JS corrects it after render.
-  function updateCardTops() {
+  // ── Set card tops relative to actual header height ─────────────────────
+  // Cards pin directly beneath the sticky header — that's what makes the
+  // stacking start the moment "01 WORK" hits the top of the viewport.
+  function setCardTops() {
     const hh = header.offsetHeight;
     cards.forEach((card, i) => {
+      // i * 14px stagger: each card peeks out slightly beneath the previous
       card.style.top = `${hh + i * 14}px`;
     });
+    // Refresh ScrollTrigger after layout change
+    ScrollTrigger.refresh();
   }
-  updateCardTops();
-  window.addEventListener('resize', updateCardTops);
 
-  // ── Progress bar + counter ─────────────────────────────────────────────
-  ScrollTrigger.create({
-    trigger: section,
-    start: 'top top',
-    end: 'bottom bottom',
-    onUpdate: (self) => {
-      progressFill.style.width = `${self.progress * 100}%`;
+  // Run after fonts/images have had a chance to affect header height
+  setCardTops();
+  window.addEventListener('resize', setCardTops);
+  document.fonts.ready.then(setCardTops);
 
-      // Update counter to show which card is currently "on top"
-      const idx = Math.min(
-        Math.floor(self.progress * cards.length),
-        cards.length - 1
-      );
-      counterEl.textContent = String(idx + 1).padStart(2, '0');
-    },
-  });
-
-  // ── Stacking ───────────────────────────────────────────────────────────
-  cards.forEach((card, i) => {
-
-    // Entrance: fade + rise when card first comes into view
+  // ── Entrance animations ────────────────────────────────────────────────
+  cards.forEach((card) => {
     gsap.fromTo(card,
       { opacity: 0, y: 28 },
       {
@@ -498,13 +423,17 @@ const HEADER_H = 72;
         },
       }
     );
+  });
 
-    if (i === 0) return; // first card has nothing beneath it to squish
+  // ── Stacking: when card i pins, squish cards 0…i-1 back ───────────────
+  cards.forEach((card, i) => {
+    if (i === 0) return;
 
-    // When card i reaches its sticky point, push previous cards back
     ScrollTrigger.create({
       trigger: card,
+      // Fire exactly when this card reaches its own sticky top
       start: () => `top ${header.offsetHeight + i * 14}px`,
+
       onEnter: () => {
         for (let j = 0; j < i; j++) {
           const depth = i - j;
@@ -516,6 +445,7 @@ const HEADER_H = 72;
           });
         }
       },
+
       onLeaveBack: () => {
         for (let j = 0; j < i; j++) {
           const prevDepth = Math.max(0, (i - 1) - j);
