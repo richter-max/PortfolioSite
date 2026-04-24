@@ -1,10 +1,26 @@
 ---
-// Nav.astro — fixed translucent top bar, vanilla scroll listener
+// Nav.astro — fixed translucent top bar
+// Items map 1:1 to section IDs in index.astro:
+//   WORK    → #work      (WorkSection)
+//   FIELD   → #field     (FieldTape)
+//   STATS   → #numbers   (MassiveNumbers — uses id="numbers")
+//   BLOG    → #blog      (BlogDrift)
+//   CONTACT → #contact   (ContactScene)
+//
+// Active state is determined live via IntersectionObserver —
+// no manual `section` prop needed, but it still works as fallback.
 interface Props {
   section?: string;
 }
 const { section = 'HOME' } = Astro.props;
-const items = ['WORK', 'FIELD', 'CONTACT'];
+
+const items = [
+  { label: 'WORK',    id: 'work' },
+  { label: 'FIELD',   id: 'field' },
+  { label: 'STATS',   id: 'numbers' },
+  { label: 'BLOG',    id: 'blog' },
+  { label: 'CONTACT', id: 'contact' },
+];
 ---
 
 <nav class="site-nav" data-section={section}>
@@ -12,10 +28,11 @@ const items = ['WORK', 'FIELD', 'CONTACT'];
   <div class="nav-items">
     {items.map((it) => (
       <a
-        href={`/#${it.toLowerCase()}`}
-        class:list={['nav-link', { active: section === it }]}
+        href={`/#${it.id}`}
+        class:list={['nav-link', { active: section === it.label }]}
+        data-nav-target={it.id}
       >
-        {it}
+        {it.label}
       </a>
     ))}
   </div>
@@ -56,6 +73,7 @@ const items = ['WORK', 'FIELD', 'CONTACT'];
     font-size: 15px;
     letter-spacing: -0.02em;
     color: var(--ink);
+    text-decoration: none;
   }
   .nav-items {
     display: flex;
@@ -66,6 +84,11 @@ const items = ['WORK', 'FIELD', 'CONTACT'];
     font-size: 10px;
     letter-spacing: 0.18em;
     color: var(--ink-mid);
+    text-decoration: none;
+    transition: color 0.25s ease;
+  }
+  .nav-link:hover {
+    color: var(--ink);
   }
   .nav-link.active {
     color: var(--ink);
@@ -85,9 +108,28 @@ const items = ['WORK', 'FIELD', 'CONTACT'];
     background: var(--accent);
     display: inline-block;
   }
+
+  /* Mobile: hide middle items, keep mark + status */
+  @media (max-width: 720px) {
+    .nav-items {
+      gap: 14px;
+    }
+    .nav-link {
+      font-size: 9px;
+      letter-spacing: 0.12em;
+    }
+    .nav-status {
+      display: none;
+    }
+  }
+  @media (max-width: 480px) {
+    .site-nav { padding: 0 16px; }
+    .nav-items { gap: 10px; }
+  }
 </style>
 
 <script>
+  // Scroll state (transparent → blurred bar)
   const nav = document.querySelector('.site-nav');
   const onScroll = () => {
     if (!nav) return;
@@ -96,4 +138,48 @@ const items = ['WORK', 'FIELD', 'CONTACT'];
   };
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
+
+  // Active-section tracking via IntersectionObserver.
+  // Marks the link whose section is currently most visible.
+  const navLinks = document.querySelectorAll<HTMLAnchorElement>('.nav-link[data-nav-target]');
+  const sectionIds = Array.from(navLinks).map(a => a.dataset.navTarget!);
+  const sections: Element[] = sectionIds
+    .map(id => document.getElementById(id))
+    .filter((el): el is HTMLElement => el !== null);
+
+  if (sections.length > 0) {
+    // Track intersection ratios for each section, pick the one with highest
+    const ratios = new Map<Element, number>();
+    sections.forEach(s => ratios.set(s, 0));
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          ratios.set(entry.target, entry.intersectionRatio);
+        });
+        // Find section with max visibility
+        let maxRatio = 0;
+        let maxSection: Element | null = null;
+        ratios.forEach((ratio, section) => {
+          if (ratio > maxRatio) {
+            maxRatio = ratio;
+            maxSection = section;
+          }
+        });
+        // Update active class
+        navLinks.forEach(link => {
+          const targetId = link.dataset.navTarget;
+          const isActive = maxSection && (maxSection as HTMLElement).id === targetId;
+          link.classList.toggle('active', !!isActive);
+        });
+      },
+      {
+        // Fire as sections enter/leave the middle band of the viewport
+        rootMargin: '-40% 0px -40% 0px',
+        threshold: [0, 0.1, 0.25, 0.5, 0.75, 1],
+      }
+    );
+
+    sections.forEach(s => observer.observe(s));
+  }
 </script>
