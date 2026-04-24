@@ -19,13 +19,15 @@ export default function Hero() {
   }, []);
 
   // ── Crossfade via scroll listener ────────────────────────────────────
+  // Depends on [mounted] so outerRef.current is guaranteed in DOM
   useEffect(() => {
+    if (!mounted) return;
     const outer = outerRef.current;
     if (!outer) return;
 
     function onScroll() {
-      const rect   = outer.getBoundingClientRect();
-      const total  = outer.offsetHeight - window.innerHeight; // = 100vh
+      const rect     = outer.getBoundingClientRect();
+      const total    = outer.offsetHeight - window.innerHeight;
       const scrolled = Math.min(Math.max(-rect.top, 0), total);
       const progress = total > 0 ? scrolled / total : 0;
 
@@ -40,9 +42,9 @@ export default function Hero() {
     }
 
     window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll(); // run once on mount
+    onScroll();
     return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+  }, [mounted]);
 
   // ── Name entrance via GSAP (only chars, no scroll dependency) ────────
   useEffect(() => {
