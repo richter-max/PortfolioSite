@@ -1,14 +1,14 @@
-// Hero.jsx — Redesigned hero
-// - "MAXIMILIAN RICHTER" als einziger Text, groß
-// - Scroll-Crossfade: laptophero.png → halbmarathon.jpg
-// - Rolle faded subtil unten ein
-// - Loader bleibt (kurze Line-Animation)
+// Hero.jsx — fixed hero
+// - 200vh outer gives scroll room for crossfade
+// - sticky inner keeps content visible while scrolling
+// - name stays — no dispersion
+// - laptop → race crossfade driven by scroll scrub
 import { useEffect, useRef, useState } from 'react';
 
 export default function Hero() {
-  const [mounted, setMounted]     = useState(false);
+  const [mounted, setMounted]       = useState(false);
   const [loaderGone, setLoaderGone] = useState(false);
-  const heroRef = useRef(null);
+  const outerRef = useRef(null);
 
   useEffect(() => {
     const t1 = setTimeout(() => setMounted(true), 60);
@@ -16,130 +16,104 @@ export default function Hero() {
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, []);
 
-  // ── Scroll crossfade + name dispersion ────────────────────────────────
   useEffect(() => {
     if (!mounted) return;
-    let cleanup = () => {};
 
     async function init() {
-      const { gsap }        = await import('gsap');
+      const { gsap }          = await import('gsap');
       const { ScrollTrigger } = await import('gsap/ScrollTrigger');
       gsap.registerPlugin(ScrollTrigger);
 
-      const hero   = heroRef.current;
-      if (!hero) return;
+      const outer   = outerRef.current;
+      if (!outer) return;
 
-      const imgDesk = hero.querySelector('[data-img-desk]');
-      const imgRace = hero.querySelector('[data-img-race]');
-      const nameEl  = hero.querySelector('[data-hero-name]');
-      const roleEl  = hero.querySelector('[data-hero-role]');
+      const imgDesk  = outer.querySelector('[data-img-desk]');
+      const imgRace  = outer.querySelector('[data-img-race]');
+      const nameEl   = outer.querySelector('[data-hero-name]');
+      const roleEl   = outer.querySelector('[data-hero-role]');
+      const scrollCue = outer.querySelector('[data-scroll-cue]');
 
-      // ── Name: split into chars, entrance after loader ─────────────────
+      // ── Name entrance: chars fall in after loader ─────────────────────
       if (nameEl && !nameEl.dataset.split) {
         nameEl.dataset.split = 'true';
         const text = nameEl.textContent || '';
         nameEl.innerHTML = text.split('').map(c =>
           c === ' '
-            ? `<span style="display:inline-block;width:0.25em"> </span>`
+            ? `<span style="display:inline-block;width:0.25em">&nbsp;</span>`
             : `<span class="hero-char" style="display:inline-block;will-change:transform,opacity">${c}</span>`
         ).join('');
       }
-      const chars = nameEl?.querySelectorAll('.hero-char') || [];
-
-      // Entrance: stagger in after loader
+      const chars = outer.querySelectorAll('.hero-char');
       gsap.set(chars, { y: -40, opacity: 0 });
       gsap.to(chars, {
         y: 0, opacity: 1,
         duration: 0.9,
         ease: 'expo.out',
-        stagger: { each: 0.022, from: 'start' },
+        stagger: { each: 0.022 },
         delay: 1.7,
       });
 
-      // Role line entrance
-      gsap.set(roleEl, { opacity: 0, y: 10 });
-      gsap.to(roleEl, {
-        opacity: 1, y: 0,
-        duration: 0.8,
-        ease: 'power2.out',
-        delay: 2.2,
-      });
+      // Role entrance
+      gsap.set(roleEl, { opacity: 0, y: 8 });
+      gsap.to(roleEl, { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out', delay: 2.2 });
 
-      // ── Crossfade: desk → race as user scrolls ────────────────────────
-      // imgRace starts at opacity 0, fades to 1 over first 60% of hero scroll
+      // ── Crossfade: scrubbed against the 200vh outer wrapper ───────────
+      // Race image starts invisible
       gsap.set(imgRace, { opacity: 0 });
 
-      gsap.to(imgRace, {
-        opacity: 1,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: hero,
-          start: 'top top',
-          end: '60% top',
-          scrub: 1.2,
-        },
-      });
-
-      // Desk image fades out slightly slower
+      // Desk fades out between 20%–70% of outer scroll
       gsap.to(imgDesk, {
         opacity: 0,
         ease: 'none',
         scrollTrigger: {
-          trigger: hero,
-          start: '10% top',
-          end: '70% top',
-          scrub: 1.2,
+          trigger: outer,
+          start: 'top top',       // when hero top hits viewport top
+          end: 'bottom bottom',   // when hero bottom hits viewport bottom (= 200vh scrolled)
+          scrub: 1,
+          onUpdate: (self) => {
+            // Manual control for smoother stagger between the two images
+            const p = self.progress;
+            // Desk: fade out 0.15 → 0.65
+            const deskOpacity = p < 0.15 ? 1 : p > 0.65 ? 0 : 1 - (p - 0.15) / 0.5;
+            // Race: fade in 0.35 → 0.85
+            const raceOpacity = p < 0.35 ? 0 : p > 0.85 ? 1 : (p - 0.35) / 0.5;
+            (imgDesk as HTMLElement).style.opacity = String(Math.max(0, deskOpacity));
+            (imgRace as HTMLElement).style.opacity = String(Math.max(0, raceOpacity));
+          },
         },
       });
 
-      // ── Name scatters on scroll ───────────────────────────────────────
-      chars.forEach((char) => {
-        gsap.to(char, {
-          scrollTrigger: {
-            trigger: hero,
-            start: 'top top',
-            end: 'bottom top',
-            scrub: 1.5,
-          },
-          x: (Math.random() - 0.5) * 320,
-          y: -(Math.random() * 200 + 60),
-          opacity: 0,
-          rotate: (Math.random() - 0.5) * 100,
-          scale: 0.3 + Math.random() * 0.4,
-          ease: 'none',
-        });
-      });
-
-      // Role fades on scroll
-      gsap.to(roleEl, {
+      // Scroll cue fades out quickly
+      gsap.to(scrollCue, {
+        opacity: 0,
         scrollTrigger: {
-          trigger: hero,
+          trigger: outer,
           start: 'top top',
-          end: '30% top',
+          end: '15% top',
           scrub: 1,
         },
-        opacity: 0,
-        y: -20,
-        ease: 'none',
       });
-
-      cleanup = () => ScrollTrigger.getAll().forEach(t => t.kill());
     }
 
-    const t = setTimeout(init, 120);
-    return () => { clearTimeout(t); cleanup(); };
+    const t = setTimeout(init, 150);
+    return () => clearTimeout(t);
   }, [mounted]);
 
   return (
     <>
       {!loaderGone && <HeroLoader mounted={mounted} />}
 
-      <section
+      {/* ── Outer: 200vh gives scroll room for crossfade ── */}
+      <div
         id="top"
-        ref={heroRef}
-        style={{
-          position: 'relative',
-          minHeight: '100vh',
+        ref={outerRef}
+        style={{ position: 'relative', height: '200vh' }}
+      >
+        {/* ── Inner: sticky — stays in view while outer scrolls ── */}
+        <div style={{
+          position: 'sticky',
+          top: 0,
+          height: '100vh',
           width: '100%',
           background: '#050506',
           overflow: 'hidden',
@@ -147,117 +121,127 @@ export default function Hero() {
           flexDirection: 'column',
           justifyContent: 'flex-end',
           padding: '0 40px 80px',
-        }}
-      >
-        {/* ── Desk image (default) ── */}
-        <div
-          data-img-desk
-          style={{
-            position: 'absolute', inset: 0,
-            backgroundImage: 'url("/img/laptophero.png")',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center 30%',
-            filter: 'saturate(0.5) brightness(0.65) contrast(1.05)',
-            willChange: 'opacity',
-          }}
-        />
-
-        {/* ── Race image (fades in on scroll) ── */}
-        <div
-          data-img-race
-          style={{
-            position: 'absolute', inset: 0,
-            backgroundImage: 'url("/img/halbmarathon.jpg")',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center 20%',
-            filter: 'saturate(0.55) brightness(0.6) contrast(1.08)',
-            willChange: 'opacity',
-          }}
-        />
-
-        {/* ── Gradient overlays ── */}
-        <div style={{
-          position: 'absolute', inset: 0, pointerEvents: 'none',
-          background: 'linear-gradient(to top, #050506 0%, rgba(5,5,6,0.5) 40%, transparent 100%)',
-        }} />
-        <div style={{
-          position: 'absolute', inset: 0, pointerEvents: 'none',
-          background: 'linear-gradient(to bottom, rgba(5,5,6,0.4) 0%, transparent 30%)',
-        }} />
-
-        {/* ── Content ── */}
-        <div style={{
-          position: 'relative',
-          maxWidth: 1440,
-          width: '100%',
-          margin: '0 auto',
-          opacity: mounted ? 1 : 0,
-          transition: 'opacity 800ms ease 1500ms',
         }}>
 
-          {/* Name — huge, full width */}
-          <h1
-            data-hero-name
-            style={{
-              fontFamily: 'Inter Tight, sans-serif',
-              fontWeight: 600,
-              fontSize: 'clamp(52px, 9.5vw, 152px)',
-              lineHeight: 0.92,
-              letterSpacing: '-0.04em',
-              color: '#F3F1EC',
-              margin: '0 0 28px',
-              maxWidth: '100%',
-            }}
-          >
-            Maximilian Richter
-          </h1>
-
-          {/* Role — mono, muted */}
+          {/* Desk photo */}
           <div
-            data-hero-role
+            data-img-desk
             style={{
-              fontFamily: 'JetBrains Mono, monospace',
-              fontSize: 11,
-              letterSpacing: '0.22em',
-              color: '#A8A6A0',
+              position: 'absolute', inset: 0,
+              backgroundImage: 'url("/img/laptophero.png")',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center 30%',
+              filter: 'saturate(0.5) brightness(0.65) contrast(1.05)',
+              willChange: 'opacity',
+            }}
+          />
+
+          {/* Race photo — starts invisible, fades in on scroll */}
+          <div
+            data-img-race
+            style={{
+              position: 'absolute', inset: 0,
+              backgroundImage: 'url("/img/halbmarathon.jpg")',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center 20%',
+              filter: 'saturate(0.55) brightness(0.6) contrast(1.08)',
+              willChange: 'opacity',
+              opacity: 0,
+            }}
+          />
+
+          {/* Gradient overlays */}
+          <div style={{
+            position: 'absolute', inset: 0, pointerEvents: 'none',
+            background: 'linear-gradient(to top, #050506 0%, rgba(5,5,6,0.55) 45%, transparent 100%)',
+          }} />
+          <div style={{
+            position: 'absolute', inset: 0, pointerEvents: 'none',
+            background: 'linear-gradient(to bottom, rgba(5,5,6,0.45) 0%, transparent 30%)',
+          }} />
+
+          {/* Text content */}
+          <div style={{
+            position: 'relative',
+            maxWidth: 1440,
+            width: '100%',
+            margin: '0 auto',
+            opacity: mounted ? 1 : 0,
+            transition: 'opacity 800ms ease 1500ms',
+          }}>
+            <h1
+              data-hero-name
+              style={{
+                fontFamily: 'Inter Tight, sans-serif',
+                fontWeight: 600,
+                fontSize: 'clamp(52px, 9.5vw, 152px)',
+                lineHeight: 0.92,
+                letterSpacing: '-0.04em',
+                color: '#F3F1EC',
+                margin: '0 0 28px',
+              }}
+            >
+              Maximilian Richter
+            </h1>
+
+            <div style={{
               display: 'flex',
-              alignItems: 'center',
-              gap: 16,
+              alignItems: 'flex-end',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: 32,
+            }}>
+              <div
+                data-hero-role
+                style={{
+                  fontFamily: 'JetBrains Mono, monospace',
+                  fontSize: 11,
+                  letterSpacing: '0.22em',
+                  color: '#A8A6A0',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 16,
+                }}
+              >
+                <span style={{ color: '#F3F1EC' }}>SECURITY ENGINEER</span>
+                <span style={{
+                  width: 24, height: 1,
+                  background: 'rgba(243,241,236,0.2)',
+                  display: 'inline-block',
+                }} />
+                <span>ENDURANCE ATHLETE</span>
+              </div>
+              <KraichgauCountdown />
+            </div>
+          </div>
+
+          {/* Scroll cue */}
+          <div
+            data-scroll-cue
+            style={{
+              position: 'absolute',
+              bottom: 40, left: '50%',
+              transform: 'translateX(-50%)',
+              display: 'flex', flexDirection: 'column',
+              alignItems: 'center', gap: 12,
+              fontFamily: 'JetBrains Mono, monospace',
+              fontSize: 9, letterSpacing: '0.3em',
+              color: '#A8A6A0', pointerEvents: 'none',
+              opacity: mounted ? 0.7 : 0,
+              transition: 'opacity 1000ms ease 2600ms',
             }}
           >
-            <span style={{ color: '#F3F1EC' }}>SECURITY ENGINEER</span>
-            <span style={{ width: 24, height: 1, background: 'rgba(243,241,236,0.2)', display: 'inline-block' }} />
-            <span>ENDURANCE ATHLETE</span>
+            <span>SCROLL</span>
+            <span style={{
+              width: 1, height: 40,
+              background: 'linear-gradient(to bottom, #F3F1EC, transparent)',
+              animation: 'heroScrollCue 2400ms cubic-bezier(.22,1,.36,1) infinite',
+              transformOrigin: 'top',
+            }} />
           </div>
-        </div>
 
-        {/* ── Scroll cue ── */}
-        <div style={{
-          position: 'absolute',
-          bottom: 40,
-          left: '50%',
-          transform: 'translateX(-50%)',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: 12,
-          fontFamily: 'JetBrains Mono, monospace',
-          fontSize: 9,
-          letterSpacing: '0.3em',
-          color: '#A8A6A0',
-          pointerEvents: 'none',
-          opacity: mounted ? 0.7 : 0,
-          transition: 'opacity 1000ms ease 2600ms',
-        }}>
-          <span>SCROLL</span>
-          <span style={{
-            width: 1, height: 40,
-            background: 'linear-gradient(to bottom, #F3F1EC, transparent)',
-            animation: 'heroScrollCue 2400ms cubic-bezier(.22,1,.36,1) infinite',
-            transformOrigin: 'top',
-          }} />
         </div>
-      </section>
+      </div>
 
       <style>{`
         @keyframes heroScrollCue {
@@ -280,6 +264,56 @@ export default function Hero() {
         }
       `}</style>
     </>
+  );
+}
+
+
+function KraichgauCountdown() {
+  const target = new Date('2026-05-31T07:00:00+02:00').getTime();
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, []);
+  const delta = Math.max(0, target - now);
+  const d = Math.floor(delta / 86400000);
+  const h = Math.floor((delta % 86400000) / 3600000);
+  const m = Math.floor((delta % 3600000) / 60000);
+  const s = Math.floor((delta % 60000) / 1000);
+  const pad = (n) => String(n).padStart(2, '0');
+
+  const cell = { display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 };
+  const num  = {
+    fontFamily: 'Inter Tight, sans-serif', fontWeight: 300,
+    fontSize: 'clamp(28px, 3vw, 40px)', lineHeight: 1, letterSpacing: '-0.03em',
+    color: '#F3F1EC', fontVariantNumeric: 'tabular-nums',
+  };
+  const lbl  = {
+    fontFamily: 'JetBrains Mono, monospace', fontSize: 9, letterSpacing: '0.22em',
+    textTransform: 'uppercase', color: '#6B6965',
+  };
+
+  return (
+    <div style={{ textAlign: 'right' }}>
+      <div style={{
+        fontFamily: 'JetBrains Mono, monospace', fontSize: 10, letterSpacing: '0.22em',
+        color: '#A8A6A0', marginBottom: 14, display: 'flex', alignItems: 'center',
+        gap: 10, justifyContent: 'flex-end',
+      }}>
+        <span style={{ width: 6, height: 6, background: '#2E6BFF', display: 'inline-block' }} />
+        IRONMAN 70.3 · KRAICHGAU
+      </div>
+      <div style={{ display: 'flex', gap: 28, justifyContent: 'flex-end' }}>
+        <div style={cell}><div style={num}>{d}</div><div style={lbl}>DAYS</div></div>
+        <div style={cell}><div style={num}>{pad(h)}</div><div style={lbl}>HRS</div></div>
+        <div style={cell}><div style={num}>{pad(m)}</div><div style={lbl}>MIN</div></div>
+        <div style={cell}><div style={num}>{pad(s)}</div><div style={lbl}>SEC</div></div>
+      </div>
+      <div style={{
+        fontFamily: 'JetBrains Mono, monospace', fontSize: 10, letterSpacing: '0.18em',
+        color: '#6B6965', marginTop: 12,
+      }}>31 MAY 2026 · 07:00 CET</div>
+    </div>
   );
 }
 
