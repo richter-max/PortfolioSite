@@ -1,53 +1,35 @@
-/* tokens.css — global resets + type + color tokens */
+/* tokens.css — design tokens (color + type) */
 
 :root {
-  /* colors */
+  /* ── surfaces ──────────────────────────────────────────────────────── */
   --bg: #050506;
-  --bg-2: #0B0B0D;
-  --ink: #F3F1EC;
-  --ink-dim: #D9D7D2;
-  --ink-mid: #A8A6A0;
-  --ink-low: #6B6965;
-  --accent: #2E6BFF;
-  --accent-deep: #1F4FD6;
+  --bg-2: #0b0b0d;
+
+  /* ── ink ──────────────────────────────────────────────────────────── */
+  --ink: #f3f1ec;
+  --ink-dim: #d9d7d2;
+  --ink-mid: #a8a6a0;
+  --ink-low: #6b6965;
+
+  /* ── accent ───────────────────────────────────────────────────────── */
+  --accent: #2e6bff;
+  --accent-deep: #1f4fd6;
+
+  /* ── strokes ──────────────────────────────────────────────────────── */
   --hairline: rgba(243, 241, 236, 0.08);
   --hairline-strong: rgba(243, 241, 236, 0.16);
 
-  /* type */
-  --font-display: 'Inter Tight', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  /* ── type stacks ──────────────────────────────────────────────────── */
+  --font-display: 'Inter Tight Variable', 'Inter Tight', -apple-system, BlinkMacSystemFont,
+    'Helvetica Neue', sans-serif;
+  --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo,
+    Consolas, monospace;
+
+  /* ── motion ───────────────────────────────────────────────────────── */
+  --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* ── layout ───────────────────────────────────────────────────────── */
+  --max-content: 1440px;
+  --gutter: 40px;
 }
-
-*, *::before, *::after { box-sizing: border-box; }
-
-html, body {
-  margin: 0;
-  padding: 0;
-  background: var(--bg);
-  color: var(--ink);
-  font-family: var(--font-display);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-}
-
-body {
-  overflow-x: hidden;
-}
-
-a { color: inherit; text-decoration: none; }
-
-button { font-family: inherit; }
-
-img, video { max-width: 100%; display: block; }
-
-::selection {
-  background: var(--accent);
-  color: var(--ink);
-}
-
-/* scrollbar — dark, unobtrusive */
-::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: rgba(243, 241, 236, 0.12); }
-::-webkit-scrollbar-thumb:hover { background: rgba(243, 241, 236, 0.24); }

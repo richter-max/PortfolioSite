@@ -1,6 +1,9 @@
 ---
-// BaseLayout.astro — html shell, fonts, tokens
-import '../styles/tokens.css';
+// BaseLayout.astro — document shell, typography, chrome
+import '@styles/fonts.css';
+import '@styles/tokens.css';
+import '@styles/base.css';
+import { SITE } from '@data/site';
 
 interface Props {
   title?: string;
@@ -9,9 +12,9 @@ interface Props {
 }
 
 const {
-  title = 'Maximilian Richter — Security Engineer · Endurance Athlete',
-  description = 'Systems that perform when they cannot fail. Hardened against adversaries. Tested in the cold.',
-  ogImage = '/img/og-default.jpg',
+  title = SITE.title,
+  description = SITE.description,
+  ogImage = SITE.ogImage,
 } = Astro.props;
 ---
 
@@ -35,13 +38,24 @@ const {
     <!-- favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
-    <!-- fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- fonts: self-hosted variable woff2, preload latin for instant render -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
-      rel="stylesheet"
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="/fonts/inter-tight-latin-wght-normal.woff2"
+      crossorigin
     />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="/fonts/jetbrains-mono-latin-wght-normal.woff2"
+      crossorigin
+    />
+
+    <!-- preload hero LCP image -->
+    <link rel="preload" as="image" href="/img/opt/laptophero-640.avif" type="image/avif" fetchpriority="high" />
   </head>
   <body>
 
@@ -169,63 +183,121 @@ const {
   }
 
   /* Re-enable on touch devices */
-  @media (hover: none) {
+  @media (hover: none), (pointer: coarse) {
     html { cursor: auto; }
     #cursor-dot, #cursor-ring { display: none; }
+    #grain { animation: none; }
   }
 
   @media (prefers-reduced-motion: reduce) {
     #grain { animation: none; }
   }
+
+  /* Pause grain when tab hidden — saves GPU wakeups */
+  html.is-hidden #grain { animation-play-state: paused; }
 </style>
 
 <script>
-  const dot = document.getElementById('cursor-dot');
-  const ring = document.getElementById('cursor-ring');
-  if (!dot || !ring) throw new Error('Cursor elements not found');
+  // Skip entirely on touch/coarse-pointer devices and when the user prefers reduced motion.
+  const isCoarse = matchMedia('(hover: none), (pointer: coarse)').matches;
+  const prefersReducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  let mouseX = -100, mouseY = -100;
-  let ringX  = -100, ringY  = -100;
-  let magnetTarget: Element | null = null;
+  if (!isCoarse && !prefersReducedMotion) {
+    const dot = document.getElementById('cursor-dot');
+    const ring = document.getElementById('cursor-ring');
+    if (!dot || !ring) throw new Error('Cursor elements not found');
 
-  const LERP = 0.12;
-  const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+    let mouseX = -100, mouseY = -100;
+    let ringX  = -100, ringY  = -100;
+    let magnetTarget: Element | null = null;
+    let rafId = 0;
+    let running = false;
+    let lastMoveAt = 0;
 
-  function tick() {
-    if (magnetTarget) {
-      const r = magnetTarget.getBoundingClientRect();
-      const cx = r.left + r.width  / 2;
-      const cy = r.top  + r.height / 2;
-      ringX = lerp(ringX, mouseX + (cx - mouseX) * 0.18, LERP * 1.4);
-      ringY = lerp(ringY, mouseY + (cy - mouseY) * 0.18, LERP * 1.4);
-    } else {
-      ringX = lerp(ringX, mouseX, LERP);
-      ringY = lerp(ringY, mouseY, LERP);
+    const LERP = 0.12;
+    const IDLE_MS = 2000; // stop RAF after this long without movement
+    const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+
+    function step() {
+      const now = performance.now();
+
+      if (magnetTarget) {
+        const r = magnetTarget.getBoundingClientRect();
+        const cx = r.left + r.width  / 2;
+        const cy = r.top  + r.height / 2;
+        ringX = lerp(ringX, mouseX + (cx - mouseX) * 0.18, LERP * 1.4);
+        ringY = lerp(ringY, mouseY + (cy - mouseY) * 0.18, LERP * 1.4);
+      } else {
+        ringX = lerp(ringX, mouseX, LERP);
+        ringY = lerp(ringY, mouseY, LERP);
+      }
+      dot!.style.transform  = `translate(${mouseX}px,${mouseY}px)`;
+      ring!.style.transform = `translate(${ringX}px,${ringY}px)`;
+
+      // Keep ticking while the ring hasn't settled or the user moved recently.
+      const settled =
+        Math.abs(ringX - mouseX) < 0.1 &&
+        Math.abs(ringY - mouseY) < 0.1 &&
+        now - lastMoveAt > IDLE_MS;
+      if (settled) {
+        running = false;
+      } else {
+        rafId = requestAnimationFrame(step);
+      }
     }
-    dot.style.transform  = `translate(${mouseX}px,${mouseY}px)`;
-    ring.style.transform = `translate(${ringX}px,${ringY}px)`;
-    requestAnimationFrame(tick);
+    function start() {
+      if (running || document.hidden) return;
+      running = true;
+      rafId = requestAnimationFrame(step);
+    }
+
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      lastMoveAt = performance.now();
+      start();
+    }, { passive: true });
+
+    document.addEventListener('mouseleave', () => {
+      dot.style.opacity = '0';
+      ring.style.opacity = '0';
+    });
+    document.addEventListener('mouseenter', () => {
+      dot.style.opacity = '1';
+      ring.style.opacity = '1';
+      start();
+    });
+
+    document.addEventListener('mouseover', (e) => {
+      const t = e.target as Element;
+      const el = t.closest('a, button, [data-cursor-hover]');
+      const tx = t.closest('p, h1, h2, h3, h4, span, label');
+      if (el) {
+        ring.classList.add('is-hovering');
+        ring.classList.remove('is-text');
+        magnetTarget = el;
+      } else if (tx) {
+        ring.classList.add('is-text');
+        ring.classList.remove('is-hovering');
+        magnetTarget = null;
+      } else {
+        ring.classList.remove('is-hovering', 'is-text');
+        magnetTarget = null;
+      }
+    });
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        cancelAnimationFrame(rafId);
+        running = false;
+      } else {
+        start();
+      }
+    });
   }
-  tick();
 
-  document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
-  document.addEventListener('mouseleave', () => { dot.style.opacity = '0'; ring.style.opacity = '0'; });
-  document.addEventListener('mouseenter', () => { dot.style.opacity = '1'; ring.style.opacity = '1'; });
-
-  document.addEventListener('mouseover', e => {
-    const el = (e.target as Element).closest('a, button, [data-cursor-hover]');
-    const tx = (e.target as Element).closest('p, h1, h2, h3, h4, span, label');
-    if (el) {
-      ring.classList.add('is-hovering');
-      ring.classList.remove('is-text');
-      magnetTarget = el;
-    } else if (tx) {
-      ring.classList.add('is-text');
-      ring.classList.remove('is-hovering');
-      magnetTarget = null;
-    } else {
-      ring.classList.remove('is-hovering', 'is-text');
-      magnetTarget = null;
-    }
+  // Pause grain when tab hidden — animation-play-state toggle via class.
+  document.addEventListener('visibilitychange', () => {
+    document.documentElement.classList.toggle('is-hidden', document.hidden);
   });
 </script>

@@ -8,7 +8,13 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "optimize:images": "node scripts/optimize-images.mjs",
+    "optimize:glb": "node scripts/optimize-glb.mjs",
+    "optimize:assets": "npm run optimize:images && npm run optimize:glb",
+    "format": "prettier --write \"**/*.{astro,js,jsx,ts,tsx,css,md,json}\"",
+    "format:check": "prettier --check \"**/*.{astro,js,jsx,ts,tsx,css,md,json}\"",
+    "typecheck": "astro check"
   },
   "dependencies": {
     "@astrojs/react": "^3.6.2",
@@ -21,5 +27,17 @@
     "react-dom": "^18.3.1",
     "split-type": "^0.3.4",
     "three": "^0.160.0"
+  },
+  "devDependencies": {
+    "@gltf-transform/core": "^4.3.0",
+    "@gltf-transform/extensions": "^4.3.0",
+    "@gltf-transform/functions": "^4.3.0",
+    "draco3dgltf": "^1.5.7",
+    "lightningcss": "^1.32.0",
+    "meshoptimizer": "^1.1.1",
+    "prettier": "^3.8.3",
+    "prettier-plugin-astro": "^0.14.1",
+    "sharp": "^0.34.5",
+    "sharp-cli": "^5.2.0"
   }
 }

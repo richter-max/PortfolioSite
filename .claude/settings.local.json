@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /Users/maxxx/Desktop/GitHub/PortfolioSite/public/img -type f -exec ls -lh {} \\\\;)",
+      "Bash(awk '{print $5, $9}')",
+      "Bash(npm install *)",
+      "Bash(node scripts/optimize-images.mjs)",
+      "Bash(node scripts/optimize-glb.mjs)",
+      "Bash(node -e \"import\\('meshoptimizer'\\).then\\(m => console.log\\(Object.keys\\(m\\), Object.keys\\(m.MeshoptEncoder || {}\\)\\)\\)\")",
+      "Bash(node -e \"import\\('meshoptimizer'\\).then\\(m => console.log\\('keys:', Object.keys\\(m\\).slice\\(0,10\\)\\)\\)\")",
+      "Bash(npm uninstall *)",
+      "Bash(npm run *)",
+      "Bash(find src *)"
+    ]
+  }
+}

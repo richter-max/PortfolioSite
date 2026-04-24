@@ -1,59 +1,27 @@
 ---
-// index.astro — home page
-import BaseLayout from '../layouts/BaseLayout.astro';
-import Nav from '../components/Nav.astro';
-import Rail from '../components/Rail.astro';
-import WorkSection from '../components/WorkSection.astro';
-import Footer from '../components/Footer.astro';
-import MassiveNumbers from '../components/MassiveNumbers.astro';
-import BlogDrift from '../components/BlogDrift.astro';
-import Hero from '../components/Hero.jsx';
-import FieldTape from '../components/FieldTape.jsx';
-import ContactScene from '../components/ContactScene.jsx';
-
-const fieldEntries = [
-  {
-    index: '02.01',
-    title: 'Ironman 70.3 Kraichgau',
-    location: 'KRAICHGAU · DE',
-    date: 'MAY 2026',
-    conditions: '1.9km swim, 90km bike, 21.1km run. First half-iron finish. Target sub five hours. Fifteen-plus hours of training per week stacked on a full-time job.',
-    image: '/img/portrait-salomon.png',
-    imagePosition: 'center 35%',
-    stats: [{ value: '≤ 5:00', label: 'TARGET' }, { value: '211 km', label: 'TOTAL' }],
-  },
-  {
-    index: '02.02',
-    title: 'Berlin Marathon',
-    location: 'BERLIN · DE',
-    date: 'SEP 2026',
-    conditions: 'Fastest course in the world. Target 4:16 per kilometer held across 42.195km. No music, no pacer, no fade.',
-    image: '/img/berlin-marathon.jpg',
-    imagePosition: 'center 40%',
-    stats: [{ value: '≤ 3:00:00', label: 'TARGET' }, { value: '4:16/km', label: 'PACE' }],
-  },
-  {
-    index: '02.03',
-    title: 'Table Tennis — Landesliga',
-    location: 'BAYERN · DE',
-    date: '2025/26 SEASON',
-    conditions: 'Ongoing league play. Current rating 1740, climbing toward 1800. Same discipline as the endurance block — reps, film, quiet volume.',
-    image: '/img/tischtennis.jpg',
-    imagePosition: 'center 62%',
-    stats: [{ value: '1,740', label: 'CURRENT' }, { value: '1,800', label: 'TARGET' }],
-  },
-];
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Nav from '@components/layout/Nav.astro';
+import Rail from '@components/layout/Rail.astro';
+import Footer from '@components/layout/Footer.astro';
+import WorkSection from '@components/work/WorkSection.astro';
+import MassiveNumbers from '@components/stats/MassiveNumbers.astro';
+import BlogDrift from '@components/blog/BlogDrift.astro';
+import Hero from '@components/hero/Hero.jsx';
+import FieldTape from '@components/field/FieldTape.jsx';
+import ContactScene from '@components/contact/ContactScene.jsx';
+import { fieldEntries } from '@data/field';
 ---
-<BaseLayout title="Maximilian Richter">
+
+<BaseLayout>
   <Nav />
   <Rail />
   <main>
     <Hero client:load />
     <WorkSection />
-    <FieldTape entries={fieldEntries} client:load />
+    <FieldTape entries={fieldEntries} client:visible />
     <MassiveNumbers />
     <BlogDrift />
-    <ContactScene client:load />
+    <ContactScene client:visible />
     <Footer />
   </main>
 </BaseLayout>
