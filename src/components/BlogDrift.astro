@@ -1,0 +1,505 @@
+---
+// BlogDrift.astro
+// "The Drift" — Posts drift horizontally. Mouse hover pauses and focuses.
+// Click triggers navigation to the post page.
+//
+// USAGE in index.astro:
+//   import BlogDrift from '../components/BlogDrift.astro';
+//   <BlogDrift />  // between MassiveNumbers and ContactScene
+
+interface Post {
+  slug: string;
+  kind: 'SEC' | 'FLD' | 'NTE';
+  date: string;    // YYYY · MM
+  title: string;
+  excerpt: string;
+  href: string;
+}
+
+// Placeholder posts — replace with your actual content later.
+// Mix of all three tracks: Security, Field (endurance), Notes (lessons).
+const posts: Post[] = [
+  {
+    slug: 'rag-injection',
+    kind: 'SEC',
+    date: '2026 · 10',
+    title: 'Prompt Injection in RAG',
+    excerpt: 'Why retrieval-augmented pipelines leak intent before they leak data.',
+    href: '/blog/rag-injection',
+  },
+  {
+    slug: 'athletes-engineers',
+    kind: 'NTE',
+    date: '2026 · 09',
+    title: 'Athletes as Engineers',
+    excerpt: 'Taper weeks taught me more about shipping than any sprint did.',
+    href: '/blog/athletes-engineers',
+  },
+  {
+    slug: 'berlin-report',
+    kind: 'FLD',
+    date: '2026 · 09',
+    title: 'Berlin Race Report',
+    excerpt: 'Three hours, flat. No pacer. No music. One pact with myself.',
+    href: '/blog/berlin-report',
+  },
+  {
+    slug: 'agent-threat-model',
+    kind: 'SEC',
+    date: '2026 · 08',
+    title: 'Threat Modeling AI Agents',
+    excerpt: 'A framework for evaluating agentic systems before they ship.',
+    href: '/blog/agent-threat-model',
+  },
+  {
+    slug: 'zone-two',
+    kind: 'FLD',
+    date: '2026 · 07',
+    title: 'The Zone Two Question',
+    excerpt: 'Cheap watts, expensive patience — why aerobic base still wins.',
+    href: '/blog/zone-two',
+  },
+  {
+    slug: 'vendor-questionnaires',
+    kind: 'NTE',
+    date: '2026 · 06',
+    title: 'On Vendor Questionnaires',
+    excerpt: 'What VendorQ taught me about how security actually gets sold.',
+    href: '/blog/vendor-questionnaires',
+  },
+];
+
+const kindColor = {
+  SEC: '#2E6BFF',
+  FLD: '#E8A23C',
+  NTE: '#A8A6A0',
+};
+
+const kindLabel = {
+  SEC: 'SECURITY',
+  FLD: 'FIELD',
+  NTE: 'NOTE',
+};
+---
+
+<section id="blog" class="drift-section">
+
+  {/* ── Section header ─────────────────────────────────────────────── */}
+  <div class="drift-header">
+    <div class="drift-label">
+      <span class="drift-label__num">03</span>
+      <span class="drift-label__rule"></span>
+      <span class="drift-label__title">FIELD NOTES</span>
+    </div>
+    <h2 class="drift-heading">Currently thinking<br/>about —</h2>
+    <p class="drift-sub">
+      Long-form essays on security, endurance, and what one teaches the other.<br/>
+      Hover to pause. Click to read.
+    </p>
+  </div>
+
+  {/* ── Drift track ─────────────────────────────────────────────────── */}
+  <div class="drift-viewport" id="drift-viewport">
+    <div class="drift-track" id="drift-track">
+      {/* Duplicate posts array so the loop wraps seamlessly */}
+      {[...posts, ...posts].map((post, i) => {
+        const color = kindColor[post.kind];
+        const label = kindLabel[post.kind];
+        return (
+          <a
+            href={post.href}
+            class="drift-post"
+            data-post-index={i}
+            data-cursor-hover
+            style={`--post-accent: ${color};`}
+          >
+            <div class="drift-post__meta">
+              <span class="drift-post__kind">{label}</span>
+              <span class="drift-post__sep">/</span>
+              <span class="drift-post__date">{post.date}</span>
+            </div>
+            <h3 class="drift-post__title">{post.title}</h3>
+            <p class="drift-post__excerpt">{post.excerpt}</p>
+            <div class="drift-post__read">
+              <span>READ</span>
+              <span class="drift-post__arrow">→</span>
+            </div>
+          </a>
+        );
+      })}
+    </div>
+  </div>
+
+  {/* ── Progress indicator ──────────────────────────────────────────── */}
+  <div class="drift-indicator">
+    <span class="drift-indicator__hint">DRAG OR HOVER</span>
+    <div class="drift-indicator__bar">
+      <div class="drift-indicator__fill" id="drift-progress"></div>
+    </div>
+  </div>
+
+</section>
+
+<style>
+  .drift-section {
+    position: relative;
+    padding: 128px 0 96px;
+    border-top: 1px solid rgba(243, 241, 236, 0.08);
+    overflow: hidden;
+  }
+
+  /* ── Header (constrained width) ─────────────────────────────────── */
+  .drift-header {
+    max-width: 1440px;
+    margin: 0 auto 72px;
+    padding: 0 40px;
+  }
+
+  .drift-label {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 40px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--ink-low, #6B6965);
+  }
+
+  .drift-label__num,
+  .drift-label__title {
+    color: var(--ink, #F3F1EC);
+  }
+
+  .drift-label__rule {
+    display: block;
+    width: 32px;
+    height: 1px;
+    background: rgba(243, 241, 236, 0.16);
+  }
+
+  .drift-heading {
+    font-family: var(--font-display, 'Inter Tight', sans-serif);
+    font-weight: 500;
+    font-size: clamp(48px, 7vw, 96px);
+    line-height: 0.98;
+    letter-spacing: -0.04em;
+    color: var(--ink, #F3F1EC);
+    margin: 0 0 28px;
+  }
+
+  .drift-sub {
+    font-family: var(--font-display, 'Inter Tight', sans-serif);
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--ink-mid, #A8A6A0);
+    margin: 0;
+    letter-spacing: -0.005em;
+    max-width: 52ch;
+  }
+
+  /* ── Drift viewport (full width, clips overflow) ─────────────────── */
+  .drift-viewport {
+    position: relative;
+    width: 100%;
+    padding: 0;
+    cursor: grab;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  .drift-viewport.is-dragging {
+    cursor: grabbing;
+  }
+
+  /* Fade edges */
+  .drift-viewport::before,
+  .drift-viewport::after {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 120px;
+    pointer-events: none;
+    z-index: 2;
+  }
+  .drift-viewport::before {
+    left: 0;
+    background: linear-gradient(to right, #050506, transparent);
+  }
+  .drift-viewport::after {
+    right: 0;
+    background: linear-gradient(to left, #050506, transparent);
+  }
+
+  /* ── Track (moves horizontally via JS) ──────────────────────────── */
+  .drift-track {
+    display: flex;
+    gap: 80px;
+    padding: 20px 80px;
+    will-change: transform;
+    transition: opacity 0.4s ease;
+  }
+
+  .drift-track.is-focused .drift-post:not(.is-active) {
+    opacity: 0.22;
+  }
+
+  /* ── Individual post (editorial card) ───────────────────────────── */
+  .drift-post {
+    flex-shrink: 0;
+    width: min(520px, 70vw);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    text-decoration: none;
+    color: inherit;
+    padding: 32px 40px;
+    border-left: 1px solid rgba(243, 241, 236, 0.08);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    cursor: inherit;
+  }
+
+  .drift-post.is-active {
+    transform: translateY(-6px);
+  }
+
+  .drift-post.is-active .drift-post__title {
+    color: var(--ink, #F3F1EC);
+  }
+
+  .drift-post.is-active .drift-post__read {
+    color: var(--post-accent);
+    transform: translateX(4px);
+  }
+
+  .drift-post__meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    color: var(--ink-low, #6B6965);
+  }
+
+  .drift-post__kind {
+    color: var(--post-accent);
+    font-weight: 500;
+  }
+
+  .drift-post__sep {
+    color: rgba(243, 241, 236, 0.2);
+  }
+
+  .drift-post__date {
+    color: var(--ink-low, #6B6965);
+  }
+
+  .drift-post__title {
+    font-family: var(--font-display, 'Inter Tight', sans-serif);
+    font-weight: 500;
+    font-size: clamp(28px, 3vw, 42px);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    color: rgba(243, 241, 236, 0.88);
+    margin: 0;
+    transition: color 0.3s ease;
+  }
+
+  .drift-post__excerpt {
+    font-family: var(--font-display, 'Inter Tight', sans-serif);
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--ink-mid, #A8A6A0);
+    margin: 0;
+    letter-spacing: -0.005em;
+    max-width: 44ch;
+  }
+
+  .drift-post__read {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    color: var(--ink-low, #6B6965);
+    transition: color 0.3s ease, transform 0.3s ease;
+    margin-top: auto;
+    padding-top: 8px;
+  }
+
+  .drift-post__arrow {
+    transition: transform 0.3s ease;
+  }
+
+  /* ── Indicator ──────────────────────────────────────────────────── */
+  .drift-indicator {
+    max-width: 1440px;
+    margin: 64px auto 0;
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .drift-indicator__hint {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    color: var(--ink-low, #6B6965);
+  }
+
+  .drift-indicator__bar {
+    flex: 1;
+    height: 1px;
+    background: rgba(243, 241, 236, 0.06);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .drift-indicator__fill {
+    position: absolute;
+    top: 0; left: 0;
+    height: 100%;
+    width: 80px;
+    background: rgba(243, 241, 236, 0.6);
+    transition: transform 0.08s linear;
+  }
+
+  @media (max-width: 900px) {
+    .drift-section { padding: 80px 0 64px; }
+    .drift-header { padding: 0 16px; margin-bottom: 48px; }
+    .drift-post { padding: 24px 28px; width: min(420px, 85vw); }
+    .drift-track { gap: 40px; padding: 20px 40px; }
+    .drift-indicator { padding: 0 16px; margin-top: 40px; }
+  }
+</style>
+
+<script>
+  const viewport = document.getElementById('drift-viewport') as HTMLElement;
+  const track    = document.getElementById('drift-track')    as HTMLElement;
+  const progress = document.getElementById('drift-progress') as HTMLElement;
+  const posts    = document.querySelectorAll<HTMLElement>('.drift-post');
+
+  if (!viewport || !track || !progress) throw new Error('BlogDrift: missing elements');
+
+  // ── Constants ──────────────────────────────────────────────────────
+  const DRIFT_SPEED = 0.4; // px per frame at 60fps — slow ambient drift
+  const POSTS_COUNT = posts.length;     // 12 (6 original × 2)
+  const LOOP_LENGTH = track.scrollWidth / 2; // we duplicated, so half = one loop
+
+  // ── State ──────────────────────────────────────────────────────────
+  let offset           = 0;  // current track X translation (negative = leftward)
+  let isPaused         = false;
+  let isDragging       = false;
+  let dragStartX       = 0;
+  let dragStartOffset  = 0;
+  let velocity         = 0;  // momentum after drag release
+  let activePost: HTMLElement | null = null;
+
+  // ── Render loop ────────────────────────────────────────────────────
+  let rafId: number;
+  function tick() {
+    rafId = requestAnimationFrame(tick);
+
+    if (!isDragging) {
+      if (isPaused) {
+        // Gentle deceleration while hover-paused
+        velocity *= 0.88;
+        offset += velocity;
+      } else {
+        // Natural drift leftward (posts scroll right → left visually)
+        offset -= DRIFT_SPEED;
+        // Apply any residual momentum from drag
+        offset += velocity;
+        velocity *= 0.92;
+      }
+    }
+
+    // Loop seamlessly — when offset exceeds one loop length, wrap
+    if (offset <= -LOOP_LENGTH) offset += LOOP_LENGTH;
+    if (offset > 0)             offset -= LOOP_LENGTH;
+
+    track.style.transform = `translateX(${offset}px)`;
+
+    // Progress bar position — always moves (visually reassures user
+    // that the section is alive)
+    const p = (-offset / LOOP_LENGTH) % 1; // 0 → 1
+    const barW = progress.parentElement!.offsetWidth;
+    const fillW = progress.offsetWidth;
+    progress.style.transform = `translateX(${p * (barW - fillW)}px)`;
+  }
+  tick();
+
+  // ── Hover: pause drift + focus one post ────────────────────────────
+  posts.forEach((post) => {
+    post.addEventListener('mouseenter', () => {
+      if (isDragging) return;
+      isPaused = true;
+      activePost = post;
+      track.classList.add('is-focused');
+      posts.forEach(p => p.classList.toggle('is-active', p === post));
+    });
+
+    post.addEventListener('mouseleave', () => {
+      // Only clear if we're leaving the post without entering another
+      // (mouseenter on the new post will fire first, keeping isPaused true)
+    });
+  });
+
+  // When cursor leaves the entire viewport, resume drift
+  viewport.addEventListener('mouseleave', () => {
+    if (isDragging) return;
+    isPaused = false;
+    activePost = null;
+    track.classList.remove('is-focused');
+    posts.forEach(p => p.classList.remove('is-active'));
+  });
+
+  // ── Drag to scroll ─────────────────────────────────────────────────
+  viewport.addEventListener('pointerdown', (e) => {
+    isDragging     = true;
+    dragStartX     = e.clientX;
+    dragStartOffset = offset;
+    velocity       = 0;
+    viewport.classList.add('is-dragging');
+    viewport.setPointerCapture(e.pointerId);
+    // Clear focus state while dragging
+    track.classList.remove('is-focused');
+    posts.forEach(p => p.classList.remove('is-active'));
+  });
+
+  viewport.addEventListener('pointermove', (e) => {
+    if (!isDragging) return;
+    const dx = e.clientX - dragStartX;
+    offset = dragStartOffset + dx;
+    velocity = dx * 0.05; // store recent velocity for momentum
+  });
+
+  viewport.addEventListener('pointerup', (e) => {
+    if (!isDragging) return;
+    isDragging = false;
+    viewport.classList.remove('is-dragging');
+    // Small momentum continues for a moment after release
+    // (applied in the tick loop)
+  });
+
+  // Prevent links from triggering navigation during drag
+  let dragDistance = 0;
+  let pointerDownX = 0;
+  viewport.addEventListener('pointerdown', (e) => {
+    pointerDownX = e.clientX;
+    dragDistance = 0;
+  });
+  viewport.addEventListener('pointermove', (e) => {
+    dragDistance = Math.abs(e.clientX - pointerDownX);
+  });
+  posts.forEach(post => {
+    post.addEventListener('click', (e) => {
+      if (dragDistance > 8) {
+        e.preventDefault(); // user was dragging, not clicking
+      }
+    });
+  });
+</script>

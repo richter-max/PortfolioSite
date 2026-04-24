@@ -1,14 +1,21 @@
-// Hero.jsx — Photo crossfade: laptophero → halbmarathon
-// - Laptop photo visible at top
-// - Scrolling fades in the race photo (blur + scale transition)
-// - Both images zoomed out with backgroundSize 70% for cinematic feel
-// - Name stays, role + countdown remain
+// Hero.jsx — bulletproof crossfade version
+// Architecture:
+//   outer (relative, 200vh)
+//     └─ sticky inner (top: 0, 100vh, overflow hidden)
+//          ├─ laptop img (absolute, always opacity 1)
+//          ├─ race img (absolute, opacity driven by scroll)
+//          ├─ gradients
+//          └─ content (relative z-index 2)
+//
+// Scroll tracking: native window scroll listener, running on [mounted]
+// to guarantee outerRef.current exists.
 import { useEffect, useRef, useState } from 'react';
 
 export default function Hero() {
   const [mounted, setMounted]       = useState(false);
   const [loaderGone, setLoaderGone] = useState(false);
   const [raceOpacity, setRaceOpacity] = useState(0);
+  const [debug, setDebug]             = useState({ top: 0, progress: 0 });
   const outerRef = useRef(null);
 
   // Loader timing
@@ -18,7 +25,8 @@ export default function Hero() {
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, []);
 
-  // Scroll listener
+  // Scroll listener — uses window scroll position, not the ref's rect,
+  // so it works even if the ref is briefly null during hydration.
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
@@ -46,6 +54,7 @@ export default function Hero() {
           : (progress - 0.2) / 0.55;
 
       setRaceOpacity(opacity);
+      setDebug({ top: Math.round(rect.top), progress: Number(progress.toFixed(3)) });
     }
 
     function onScroll() {
@@ -56,6 +65,7 @@ export default function Hero() {
       });
     }
 
+    // Initial computation after mount (ref is now attached)
     compute();
 
     window.addEventListener('scroll', onScroll, { passive: true });
@@ -102,6 +112,9 @@ export default function Hero() {
     const t = setTimeout(initChars, 150);
     return () => { cancelled = true; clearTimeout(t); };
   }, [mounted]);
+
+  // Toggle this to see live debug overlay
+  const SHOW_DEBUG = false;
 
   return (
     <>
@@ -172,6 +185,24 @@ export default function Hero() {
             zIndex: 2,
           }} />
 
+          {/* DEBUG overlay — remove once working */}
+          {SHOW_DEBUG && (
+            <div style={{
+              position: 'absolute', top: 20, left: 20,
+              fontFamily: 'monospace', fontSize: 11,
+              color: '#00ff88',
+              background: 'rgba(0,0,0,0.75)',
+              padding: '8px 12px',
+              borderRadius: 4,
+              zIndex: 100,
+              lineHeight: 1.5,
+            }}>
+              rect.top: {debug.top}px<br/>
+              progress: {debug.progress}<br/>
+              raceOpacity: {raceOpacity.toFixed(3)}
+            </div>
+          )}
+
           {/* Content */}
           <div style={{
             position: 'relative',
@@ -223,6 +254,29 @@ export default function Hero() {
               </div>
               <KraichgauCountdown />
             </div>
+          </div>
+
+          {/* Scroll cue */}
+          <div style={{
+            position: 'absolute',
+            bottom: 40, left: '50%',
+            transform: 'translateX(-50%)',
+            display: 'flex', flexDirection: 'column',
+            alignItems: 'center', gap: 12,
+            fontFamily: 'JetBrains Mono, monospace',
+            fontSize: 9, letterSpacing: '0.3em',
+            color: '#A8A6A0', pointerEvents: 'none',
+            opacity: mounted ? (raceOpacity > 0.5 ? 0 : 0.7) : 0,
+            transition: 'opacity 600ms ease',
+            zIndex: 3,
+          }}>
+            <span>SCROLL</span>
+            <span style={{
+              width: 1, height: 40,
+              background: 'linear-gradient(to bottom, #F3F1EC, transparent)',
+              animation: 'heroScrollCue 2400ms cubic-bezier(.22,1,.36,1) infinite',
+              transformOrigin: 'top',
+            }} />
           </div>
 
         </div>
