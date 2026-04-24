@@ -5,6 +5,7 @@
 // - Live character counter on message
 // - Grid: Name + Email side by side, Company full width, Message full width
 import { useState } from 'react';
+import ContactRunner from './ContactRunner.jsx';
 
 const MAX_CHARS = 600;
 
@@ -67,9 +68,15 @@ export default function ContactScene() {
           letterSpacing: '-0.005em',
         }}>Security engagements, speaking, collaborations. Replies within two working days.</p>
 
-        {/* ── Form ── */}
+        {/* ── Form + Runner grid ── */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'minmax(0, 1fr) 360px',
+          gap: 64,
+          alignItems: 'start',
+        }}>
+
         <form onSubmit={submit} style={{
-          maxWidth: 900,
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',
           gap: '36px 40px',
@@ -176,6 +183,31 @@ export default function ContactScene() {
             </div>
           </div>
         </form>
+
+          {/* ── Runner column ── */}
+          <div style={{
+            position: 'sticky',
+            top: 100,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 20,
+          }}>
+            <ContactRunner />
+            <div style={{
+              fontFamily: 'JetBrains Mono, monospace',
+              fontSize: 10,
+              letterSpacing: '0.22em',
+              color: '#6B6965',
+              textAlign: 'center',
+              lineHeight: 1.6,
+            }}>
+              <span style={{ color: '#F3F1EC' }}>IN MOTION</span><br/>
+              ALLGÄU · CET
+            </div>
+          </div>
+
+        </div>
 
         {/* ── Meta info grid ── */}
         <div style={{
