@@ -1,0 +1,167 @@
+// FieldTape.jsx — React island: pinned horizontal scroll through endurance chapters
+import { useEffect, useRef, useState } from 'react';
+
+export default function FieldTape({ entries }) {
+  const pinRef = useRef(null);
+  const trackRef = useRef(null);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const pin = pinRef.current; if (!pin) return;
+    const onScroll = () => {
+      const rect = pin.getBoundingClientRect();
+      const vh = window.innerHeight;
+      const total = pin.offsetHeight - vh;
+      const scrolled = Math.min(Math.max(-rect.top, 0), total);
+      const p = total > 0 ? scrolled / total : 0;
+      setProgress(p);
+      if (trackRef.current) {
+        const maxShift = trackRef.current.scrollWidth - window.innerWidth;
+        trackRef.current.style.transform = `translateX(${-p * maxShift}px)`;
+      }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  return (
+    <section id="field" style={{ borderTop: '1px solid rgba(243,241,236,0.08)' }}>
+      <div style={{ maxWidth: 1440, margin: '0 auto', padding: '128px 40px 64px' }}>
+        <div style={{
+          fontFamily: 'JetBrains Mono, monospace', fontSize: 11, letterSpacing: '0.2em',
+          color: '#6B6965', marginBottom: 40, display: 'flex', gap: 16, alignItems: 'center',
+        }}>
+          <span style={{ color: '#F3F1EC' }}>02</span>
+          <span style={{ width: 32, height: 1, background: 'rgba(243,241,236,0.16)' }} />
+          <span style={{ color: '#F3F1EC' }}>FIELD</span>
+        </div>
+        <h2 style={{
+          fontFamily: 'Inter Tight, sans-serif', fontWeight: 500,
+          fontSize: 'clamp(48px, 7vw, 96px)', lineHeight: 0.98, letterSpacing: '-0.04em',
+          color: '#F3F1EC', margin: 0, maxWidth: '14ch',
+        }}>Tested in the cold.</h2>
+        <p style={{
+          fontFamily: 'Inter Tight, sans-serif', fontSize: 19, lineHeight: 1.5,
+          color: '#A8A6A0', maxWidth: '52ch', marginTop: 32, letterSpacing: '-0.005em',
+        }}>Endurance is not a hobby. It is the same practice — systems under load, failure modes, recovery. Scroll to traverse.</p>
+      </div>
+
+      <div ref={pinRef} style={{ height: `${entries.length * 100}vh`, position: 'relative' }}>
+        <div style={{
+          position: 'sticky', top: 0, height: '100vh', overflow: 'hidden',
+          background: '#050506',
+        }}>
+          <div style={{
+            position: 'absolute', top: 40, left: 40, right: 40, height: 1,
+            background: 'rgba(243,241,236,0.1)', zIndex: 5,
+          }}>
+            <div style={{
+              position: 'absolute', left: 0, top: 0, height: 1,
+              width: `${progress * 100}%`, background: '#2E6BFF',
+              transition: 'width 120ms linear',
+            }} />
+            <div style={{
+              position: 'absolute', left: 0, top: -4, height: 9, width: 1,
+              background: 'rgba(243,241,236,0.3)',
+            }} />
+            {entries.map((_, i) => (
+              <div key={i} style={{
+                position: 'absolute', left: `${((i + 1) / entries.length) * 100}%`,
+                top: -4, height: 9, width: 1,
+                background: 'rgba(243,241,236,0.2)',
+              }} />
+            ))}
+            <div style={{
+              position: 'absolute', right: 0, top: -18,
+              fontFamily: 'JetBrains Mono, monospace', fontSize: 10,
+              letterSpacing: '0.22em', color: '#A8A6A0',
+            }}>{String(Math.min(entries.length, Math.floor(progress * entries.length) + 1)).padStart(2, '0')} / {String(entries.length).padStart(2, '0')}</div>
+          </div>
+
+          <div ref={trackRef} style={{
+            position: 'absolute', top: 0, left: 0, height: '100%',
+            display: 'flex', willChange: 'transform',
+          }}>
+            {entries.map((e, i) => (
+              <FieldPanel key={i} {...e} />
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function FieldPanel({ index, title, location, date, stats = [], conditions, image, imagePosition = 'center 35%' }) {
+  return (
+    <article style={{
+      width: '100vw', height: '100vh', flex: '0 0 100vw',
+      position: 'relative', overflow: 'hidden',
+    }}>
+      {image && (
+        <>
+          <div style={{
+            position: 'absolute', inset: 0,
+            backgroundImage: `url("${image}")`,
+            backgroundSize: 'cover', backgroundPosition: imagePosition,
+            filter: 'saturate(0.45) brightness(0.55) contrast(1.05)',
+          }} />
+          <div style={{ position: 'absolute', inset: 0,
+            background: 'linear-gradient(180deg, rgba(5,5,6,0.45) 0%, rgba(5,5,6,0.25) 35%, rgba(5,5,6,0.9) 100%)',
+            pointerEvents: 'none' }} />
+          <div style={{ position: 'absolute', inset: 0, opacity: 0.05, mixBlendMode: 'overlay',
+            backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence baseFrequency='0.9'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>")`,
+            pointerEvents: 'none' }} />
+        </>
+      )}
+
+      <div style={{
+        position: 'absolute', inset: 0, padding: '140px 80px 80px',
+        display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+      }}>
+        <div style={{
+          fontFamily: 'JetBrains Mono, monospace', fontSize: 11, letterSpacing: '0.22em',
+          color: '#A8A6A0', display: 'flex', alignItems: 'center', gap: 16,
+        }}>
+          <span style={{ color: '#F3F1EC' }}>{index}</span>
+          <span style={{ width: 32, height: 1, background: 'rgba(243,241,236,0.16)' }} />
+          <span>{location}</span>
+          <span>·</span>
+          <span>{date}</span>
+        </div>
+
+        <div style={{ maxWidth: 1440, margin: '0 auto', width: '100%',
+          display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 80, alignItems: 'end' }}>
+          <div>
+            <h3 style={{
+              fontFamily: 'Inter Tight, sans-serif', fontWeight: 500,
+              fontSize: 'clamp(56px, 8vw, 128px)', lineHeight: 0.95, letterSpacing: '-0.04em',
+              color: '#F3F1EC', margin: 0, maxWidth: '14ch',
+            }}>{title}</h3>
+            <p style={{
+              fontFamily: 'Inter Tight, sans-serif', fontSize: 17, lineHeight: 1.55,
+              color: '#D9D7D2', margin: 0, marginTop: 32, maxWidth: '50ch', letterSpacing: '-0.005em',
+            }}>{conditions}</p>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 32, alignItems: 'flex-end' }}>
+            {stats.map((s, i) => (
+              <div key={i} style={{ textAlign: 'right' }}>
+                <div style={{
+                  fontFamily: 'Inter Tight, sans-serif', fontWeight: 300,
+                  fontSize: 'clamp(48px, 5.5vw, 88px)', lineHeight: 0.95, letterSpacing: '-0.04em',
+                  color: '#F3F1EC', fontVariantNumeric: 'tabular-nums',
+                }}>{s.value}</div>
+                <div style={{
+                  fontFamily: 'JetBrains Mono, monospace', fontSize: 10, letterSpacing: '0.22em',
+                  textTransform: 'uppercase', color: '#A8A6A0', marginTop: 8,
+                }}>{s.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </article>
+  );
+}

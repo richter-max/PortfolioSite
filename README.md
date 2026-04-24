@@ -1,45 +1,81 @@
-# SPLIT SIGNAL — Portfolio
+# Maximilian Richter — Personal Site
 
-Personal portfolio site for Maximilian Richter. Built as a dual-panel experience reflecting two sides of the same discipline: **Security Engineering** and **Endurance Athletics**.
-
-## Live
-
-→ [View Site](https://your-domain.com)
+Astro + React islands. Static-first, hydrated only where needed (hero countdown, field tape scroll, writing deck).
 
 ## Stack
+- **Framework:** Astro 4
+- **Islands:** React 18 (hero, field tape, contact)
+- **Styles:** Inline + `src/styles/tokens.css`
+- **Fonts:** Inter Tight + JetBrains Mono (self-hosted via Google Fonts in `<head>`)
 
-- Pure HTML, CSS, JavaScript — no frameworks, no build step
-- Hosted on Vercel
-- Custom animations, particle systems, and scroll-driven effects
+## Develop
+
+```bash
+pnpm install      # or npm install / yarn
+pnpm dev          # http://localhost:4321
+```
+
+## Build
+
+```bash
+pnpm build        # outputs to ./dist
+pnpm preview      # serve ./dist locally
+```
+
+## Deploy
+
+The site is **static output** — any host works. Recommended:
+
+### Cloudflare Pages (recommended)
+1. Push this repo to GitHub
+2. Cloudflare Pages → Create project → Connect to Git → select repo
+3. Build command: `pnpm build` (or `npm run build`)
+4. Output directory: `dist`
+5. Node version (env var): `NODE_VERSION=20`
+6. Custom domain → `richtermax.com` → follow DNS steps
+
+### Vercel
+1. Push to GitHub
+2. Vercel → New Project → Import
+3. Framework preset: Astro (auto-detected)
+4. Deploy
+
+### Netlify
+1. Push to GitHub
+2. Netlify → Add new site → Import from Git
+3. Build command: `pnpm build`, Publish dir: `dist`
 
 ## Structure
 
 ```
-index.html                    — Main portfolio page
-blog-aegis.html              — Building AEGIS: AI Agent Security
-blog-ironman-training.html   — Training for Ironman at Bosch
-blog-career-roadmap.html     — From Apprentice to ???
-blog-endurance-roadmap.html  — The Endurance Roadmap
+src/
+├── pages/
+│   ├── index.astro             — home
+│   └── case-studies/
+│       └── aegis.astro         — AEGIS case study (static HTML)
+├── components/
+│   ├── Nav.astro               — static top bar (scroll-reactive via vanilla JS)
+│   ├── SectionMarker.astro     — section eyebrow
+│   ├── WorkScene.astro         — work row
+│   ├── Footer.astro
+│   ├── Rail.astro              — side scroll rail
+│   ├── Hero.jsx                — React island (loader + countdown + ken-burns)
+│   ├── FieldTape.jsx           — React island (pinned horizontal scroll)
+│   └── ContactScene.jsx        — React island (form state)
+├── styles/
+│   └── tokens.css              — colors + type + resets
+└── layouts/
+    └── BaseLayout.astro        — html/head wrapper
+
+public/
+├── img/                        — all photos (blog-*, portrait-*, fjord, etc)
+└── favicon.svg
 ```
 
-## Features
+## Editing content
 
-- Cinematic boot sequence
-- Dual-panel layout with synchronized scroll
-- Particle systems (geometric/tech left, organic/athlete right)
-- Scroll-progress EKG sidebar with context-aware color shifting
-- Live race countdowns (Ironman 70.3, Berlin Marathon)
-- Interactive attack surface scanner demo terminal
-- Cursor-following glow effects
-- Micro-interaction tooltips on tech stack
-- Konami code easter egg
-- Morph transitions between sections
+**Work entries:** `src/pages/index.astro` → `<WorkScene ... />` blocks.
+**Field entries:** same file → `fieldEntries` array passed to `<FieldTape>`.
+**AEGIS case study:** `src/pages/case-studies/aegis.astro`.
 
-## Author
-
-**Maximilian Richter**
-Software Developer @ Bosch | Security Engineering | Endurance Athlete
-
-- [GitHub](https://github.com/richter-max)
-- [LinkedIn](https://www.linkedin.com/in/maximilian-richter-40697a298)
-- [Strava](https://www.strava.com/athletes/richter-max)
+No CMS. Edit, commit, push — Cloudflare/Vercel auto-redeploys.

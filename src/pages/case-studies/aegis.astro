@@ -1,0 +1,311 @@
+---
+// aegis.astro — case study 01/04
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+<BaseLayout title="AEGIS — Case Study · Maximilian Richter" description="Measuring how badly an AI agent breaks when you push on it.">
+
+<!-- COVER -->
+<section class="cover">
+  <div class="top-bar">
+    <a class="mark" href="/">MR.</a>
+    <div class="mono top-meta">CASE&nbsp;STUDY · 01 / 04</div>
+  </div>
+
+  <div>
+    <div class="mono cover-kicker">
+      <span class="dot"></span>
+      SECURITY FRAMEWORK · AI AGENTS
+    </div>
+    <h1 class="display cover-title">AEGIS.</h1>
+    <div class="cover-dek">
+      Measuring how badly an AI agent breaks when you push on it.
+    </div>
+  </div>
+
+  <div class="cover-meta mono">
+    <div><div class="k">ROLE</div><div class="v">Sole author</div></div>
+    <div><div class="k">PERIOD</div><div class="v">2025 — ongoing</div></div>
+    <div><div class="k">STATUS</div><div class="v">Private project</div></div>
+    <div><div class="k">READ</div><div class="v">≈ 6 min</div></div>
+  </div>
+</section>
+
+<!-- ARTICLE -->
+<main>
+
+  <!-- 01 Brief -->
+  <article class="chapter">
+    <div class="chapter-num mono">
+      <span>CHAPTER</span>
+      <span class="big">01</span>
+    </div>
+    <div>
+      <div class="kicker mono">THE BRIEF</div>
+      <h2>Agents act. Nobody checks what happens when they act wrong.</h2>
+      <p class="lede">An AI agent can read the web, write to a database, call an API, ship a deploy. A chatbot cannot. That difference is the entire security story, and almost nobody is treating it like one yet.</p>
+      <div class="body">
+        <p>For a year I watched the industry ship agent after agent — in customer support, in ops, in code review — with the same evaluation harness one would use for a text model. Accuracy on a fixed benchmark. Average completion rate. A spot check of outputs.</p>
+        <p>None of those measure what I wanted to know. If a hostile user slips a line into a calendar invite, will the agent exfiltrate the contents of the inbox? If an internal tool returns a crafted error, will the agent retry it thirty times against production? If the system prompt drifts, does the agent still refuse the requests it is supposed to refuse?</p>
+        <p>I started AEGIS in the margin hours around a full-time job to answer questions like that — not as a research paper, but as a tool an engineer could actually run against their own agent and get a readable report back from.</p>
+      </div>
+    </div>
+  </article>
+
+  <!-- 02 Approach -->
+  <article class="chapter">
+    <div class="chapter-num mono">
+      <span>CHAPTER</span>
+      <span class="big">02</span>
+    </div>
+    <div>
+      <div class="kicker mono">THE APPROACH</div>
+      <h2>Treat the agent like software. Attack it like software.</h2>
+      <div class="body">
+        <p>Security testing for traditional software has a vocabulary: surface, vector, payload, impact. Most "AI safety" work has none of that. It speaks in alignment and intent. Useful, but not something you can run in CI.</p>
+        <p>AEGIS lifts the security vocabulary directly. An agent is a service. Its tools are endpoints. Its memory is state. Its system prompt is a trust boundary. Every place a piece of text enters the agent — the user turn, a tool result, a retrieved document, a file name — is an ingress point, and ingress points can carry payloads.</p>
+        <p>From there the framework is almost boring. For each ingress point, enumerate the payload classes that could arrive there. For each payload, observe what the agent does. Score the delta from intended behavior. Report.</p>
+      </div>
+
+      <div class="diagram">
+        <div class="diagram-label mono">FIG. 01 · INGRESS POINTS &amp; EVALUATION LOOP</div>
+        <svg viewBox="0 0 900 360" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+              <path d="M0,0 L6,4 L0,8 z" fill="#6B6965"></path>
+            </marker>
+            <marker id="arrowblue" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+              <path d="M0,0 L6,4 L0,8 z" fill="#2E6BFF"></path>
+            </marker>
+          </defs>
+          <g font-family="JetBrains Mono, monospace" font-size="10" fill="#A8A6A0" letter-spacing="1.5">
+            <text x="40" y="60">USER TURN</text>
+            <text x="40" y="130">TOOL RESULT</text>
+            <text x="40" y="200">RETRIEVED DOC</text>
+            <text x="40" y="270">SYSTEM PROMPT</text>
+          </g>
+          <g stroke="#6B6965" stroke-width="1">
+            <line x1="180" y1="56" x2="340" y2="170" marker-end="url(#arrow)"></line>
+            <line x1="180" y1="126" x2="340" y2="170" marker-end="url(#arrow)"></line>
+            <line x1="180" y1="196" x2="340" y2="170" marker-end="url(#arrow)"></line>
+            <line x1="180" y1="266" x2="340" y2="170" marker-end="url(#arrow)"></line>
+          </g>
+          <rect x="340" y="130" width="220" height="100" fill="none" stroke="#F3F1EC" stroke-width="1"></rect>
+          <text x="450" y="165" text-anchor="middle" font-family="Inter Tight, sans-serif" font-size="16" fill="#F3F1EC" letter-spacing="-0.02em">AGENT</text>
+          <text x="450" y="188" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#6B6965" letter-spacing="1.2">MODEL + TOOLS + MEMORY</text>
+          <text x="450" y="210" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#6B6965" letter-spacing="1.2">UNDER TEST</text>
+          <line x1="560" y1="180" x2="700" y2="180" stroke="#2E6BFF" stroke-width="1" marker-end="url(#arrowblue)"></line>
+          <text x="630" y="170" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#2E6BFF" letter-spacing="1.5">OBSERVE</text>
+          <rect x="700" y="130" width="160" height="100" fill="#2E6BFF"></rect>
+          <text x="780" y="170" text-anchor="middle" font-family="Inter Tight, sans-serif" font-size="14" fill="#F3F1EC" letter-spacing="-0.02em">SCORE</text>
+          <text x="780" y="192" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="rgba(243,241,236,0.7)" letter-spacing="1.2">DELTA FROM INTENDED</text>
+          <path d="M780,230 Q780,310 450,310 Q120,310 120,290" fill="none" stroke="#6B6965" stroke-width="1" stroke-dasharray="3 4" marker-end="url(#arrow)"></path>
+          <text x="450" y="335" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#6B6965" letter-spacing="1.5">FEED BACK · NEXT PAYLOAD</text>
+        </svg>
+      </div>
+    </div>
+  </article>
+
+  <div class="pullquote-wrap">
+    <div class="pullquote">
+      "Alignment tells you what the agent should do. Security tells you what it actually does when you lie to it."
+    </div>
+  </div>
+
+  <!-- 03 Findings -->
+  <article class="chapter">
+    <div class="chapter-num mono">
+      <span>CHAPTER</span>
+      <span class="big">03</span>
+    </div>
+    <div>
+      <div class="kicker mono">THE FINDINGS</div>
+      <h2>What actually breaks.</h2>
+      <p class="lede">Five agent architectures tested in the first pass. The pattern was more consistent than expected: the same handful of failure modes kept showing up, independent of the model underneath.</p>
+
+      <div class="findings">
+        <div class="finding">
+          <div class="idx mono">F.01 · INDIRECT INJECTION</div>
+          <h3>Payloads in retrieved documents.</h3>
+          <p>Hostile instructions inside a PDF the agent was asked to summarize were executed as if they came from the user. No architecture caught this reliably.</p>
+        </div>
+        <div class="finding">
+          <div class="idx mono">F.02 · TOOL RESULT TRUST</div>
+          <h3>Crafted error strings redirect execution.</h3>
+          <p>When a fake tool returned an error that looked like new instructions, most agents followed them. The system prompt's "only trust the user" clause did not survive contact.</p>
+        </div>
+        <div class="finding">
+          <div class="idx mono">F.03 · MEMORY EXFIL</div>
+          <h3>Long-term memory leaks across sessions.</h3>
+          <p>On agents with persistent memory, a single adversarial turn could plant an instruction that fired days later for a different user on the same store.</p>
+        </div>
+        <div class="finding">
+          <div class="idx mono">F.04 · UNBOUNDED RETRY</div>
+          <h3>No cost ceiling under failure.</h3>
+          <p>Given a tool that always errored, several agents looped until budget exhausted — dozens to hundreds of calls — with no backoff and no escalation.</p>
+        </div>
+        <div class="finding">
+          <div class="idx mono">F.05 · SYSTEM PROMPT DRIFT</div>
+          <h3>Refusals weaken over long contexts.</h3>
+          <p>Requests the agent refused on turn one were quietly accepted by turn forty. The trust boundary erodes as the conversation grows.</p>
+        </div>
+        <div class="finding">
+          <div class="idx mono">F.06 · TOOL COMPOSITION</div>
+          <h3>Safe tools combine into unsafe actions.</h3>
+          <p>Read-email and send-email, each audited and benign, chained into a credible phishing pipeline when the agent was asked nicely enough.</p>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- 04 Harness -->
+  <article class="chapter">
+    <div class="chapter-num mono">
+      <span>CHAPTER</span>
+      <span class="big">04</span>
+    </div>
+    <div>
+      <div class="kicker mono">THE HARNESS</div>
+      <h2>What the engineer actually runs.</h2>
+      <div class="body">
+        <p>The framework ships as a Python package. Point it at an agent endpoint, declare the tools and ingress points, and it runs the payload corpus against each one in parallel. Results land as a readable report — not a confusion matrix, a document.</p>
+        <p>The harness is designed to be boring on purpose. A single config file. A single command. A report that an engineer can forward to a PM without a glossary. The interesting work is in the corpus; the tool just gets out of the way.</p>
+      </div>
+
+      <div class="code-head mono">aegis_run.py · simplified</div>
+      <pre class="code"><span class="c"># point AEGIS at an agent and run the full payload corpus</span>
+<span class="k">from</span> aegis <span class="k">import</span> Harness, Agent, Corpus
+
+agent = Agent(
+    endpoint=<span class="s">"https://my-agent.internal/chat"</span>,
+    tools=[<span class="s">"read_email"</span>, <span class="s">"send_email"</span>, <span class="s">"fetch_url"</span>],
+    ingress=[<span class="s">"user"</span>, <span class="s">"tool_result"</span>, <span class="s">"retrieved"</span>],
+)
+
+corpus = Corpus.load(<span class="s">"default"</span>)   <span class="c"># 340+ payloads across 6 classes</span>
+
+report = Harness(agent, corpus).<span class="f">run</span>(parallel=8)
+report.<span class="f">save</span>(<span class="s">"report.html"</span>)</pre>
+    </div>
+  </article>
+
+  <!-- 05 Outcome -->
+  <article class="chapter">
+    <div class="chapter-num mono">
+      <span>CHAPTER</span>
+      <span class="big">05</span>
+    </div>
+    <div>
+      <div class="kicker mono">THE OUTCOME</div>
+      <h2>Quiet findings, loud implications.</h2>
+      <div class="body">
+        <p>The first production agent I pointed AEGIS at passed its own team's evaluation suite and failed half the payload classes above. Not because the team was careless — because the team was evaluating for the wrong thing, with the wrong vocabulary, in a model of the problem that predated the tool-using agent entirely.</p>
+        <p>That gap is the thesis. Agents are not chatbots. The evaluation methodology must catch up, and it will catch up faster if engineers have a tool they can run on a Tuesday afternoon without reading a paper.</p>
+        <p>AEGIS is still private and still evolving. Next on the list: expanding the payload corpus, building a continuous mode that runs against a canary agent in pre-production, and a calmer way of presenting the score so that "AEGIS failed your agent" is a fact people can act on instead of argue with.</p>
+      </div>
+    </div>
+  </article>
+
+  <div class="endmark mono">— END OF REPORT —</div>
+
+</main>
+
+<nav class="backnav mono">
+  <a href="/">← BACK · MR.</a>
+  <a href="mailto:max.richter.dev@proton.me">WRITE → MAX.RICHTER.DEV@PROTON.ME</a>
+</nav>
+
+</BaseLayout>
+
+<style is:global>
+  html, body { background: #F3F1EC !important; color: #0a0a0b; }
+  ::selection { background: #2E6BFF; color: #F3F1EC; }
+</style>
+
+<style>
+  .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+  .display { font-family: 'Inter Tight', sans-serif; font-weight: 500; letter-spacing: -0.04em; line-height: 0.98; }
+  .body { font-family: 'Inter Tight', sans-serif; font-size: 19px; line-height: 1.65; letter-spacing: -0.005em; color: #1c1c1e; }
+  .body :global(p) { margin: 0 0 28px; }
+  .body :global(p:first-of-type::first-letter) {
+    font-family: 'Inter Tight', sans-serif; font-weight: 500; font-size: 84px;
+    float: left; line-height: 0.82; padding: 8px 14px 0 0; color: #0a0a0b;
+  }
+  .kicker { font-size: 10px; letter-spacing: 0.24em; text-transform: uppercase; color: #6B6965; }
+
+  .pullquote-wrap { max-width: 1200px; margin: 0 auto; padding: 0 40px; }
+  .pullquote {
+    font-family: 'Inter Tight', sans-serif; font-weight: 400;
+    font-size: clamp(28px, 3.2vw, 44px); line-height: 1.15; letter-spacing: -0.025em;
+    color: #0a0a0b; padding: 48px 0; margin: 56px 0;
+    border-top: 1px solid rgba(10,10,11,0.14);
+    border-bottom: 1px solid rgba(10,10,11,0.14);
+    max-width: 28ch;
+  }
+
+  .cover {
+    position: relative; min-height: 100vh; width: 100%;
+    background: #050506; color: #F3F1EC;
+    display: flex; flex-direction: column; justify-content: space-between;
+    padding: 40px; overflow: hidden;
+  }
+  .cover::before {
+    content: ""; position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 80%, rgba(46,107,255,0.16), transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(90,100,120,0.12), transparent 55%),
+      linear-gradient(180deg, #0a0c10 0%, #050506 100%);
+    pointer-events: none;
+  }
+  .cover > * { position: relative; }
+  .top-bar { display: flex; justify-content: space-between; align-items: center; }
+  .mark { font-family: 'Inter Tight', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: -0.02em; color: #F3F1EC; }
+  .top-meta { font-size: 10px; letter-spacing: 0.22em; color: #A8A6A0; }
+  .cover-kicker {
+    font-size: 10px; letter-spacing: 0.24em; color: #2E6BFF;
+    margin-bottom: 40px; display: flex; align-items: center; gap: 12px;
+  }
+  .cover-kicker .dot { width: 6px; height: 6px; background: #2E6BFF; display: inline-block; }
+  .cover-title { font-size: clamp(72px, 13vw, 220px); max-width: 12ch; color: #F3F1EC; margin: 0; }
+  .cover-dek { color: #D9D7D2; font-size: 22px; max-width: 44ch; margin-top: 40px; font-family: 'Inter Tight', sans-serif; }
+  .cover-meta { display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px; padding-top: 32px; border-top: 1px solid rgba(243,241,236,0.16); }
+  .cover-meta .k { color: #A8A6A0; font-size: 10px; letter-spacing: 0.22em; }
+  .cover-meta .v { color: #F3F1EC; font-size: 15px; margin-top: 10px; font-family: 'Inter Tight', sans-serif; letter-spacing: -0.01em; }
+
+  main { max-width: 1200px; margin: 0 auto; padding: 120px 40px 64px; }
+  .chapter { display: grid; grid-template-columns: 180px 1fr; gap: 80px; padding: 64px 0; border-top: 1px solid rgba(10,10,11,0.14); }
+  .chapter:first-of-type { border-top: none; }
+  .chapter-num { font-size: 10px; letter-spacing: 0.24em; color: #6B6965; }
+  .chapter-num .big { display: block; font-family: 'Inter Tight', sans-serif; font-weight: 300; font-size: 64px; line-height: 1; letter-spacing: -0.04em; color: #0a0a0b; margin-top: 10px; }
+  .chapter h2 { font-family: 'Inter Tight', sans-serif; font-weight: 500; font-size: clamp(36px, 4.4vw, 56px); line-height: 1; letter-spacing: -0.035em; margin: 0 0 40px; max-width: 18ch; color: #0a0a0b; }
+  .lede { font-size: 24px; line-height: 1.45; color: #0a0a0b; max-width: 40ch; margin-bottom: 40px; letter-spacing: -0.01em; font-family: 'Inter Tight', sans-serif; }
+
+  .findings { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0; margin: 40px 0; }
+  .finding { padding: 32px 32px 32px 0; border-top: 1px solid rgba(10,10,11,0.14); }
+  .finding:nth-child(even) { padding-left: 32px; border-left: 1px solid rgba(10,10,11,0.14); padding-right: 0; }
+  .finding .idx { font-size: 10px; letter-spacing: 0.22em; color: #2E6BFF; margin-bottom: 14px; }
+  .finding h3 { font-family: 'Inter Tight', sans-serif; font-weight: 500; font-size: 22px; line-height: 1.2; letter-spacing: -0.02em; margin: 0 0 12px; color: #0a0a0b; }
+  .finding p { font-family: 'Inter Tight', sans-serif; font-size: 15px; line-height: 1.55; color: #1c1c1e; margin: 0; max-width: 40ch; }
+
+  .diagram { margin: 40px 0; padding: 40px; background: #0a0a0b; color: #F3F1EC; border: 1px solid rgba(10,10,11,0.14); }
+  .diagram-label { font-size: 10px; letter-spacing: 0.22em; color: #6B6965; margin-bottom: 32px; }
+  .diagram svg { width: 100%; height: auto; display: block; }
+
+  .code { margin: 40px 0; background: #0a0a0b; color: #D9D7D2; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.7; padding: 28px 32px; overflow-x: auto; letter-spacing: 0.005em; }
+  .code :global(.c) { color: #6B6965; }
+  .code :global(.k) { color: #9FB2E0; }
+  .code :global(.s) { color: #C9B38C; }
+  .code :global(.f) { color: #E8E6E1; }
+  .code-head { font-size: 10px; letter-spacing: 0.22em; color: #6B6965; margin-bottom: 14px; }
+
+  .endmark { text-align: center; padding: 80px 0 40px; font-size: 10px; letter-spacing: 0.3em; color: #6B6965; }
+  .backnav { padding: 40px; display: flex; justify-content: space-between; font-size: 10px; letter-spacing: 0.22em; color: #6B6965; border-top: 1px solid rgba(10,10,11,0.14); background: #F3F1EC; }
+  .backnav a { text-decoration: none; color: inherit; }
+  .backnav a:hover { color: #0a0a0b; }
+
+  @media (max-width: 900px) {
+    .chapter { grid-template-columns: 1fr; gap: 24px; padding: 48px 0; }
+    .findings { grid-template-columns: 1fr; }
+    .finding:nth-child(even) { padding-left: 0; border-left: none; }
+    .cover-meta { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+  }
+</style>

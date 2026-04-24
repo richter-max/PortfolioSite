@@ -1,0 +1,98 @@
+---
+// WorkScene.astro — one work entry row
+interface Props {
+  index: string;
+  client: string;
+  role: string;
+  year: string;
+  summary: string;
+  href?: string;
+}
+const { index, client, role, year, summary, href = '#' } = Astro.props;
+---
+
+<a href={href} class="work-row">
+  <div class="grid">
+    <div class="idx">{index}</div>
+    <div class="body">
+      <div class="client">{client}</div>
+      <p class="summary">{summary}</p>
+    </div>
+    <div class="role">
+      <span class="muted">ROLE</span>
+      <span class="val">{role}</span>
+    </div>
+    <div class="year">{year}&nbsp;&nbsp;→</div>
+  </div>
+</a>
+
+<style>
+  .work-row {
+    display: block;
+    padding: 48px 40px;
+    border-top: 1px solid rgba(243, 241, 236, 0.08);
+    transition: background 600ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .work-row:hover {
+    background: rgba(243, 241, 236, 0.02);
+  }
+  .work-row:hover .year {
+    opacity: 1;
+  }
+  .grid {
+    max-width: 1440px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 80px 1fr 200px 120px;
+    gap: 32px;
+    align-items: baseline;
+  }
+  .idx {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--ink-low);
+  }
+  .client {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(28px, 3.2vw, 44px);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+    margin-bottom: 14px;
+  }
+  .summary {
+    font-family: var(--font-display);
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--ink-mid);
+    margin: 0;
+    max-width: 54ch;
+    letter-spacing: -0.005em;
+  }
+  .role {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--ink-mid);
+    text-transform: uppercase;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .role .muted {
+    color: var(--ink-low);
+  }
+  .role .val {
+    color: var(--ink);
+  }
+  .year {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ink);
+    text-align: right;
+    opacity: 0.6;
+    transition: opacity 600ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+</style>

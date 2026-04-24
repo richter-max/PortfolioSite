@@ -1,0 +1,64 @@
+---
+// index.astro — home page
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import Rail from '../components/Rail.astro';
+import SectionMarker from '../components/SectionMarker.astro';
+import WorkScene from '../components/WorkScene.astro';
+import Footer from '../components/Footer.astro';
+import Hero from '../components/Hero.jsx';
+import FieldTape from '../components/FieldTape.jsx';
+import ContactScene from '../components/ContactScene.jsx';
+
+const fieldEntries = [
+  {
+    index: '02.01',
+    title: 'Ironman 70.3 Kraichgau',
+    location: 'KRAICHGAU · DE',
+    date: 'MAY 2026',
+    conditions: '1.9km swim, 90km bike, 21.1km run. First half-iron finish. Target sub five hours. Fifteen-plus hours of training per week stacked on a full-time job.',
+    image: '/img/portrait-salomon.png',
+    imagePosition: 'center 35%',
+    stats: [{ value: '≤ 5:00', label: 'TARGET' }, { value: '211 km', label: 'TOTAL' }],
+  },
+  {
+    index: '02.02',
+    title: 'Berlin Marathon',
+    location: 'BERLIN · DE',
+    date: 'SEP 2026',
+    conditions: 'Fastest course in the world. Target 4:16 per kilometer held across 42.195km. No music, no pacer, no fade.',
+    image: '/img/berlin-marathon.jpg',
+    imagePosition: 'center 40%',
+    stats: [{ value: '≤ 3:00:00', label: 'TARGET' }, { value: '4:16/km', label: 'PACE' }],
+  },
+  {
+    index: '02.03',
+    title: 'Table Tennis — Landesliga',
+    location: 'BAYERN · DE',
+    date: '2025/26 SEASON',
+    conditions: 'Ongoing league play. Current rating 1740, climbing toward 1800. Same discipline as the endurance block — reps, film, quiet volume.',
+    image: '/img/tischtennis.jpg',
+    imagePosition: 'center 62%',
+    stats: [{ value: '1,740', label: 'CURRENT' }, { value: '1,800', label: 'TARGET' }],
+  },
+];
+---
+<BaseLayout title="Maximilian Richter">
+  <Nav />
+  <Rail />
+  <main>
+    <Hero client:load />
+
+    <section id="work">
+      <SectionMarker number="01" label="WORK" title="Systems that cannot fail." subtitle="Production security engineering. Threat modeling, hardening, incident response. Selected engagements below." />
+      <WorkScene index="01.01" client="AEGIS" role="Security Framework · AI Agents" year="2025" summary="Private project. A framework for evaluating how vulnerable AI agents are to prompt injection, data exfiltration, and unauthorized actions. Built from scratch. Tested across agent architectures; surfaced vulnerability classes before deployment." href="/case-studies/aegis" />
+      <WorkScene index="01.02" client="Attack Surface Scanner" role="CLI Tool · Open Source" year="2025" summary="Automated reconnaissance — DNS, open ports, subdomains, security headers — in one command. Full scan under thirty seconds. Live demo on the site." />
+      <WorkScene index="01.03" client="VendorQ" role="B2B SaaS · Beta" year="2025" summary="AI reads existing security docs and auto-generates answers for vendor questionnaires. Two-week process compressed to a two-hour review. ~70% faster turnaround." />
+      <WorkScene index="01.04" client="SMB Security Tool" role="Security Product · In Development" year="2026" summary="Enterprise-grade security for companies with 10–200 employees. One-click setup, automated scanning, reports a non-technical CEO can understand." />
+    </section>
+
+    <FieldTape entries={fieldEntries} client:load />
+    <ContactScene client:load />
+    <Footer />
+  </main>
+</BaseLayout>

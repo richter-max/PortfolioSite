@@ -1,0 +1,99 @@
+---
+// Nav.astro — fixed translucent top bar, vanilla scroll listener
+interface Props {
+  section?: string;
+}
+const { section = 'HOME' } = Astro.props;
+const items = ['WORK', 'FIELD', 'CONTACT'];
+---
+
+<nav class="site-nav" data-section={section}>
+  <a href="/#top" class="nav-mark">MR.</a>
+  <div class="nav-items">
+    {items.map((it) => (
+      <a
+        href={`/#${it.toLowerCase()}`}
+        class:list={['nav-link', { active: section === it }]}
+      >
+        {it}
+      </a>
+    ))}
+  </div>
+  <div class="nav-status">
+    <span class="nav-dot"></span>
+    ALLGÄU · CET
+  </div>
+</nav>
+
+<style>
+  .site-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 72px;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    background: transparent;
+    border-bottom: 1px solid transparent;
+    transition:
+      background 600ms cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 600ms cubic-bezier(0.22, 1, 0.36, 1),
+      backdrop-filter 600ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .site-nav.scrolled {
+    background: rgba(5, 5, 6, 0.6);
+    backdrop-filter: blur(20px) saturate(1.2);
+    -webkit-backdrop-filter: blur(20px) saturate(1.2);
+    border-bottom: 1px solid rgba(243, 241, 236, 0.08);
+  }
+  .nav-mark {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  .nav-items {
+    display: flex;
+    gap: 28px;
+  }
+  .nav-link {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: var(--ink-mid);
+  }
+  .nav-link.active {
+    color: var(--ink);
+  }
+  .nav-status {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: var(--ink-mid);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .nav-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    display: inline-block;
+  }
+</style>
+
+<script>
+  const nav = document.querySelector('.site-nav');
+  const onScroll = () => {
+    if (!nav) return;
+    if (window.scrollY > 10) nav.classList.add('scrolled');
+    else nav.classList.remove('scrolled');
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+</script>

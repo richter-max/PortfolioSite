@@ -1,0 +1,65 @@
+---
+// SectionMarker.astro
+interface Props {
+  number: string;
+  label: string;
+  title: string;
+  subtitle?: string;
+}
+const { number, label, title, subtitle } = Astro.props;
+---
+
+<div class="section-marker">
+  <div class="eyebrow">
+    <span class="em">{number}</span>
+    <span class="rule"></span>
+    <span class="em">{label}</span>
+  </div>
+  <h2>{title}</h2>
+  {subtitle && <p>{subtitle}</p>}
+</div>
+
+<style>
+  .section-marker {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 128px 40px 64px;
+  }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--ink-low);
+    margin-bottom: 40px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+  .em {
+    color: var(--ink);
+  }
+  .rule {
+    width: 32px;
+    height: 1px;
+    background: rgba(243, 241, 236, 0.16);
+  }
+  h2 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(48px, 7vw, 96px);
+    line-height: 0.98;
+    letter-spacing: -0.04em;
+    color: var(--ink);
+    margin: 0;
+    max-width: 14ch;
+  }
+  p {
+    font-family: var(--font-display);
+    font-size: 19px;
+    line-height: 1.5;
+    color: var(--ink-mid);
+    max-width: 52ch;
+    margin-top: 32px;
+    letter-spacing: -0.005em;
+  }
+</style>
