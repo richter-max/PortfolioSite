@@ -1,9 +1,10 @@
-// Hero.jsx — React island: loader + ken-burns + live countdown
-import { useEffect, useState } from 'react';
+// Hero.jsx — React island: loader + ken-burns + live countdown + scroll dispersion
+import { useEffect, useRef, useState } from 'react';
 
 export default function Hero() {
   const [mounted, setMounted] = useState(false);
   const [loaderGone, setLoaderGone] = useState(false);
+  const headlineRef = useRef(null);
 
   useEffect(() => {
     const t1 = setTimeout(() => setMounted(true), 60);
@@ -11,11 +12,100 @@ export default function Hero() {
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, []);
 
+  // ── Scroll dispersion: chars scatter as hero scrolls out ──────────────
+  useEffect(() => {
+    if (!mounted) return;
+
+    let gsap, ScrollTrigger;
+
+    async function initScrollAnim() {
+      // Dynamic import so GSAP doesn't block initial render
+      const gsapMod = await import('gsap');
+      const stMod   = await import('gsap/ScrollTrigger');
+      gsap          = gsapMod.gsap;
+      ScrollTrigger = stMod.ScrollTrigger;
+      gsap.registerPlugin(ScrollTrigger);
+
+      const headline = headlineRef.current;
+      if (!headline) return;
+
+      // Split h1 text into individual char spans
+      const h1 = headline.querySelector('h1');
+      if (!h1 || h1.dataset.split) return; // prevent double-split
+      h1.dataset.split = 'true';
+
+      const original = h1.innerText;
+      h1.innerHTML = original
+        .split('')
+        .map(c => c === ' '
+          ? `<span style="display:inline-block;width:0.28em"> </span>`
+          : `<span class="hero-char" style="display:inline-block;will-change:transform,opacity">${c}</span>`
+        )
+        .join('');
+
+      const chars = h1.querySelectorAll('.hero-char');
+
+      // ── Entrance: staggered fall-in after loader (delay 1.8s) ──────────
+      if (typeof gsap !== 'undefined') {
+        gsap.set(chars, { y: -50, opacity: 0, rotateX: -35 });
+        gsap.to(chars, {
+          y: 0, opacity: 1, rotateX: 0,
+          duration: 0.75,
+          ease: 'expo.out',
+          stagger: { each: 0.025, from: 'start' },
+          delay: 1.85, // after loader fades (1700ms + buffer)
+        });
+      }
+
+      // ── Scroll dispersion ───────────────────────────────────────────────
+      chars.forEach((char) => {
+        const xDrift  = (Math.random() - 0.5) * 350;
+        const yDrift  = -(Math.random() * 220 + 60);
+        const rotDrift = (Math.random() - 0.5) * 130;
+
+        gsap.to(char, {
+          scrollTrigger: {
+            trigger: headline,
+            start: 'top top',
+            end:   'bottom top',
+            scrub: 1.5,
+          },
+          x:       xDrift,
+          y:       yDrift,
+          opacity: 0,
+          rotate:  rotDrift,
+          scale:   0.3 + Math.random() * 0.5,
+          ease:    'none',
+        });
+      });
+
+      // Sub-text fades on scroll
+      const sub = headline.querySelector('[data-hero-sub]');
+      if (sub) {
+        gsap.to(sub, {
+          scrollTrigger: {
+            trigger: headline,
+            start: 'top top',
+            end:   '35% top',
+            scrub: 1,
+          },
+          opacity: 0,
+          y: -24,
+          ease: 'none',
+        });
+      }
+    }
+
+    // Small delay so the DOM is ready
+    const t = setTimeout(initScrollAnim, 100);
+    return () => clearTimeout(t);
+  }, [mounted]);
+
   return (
     <>
       {!loaderGone && <HeroLoader mounted={mounted} />}
 
-      <section id="top" style={{
+      <section id="top" ref={headlineRef} style={{
         position: 'relative', minHeight: '100vh', width: '100%',
         background: '#050506',
         overflow: 'hidden',
@@ -30,6 +120,7 @@ export default function Hero() {
           animation: 'heroKenBurns 48s ease-in-out infinite alternate',
         }} data-hero-bg />
 
+        {/* Fog layers — unchanged */}
         <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
           {[0, 1, 2, 3, 4].map(i => (
             <div key={i} style={{
@@ -47,19 +138,27 @@ export default function Hero() {
           ))}
         </div>
 
+        {/* Noise — kept but GrainOverlay in BaseLayout replaces the need;
+            leaving this in keeps the local hero texture slightly stronger */}
         <div style={{
           position: 'absolute', inset: 0, opacity: 0.04, mixBlendMode: 'overlay',
           backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence baseFrequency='0.9'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>")`,
           pointerEvents: 'none',
         }} />
 
-        <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: '30%',
+        {/* Gradients — unchanged */}
+        <div style={{
+          position: 'absolute', left: 0, right: 0, top: 0, height: '30%',
           background: 'linear-gradient(to top, transparent 0%, rgba(5,5,6,0.65) 100%)',
-          pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: '80%',
+          pointerEvents: 'none',
+        }} />
+        <div style={{
+          position: 'absolute', left: 0, right: 0, bottom: 0, height: '80%',
           background: 'linear-gradient(to bottom, transparent 0%, rgba(5,5,6,0.7) 55%, #050506 100%)',
-          pointerEvents: 'none' }} />
+          pointerEvents: 'none',
+        }} />
 
+        {/* ── Main content ── */}
         <div style={{
           position: 'relative', maxWidth: 1440, width: '100%', margin: '0 auto',
           opacity: mounted ? 1 : 0,
@@ -73,6 +172,7 @@ export default function Hero() {
             <span style={{ color: '#F3F1EC' }}>MAXIMILIAN RICHTER</span> &nbsp;/&nbsp; SECURITY ENGINEER · ENDURANCE ATHLETE
           </div>
 
+          {/* h1 — GSAP will split this into chars after mount */}
           <h1 style={{
             fontFamily: 'Inter Tight, sans-serif', fontWeight: 500,
             fontSize: 'clamp(64px, 11vw, 180px)', lineHeight: 0.95, letterSpacing: '-0.04em',
@@ -81,7 +181,7 @@ export default function Hero() {
             Built under pressure.
           </h1>
 
-          <div style={{
+          <div data-hero-sub style={{
             marginTop: 56, display: 'flex', gap: 48, alignItems: 'flex-end',
             justifyContent: 'space-between', flexWrap: 'wrap',
           }}>
@@ -95,6 +195,7 @@ export default function Hero() {
           </div>
         </div>
 
+        {/* Scroll cue — unchanged */}
         <div style={{
           position: 'absolute', bottom: 40, left: '50%', transform: 'translateX(-50%)',
           display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12,
@@ -199,15 +300,13 @@ function KraichgauCountdown() {
   const s = Math.floor((delta % 60000) / 1000);
   const pad = (n) => String(n).padStart(2, '0');
 
-  const cell = {
-    display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4,
-  };
-  const num = {
+  const cell = { display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 };
+  const num  = {
     fontFamily: 'Inter Tight, sans-serif', fontWeight: 300,
     fontSize: 'clamp(28px, 3vw, 40px)', lineHeight: 1, letterSpacing: '-0.03em',
     color: '#F3F1EC', fontVariantNumeric: 'tabular-nums',
   };
-  const lbl = {
+  const lbl  = {
     fontFamily: 'JetBrains Mono, monospace', fontSize: 9, letterSpacing: '0.22em',
     textTransform: 'uppercase', color: '#6B6965',
   };
@@ -231,9 +330,7 @@ function KraichgauCountdown() {
       <div style={{
         fontFamily: 'JetBrains Mono, monospace', fontSize: 10, letterSpacing: '0.18em',
         color: '#6B6965', marginTop: 12,
-      }}>
-        31 MAY 2026 · 07:00 CET
-      </div>
+      }}>31 MAY 2026 · 07:00 CET</div>
     </div>
   );
 }
