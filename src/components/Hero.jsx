@@ -1,13 +1,15 @@
-// Hero.jsx — fixed hero
-// - 200vh outer gives scroll room for crossfade
-// - sticky inner keeps content visible while scrolling
-// - name stays — no dispersion
-// - laptop → race crossfade driven by scroll scrub
+// Hero.jsx
+// - 200vh outer div gibt Scroll-Raum
+// - sticky inner hält Content sichtbar
+// - Crossfade laptop → race via nativer scroll listener (kein GSAP nötig)
+// - Countdown Kraichgau
+// - Name bleibt stehen, nur Entrance-Animation
 import { useEffect, useRef, useState } from 'react';
 
 export default function Hero() {
   const [mounted, setMounted]       = useState(false);
   const [loaderGone, setLoaderGone] = useState(false);
+  const [raceOpacity, setRaceOpacity] = useState(0);
   const outerRef = useRef(null);
 
   useEffect(() => {
@@ -16,34 +18,53 @@ export default function Hero() {
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, []);
 
+  // ── Crossfade via scroll listener ────────────────────────────────────
+  useEffect(() => {
+    const outer = outerRef.current;
+    if (!outer) return;
+
+    function onScroll() {
+      const rect   = outer.getBoundingClientRect();
+      const total  = outer.offsetHeight - window.innerHeight; // = 100vh
+      const scrolled = Math.min(Math.max(-rect.top, 0), total);
+      const progress = total > 0 ? scrolled / total : 0;
+
+      // Race fades in from progress 0.3 → 0.8
+      const opacity = progress < 0.3
+        ? 0
+        : progress > 0.8
+          ? 1
+          : (progress - 0.3) / 0.5;
+
+      setRaceOpacity(opacity);
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll(); // run once on mount
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  // ── Name entrance via GSAP (only chars, no scroll dependency) ────────
   useEffect(() => {
     if (!mounted) return;
+    let cancelled = false;
 
-    async function init() {
-      const { gsap }          = await import('gsap');
-      const { ScrollTrigger } = await import('gsap/ScrollTrigger');
-      gsap.registerPlugin(ScrollTrigger);
+    async function initChars() {
+      const { gsap } = await import('gsap');
+      if (cancelled) return;
 
-      const outer   = outerRef.current;
-      if (!outer) return;
+      const nameEl = document.querySelector('[data-hero-name]');
+      if (!nameEl || nameEl.dataset.split) return;
+      nameEl.dataset.split = 'true';
 
-      const imgDesk  = outer.querySelector('[data-img-desk]');
-      const imgRace  = outer.querySelector('[data-img-race]');
-      const nameEl   = outer.querySelector('[data-hero-name]');
-      const roleEl   = outer.querySelector('[data-hero-role]');
-      const scrollCue = outer.querySelector('[data-scroll-cue]');
+      const text = nameEl.textContent || '';
+      nameEl.innerHTML = text.split('').map(c =>
+        c === ' '
+          ? `<span style="display:inline-block;width:0.25em">&nbsp;</span>`
+          : `<span style="display:inline-block;will-change:transform,opacity">${c}</span>`
+      ).join('');
 
-      // ── Name entrance: chars fall in after loader ─────────────────────
-      if (nameEl && !nameEl.dataset.split) {
-        nameEl.dataset.split = 'true';
-        const text = nameEl.textContent || '';
-        nameEl.innerHTML = text.split('').map(c =>
-          c === ' '
-            ? `<span style="display:inline-block;width:0.25em">&nbsp;</span>`
-            : `<span class="hero-char" style="display:inline-block;will-change:transform,opacity">${c}</span>`
-        ).join('');
-      }
-      const chars = outer.querySelectorAll('.hero-char');
+      const chars = nameEl.querySelectorAll('span');
       gsap.set(chars, { y: -40, opacity: 0 });
       gsap.to(chars, {
         y: 0, opacity: 1,
@@ -52,64 +73,23 @@ export default function Hero() {
         stagger: { each: 0.022 },
         delay: 1.7,
       });
-
-      // Role entrance
-      gsap.set(roleEl, { opacity: 0, y: 8 });
-      gsap.to(roleEl, { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out', delay: 2.2 });
-
-      // ── Crossfade: scrubbed against the 200vh outer wrapper ───────────
-      // Race image starts invisible
-      gsap.set(imgRace, { opacity: 0 });
-
-      // Desk fades out between 20%–70% of outer scroll
-      gsap.to(imgDesk, {
-        opacity: 0,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: outer,
-          start: 'top top',       // when hero top hits viewport top
-          end: 'bottom bottom',   // when hero bottom hits viewport bottom (= 200vh scrolled)
-          scrub: 1,
-          onUpdate: (self) => {
-            // Manual control for smoother stagger between the two images
-            const p = self.progress;
-            // Desk: fade out 0.15 → 0.65
-            const deskOpacity = p < 0.15 ? 1 : p > 0.65 ? 0 : 1 - (p - 0.15) / 0.5;
-            // Race: fade in 0.35 → 0.85
-            const raceOpacity = p < 0.35 ? 0 : p > 0.85 ? 1 : (p - 0.35) / 0.5;
-            (imgDesk as HTMLElement).style.opacity = String(Math.max(0, deskOpacity));
-            (imgRace as HTMLElement).style.opacity = String(Math.max(0, raceOpacity));
-          },
-        },
-      });
-
-      // Scroll cue fades out quickly
-      gsap.to(scrollCue, {
-        opacity: 0,
-        scrollTrigger: {
-          trigger: outer,
-          start: 'top top',
-          end: '15% top',
-          scrub: 1,
-        },
-      });
     }
 
-    const t = setTimeout(init, 150);
-    return () => clearTimeout(t);
+    const t = setTimeout(initChars, 150);
+    return () => { cancelled = true; clearTimeout(t); };
   }, [mounted]);
 
   return (
     <>
       {!loaderGone && <HeroLoader mounted={mounted} />}
 
-      {/* ── Outer: 200vh gives scroll room for crossfade ── */}
+      {/* 200vh outer — gives scroll room for crossfade */}
       <div
         id="top"
         ref={outerRef}
         style={{ position: 'relative', height: '200vh' }}
       >
-        {/* ── Inner: sticky — stays in view while outer scrolls ── */}
+        {/* sticky inner — stays visible while outer scrolls */}
         <div style={{
           position: 'sticky',
           top: 0,
@@ -123,32 +103,25 @@ export default function Hero() {
           padding: '0 40px 80px',
         }}>
 
-          {/* Desk photo */}
-          <div
-            data-img-desk
-            style={{
-              position: 'absolute', inset: 0,
-              backgroundImage: 'url("/img/laptophero.png")',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center 30%',
-              filter: 'saturate(0.5) brightness(0.65) contrast(1.05)',
-              willChange: 'opacity',
-            }}
-          />
+          {/* Laptop photo — always visible */}
+          <div style={{
+            position: 'absolute', inset: 0,
+            backgroundImage: 'url("/img/laptophero.png")',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center 30%',
+            filter: 'saturate(0.5) brightness(0.65) contrast(1.05)',
+          }} />
 
-          {/* Race photo — starts invisible, fades in on scroll */}
-          <div
-            data-img-race
-            style={{
-              position: 'absolute', inset: 0,
-              backgroundImage: 'url("/img/halbmarathon.jpg")',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center 20%',
-              filter: 'saturate(0.55) brightness(0.6) contrast(1.08)',
-              willChange: 'opacity',
-              opacity: 0,
-            }}
-          />
+          {/* Race photo — fades in on scroll via React state */}
+          <div style={{
+            position: 'absolute', inset: 0,
+            backgroundImage: 'url("/img/halbmarathon.jpg")',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center 20%',
+            filter: 'saturate(0.55) brightness(0.6) contrast(1.08)',
+            opacity: raceOpacity,
+            transition: 'opacity 0.1s linear',
+          }} />
 
           {/* Gradient overlays */}
           <div style={{
@@ -160,7 +133,7 @@ export default function Hero() {
             background: 'linear-gradient(to bottom, rgba(5,5,6,0.45) 0%, transparent 30%)',
           }} />
 
-          {/* Text content */}
+          {/* Content */}
           <div style={{
             position: 'relative',
             maxWidth: 1440,
@@ -178,12 +151,13 @@ export default function Hero() {
                 lineHeight: 0.92,
                 letterSpacing: '-0.04em',
                 color: '#F3F1EC',
-                margin: '0 0 28px',
+                margin: '0 0 36px',
               }}
             >
               Maximilian Richter
             </h1>
 
+            {/* Role + Countdown row */}
             <div style={{
               display: 'flex',
               alignItems: 'flex-end',
@@ -191,18 +165,16 @@ export default function Hero() {
               flexWrap: 'wrap',
               gap: 32,
             }}>
-              <div
-                data-hero-role
-                style={{
-                  fontFamily: 'JetBrains Mono, monospace',
-                  fontSize: 11,
-                  letterSpacing: '0.22em',
-                  color: '#A8A6A0',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 16,
-                }}
-              >
+              {/* Role */}
+              <div style={{
+                fontFamily: 'JetBrains Mono, monospace',
+                fontSize: 11,
+                letterSpacing: '0.22em',
+                color: '#A8A6A0',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 16,
+              }}>
                 <span style={{ color: '#F3F1EC' }}>SECURITY ENGINEER</span>
                 <span style={{
                   width: 24, height: 1,
@@ -211,26 +183,25 @@ export default function Hero() {
                 }} />
                 <span>ENDURANCE ATHLETE</span>
               </div>
+
+              {/* Countdown */}
               <KraichgauCountdown />
             </div>
           </div>
 
           {/* Scroll cue */}
-          <div
-            data-scroll-cue
-            style={{
-              position: 'absolute',
-              bottom: 40, left: '50%',
-              transform: 'translateX(-50%)',
-              display: 'flex', flexDirection: 'column',
-              alignItems: 'center', gap: 12,
-              fontFamily: 'JetBrains Mono, monospace',
-              fontSize: 9, letterSpacing: '0.3em',
-              color: '#A8A6A0', pointerEvents: 'none',
-              opacity: mounted ? 0.7 : 0,
-              transition: 'opacity 1000ms ease 2600ms',
-            }}
-          >
+          <div style={{
+            position: 'absolute',
+            bottom: 40, left: '50%',
+            transform: 'translateX(-50%)',
+            display: 'flex', flexDirection: 'column',
+            alignItems: 'center', gap: 12,
+            fontFamily: 'JetBrains Mono, monospace',
+            fontSize: 9, letterSpacing: '0.3em',
+            color: '#A8A6A0', pointerEvents: 'none',
+            opacity: mounted ? (raceOpacity > 0.5 ? 0 : 0.7) : 0,
+            transition: 'opacity 600ms ease',
+          }}>
             <span>SCROLL</span>
             <span style={{
               width: 1, height: 40,
@@ -267,7 +238,7 @@ export default function Hero() {
   );
 }
 
-
+// ── Kraichgau Countdown ───────────────────────────────────────────────────
 function KraichgauCountdown() {
   const target = new Date('2026-05-31T07:00:00+02:00').getTime();
   const [now, setNow] = useState(Date.now());
@@ -275,6 +246,7 @@ function KraichgauCountdown() {
     const id = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(id);
   }, []);
+
   const delta = Math.max(0, target - now);
   const d = Math.floor(delta / 86400000);
   const h = Math.floor((delta % 86400000) / 3600000);
@@ -288,17 +260,17 @@ function KraichgauCountdown() {
     fontSize: 'clamp(28px, 3vw, 40px)', lineHeight: 1, letterSpacing: '-0.03em',
     color: '#F3F1EC', fontVariantNumeric: 'tabular-nums',
   };
-  const lbl  = {
-    fontFamily: 'JetBrains Mono, monospace', fontSize: 9, letterSpacing: '0.22em',
-    textTransform: 'uppercase', color: '#6B6965',
+  const lbl = {
+    fontFamily: 'JetBrains Mono, monospace', fontSize: 9,
+    letterSpacing: '0.22em', textTransform: 'uppercase', color: '#6B6965',
   };
 
   return (
     <div style={{ textAlign: 'right' }}>
       <div style={{
         fontFamily: 'JetBrains Mono, monospace', fontSize: 10, letterSpacing: '0.22em',
-        color: '#A8A6A0', marginBottom: 14, display: 'flex', alignItems: 'center',
-        gap: 10, justifyContent: 'flex-end',
+        color: '#A8A6A0', marginBottom: 14,
+        display: 'flex', alignItems: 'center', gap: 10, justifyContent: 'flex-end',
       }}>
         <span style={{ width: 6, height: 6, background: '#2E6BFF', display: 'inline-block' }} />
         IRONMAN 70.3 · KRAICHGAU
@@ -317,6 +289,7 @@ function KraichgauCountdown() {
   );
 }
 
+// ── Loader ────────────────────────────────────────────────────────────────
 function HeroLoader({ mounted }) {
   const [exiting, setExiting] = useState(false);
   useEffect(() => {
