@@ -1,0 +1,487 @@
+---
+// WorkSection.astro
+// Replaces the four individual <WorkScene> calls in index.astro.
+// 
+// USAGE — in index.astro, replace:
+//   <section id="work">
+//     <SectionMarker ... />
+//     <WorkScene ... />
+//     <WorkScene ... />
+//     <WorkScene ... />
+//     <WorkScene ... />
+//   </section>
+//
+// With:
+//   <WorkSection />
+//
+// Requires: npm install gsap (already installed)
+
+const projects = [
+  {
+    index: '01.01',
+    client: 'AEGIS',
+    role: 'Security Framework · AI Agents',
+    year: '2025',
+    summary: 'Private project. A framework for evaluating how vulnerable AI agents are to prompt injection, data exfiltration, and unauthorized actions. Built from scratch. Tested across agent architectures; surfaced vulnerability classes before deployment.',
+    href: '/case-studies/aegis',
+    image: '/img/blog-career.jpg',
+    tag: 'Security Research',
+  },
+  {
+    index: '01.02',
+    client: 'Attack Surface Scanner',
+    role: 'CLI Tool · Open Source',
+    year: '2025',
+    summary: 'Automated reconnaissance — DNS, open ports, subdomains, security headers — in one command. Full scan under thirty seconds. Live demo on the site.',
+    href: '#',
+    image: '/img/blog-extreme.jpg',
+    tag: 'Open Source',
+  },
+  {
+    index: '01.03',
+    client: 'VendorQ',
+    role: 'B2B SaaS · Beta',
+    year: '2025',
+    summary: 'AI reads existing security docs and auto-generates answers for vendor questionnaires. Two-week process compressed to a two-hour review. ~70% faster turnaround.',
+    href: '#',
+    image: '/img/blog-shenzhen.jpg',
+    tag: 'SaaS · Beta',
+  },
+  {
+    index: '01.04',
+    client: 'SMB Security Tool',
+    role: 'Security Product · In Development',
+    year: '2026',
+    summary: 'Enterprise-grade security for companies with 10–200 employees. One-click setup, automated scanning, reports a non-technical CEO can understand.',
+    href: '#',
+    image: '/img/blog-endurance.jpg',
+    tag: 'In Development',
+  },
+];
+---
+
+<section id="work" class="work-section">
+  <!-- Section header — scrolls away normally -->
+  <div class="work-header">
+    <div class="work-header__label">
+      <span class="work-header__num">01</span>
+      <span class="work-header__rule"></span>
+      <span class="work-header__title">WORK</span>
+    </div>
+    <h2 class="work-header__headline">Systems that<br />cannot fail.</h2>
+    <p class="work-header__sub">
+      Production security engineering. Threat modeling,<br />
+      hardening, incident response. Selected engagements below.
+    </p>
+  </div>
+
+  <!-- Stack container — cards pin and stack here -->
+  <div class="work-stack" id="work-stack">
+    {projects.map((p, i) => (
+      <div
+        class="work-card"
+        data-card-index={i}
+        data-card-total={projects.length}
+        style={`z-index: ${10 + i};`}
+      >
+        <a href={p.href} class="work-card__inner" data-cursor-hover>
+
+          <!-- Left: index + content -->
+          <div class="work-card__left">
+            <div class="work-card__meta">
+              <span class="work-card__index">{p.index}</span>
+              <span class="work-card__tag">{p.tag}</span>
+              <span class="work-card__year">{p.year}</span>
+            </div>
+            <div class="work-card__body">
+              <h3 class="work-card__client">
+                {p.client}
+                <span class="work-card__arrow">→</span>
+              </h3>
+              <p class="work-card__summary">{p.summary}</p>
+              <div class="work-card__role">
+                <span class="work-card__role-label">ROLE</span>
+                <span class="work-card__role-val">{p.role}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: image -->
+          <div class="work-card__image-wrap">
+            {p.image && (
+              <div
+                class="work-card__image"
+                style={`background-image: url("${p.image}")`}
+              />
+            )}
+            <!-- Stack depth indicator — shows how many more cards below -->
+            <div class="work-card__depth">
+              {projects.slice(i + 1).map((_, j) => (
+                <span class="work-card__depth-dot" style={`opacity: ${0.25 - j * 0.06}`} />
+              ))}
+            </div>
+          </div>
+
+        </a>
+      </div>
+    ))}
+  </div>
+</section>
+
+<style>
+  .work-section {
+    position: relative;
+  }
+
+  /* ── Section header ──────────────────────────────────────────────────── */
+  .work-header {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 128px 40px 80px;
+  }
+
+  .work-header__label {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 40px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--ink-low);
+  }
+
+  .work-header__num,
+  .work-header__title {
+    color: var(--ink);
+  }
+
+  .work-header__rule {
+    display: block;
+    width: 32px;
+    height: 1px;
+    background: rgba(243, 241, 236, 0.16);
+  }
+
+  .work-header__headline {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(48px, 7vw, 96px);
+    line-height: 0.98;
+    letter-spacing: -0.04em;
+    color: var(--ink);
+    margin: 0 0 28px;
+  }
+
+  .work-header__sub {
+    font-family: var(--font-display);
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--ink-mid);
+    margin: 0;
+    letter-spacing: -0.005em;
+  }
+
+  /* ── Stack container ─────────────────────────────────────────────────── */
+  .work-stack {
+    position: relative;
+    /* Height = enough scroll distance for all cards to stack.
+       Each card needs ~80vh of scroll distance.
+       Last card stays pinned until user scrolls past. */
+    padding: 0 40px 40px;
+    max-width: 1440px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /* ── Individual card ─────────────────────────────────────────────────── */
+  .work-card {
+    position: sticky;
+    /* Each card sticks at a slightly lower top offset so they stack visually */
+    border-radius: 12px;
+    margin-bottom: 16px;
+    /* JS sets top dynamically per card */
+    will-change: transform;
+  }
+
+  .work-card__inner {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 48px;
+    align-items: stretch;
+    background: #0d0d0e;
+    border: 1px solid rgba(243, 241, 236, 0.08);
+    border-radius: 12px;
+    padding: 48px 48px 48px 52px;
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+    overflow: hidden;
+    transition:
+      border-color 0.4s ease,
+      background 0.4s ease;
+    min-height: 320px;
+  }
+
+  .work-card__inner::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(243, 241, 236, 0.015);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+    border-radius: 12px;
+  }
+
+  .work-card__inner:hover {
+    border-color: rgba(243, 241, 236, 0.16);
+  }
+
+  .work-card__inner:hover::before {
+    opacity: 1;
+  }
+
+  .work-card__inner:hover .work-card__client {
+    transform: translateX(8px);
+  }
+
+  .work-card__inner:hover .work-card__arrow {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .work-card__inner:hover .work-card__image {
+    transform: scale(1.04);
+    filter: saturate(0.75) brightness(0.9) contrast(1.05);
+  }
+
+  /* ── Left content ────────────────────────────────────────────────────── */
+  .work-card__left {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 32px;
+  }
+
+  .work-card__meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .work-card__index {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: var(--ink-low);
+  }
+
+  .work-card__tag {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border: 1px solid rgba(243, 241, 236, 0.12);
+    border-radius: 100px;
+    color: rgba(243, 241, 236, 0.35);
+  }
+
+  .work-card__year {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    color: var(--ink-low);
+    margin-left: auto;
+  }
+
+  .work-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .work-card__client {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(32px, 3.5vw, 52px);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+    margin: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 20px;
+    transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .work-card__arrow {
+    font-size: clamp(24px, 2.5vw, 36px);
+    color: var(--accent, #2E6BFF);
+    opacity: 0;
+    transform: translateX(-12px);
+    transition:
+      opacity 700ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .work-card__summary {
+    font-family: var(--font-display);
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--ink-mid);
+    margin: 0;
+    max-width: 52ch;
+    letter-spacing: -0.005em;
+  }
+
+  .work-card__role {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .work-card__role-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    color: var(--ink-low);
+    text-transform: uppercase;
+  }
+
+  .work-card__role-val {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--ink);
+    text-transform: uppercase;
+  }
+
+  /* ── Right image ─────────────────────────────────────────────────────── */
+  .work-card__image-wrap {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    background: rgba(243, 241, 236, 0.04);
+  }
+
+  .work-card__image {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    filter: saturate(0.5) brightness(0.75) contrast(1.05);
+    transition:
+      transform 700ms cubic-bezier(0.22, 1, 0.36, 1),
+      filter 700ms cubic-bezier(0.22, 1, 0.36, 1);
+    min-height: 220px;
+  }
+
+  /* Depth dots — peek indicator for cards below */
+  .work-card__depth {
+    position: absolute;
+    bottom: 12px;
+    right: 16px;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+  }
+
+  .work-card__depth-dot {
+    display: block;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: rgba(243, 241, 236, 0.6);
+  }
+
+  /* ── Responsive ──────────────────────────────────────────────────────── */
+  @media (max-width: 900px) {
+    .work-card__inner {
+      grid-template-columns: 1fr;
+    }
+    .work-card__image-wrap {
+      height: 200px;
+    }
+    .work-stack {
+      padding: 0 16px 24px;
+    }
+    .work-header {
+      padding: 80px 16px 48px;
+    }
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const cards = document.querySelectorAll<HTMLElement>('.work-card');
+  const STACK_TOP = 80; // px from top for first card
+  const CARD_OFFSET = 16; // px additional offset per card when stacked
+
+  cards.forEach((card, i) => {
+    // Each card sticks at a slightly lower position so the header row peeks out
+    card.style.top = `${STACK_TOP + i * CARD_OFFSET}px`;
+
+    // Scale down cards beneath the active one (peek effect)
+    // As card i is active, cards 0..i-1 should be slightly scaled
+    if (i > 0) {
+      gsap.to(card, {
+        scrollTrigger: {
+          trigger: card,
+          start: 'top 80px', // when this card hits its sticky point
+          end: 'top 80px',
+          onEnter: () => {
+            // Scale and push down previous cards slightly
+            cards.forEach((prevCard, j) => {
+              if (j < i) {
+                gsap.to(prevCard, {
+                  scale: 1 - (i - j) * 0.025,
+                  y: -(i - j) * 6,
+                  duration: 0.5,
+                  ease: 'power2.out',
+                });
+              }
+            });
+          },
+          onLeaveBack: () => {
+            // Restore previous cards when scrolling back up
+            cards.forEach((prevCard, j) => {
+              if (j < i) {
+                const prevActive = Math.max(0, i - 1);
+                gsap.to(prevCard, {
+                  scale: 1 - (prevActive - j) * 0.025,
+                  y: -(prevActive - j) * 6,
+                  duration: 0.4,
+                  ease: 'power2.out',
+                });
+              }
+            });
+          },
+        },
+      });
+    }
+
+    // Entrance animation: cards fade up on first scroll into view
+    gsap.fromTo(card,
+      { opacity: 0, y: 32 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.7,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: card,
+          start: 'top 90%',
+          toggleActions: 'play none none none',
+        },
+      }
+    );
+  });
+</script>
