@@ -141,10 +141,11 @@ export default function Hero() {
           {/* Laptop photo — blurs + scales down as race takes over */}
           <div style={{
             position: 'absolute',
-            top: '-10%', left: '-10%', right: '-10%', bottom: '-10%',
+            top: 0, left: 0, right: 0, bottom: 0,
             backgroundImage: 'url("/img/laptophero.png")',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center 30%',
+            backgroundSize: '70%',
+            backgroundPosition: 'center 40%',
+            backgroundRepeat: 'no-repeat',
             filter: `saturate(0.5) brightness(0.65) contrast(1.05) blur(${raceOpacity * 12}px)`,
             transform: `scale(${1 - raceOpacity * 0.06})`,
             transformOrigin: 'center center',
@@ -155,10 +156,11 @@ export default function Hero() {
           {/* Race photo — starts blurred + zoomed, comes into focus as it fades in */}
           <div style={{
             position: 'absolute',
-            top: '-10%', left: '-10%', right: '-10%', bottom: '-10%',
+            top: 0, left: 0, right: 0, bottom: 0,
             backgroundImage: 'url("/img/halbmarathon.jpg")',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center 20%',
+            backgroundSize: '70%',
+            backgroundPosition: 'center 40%',
+            backgroundRepeat: 'no-repeat',
             filter: `saturate(0.55) brightness(0.6) contrast(1.08) blur(${(1 - raceOpacity) * 16}px)`,
             transform: `scale(${1.08 - raceOpacity * 0.08})`,
             transformOrigin: 'center center',
