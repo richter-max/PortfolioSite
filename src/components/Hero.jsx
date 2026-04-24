@@ -1,52 +1,84 @@
-// Hero.jsx
-// - 200vh outer div gibt Scroll-Raum
-// - sticky inner hält Content sichtbar
-// - Crossfade laptop → race via nativer scroll listener (kein GSAP nötig)
-// - Countdown Kraichgau
-// - Name bleibt stehen, nur Entrance-Animation
+// Hero.jsx — bulletproof crossfade version
+// Architecture:
+//   outer (relative, 200vh)
+//     └─ sticky inner (top: 0, 100vh, overflow hidden)
+//          ├─ laptop img (absolute, always opacity 1)
+//          ├─ race img (absolute, opacity driven by scroll)
+//          ├─ gradients
+//          └─ content (relative z-index 2)
+//
+// Scroll tracking: native window scroll listener, running on [mounted]
+// to guarantee outerRef.current exists.
 import { useEffect, useRef, useState } from 'react';
 
 export default function Hero() {
   const [mounted, setMounted]       = useState(false);
   const [loaderGone, setLoaderGone] = useState(false);
   const [raceOpacity, setRaceOpacity] = useState(0);
+  const [debug, setDebug]             = useState({ top: 0, progress: 0 });
   const outerRef = useRef(null);
 
+  // Loader timing
   useEffect(() => {
     const t1 = setTimeout(() => setMounted(true), 60);
     const t2 = setTimeout(() => setLoaderGone(true), 2200);
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, []);
 
-  // ── Crossfade via scroll listener ────────────────────────────────────
-  // Depends on [mounted] so outerRef.current is guaranteed in DOM
+  // Scroll listener — uses window scroll position, not the ref's rect,
+  // so it works even if the ref is briefly null during hydration.
   useEffect(() => {
-    if (!mounted) return;
-    const outer = outerRef.current;
-    if (!outer) return;
+    if (typeof window === 'undefined') return;
 
-    function onScroll() {
-      const rect     = outer.getBoundingClientRect();
-      const total    = outer.offsetHeight - window.innerHeight;
+    let rafId = null;
+
+    function compute() {
+      const outer = outerRef.current;
+      if (!outer) return;
+
+      const rect   = outer.getBoundingClientRect();
+      const height = outer.offsetHeight;
+      const vh     = window.innerHeight;
+      const total  = height - vh;
+
+      if (total <= 0) return;
+
       const scrolled = Math.min(Math.max(-rect.top, 0), total);
-      const progress = total > 0 ? scrolled / total : 0;
+      const progress = scrolled / total;
 
-      // Race fades in from progress 0.3 → 0.8
-      const opacity = progress < 0.3
+      // Race fades in 0.2 → 0.75
+      const opacity = progress < 0.2
         ? 0
-        : progress > 0.8
+        : progress > 0.75
           ? 1
-          : (progress - 0.3) / 0.5;
+          : (progress - 0.2) / 0.55;
 
       setRaceOpacity(opacity);
+      setDebug({ top: Math.round(rect.top), progress: Number(progress.toFixed(3)) });
     }
 
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener('scroll', onScroll);
-  }, [mounted]);
+    function onScroll() {
+      if (rafId) return;
+      rafId = requestAnimationFrame(() => {
+        compute();
+        rafId = null;
+      });
+    }
 
-  // ── Name entrance via GSAP (only chars, no scroll dependency) ────────
+    // Initial computation after mount (ref is now attached)
+    compute();
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', compute);
+
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', compute);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
+  }, []);
+
+  // Name entrance
   useEffect(() => {
     if (!mounted) return;
     let cancelled = false;
@@ -62,8 +94,8 @@ export default function Hero() {
       const text = nameEl.textContent || '';
       nameEl.innerHTML = text.split('').map(c =>
         c === ' '
-          ? `<span style="display:inline-block;width:0.25em">&nbsp;</span>`
-          : `<span style="display:inline-block;will-change:transform,opacity">${c}</span>`
+          ? '<span style="display:inline-block;width:0.25em">&nbsp;</span>'
+          : '<span style="display:inline-block;will-change:transform,opacity">' + c + '</span>'
       ).join('');
 
       const chars = nameEl.querySelectorAll('span');
@@ -81,17 +113,18 @@ export default function Hero() {
     return () => { cancelled = true; clearTimeout(t); };
   }, [mounted]);
 
+  // Toggle this to see live debug overlay
+  const SHOW_DEBUG = true;
+
   return (
     <>
       {!loaderGone && <HeroLoader mounted={mounted} />}
 
-      {/* 200vh outer — gives scroll room for crossfade */}
       <div
         id="top"
         ref={outerRef}
-        style={{ position: 'relative', height: '200vh' }}
+        style={{ position: 'relative', height: '200vh', width: '100%' }}
       >
-        {/* sticky inner — stays visible while outer scrolls */}
         <div style={{
           position: 'sticky',
           top: 0,
@@ -105,39 +138,67 @@ export default function Hero() {
           padding: '0 40px 80px',
         }}>
 
-          {/* Laptop photo — always visible */}
+          {/* Laptop photo */}
           <div style={{
-            position: 'absolute', inset: 0,
+            position: 'absolute',
+            top: 0, left: 0, right: 0, bottom: 0,
             backgroundImage: 'url("/img/laptophero.png")',
             backgroundSize: 'cover',
             backgroundPosition: 'center 30%',
             filter: 'saturate(0.5) brightness(0.65) contrast(1.05)',
+            zIndex: 0,
           }} />
 
-          {/* Race photo — fades in on scroll via React state */}
+          {/* Race photo — opacity controlled by scroll */}
           <div style={{
-            position: 'absolute', inset: 0,
+            position: 'absolute',
+            top: 0, left: 0, right: 0, bottom: 0,
             backgroundImage: 'url("/img/halmarathonpic.jpg")',
             backgroundSize: 'cover',
             backgroundPosition: 'center 20%',
             filter: 'saturate(0.55) brightness(0.6) contrast(1.08)',
             opacity: raceOpacity,
-            transition: 'opacity 0.1s linear',
+            zIndex: 1,
           }} />
 
           {/* Gradient overlays */}
           <div style={{
-            position: 'absolute', inset: 0, pointerEvents: 'none',
+            position: 'absolute',
+            top: 0, left: 0, right: 0, bottom: 0,
+            pointerEvents: 'none',
             background: 'linear-gradient(to top, #050506 0%, rgba(5,5,6,0.55) 45%, transparent 100%)',
+            zIndex: 2,
           }} />
           <div style={{
-            position: 'absolute', inset: 0, pointerEvents: 'none',
+            position: 'absolute',
+            top: 0, left: 0, right: 0, bottom: 0,
+            pointerEvents: 'none',
             background: 'linear-gradient(to bottom, rgba(5,5,6,0.45) 0%, transparent 30%)',
+            zIndex: 2,
           }} />
+
+          {/* DEBUG overlay — remove once working */}
+          {SHOW_DEBUG && (
+            <div style={{
+              position: 'absolute', top: 20, left: 20,
+              fontFamily: 'monospace', fontSize: 11,
+              color: '#00ff88',
+              background: 'rgba(0,0,0,0.75)',
+              padding: '8px 12px',
+              borderRadius: 4,
+              zIndex: 100,
+              lineHeight: 1.5,
+            }}>
+              rect.top: {debug.top}px<br/>
+              progress: {debug.progress}<br/>
+              raceOpacity: {raceOpacity.toFixed(3)}
+            </div>
+          )}
 
           {/* Content */}
           <div style={{
             position: 'relative',
+            zIndex: 3,
             maxWidth: 1440,
             width: '100%',
             margin: '0 auto',
@@ -159,7 +220,6 @@ export default function Hero() {
               Maximilian Richter
             </h1>
 
-            {/* Role + Countdown row */}
             <div style={{
               display: 'flex',
               alignItems: 'flex-end',
@@ -167,7 +227,6 @@ export default function Hero() {
               flexWrap: 'wrap',
               gap: 32,
             }}>
-              {/* Role */}
               <div style={{
                 fontFamily: 'JetBrains Mono, monospace',
                 fontSize: 11,
@@ -185,8 +244,6 @@ export default function Hero() {
                 }} />
                 <span>ENDURANCE ATHLETE</span>
               </div>
-
-              {/* Countdown */}
               <KraichgauCountdown />
             </div>
           </div>
@@ -203,6 +260,7 @@ export default function Hero() {
             color: '#A8A6A0', pointerEvents: 'none',
             opacity: mounted ? (raceOpacity > 0.5 ? 0 : 0.7) : 0,
             transition: 'opacity 600ms ease',
+            zIndex: 3,
           }}>
             <span>SCROLL</span>
             <span style={{
@@ -240,7 +298,6 @@ export default function Hero() {
   );
 }
 
-// ── Kraichgau Countdown ───────────────────────────────────────────────────
 function KraichgauCountdown() {
   const target = new Date('2026-05-31T07:00:00+02:00').getTime();
   const [now, setNow] = useState(Date.now());
@@ -257,7 +314,7 @@ function KraichgauCountdown() {
   const pad = (n) => String(n).padStart(2, '0');
 
   const cell = { display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 };
-  const num  = {
+  const num = {
     fontFamily: 'Inter Tight, sans-serif', fontWeight: 300,
     fontSize: 'clamp(28px, 3vw, 40px)', lineHeight: 1, letterSpacing: '-0.03em',
     color: '#F3F1EC', fontVariantNumeric: 'tabular-nums',
@@ -291,7 +348,6 @@ function KraichgauCountdown() {
   );
 }
 
-// ── Loader ────────────────────────────────────────────────────────────────
 function HeroLoader({ mounted }) {
   const [exiting, setExiting] = useState(false);
   useEffect(() => {
