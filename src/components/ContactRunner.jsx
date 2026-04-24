@@ -157,8 +157,7 @@ export default function ContactRunner() {
       ref={containerRef}
       style={{
         width: '100%',
-        aspectRatio: '1 / 1',
-        maxWidth: 420,
+        height: 500,
         position: 'relative',
       }}
       aria-hidden="true"
