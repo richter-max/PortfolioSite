@@ -26,12 +26,12 @@ export default function ContactScene() {
           <span style={{ width: 32, height: 1, background: 'rgba(243,241,236,0.16)' }} />
           <span style={{ color: '#F3F1EC' }}>CONTACT</span>
         </div>
-        <h2 style={{
+        <h2 data-reveal="lines" style={{
           fontFamily: 'Inter Tight, sans-serif', fontWeight: 500,
           fontSize: 'clamp(48px, 7vw, 96px)', lineHeight: 0.98, letterSpacing: '-0.04em',
           color: '#F3F1EC', margin: 0, maxWidth: '14ch',
         }}>Get in touch.</h2>
-        <p style={{
+        <p data-reveal="fade-up" style={{
           fontFamily: 'Inter Tight, sans-serif', fontSize: 19, lineHeight: 1.5,
           color: '#A8A6A0', maxWidth: '52ch', marginTop: 32, marginBottom: 64,
           letterSpacing: '-0.005em',
@@ -66,7 +66,7 @@ export default function ContactScene() {
                 color: '#F3F1EC', outline: 'none', resize: 'vertical',
               }} />
           </label>
-          <button type="submit" style={{
+          <button data-magnetic="0.4" type="submit" style={{
             gridColumn: '1 / -1', justifySelf: 'start',
             background: '#F3F1EC', color: '#050506', border: 'none',
             padding: '18px 40px', fontFamily: 'JetBrains Mono, monospace', fontSize: 11,

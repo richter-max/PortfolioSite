@@ -1,0 +1,134 @@
+---
+// MassiveNumbers.astro — full-screen stat reveal between sections
+---
+
+<section class="mn">
+  <div class="mn-inner">
+    <div class="eyebrow" data-reveal="fade-up">
+      <span class="em">02.5</span>
+      <span class="rule"></span>
+      <span class="em">BY THE NUMBERS</span>
+    </div>
+
+    <div class="grid" data-stagger-children>
+      <div class="cell">
+        <div class="num"><span data-count="15" data-count-suffix="+">0</span><span class="unit">h</span></div>
+        <div class="label">TRAINING / WEEK</div>
+        <div class="sub">Swim · Bike · Run, stacked on full-time work</div>
+      </div>
+      <div class="cell">
+        <div class="num"><span data-count="211" data-count-suffix="">0</span><span class="unit">km</span></div>
+        <div class="label">IRONMAN 70.3</div>
+        <div class="sub">1.9 swim · 90 bike · 21.1 run · Kraichgau, May</div>
+      </div>
+      <div class="cell">
+        <div class="num"><span data-count="340" data-count-suffix="+">0</span></div>
+        <div class="label">AEGIS PAYLOADS</div>
+        <div class="sub">Security tests across six attack classes</div>
+      </div>
+      <div class="cell">
+        <div class="num"><span data-count="1740">0</span></div>
+        <div class="label">TT RATING</div>
+        <div class="sub">Landesliga, Bayern · target 1,800</div>
+      </div>
+    </div>
+
+    <div class="caption" data-reveal="fade-up">
+      Two arenas. Same discipline. Reps, film, quiet volume.
+    </div>
+  </div>
+</section>
+
+<style>
+  .mn {
+    padding: 192px 40px 192px;
+    border-top: 1px solid rgba(243, 241, 236, 0.08);
+    background: var(--bg);
+    position: relative;
+    overflow: hidden;
+  }
+  .mn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 20% 0%, rgba(46,107,255,0.05), transparent 60%);
+    pointer-events: none;
+  }
+  .mn-inner { max-width: 1440px; margin: 0 auto; position: relative; }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--ink-low);
+    margin-bottom: 80px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+  .em { color: var(--ink); }
+  .rule { width: 32px; height: 1px; background: rgba(243,241,236,0.16); }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0;
+    border-top: 1px solid rgba(243,241,236,0.08);
+  }
+  .cell {
+    padding: 64px 40px 64px 0;
+    border-bottom: 1px solid rgba(243,241,236,0.08);
+  }
+  .cell:nth-child(even) {
+    padding-left: 40px;
+    padding-right: 0;
+    border-left: 1px solid rgba(243,241,236,0.08);
+  }
+  .num {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(96px, 14vw, 220px);
+    line-height: 0.9;
+    letter-spacing: -0.05em;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .unit {
+    font-size: 0.35em;
+    font-weight: 400;
+    color: var(--ink-mid);
+    letter-spacing: -0.02em;
+  }
+  .label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    color: var(--accent);
+    margin-top: 16px;
+    text-transform: uppercase;
+  }
+  .sub {
+    font-family: var(--font-display);
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--ink-mid);
+    margin-top: 12px;
+    max-width: 36ch;
+    letter-spacing: -0.005em;
+  }
+  .caption {
+    margin-top: 80px;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(28px, 3.6vw, 48px);
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+    max-width: 24ch;
+  }
+  @media (max-width: 900px) {
+    .grid { grid-template-columns: 1fr; }
+    .cell, .cell:nth-child(even) { padding: 48px 0; border-left: none; }
+  }
+</style>

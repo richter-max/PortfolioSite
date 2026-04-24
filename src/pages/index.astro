@@ -6,6 +6,7 @@ import Rail from '../components/Rail.astro';
 import SectionMarker from '../components/SectionMarker.astro';
 import WorkScene from '../components/WorkScene.astro';
 import Footer from '../components/Footer.astro';
+import MassiveNumbers from '../components/MassiveNumbers.astro';
 import Hero from '../components/Hero.jsx';
 import FieldTape from '../components/FieldTape.jsx';
 import ContactScene from '../components/ContactScene.jsx';
@@ -51,13 +52,14 @@ const fieldEntries = [
 
     <section id="work">
       <SectionMarker number="01" label="WORK" title="Systems that cannot fail." subtitle="Production security engineering. Threat modeling, hardening, incident response. Selected engagements below." />
-      <WorkScene index="01.01" client="AEGIS" role="Security Framework · AI Agents" year="2025" summary="Private project. A framework for evaluating how vulnerable AI agents are to prompt injection, data exfiltration, and unauthorized actions. Built from scratch. Tested across agent architectures; surfaced vulnerability classes before deployment." href="/case-studies/aegis" />
-      <WorkScene index="01.02" client="Attack Surface Scanner" role="CLI Tool · Open Source" year="2025" summary="Automated reconnaissance — DNS, open ports, subdomains, security headers — in one command. Full scan under thirty seconds. Live demo on the site." />
-      <WorkScene index="01.03" client="VendorQ" role="B2B SaaS · Beta" year="2025" summary="AI reads existing security docs and auto-generates answers for vendor questionnaires. Two-week process compressed to a two-hour review. ~70% faster turnaround." />
-      <WorkScene index="01.04" client="SMB Security Tool" role="Security Product · In Development" year="2026" summary="Enterprise-grade security for companies with 10–200 employees. One-click setup, automated scanning, reports a non-technical CEO can understand." />
+      <WorkScene index="01.01" client="AEGIS" role="Security Framework · AI Agents" year="2025" summary="Private project. A framework for evaluating how vulnerable AI agents are to prompt injection, data exfiltration, and unauthorized actions. Built from scratch. Tested across agent architectures; surfaced vulnerability classes before deployment." href="/case-studies/aegis" image="/img/blog-career.jpg" />
+      <WorkScene index="01.02" client="Attack Surface Scanner" role="CLI Tool · Open Source" year="2025" summary="Automated reconnaissance — DNS, open ports, subdomains, security headers — in one command. Full scan under thirty seconds. Live demo on the site." image="/img/blog-extreme.jpg" />
+      <WorkScene index="01.03" client="VendorQ" role="B2B SaaS · Beta" year="2025" summary="AI reads existing security docs and auto-generates answers for vendor questionnaires. Two-week process compressed to a two-hour review. ~70% faster turnaround." image="/img/blog-shenzhen.jpg" />
+      <WorkScene index="01.04" client="SMB Security Tool" role="Security Product · In Development" year="2026" summary="Enterprise-grade security for companies with 10–200 employees. One-click setup, automated scanning, reports a non-technical CEO can understand." image="/img/blog-endurance.jpg" />
     </section>
 
     <FieldTape entries={fieldEntries} client:load />
+    <MassiveNumbers />
     <ContactScene client:load />
     <Footer />
   </main>

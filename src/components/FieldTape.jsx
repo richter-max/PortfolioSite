@@ -5,9 +5,12 @@ export default function FieldTape({ entries }) {
   const pinRef = useRef(null);
   const trackRef = useRef(null);
   const [progress, setProgress] = useState(0);
+  const velRef = useRef(0);
+  const lastProgRef = useRef(0);
 
   useEffect(() => {
     const pin = pinRef.current; if (!pin) return;
+    let raf;
     const onScroll = () => {
       const rect = pin.getBoundingClientRect();
       const vh = window.innerHeight;
@@ -15,14 +18,19 @@ export default function FieldTape({ entries }) {
       const scrolled = Math.min(Math.max(-rect.top, 0), total);
       const p = total > 0 ? scrolled / total : 0;
       setProgress(p);
+      const v = Math.abs(p - lastProgRef.current);
+      velRef.current = velRef.current * 0.8 + v * 300;
+      lastProgRef.current = p;
       if (trackRef.current) {
         const maxShift = trackRef.current.scrollWidth - window.innerWidth;
         trackRef.current.style.transform = `translateX(${-p * maxShift}px)`;
+        const blur = Math.min(8, velRef.current * 0.4);
+        trackRef.current.style.filter = blur > 0.3 ? `blur(${blur.toFixed(1)}px)` : '';
       }
     };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener('scroll', onScroll);
+    const tick = () => { onScroll(); raf = requestAnimationFrame(tick); };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
   }, []);
 
   return (
@@ -40,8 +48,8 @@ export default function FieldTape({ entries }) {
           fontFamily: 'Inter Tight, sans-serif', fontWeight: 500,
           fontSize: 'clamp(48px, 7vw, 96px)', lineHeight: 0.98, letterSpacing: '-0.04em',
           color: '#F3F1EC', margin: 0, maxWidth: '14ch',
-        }}>Tested in the cold.</h2>
-        <p style={{
+        }} data-reveal="lines">Tested in the cold.</h2>
+        <p data-reveal="fade-up" style={{
           fontFamily: 'Inter Tight, sans-serif', fontSize: 19, lineHeight: 1.5,
           color: '#A8A6A0', maxWidth: '52ch', marginTop: 32, letterSpacing: '-0.005em',
         }}>Endurance is not a hobby. It is the same practice — systems under load, failure modes, recovery. Scroll to traverse.</p>
@@ -101,11 +109,12 @@ function FieldPanel({ index, title, location, date, stats = [], conditions, imag
     }}>
       {image && (
         <>
-          <div style={{
-            position: 'absolute', inset: 0,
+          <div data-field-parallax style={{
+            position: 'absolute', inset: '-8% -4%',
             backgroundImage: `url("${image}")`,
             backgroundSize: 'cover', backgroundPosition: imagePosition,
             filter: 'saturate(0.45) brightness(0.55) contrast(1.05)',
+            willChange: 'transform',
           }} />
           <div style={{ position: 'absolute', inset: 0,
             background: 'linear-gradient(180deg, rgba(5,5,6,0.45) 0%, rgba(5,5,6,0.25) 35%, rgba(5,5,6,0.9) 100%)',

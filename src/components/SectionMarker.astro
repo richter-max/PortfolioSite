@@ -1,22 +1,25 @@
 ---
-// SectionMarker.astro
+// SectionMarker.astro — sticky headline that pins while the section scrolls
 interface Props {
   number: string;
   label: string;
   title: string;
   subtitle?: string;
+  sticky?: boolean;
 }
-const { number, label, title, subtitle } = Astro.props;
+const { number, label, title, subtitle, sticky = true } = Astro.props;
 ---
 
-<div class="section-marker">
-  <div class="eyebrow">
-    <span class="em">{number}</span>
-    <span class="rule"></span>
-    <span class="em">{label}</span>
+<div class:list={["section-marker", { sticky }]}>
+  <div class="inner">
+    <div class="eyebrow" data-reveal="fade-up">
+      <span class="em">{number}</span>
+      <span class="rule"></span>
+      <span class="em">{label}</span>
+    </div>
+    <h2 data-reveal="lines">{title}</h2>
+    {subtitle && <p data-reveal="fade-up">{subtitle}</p>}
   </div>
-  <h2>{title}</h2>
-  {subtitle && <p>{subtitle}</p>}
 </div>
 
 <style>
@@ -35,9 +38,7 @@ const { number, label, title, subtitle } = Astro.props;
     gap: 16px;
     align-items: center;
   }
-  .em {
-    color: var(--ink);
-  }
+  .em { color: var(--ink); }
   .rule {
     width: 32px;
     height: 1px;

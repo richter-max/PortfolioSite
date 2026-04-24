@@ -28,7 +28,7 @@ export default function Hero() {
           backgroundSize: 'cover', backgroundPosition: 'center',
           filter: 'saturate(0.55) brightness(0.72) contrast(1.05)',
           animation: 'heroKenBurns 48s ease-in-out infinite alternate',
-        }} />
+        }} data-hero-bg />
 
         <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
           {[0, 1, 2, 3, 4].map(i => (
@@ -69,7 +69,7 @@ export default function Hero() {
           <div style={{
             fontFamily: 'JetBrains Mono, monospace', fontSize: 11, letterSpacing: '0.2em',
             color: '#A8A6A0', marginBottom: 32,
-          }}>
+          }} data-reveal="fade-up">
             <span style={{ color: '#F3F1EC' }}>MAXIMILIAN RICHTER</span> &nbsp;/&nbsp; SECURITY ENGINEER · ENDURANCE ATHLETE
           </div>
 
@@ -77,8 +77,8 @@ export default function Hero() {
             fontFamily: 'Inter Tight, sans-serif', fontWeight: 500,
             fontSize: 'clamp(64px, 11vw, 180px)', lineHeight: 0.95, letterSpacing: '-0.04em',
             color: '#F3F1EC', margin: 0, maxWidth: '14ch',
-          }}>
-            Built under<br/>pressure.
+          }} data-reveal="chars">
+            Built under pressure.
           </h1>
 
           <div style={{
@@ -88,11 +88,27 @@ export default function Hero() {
             <p style={{
               fontFamily: 'Inter Tight, sans-serif', fontSize: 17, lineHeight: 1.55,
               color: '#D9D7D2', maxWidth: '42ch', margin: 0, letterSpacing: '-0.005em',
-            }}>
+            }} data-reveal="fade-up">
               Systems that perform when they cannot fail. Hardened against adversaries. Tested in the cold.
             </p>
             <KraichgauCountdown />
           </div>
+        </div>
+
+        <div style={{
+          position: 'absolute', bottom: 40, left: '50%', transform: 'translateX(-50%)',
+          display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12,
+          fontFamily: 'JetBrains Mono, monospace', fontSize: 9, letterSpacing: '0.3em',
+          color: '#A8A6A0', pointerEvents: 'none',
+          opacity: mounted ? 0.8 : 0,
+          transition: 'opacity 1200ms cubic-bezier(.22,1,.36,1) 2800ms',
+        }}>
+          <span>SCROLL</span>
+          <span style={{
+            width: 1, height: 40, background: 'linear-gradient(to bottom, #F3F1EC, transparent)',
+            animation: 'heroScrollCue 2400ms cubic-bezier(.22,1,.36,1) infinite',
+            transformOrigin: 'top',
+          }} />
         </div>
       </section>
 
@@ -118,6 +134,12 @@ export default function Hero() {
         @keyframes loaderTextFade {
           0%   { opacity: 0; letter-spacing: 0.45em; }
           100% { opacity: 1; letter-spacing: 0.2em; }
+        }
+        @keyframes heroScrollCue {
+          0%   { transform: scaleY(0); transform-origin: top; }
+          50%  { transform: scaleY(1); transform-origin: top; }
+          51%  { transform: scaleY(1); transform-origin: bottom; }
+          100% { transform: scaleY(0); transform-origin: bottom; }
         }
       `}</style>
     </>

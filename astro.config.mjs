@@ -6,4 +6,9 @@ export default defineConfig({
   site: 'https://richtermax.com',
   integrations: [react()],
   compressHTML: true,
+  vite: {
+    ssr: {
+      noExternal: ['gsap', '@studio-freight/lenis', 'split-type'],
+    },
+  },
 });
