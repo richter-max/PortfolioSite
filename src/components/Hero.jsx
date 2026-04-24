@@ -115,7 +115,7 @@ export default function Hero() {
           {/* Race photo — fades in on scroll via React state */}
           <div style={{
             position: 'absolute', inset: 0,
-            backgroundImage: 'url("/img/halbmarathon.jpg")',
+            backgroundImage: 'url("/img/halmarathonpic.jpg")',
             backgroundSize: 'cover',
             backgroundPosition: 'center 20%',
             filter: 'saturate(0.55) brightness(0.6) contrast(1.08)',
