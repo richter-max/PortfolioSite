@@ -1,0 +1,181 @@
+---
+// CustomCursor.astro
+// Drop into your Layout.astro, inside <body> before </body>
+// No props needed.
+---
+
+<div id="cursor-dot" aria-hidden="true"></div>
+<div id="cursor-ring" aria-hidden="true"></div>
+
+<style>
+  #cursor-dot,
+  #cursor-ring {
+    position: fixed;
+    top: 0;
+    left: 0;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    will-change: transform;
+    transition: opacity 0.3s ease;
+  }
+
+  #cursor-dot {
+    width: 6px;
+    height: 6px;
+    background: #fff;
+    margin: -3px 0 0 -3px;
+    mix-blend-mode: difference;
+  }
+
+  #cursor-ring {
+    width: 36px;
+    height: 36px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    margin: -18px 0 0 -18px;
+    mix-blend-mode: difference;
+    transition:
+      width 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+      height 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+      margin 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+      opacity 0.3s ease,
+      background 0.2s ease;
+  }
+
+  /* Expanded state on hover */
+  #cursor-ring.is-hovering {
+    width: 64px;
+    height: 64px;
+    margin: -32px 0 0 -32px;
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.9);
+  }
+
+  /* Text cursor state (links, buttons) */
+  #cursor-ring.is-text {
+    width: 3px;
+    height: 28px;
+    margin: -14px 0 0 -1.5px;
+    border-radius: 2px;
+    border-color: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  /* Hide on touch devices */
+  @media (hover: none) {
+    #cursor-dot,
+    #cursor-ring {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  const dot = document.getElementById('cursor-dot')!;
+  const ring = document.getElementById('cursor-ring')!;
+
+  // Hide native cursor globally
+  document.documentElement.style.cursor = 'none';
+
+  let mouseX = -100;
+  let mouseY = -100;
+  let ringX = -100;
+  let ringY = -100;
+  let rafId: number;
+
+  // Smooth ring follows mouse with lerp
+  const LERP = 0.12;
+
+  function lerp(a: number, b: number, t: number) {
+    return a + (b - a) * t;
+  }
+
+  function tick() {
+    ringX = lerp(ringX, mouseX, LERP);
+    ringY = lerp(ringY, mouseY, LERP);
+
+    dot.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
+    ring.style.transform = `translate(${ringX}px, ${ringY}px)`;
+
+    rafId = requestAnimationFrame(tick);
+  }
+
+  tick();
+
+  document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+  });
+
+  // Hide when mouse leaves window
+  document.addEventListener('mouseleave', () => {
+    dot.style.opacity = '0';
+    ring.style.opacity = '0';
+  });
+
+  document.addEventListener('mouseenter', () => {
+    dot.style.opacity = '1';
+    ring.style.opacity = '1';
+  });
+
+  // Hover states — magnetic effect on interactive elements
+  const HOVER_SELECTORS = 'a, button, [data-cursor-hover], .project-card';
+  const TEXT_SELECTORS = 'p, h1, h2, h3, h4, span, label';
+
+  // Magnetic pull: element pulls the ring slightly toward its center
+  let magnetTarget: Element | null = null;
+
+  document.addEventListener('mouseover', (e) => {
+    const el = (e.target as Element).closest(HOVER_SELECTORS);
+    const textEl = (e.target as Element).closest(TEXT_SELECTORS);
+
+    if (el) {
+      ring.classList.add('is-hovering');
+      ring.classList.remove('is-text');
+      magnetTarget = el;
+    } else if (textEl) {
+      ring.classList.add('is-text');
+      ring.classList.remove('is-hovering');
+      magnetTarget = null;
+    } else {
+      ring.classList.remove('is-hovering', 'is-text');
+      magnetTarget = null;
+    }
+  });
+
+  // Magnetic pull animation override
+  const originalTick = tick;
+  cancelAnimationFrame(rafId);
+
+  function magneticTick() {
+    if (magnetTarget) {
+      const rect = magnetTarget.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      // Pull ring 18% toward element center
+      const targetX = mouseX + (cx - mouseX) * 0.18;
+      const targetY = mouseY + (cy - mouseY) * 0.18;
+      ringX = lerp(ringX, targetX, LERP * 1.4);
+      ringY = lerp(ringY, targetY, LERP * 1.4);
+    } else {
+      ringX = lerp(ringX, mouseX, LERP);
+      ringY = lerp(ringY, mouseY, LERP);
+    }
+
+    dot.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
+    ring.style.transform = `translate(${ringX}px, ${ringY}px)`;
+
+    requestAnimationFrame(magneticTick);
+  }
+
+  magneticTick();
+
+  // Click pulse
+  document.addEventListener('mousedown', () => {
+    dot.style.transform += ' scale(0.6)';
+    ring.style.transform += ' scale(0.85)';
+  });
+  document.addEventListener('mouseup', () => {
+    // Scale resets naturally on next frame
+  });
+</script>
