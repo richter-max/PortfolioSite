@@ -159,7 +159,7 @@ export default function Hero() {
             top: 0, left: 0, right: 0, bottom: 0,
             backgroundImage: 'url("/img/halbmarathon.jpg")',
             backgroundSize: '70%',
-            backgroundPosition: 'center 40%',
+            backgroundPosition: 'center 15%',
             backgroundRepeat: 'no-repeat',
             filter: `saturate(0.55) brightness(0.6) contrast(1.08) blur(${(1 - raceOpacity) * 16}px)`,
             transform: `scale(${1.08 - raceOpacity * 0.08})`,
