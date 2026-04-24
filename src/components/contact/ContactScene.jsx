@@ -1,6 +1,7 @@
-// ContactScene.jsx — Underline form + 3D runner
-import { useState } from 'react';
+// ContactScene.jsx — Underline form + 3D runner + Web3Forms submission
+import { useEffect, useRef, useState } from 'react';
 import ContactRunner from './ContactRunner.jsx';
+import { submitContact, validate } from '~/lib/contact';
 
 const MAX_CHARS = 600;
 
@@ -9,18 +10,51 @@ export default function ContactScene() {
   const [email, setEmail]     = useState('');
   const [company, setCompany] = useState('');
   const [message, setMessage] = useState('');
+  const [website, setWebsite] = useState(''); // honeypot
   const [focused, setFocused] = useState(null);
-  const [sent, setSent]       = useState(false);
+  const [status, setStatus]   = useState({ state: 'idle', message: '' });
+  const mountedAt = useRef(Date.now());
 
-  const submit = (e) => {
+  useEffect(() => {
+    mountedAt.current = Date.now();
+  }, []);
+
+  const isSubmitting = status.state === 'sending';
+  const isDone       = status.state === 'success';
+
+  async function onSubmit(e) {
     e.preventDefault();
-    if (!name || !email || !message) return;
-    setSent(true);
-    const body =
-      `${message}\n\n—\nFrom: ${name}\nEmail: ${email}` +
-      (company ? `\nCompany: ${company}` : '');
-    window.location.href = `mailto:max.richter.dev@proton.me?subject=${encodeURIComponent(`Contact · ${name}`)}&body=${encodeURIComponent(body)}`;
-  };
+    if (isSubmitting || isDone) return;
+
+    const inlineErr = validate({ name, email, message });
+    if (inlineErr) {
+      setStatus({ state: 'error', message: inlineErr });
+      return;
+    }
+
+    setStatus({ state: 'sending', message: '' });
+
+    const result = await submitContact({
+      name: name.trim(),
+      email: email.trim(),
+      company: company.trim() || undefined,
+      message: message.trim(),
+      website,
+      elapsedMs: Date.now() - mountedAt.current,
+    });
+
+    if (result.ok) {
+      setStatus({ state: 'success', message: 'Message sent. I’ll reply within 48h.' });
+      setName(''); setEmail(''); setCompany(''); setMessage('');
+    } else {
+      setStatus({ state: 'error', message: result.message });
+    }
+  }
+
+  const buttonLabel =
+    status.state === 'sending' ? 'SENDING…' :
+    status.state === 'success' ? 'SENT →' :
+    'SEND →';
 
   return (
     <section id="contact" style={{
@@ -65,16 +99,16 @@ export default function ContactScene() {
         }}>
 
           {/* LEFT: form */}
-          <form onSubmit={submit} style={{
+          <form onSubmit={onSubmit} noValidate style={{
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
             gap: '36px 40px',
           }}>
-            <UnderlineField name="name" label="NAME" required value={name} onChange={setName} focused={focused} setFocused={setFocused} />
-            <UnderlineField name="email" label="EMAIL" type="email" required value={email} onChange={setEmail} focused={focused} setFocused={setFocused} />
+            <UnderlineField name="name" label="NAME" required value={name} onChange={setName} focused={focused} setFocused={setFocused} autoComplete="name" disabled={isSubmitting || isDone} />
+            <UnderlineField name="email" label="EMAIL" type="email" required value={email} onChange={setEmail} focused={focused} setFocused={setFocused} autoComplete="email" disabled={isSubmitting || isDone} />
 
             <div style={{ gridColumn: '1 / -1' }}>
-              <UnderlineField name="company" label="COMPANY" optional value={company} onChange={setCompany} focused={focused} setFocused={setFocused} />
+              <UnderlineField name="company" label="COMPANY" optional value={company} onChange={setCompany} focused={focused} setFocused={setFocused} autoComplete="organization" disabled={isSubmitting || isDone} />
             </div>
 
             <div style={{ gridColumn: '1 / -1' }}>
@@ -84,7 +118,25 @@ export default function ContactScene() {
                 onChange={(v) => { if (v.length <= MAX_CHARS) setMessage(v); }}
                 focused={focused} setFocused={setFocused}
                 meta={`${message.length} / ${MAX_CHARS} CHARS`}
+                disabled={isSubmitting || isDone}
               />
+            </div>
+
+            {/* Honeypot — hidden from humans, bots fill it */}
+            <div aria-hidden="true" style={{
+              position: 'absolute', left: '-10000px', top: 'auto',
+              width: 1, height: 1, overflow: 'hidden',
+            }}>
+              <label>
+                Website
+                <input
+                  type="text"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={website}
+                  onChange={(e) => setWebsite(e.target.value)}
+                />
+              </label>
             </div>
 
             <div style={{
@@ -92,10 +144,7 @@ export default function ContactScene() {
               display: 'flex', justifyContent: 'space-between',
               alignItems: 'center', flexWrap: 'wrap', gap: 16,
             }}>
-              <div style={{
-                fontFamily: 'JetBrains Mono, monospace',
-                fontSize: 10, letterSpacing: '0.2em', color: '#6B6965',
-              }}>REPLY &lt; 48H · CET</div>
+              <StatusLine status={status} />
 
               <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
                 <span style={{
@@ -104,16 +153,29 @@ export default function ContactScene() {
                 }}>⏎ PRESS ENTER</span>
                 <button
                   data-magnetic="0.4" data-cursor-hover type="submit"
+                  disabled={isSubmitting || isDone}
+                  aria-busy={isSubmitting}
                   style={{
-                    background: 'transparent', color: '#2E6BFF',
+                    background: isDone ? '#2E6BFF' : 'transparent',
+                    color: isDone ? '#F3F1EC' : '#2E6BFF',
                     border: '0.5px solid #2E6BFF', padding: '14px 28px',
                     fontFamily: 'JetBrains Mono, monospace', fontSize: 11,
-                    letterSpacing: '0.2em', borderRadius: 4, cursor: 'none',
-                    transition: 'background 0.25s ease, color 0.25s ease',
+                    letterSpacing: '0.2em', borderRadius: 4,
+                    cursor: isSubmitting || isDone ? 'default' : 'none',
+                    opacity: isSubmitting ? 0.7 : 1,
+                    transition: 'background 0.25s ease, color 0.25s ease, opacity 0.25s ease',
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = '#2E6BFF'; e.currentTarget.style.color = '#F3F1EC'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#2E6BFF'; }}
-                >{sent ? 'OPENED IN CLIENT →' : 'SEND →'}</button>
+                  onMouseEnter={(e) => {
+                    if (isSubmitting || isDone) return;
+                    e.currentTarget.style.background = '#2E6BFF';
+                    e.currentTarget.style.color = '#F3F1EC';
+                  }}
+                  onMouseLeave={(e) => {
+                    if (isSubmitting || isDone) return;
+                    e.currentTarget.style.background = 'transparent';
+                    e.currentTarget.style.color = '#2E6BFF';
+                  }}
+                >{buttonLabel}</button>
               </div>
             </div>
           </form>
@@ -169,7 +231,39 @@ export default function ContactScene() {
   );
 }
 
-function UnderlineField({ name, label, value, onChange, focused, setFocused, type = 'text', required = false, optional = false, multiline = false, meta = null }) {
+function StatusLine({ status }) {
+  const base = {
+    fontFamily: 'JetBrains Mono, monospace',
+    fontSize: 10, letterSpacing: '0.2em',
+    transition: 'color 0.25s ease',
+  };
+
+  if (status.state === 'idle') {
+    return <div role="status" aria-live="polite" style={{ ...base, color: '#6B6965' }}>REPLY &lt; 48H · CET</div>;
+  }
+  if (status.state === 'sending') {
+    return <div role="status" aria-live="polite" style={{ ...base, color: '#A8A6A0' }}>TRANSMITTING…</div>;
+  }
+  if (status.state === 'success') {
+    return (
+      <div role="status" aria-live="polite" style={{ ...base, color: '#2E6BFF', letterSpacing: '0.14em' }}>
+        ✓ {status.message.toUpperCase()}
+      </div>
+    );
+  }
+  // error
+  return (
+    <div role="alert" aria-live="assertive" style={{ ...base, color: '#E8A23C', letterSpacing: '0.14em', maxWidth: '44ch' }}>
+      ! {status.message}
+    </div>
+  );
+}
+
+function UnderlineField({
+  name, label, value, onChange, focused, setFocused,
+  type = 'text', required = false, optional = false, multiline = false,
+  meta = null, autoComplete, disabled = false,
+}) {
   const isActive = focused === name;
   const hasValue = value.length > 0;
   const underlineColor = isActive ? '#2E6BFF' : hasValue ? 'rgba(243,241,236,0.4)' : 'rgba(243,241,236,0.12)';
@@ -182,8 +276,9 @@ function UnderlineField({ name, label, value, onChange, focused, setFocused, typ
     fontFamily: 'Inter Tight, sans-serif', fontSize: 18,
     color: '#F3F1EC', outline: 'none',
     caretColor: '#2E6BFF',
-    transition: 'border-color 0.25s ease',
+    transition: 'border-color 0.25s ease, opacity 0.25s ease',
     fontWeight: 400, letterSpacing: '-0.005em',
+    opacity: disabled ? 0.5 : 1,
   };
 
   return (
@@ -211,22 +306,28 @@ function UnderlineField({ name, label, value, onChange, focused, setFocused, typ
 
       {multiline ? (
         <textarea
+          name={name}
           required={required} rows={3}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           onFocus={() => setFocused(name)}
           onBlur={() => setFocused(null)}
           data-cursor-hover
+          disabled={disabled}
+          autoComplete={autoComplete}
           style={{ ...sharedInputStyle, resize: 'vertical', minHeight: 80, lineHeight: 1.5 }}
         />
       ) : (
         <input
+          name={name}
           type={type} required={required}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           onFocus={() => setFocused(name)}
           onBlur={() => setFocused(null)}
           data-cursor-hover
+          disabled={disabled}
+          autoComplete={autoComplete}
           style={sharedInputStyle}
         />
       )}

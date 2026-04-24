@@ -27,8 +27,25 @@ of critical payload on first paint.
 
 ```bash
 npm install
-npm run dev         # http://localhost:4321
+cp .env.example .env     # fill in PUBLIC_WEB3FORMS_KEY
+npm run dev              # http://localhost:4321
 ```
+
+### Contact form setup
+
+The contact form posts directly from the browser to
+[Web3Forms](https://web3forms.com) (free up to 1,000 submissions/month) and
+every message is forwarded to `max.richter.dev@proton.me`. To activate:
+
+1. Go to <https://web3forms.com/#start>
+2. Enter `max.richter.dev@proton.me`; Web3Forms emails you an access key
+3. Put it in `.env` as `PUBLIC_WEB3FORMS_KEY=…`
+4. In production, set the same variable in your host's dashboard
+   (Cloudflare Pages → Settings → Environment variables,
+   Vercel → Project → Settings → Environment Variables, etc.)
+
+Spam protection is handled in three layers: a honeypot field, a minimum
+render-time check (bots submit too fast), and Web3Forms' own filtering.
 
 ### Scripts
 
