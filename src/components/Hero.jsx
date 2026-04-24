@@ -1,52 +1,66 @@
-// Hero.jsx — Photo background + 3D runner approaching from vanishing point
-// Architecture:
-//   outer (200vh relative)
-//     └─ sticky inner (100vh)
-//          ├─ photo background (CSS filter for mood)
-//          ├─ atmospheric overlays
-//          ├─ 3D canvas (runner runs from background → foreground)
-//          └─ content (name, role, countdown)
+// Hero.jsx — Photo crossfade: laptophero → halbmarathon
+// - Laptop photo visible at top
+// - Scrolling fades in the race photo (blur + scale transition)
+// - Both images zoomed out with backgroundSize 70% for cinematic feel
+// - Name stays, role + countdown remain
 import { useEffect, useRef, useState } from 'react';
-
-const MODEL_URL = '/models/richter.glb';
-const PHOTO_URL = '/img/hero-path.jpg';
 
 export default function Hero() {
   const [mounted, setMounted]       = useState(false);
   const [loaderGone, setLoaderGone] = useState(false);
-  const outerRef  = useRef(null);
-  const canvasRef = useRef(null);
-  const stateRef  = useRef({ scrollProgress: 0 });
+  const [raceOpacity, setRaceOpacity] = useState(0);
+  const outerRef = useRef(null);
 
-  // ── Loader timing ─────────────────────────────────────────────────────
+  // Loader timing
   useEffect(() => {
     const t1 = setTimeout(() => setMounted(true), 60);
     const t2 = setTimeout(() => setLoaderGone(true), 2200);
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, []);
 
-  // ── Scroll tracking ───────────────────────────────────────────────────
+  // Scroll listener
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+
     let rafId = null;
 
     function compute() {
       const outer = outerRef.current;
       if (!outer) return;
-      const rect  = outer.getBoundingClientRect();
-      const total = outer.offsetHeight - window.innerHeight;
+
+      const rect   = outer.getBoundingClientRect();
+      const height = outer.offsetHeight;
+      const vh     = window.innerHeight;
+      const total  = height - vh;
+
       if (total <= 0) return;
+
       const scrolled = Math.min(Math.max(-rect.top, 0), total);
-      stateRef.current.scrollProgress = scrolled / total;
+      const progress = scrolled / total;
+
+      // Race fades in 0.2 → 0.75
+      const opacity = progress < 0.2
+        ? 0
+        : progress > 0.75
+          ? 1
+          : (progress - 0.2) / 0.55;
+
+      setRaceOpacity(opacity);
     }
 
     function onScroll() {
       if (rafId) return;
-      rafId = requestAnimationFrame(() => { compute(); rafId = null; });
+      rafId = requestAnimationFrame(() => {
+        compute();
+        rafId = null;
+      });
     }
 
     compute();
+
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', compute);
+
     return () => {
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', compute);
@@ -54,12 +68,12 @@ export default function Hero() {
     };
   }, []);
 
-  // ── Name entrance ─────────────────────────────────────────────────────
+  // Name entrance
   useEffect(() => {
     if (!mounted) return;
     let cancelled = false;
 
-    async function init() {
+    async function initChars() {
       const { gsap } = await import('gsap');
       if (cancelled) return;
 
@@ -85,239 +99,85 @@ export default function Hero() {
       });
     }
 
-    const t = setTimeout(init, 150);
+    const t = setTimeout(initChars, 150);
     return () => { cancelled = true; clearTimeout(t); };
   }, [mounted]);
-
-  // ── 3D Runner ─────────────────────────────────────────────────────────
-  useEffect(() => {
-    let cleanup = () => {};
-    let mountedFlag = true;
-
-    async function initWebGL() {
-      const THREE          = await import('three');
-      const { GLTFLoader } = await import('three/examples/jsm/loaders/GLTFLoader.js');
-      if (!mountedFlag || !canvasRef.current) return;
-
-      const canvas = canvasRef.current;
-      const width  = window.innerWidth;
-      const height = window.innerHeight;
-
-      // ── Scene ──────────────────────────────────────────────────────
-      const scene = new THREE.Scene();
-      scene.background = null; // transparent — photo shows through
-
-      // ── Camera ─────────────────────────────────────────────────────
-      // We align 3D world with photo perspective.
-      // Photo's vanishing point is roughly at (50% x, 50% y) → center of screen.
-      // Camera looks along +Z. Runner starts at -Z (far) and moves to +Z (close).
-      const camera = new THREE.PerspectiveCamera(
-        35, width / height, 0.1, 200
-      );
-      // Camera at ground eye level, looking slightly down (matches photo angle)
-      camera.position.set(0, 1.4, 0);
-      camera.lookAt(0, 1.2, -10);
-
-      // ── Renderer ───────────────────────────────────────────────────
-      const renderer = new THREE.WebGLRenderer({
-        canvas,
-        antialias: true,
-        alpha: true,
-      });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      renderer.setSize(width, height, false);
-      renderer.outputColorSpace = THREE.SRGBColorSpace;
-      renderer.toneMapping = THREE.ACESFilmicToneMapping;
-      renderer.toneMappingExposure = 0.95;
-
-      // ── Lighting (warm key + cool fill for silhouette separation) ──
-      const ambient = new THREE.AmbientLight(0xffffff, 0.25);
-      scene.add(ambient);
-
-      // Key light: from front-top-right (the open sky direction in the photo)
-      const keyLight = new THREE.DirectionalLight(0xE8EEF5, 1.8);
-      keyLight.position.set(4, 8, 3);
-      scene.add(keyLight);
-
-      // Rim light: blue, from behind — creates edge glow
-      const rimLight = new THREE.DirectionalLight(0x2E6BFF, 1.4);
-      rimLight.position.set(-2, 3, -6);
-      scene.add(rimLight);
-
-      // Fill: subtle, from below
-      const fill = new THREE.DirectionalLight(0xffffff, 0.3);
-      fill.position.set(-2, -1, 2);
-      scene.add(fill);
-
-      // ── Load runner ────────────────────────────────────────────────
-      let runner = null;
-      let runnerBaseY = 0;
-
-      const loader = new GLTFLoader();
-      loader.load(
-        MODEL_URL,
-        (gltf) => {
-          if (!mountedFlag) return;
-          runner = gltf.scene;
-
-          // Normalize size: model's height → 1.8 units (human scale in meters)
-          const box    = new THREE.Box3().setFromObject(runner);
-          const size   = box.getSize(new THREE.Vector3());
-          const center = box.getCenter(new THREE.Vector3());
-          const scale  = 1.8 / size.y;
-          runner.scale.setScalar(scale);
-
-          // Ground feet at y=0, center horizontally
-          runner.position.x = -(center.x * scale);
-          runner.position.y = -(box.min.y * scale);
-          runnerBaseY = runner.position.y;
-
-          // Face camera (runs TOWARDS viewer)
-          runner.rotation.y = 0;
-
-          scene.add(runner);
-        },
-        undefined,
-        (err) => console.error('Hero: runner load failed', err)
-      );
-
-      // ── Animation loop ─────────────────────────────────────────────
-      const clock = new THREE.Clock();
-      let rafId;
-
-      function animate() {
-        rafId = requestAnimationFrame(animate);
-        const t = clock.getElapsedTime();
-        const p = stateRef.current.scrollProgress; // 0 → 1
-
-        if (runner) {
-          // Z position: -20 (far, at vanishing point) → -2 (close, near camera)
-          // At p=0: runner is tiny dot at horizon
-          // At p=1: runner is large in foreground
-          const startZ = -22;
-          const endZ   = -2.5;
-          runner.position.z = startZ + p * (endZ - startZ);
-
-          // Stay centered on the road (X=0 in our world)
-          // But add a tiny sway to make it feel alive
-          runner.position.x = Math.sin(t * 1.5) * 0.08;
-
-          // Subtle up/down bob (stride simulation)
-          runner.position.y = runnerBaseY + Math.abs(Math.sin(t * 3)) * 0.08;
-
-          // Fade in during first 5% of scroll (so runner doesn't just pop in)
-          const opacity = Math.min(p * 20, 1);
-          runner.traverse((c) => {
-            if (c.isMesh && c.material) {
-              c.material.transparent = true;
-              c.material.opacity = opacity;
-            }
-          });
-        }
-
-        renderer.render(scene, camera);
-      }
-      animate();
-
-      // ── Resize ─────────────────────────────────────────────────────
-      function onResize() {
-        const w = window.innerWidth;
-        const h = window.innerHeight;
-        camera.aspect = w / h;
-        camera.updateProjectionMatrix();
-        renderer.setSize(w, h, false);
-      }
-      window.addEventListener('resize', onResize);
-
-      cleanup = () => {
-        mountedFlag = false;
-        cancelAnimationFrame(rafId);
-        window.removeEventListener('resize', onResize);
-        renderer.dispose();
-        scene.traverse((obj) => {
-          if (obj.geometry) obj.geometry.dispose();
-          if (obj.material) {
-            if (Array.isArray(obj.material)) obj.material.forEach(m => m.dispose());
-            else obj.material.dispose();
-          }
-        });
-      };
-    }
-
-    initWebGL();
-    return () => cleanup();
-  }, []);
 
   return (
     <>
       {!loaderGone && <HeroLoader mounted={mounted} />}
 
-      {/* Outer 200vh — scroll room for runner approach */}
       <div
         id="top"
         ref={outerRef}
         style={{ position: 'relative', height: '200vh', width: '100%' }}
       >
-        {/* Sticky 100vh container */}
         <div style={{
           position: 'sticky',
           top: 0,
           height: '100vh',
           width: '100%',
-          overflow: 'hidden',
           background: '#050506',
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'flex-end',
+          padding: '0 40px 80px',
         }}>
 
-          {/* Photo background — moody, desaturated */}
+          {/* Laptop photo — blurs + scales down as race takes over */}
           <div style={{
-            position: 'absolute', inset: 0,
-            backgroundImage: `url("${PHOTO_URL}")`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            filter: 'saturate(0.35) brightness(0.55) contrast(1.1) hue-rotate(10deg)',
+            position: 'absolute',
+            top: 0, left: 0, right: 0, bottom: 0,
+            backgroundImage: 'url("/img/laptophero.png")',
+            backgroundSize: '70%',
+            backgroundPosition: 'center 40%',
+            backgroundRepeat: 'no-repeat',
+            filter: `saturate(0.5) brightness(0.65) contrast(1.05) blur(${raceOpacity * 12}px)`,
+            transform: `scale(${1 - raceOpacity * 0.06})`,
+            transformOrigin: 'center center',
+            willChange: 'filter, transform',
             zIndex: 0,
           }} />
 
-          {/* Cool color overlay — pushes photo toward blue/moody */}
+          {/* Race photo — starts blurred + zoomed, comes into focus as it fades in */}
           <div style={{
-            position: 'absolute', inset: 0,
-            background: 'linear-gradient(180deg, rgba(10,15,30,0.35) 0%, rgba(10,15,30,0.15) 50%, rgba(5,5,6,0.6) 100%)',
-            mixBlendMode: 'multiply',
+            position: 'absolute',
+            top: 0, left: 0, right: 0, bottom: 0,
+            backgroundImage: 'url("/img/halbmarathon.jpg")',
+            backgroundSize: '70%',
+            backgroundPosition: 'center 15%',
+            backgroundRepeat: 'no-repeat',
+            filter: `saturate(0.55) brightness(0.6) contrast(1.08) blur(${(1 - raceOpacity) * 16}px)`,
+            transform: `scale(${1.08 - raceOpacity * 0.08})`,
+            transformOrigin: 'center center',
+            opacity: raceOpacity,
+            willChange: 'filter, transform, opacity',
             zIndex: 1,
           }} />
 
-          {/* Vignette */}
+          {/* Gradient overlays */}
           <div style={{
-            position: 'absolute', inset: 0,
-            background: 'radial-gradient(ellipse at center, transparent 30%, rgba(5,5,6,0.6) 100%)',
+            position: 'absolute',
+            top: 0, left: 0, right: 0, bottom: 0,
+            pointerEvents: 'none',
+            background: 'linear-gradient(to top, #050506 0%, rgba(5,5,6,0.55) 45%, transparent 100%)',
             zIndex: 2,
           }} />
-
-          {/* 3D canvas — runner */}
-          <canvas
-            ref={canvasRef}
-            style={{
-              position: 'absolute', inset: 0,
-              width: '100%', height: '100%',
-              display: 'block',
-              zIndex: 3,
-            }}
-          />
-
-          {/* Bottom gradient for text legibility */}
           <div style={{
-            position: 'absolute', inset: 0, pointerEvents: 'none',
-            background: 'linear-gradient(to top, rgba(5,5,6,0.9) 0%, rgba(5,5,6,0.4) 30%, transparent 55%)',
-            zIndex: 4,
+            position: 'absolute',
+            top: 0, left: 0, right: 0, bottom: 0,
+            pointerEvents: 'none',
+            background: 'linear-gradient(to bottom, rgba(5,5,6,0.45) 0%, transparent 30%)',
+            zIndex: 2,
           }} />
 
           {/* Content */}
           <div style={{
-            position: 'absolute',
-            bottom: 80,
-            left: 40, right: 40,
-            zIndex: 5,
+            position: 'relative',
+            zIndex: 3,
             maxWidth: 1440,
+            width: '100%',
             margin: '0 auto',
             opacity: mounted ? 1 : 0,
             transition: 'opacity 800ms ease 1500ms',
@@ -338,18 +198,27 @@ export default function Hero() {
             </h1>
 
             <div style={{
-              display: 'flex', alignItems: 'flex-end',
+              display: 'flex',
+              alignItems: 'flex-end',
               justifyContent: 'space-between',
-              flexWrap: 'wrap', gap: 32,
+              flexWrap: 'wrap',
+              gap: 32,
             }}>
               <div style={{
                 fontFamily: 'JetBrains Mono, monospace',
-                fontSize: 11, letterSpacing: '0.22em',
+                fontSize: 11,
+                letterSpacing: '0.22em',
                 color: '#A8A6A0',
-                display: 'flex', alignItems: 'center', gap: 16,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 16,
               }}>
                 <span style={{ color: '#F3F1EC' }}>SECURITY ENGINEER</span>
-                <span style={{ width: 24, height: 1, background: 'rgba(243,241,236,0.2)', display: 'inline-block' }} />
+                <span style={{
+                  width: 24, height: 1,
+                  background: 'rgba(243,241,236,0.2)',
+                  display: 'inline-block',
+                }} />
                 <span>ENDURANCE ATHLETE</span>
               </div>
               <KraichgauCountdown />
@@ -359,20 +228,20 @@ export default function Hero() {
           {/* Scroll cue */}
           <div style={{
             position: 'absolute',
-            bottom: 20, left: '50%',
+            bottom: 40, left: '50%',
             transform: 'translateX(-50%)',
             display: 'flex', flexDirection: 'column',
             alignItems: 'center', gap: 12,
             fontFamily: 'JetBrains Mono, monospace',
             fontSize: 9, letterSpacing: '0.3em',
             color: '#A8A6A0', pointerEvents: 'none',
-            opacity: mounted ? 0.5 : 0,
-            transition: 'opacity 1000ms ease 2600ms',
-            zIndex: 5,
+            opacity: mounted ? (raceOpacity > 0.5 ? 0 : 0.7) : 0,
+            transition: 'opacity 600ms ease',
+            zIndex: 3,
           }}>
             <span>SCROLL</span>
             <span style={{
-              width: 1, height: 30,
+              width: 1, height: 40,
               background: 'linear-gradient(to bottom, #F3F1EC, transparent)',
               animation: 'heroScrollCue 2400ms cubic-bezier(.22,1,.36,1) infinite',
               transformOrigin: 'top',
@@ -406,7 +275,6 @@ export default function Hero() {
   );
 }
 
-// ══════════════════════════════════════════════════════════════════════════
 function KraichgauCountdown() {
   const target = new Date('2026-05-31T07:00:00+02:00').getTime();
   const [now, setNow] = useState(Date.now());
@@ -457,7 +325,6 @@ function KraichgauCountdown() {
   );
 }
 
-// ══════════════════════════════════════════════════════════════════════════
 function HeroLoader({ mounted }) {
   const [exiting, setExiting] = useState(false);
   useEffect(() => {
