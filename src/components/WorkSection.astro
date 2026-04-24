@@ -1,20 +1,6 @@
 ---
 // WorkSection.astro
-// Replaces the four individual <WorkScene> calls in index.astro.
-// 
-// USAGE — in index.astro, replace:
-//   <section id="work">
-//     <SectionMarker ... />
-//     <WorkScene ... />
-//     <WorkScene ... />
-//     <WorkScene ... />
-//     <WorkScene ... />
-//   </section>
-//
-// With:
-//   <WorkSection />
-//
-// Requires: npm install gsap (already installed)
+// Header pinnt zuerst an der Decke — Karten stacken sich darunter auf.
 
 const projects = [
   {
@@ -58,35 +44,51 @@ const projects = [
     tag: 'In Development',
   },
 ];
+
+// Pixel-Höhe des Headers — Karten starten direkt darunter.
+// Passt sich per JS dynamisch an, dieser Wert ist nur der CSS-Fallback.
+const HEADER_H = 72;
 ---
 
 <section id="work" class="work-section">
-  <!-- Section header — scrolls away normally -->
-  <div class="work-header">
-    <div class="work-header__label">
-      <span class="work-header__num">01</span>
-      <span class="work-header__rule"></span>
-      <span class="work-header__title">WORK</span>
+
+  <!-- ── Sticky header — pinnt wenn die Section oben ankommt ── -->
+  <div class="work-header" id="work-header">
+    <div class="work-header__inner">
+      <div class="work-header__label">
+        <span class="work-header__num">01</span>
+        <span class="work-header__rule"></span>
+        <span class="work-header__title">WORK</span>
+      </div>
+      <div class="work-header__right">
+        <h2 class="work-header__headline">Systems that cannot fail.</h2>
+        <p class="work-header__sub">
+          Production security engineering. Threat modeling, hardening, incident response.
+        </p>
+      </div>
+      <!-- Card counter: 01 / 04 -->
+      <div class="work-header__counter" id="work-counter">
+        <span id="work-counter-current">01</span>
+        <span class="work-header__counter-sep">/</span>
+        <span>{String(projects.length).padStart(2, '0')}</span>
+      </div>
     </div>
-    <h2 class="work-header__headline">Systems that<br />cannot fail.</h2>
-    <p class="work-header__sub">
-      Production security engineering. Threat modeling,<br />
-      hardening, incident response. Selected engagements below.
-    </p>
+    <!-- Progress line at bottom of header -->
+    <div class="work-header__progress-track">
+      <div class="work-header__progress-fill" id="work-progress-fill"></div>
+    </div>
   </div>
 
-  <!-- Stack container — cards pin and stack here -->
+  <!-- ── Stack — Karten stacken sich unter dem Header auf ── -->
   <div class="work-stack" id="work-stack">
     {projects.map((p, i) => (
       <div
         class="work-card"
         data-card-index={i}
-        data-card-total={projects.length}
-        style={`z-index: ${10 + i};`}
+        style={`z-index: ${10 + i}; top: calc(${HEADER_H}px + ${i * 14}px);`}
       >
         <a href={p.href} class="work-card__inner" data-cursor-hover>
 
-          <!-- Left: index + content -->
           <div class="work-card__left">
             <div class="work-card__meta">
               <span class="work-card__index">{p.index}</span>
@@ -106,7 +108,6 @@ const projects = [
             </div>
           </div>
 
-          <!-- Right: image -->
           <div class="work-card__image-wrap">
             {p.image && (
               <div
@@ -114,7 +115,6 @@ const projects = [
                 style={`background-image: url("${p.image}")`}
               />
             )}
-            <!-- Stack depth indicator — shows how many more cards below -->
             <div class="work-card__depth">
               {projects.slice(i + 1).map((_, j) => (
                 <span class="work-card__depth-dot" style={`opacity: ${0.25 - j * 0.06}`} />
@@ -126,25 +126,39 @@ const projects = [
       </div>
     ))}
   </div>
+
 </section>
 
 <style>
   .work-section {
     position: relative;
+    border-top: 1px solid rgba(243, 241, 236, 0.08);
   }
 
-  /* ── Section header ──────────────────────────────────────────────────── */
+  /* ── Sticky header ───────────────────────────────────────────────────── */
   .work-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    /* Matcht den Body-Hintergrund — so deckt er die stackenden Karten ab */
+    background: #050506;
+    border-bottom: 1px solid rgba(243, 241, 236, 0.07);
+  }
+
+  .work-header__inner {
     max-width: 1440px;
     margin: 0 auto;
-    padding: 128px 40px 80px;
+    padding: 18px 40px;
+    display: flex;
+    align-items: center;
+    gap: 32px;
   }
 
   .work-header__label {
     display: flex;
     align-items: center;
-    gap: 16px;
-    margin-bottom: 40px;
+    gap: 12px;
+    flex-shrink: 0;
     font-family: var(--font-mono);
     font-size: 11px;
     letter-spacing: 0.2em;
@@ -158,52 +172,88 @@ const projects = [
 
   .work-header__rule {
     display: block;
-    width: 32px;
+    width: 24px;
     height: 1px;
     background: rgba(243, 241, 236, 0.16);
+  }
+
+  .work-header__right {
+    display: flex;
+    align-items: baseline;
+    gap: 28px;
+    flex: 1;
   }
 
   .work-header__headline {
     font-family: var(--font-display);
     font-weight: 500;
-    font-size: clamp(48px, 7vw, 96px);
-    line-height: 0.98;
-    letter-spacing: -0.04em;
+    font-size: clamp(15px, 1.6vw, 20px);
+    line-height: 1;
+    letter-spacing: -0.02em;
     color: var(--ink);
-    margin: 0 0 28px;
+    margin: 0;
+    white-space: nowrap;
   }
 
   .work-header__sub {
     font-family: var(--font-display);
-    font-size: 17px;
-    line-height: 1.55;
-    color: var(--ink-mid);
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--ink-low);
     margin: 0;
-    letter-spacing: -0.005em;
+    letter-spacing: -0.003em;
   }
 
-  /* ── Stack container ─────────────────────────────────────────────────── */
+  /* Card counter — top right of header */
+  .work-header__counter {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    color: var(--ink-low);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  #work-counter-current {
+    color: var(--ink);
+    transition: opacity 0.2s ease;
+  }
+
+  .work-header__counter-sep {
+    opacity: 0.3;
+  }
+
+  /* Progress line */
+  .work-header__progress-track {
+    height: 1px;
+    width: 100%;
+    background: rgba(243, 241, 236, 0.06);
+  }
+
+  .work-header__progress-fill {
+    height: 100%;
+    width: 0%;
+    background: #2E6BFF;
+    transition: width 80ms linear;
+  }
+
+  /* ── Stack ───────────────────────────────────────────────────────────── */
   .work-stack {
-    position: relative;
-    /* Height = enough scroll distance for all cards to stack.
-       Each card needs ~80vh of scroll distance.
-       Last card stays pinned until user scrolls past. */
-    padding: 0 40px 40px;
     max-width: 1440px;
     margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 0;
+    padding: 20px 40px 120px;
   }
 
-  /* ── Individual card ─────────────────────────────────────────────────── */
+  /* ── Card ────────────────────────────────────────────────────────────── */
   .work-card {
     position: sticky;
-    /* Each card sticks at a slightly lower top offset so they stack visually */
-    border-radius: 12px;
-    margin-bottom: 16px;
-    /* JS sets top dynamically per card */
+    /* top set inline: header height + stagger per card */
+    margin-bottom: 20px;
     will-change: transform;
+    transform-origin: top center;
   }
 
   .work-card__inner {
@@ -219,10 +269,8 @@ const projects = [
     color: inherit;
     position: relative;
     overflow: hidden;
-    transition:
-      border-color 0.4s ease,
-      background 0.4s ease;
-    min-height: 320px;
+    transition: border-color 0.4s ease, background 0.4s ease;
+    min-height: 300px;
   }
 
   .work-card__inner::before {
@@ -236,29 +284,15 @@ const projects = [
     border-radius: 12px;
   }
 
-  .work-card__inner:hover {
-    border-color: rgba(243, 241, 236, 0.16);
-  }
-
-  .work-card__inner:hover::before {
-    opacity: 1;
-  }
-
-  .work-card__inner:hover .work-card__client {
-    transform: translateX(8px);
-  }
-
-  .work-card__inner:hover .work-card__arrow {
-    opacity: 1;
-    transform: translateX(0);
-  }
-
+  .work-card__inner:hover { border-color: rgba(243, 241, 236, 0.16); }
+  .work-card__inner:hover::before { opacity: 1; }
+  .work-card__inner:hover .work-card__client { transform: translateX(8px); }
+  .work-card__inner:hover .work-card__arrow { opacity: 1; transform: translateX(0); }
   .work-card__inner:hover .work-card__image {
     transform: scale(1.04);
     filter: saturate(0.75) brightness(0.9) contrast(1.05);
   }
 
-  /* ── Left content ────────────────────────────────────────────────────── */
   .work-card__left {
     display: flex;
     flex-direction: column;
@@ -360,7 +394,6 @@ const projects = [
     text-transform: uppercase;
   }
 
-  /* ── Right image ─────────────────────────────────────────────────────── */
   .work-card__image-wrap {
     position: relative;
     border-radius: 8px;
@@ -380,7 +413,6 @@ const projects = [
     min-height: 220px;
   }
 
-  /* Depth dots — peek indicator for cards below */
   .work-card__depth {
     position: absolute;
     bottom: 12px;
@@ -398,20 +430,12 @@ const projects = [
     background: rgba(243, 241, 236, 0.6);
   }
 
-  /* ── Responsive ──────────────────────────────────────────────────────── */
   @media (max-width: 900px) {
-    .work-card__inner {
-      grid-template-columns: 1fr;
-    }
-    .work-card__image-wrap {
-      height: 200px;
-    }
-    .work-stack {
-      padding: 0 16px 24px;
-    }
-    .work-header {
-      padding: 80px 16px 48px;
-    }
+    .work-card__inner { grid-template-columns: 1fr; }
+    .work-card__image-wrap { height: 200px; }
+    .work-stack { padding: 16px 16px 80px; }
+    .work-header__right { display: none; }
+    .work-header__inner { padding: 14px 16px; }
   }
 </style>
 
@@ -421,67 +445,88 @@ const projects = [
 
   gsap.registerPlugin(ScrollTrigger);
 
-  const cards = document.querySelectorAll<HTMLElement>('.work-card');
-  const STACK_TOP = 80; // px from top for first card
-  const CARD_OFFSET = 16; // px additional offset per card when stacked
+  const section      = document.getElementById('work') as HTMLElement;
+  const header       = document.getElementById('work-header') as HTMLElement;
+  const progressFill = document.getElementById('work-progress-fill') as HTMLElement;
+  const counterEl    = document.getElementById('work-counter-current') as HTMLElement;
+  const cards        = document.querySelectorAll<HTMLElement>('.work-card');
 
+  if (!section || !header || !cards.length) throw new Error('WorkSection: missing elements');
+
+  // ── Update card top offsets dynamically based on real header height ────
+  // CSS uses the fallback value; JS corrects it after render.
+  function updateCardTops() {
+    const hh = header.offsetHeight;
+    cards.forEach((card, i) => {
+      card.style.top = `${hh + i * 14}px`;
+    });
+  }
+  updateCardTops();
+  window.addEventListener('resize', updateCardTops);
+
+  // ── Progress bar + counter ─────────────────────────────────────────────
+  ScrollTrigger.create({
+    trigger: section,
+    start: 'top top',
+    end: 'bottom bottom',
+    onUpdate: (self) => {
+      progressFill.style.width = `${self.progress * 100}%`;
+
+      // Update counter to show which card is currently "on top"
+      const idx = Math.min(
+        Math.floor(self.progress * cards.length),
+        cards.length - 1
+      );
+      counterEl.textContent = String(idx + 1).padStart(2, '0');
+    },
+  });
+
+  // ── Stacking ───────────────────────────────────────────────────────────
   cards.forEach((card, i) => {
-    // Each card sticks at a slightly lower position so the header row peeks out
-    card.style.top = `${STACK_TOP + i * CARD_OFFSET}px`;
 
-    // Scale down cards beneath the active one (peek effect)
-    // As card i is active, cards 0..i-1 should be slightly scaled
-    if (i > 0) {
-      gsap.to(card, {
-        scrollTrigger: {
-          trigger: card,
-          start: 'top 80px', // when this card hits its sticky point
-          end: 'top 80px',
-          onEnter: () => {
-            // Scale and push down previous cards slightly
-            cards.forEach((prevCard, j) => {
-              if (j < i) {
-                gsap.to(prevCard, {
-                  scale: 1 - (i - j) * 0.025,
-                  y: -(i - j) * 6,
-                  duration: 0.5,
-                  ease: 'power2.out',
-                });
-              }
-            });
-          },
-          onLeaveBack: () => {
-            // Restore previous cards when scrolling back up
-            cards.forEach((prevCard, j) => {
-              if (j < i) {
-                const prevActive = Math.max(0, i - 1);
-                gsap.to(prevCard, {
-                  scale: 1 - (prevActive - j) * 0.025,
-                  y: -(prevActive - j) * 6,
-                  duration: 0.4,
-                  ease: 'power2.out',
-                });
-              }
-            });
-          },
-        },
-      });
-    }
-
-    // Entrance animation: cards fade up on first scroll into view
+    // Entrance: fade + rise when card first comes into view
     gsap.fromTo(card,
-      { opacity: 0, y: 32 },
+      { opacity: 0, y: 28 },
       {
-        opacity: 1,
-        y: 0,
-        duration: 0.7,
+        opacity: 1, y: 0,
+        duration: 0.65,
         ease: 'power2.out',
         scrollTrigger: {
           trigger: card,
-          start: 'top 90%',
+          start: 'top 92%',
           toggleActions: 'play none none none',
         },
       }
     );
+
+    if (i === 0) return; // first card has nothing beneath it to squish
+
+    // When card i reaches its sticky point, push previous cards back
+    ScrollTrigger.create({
+      trigger: card,
+      start: () => `top ${header.offsetHeight + i * 14}px`,
+      onEnter: () => {
+        for (let j = 0; j < i; j++) {
+          const depth = i - j;
+          gsap.to(cards[j], {
+            scale: 1 - depth * 0.028,
+            y: -(depth * 8),
+            duration: 0.45,
+            ease: 'power2.out',
+          });
+        }
+      },
+      onLeaveBack: () => {
+        for (let j = 0; j < i; j++) {
+          const prevDepth = Math.max(0, (i - 1) - j);
+          gsap.to(cards[j], {
+            scale: prevDepth === 0 ? 1 : 1 - prevDepth * 0.028,
+            y: prevDepth === 0 ? 0 : -(prevDepth * 8),
+            duration: 0.4,
+            ease: 'power2.out',
+          });
+        }
+      },
+    });
   });
 </script>
