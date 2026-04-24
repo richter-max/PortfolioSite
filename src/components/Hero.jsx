@@ -114,7 +114,7 @@ export default function Hero() {
   }, [mounted]);
 
   // Toggle this to see live debug overlay
-  const SHOW_DEBUG = true;
+  const SHOW_DEBUG = false;
 
   return (
     <>
@@ -153,7 +153,7 @@ export default function Hero() {
           <div style={{
             position: 'absolute',
             top: 0, left: 0, right: 0, bottom: 0,
-            backgroundImage: 'url("/img/halmarathonpic.jpg")',
+            backgroundImage: 'url("/img/halbmarathon.jpg")',
             backgroundSize: 'cover',
             backgroundPosition: 'center 20%',
             filter: 'saturate(0.55) brightness(0.6) contrast(1.08)',
