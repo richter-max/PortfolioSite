@@ -32,6 +32,8 @@ export default function ContactRunner() {
       camera.lookAt(0, 0, 0);
 
       // ── Renderer ─────────────────────────────────────────────────────
+      // No tone mapping → preserves the GLB's baked colors 1:1.
+      // SRGBColorSpace ensures sRGB textures display correctly.
       const renderer = new THREE.WebGLRenderer({
         antialias: true,
         alpha: true,
@@ -39,25 +41,25 @@ export default function ContactRunner() {
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       renderer.setSize(width, height);
       renderer.outputColorSpace = THREE.SRGBColorSpace;
-      renderer.toneMapping = THREE.ACESFilmicToneMapping;
-      renderer.toneMappingExposure = 0.9;
+      renderer.toneMapping = THREE.NoToneMapping;
       container.appendChild(renderer.domElement);
 
       // ── Lighting ─────────────────────────────────────────────────────
-      const ambient = new THREE.AmbientLight(0xffffff, 0.4);
+      // Pure white, balanced — no color casts on the model.
+      const ambient = new THREE.AmbientLight(0xffffff, 1.0);
       scene.add(ambient);
 
-      const keyLight = new THREE.DirectionalLight(0xffffff, 2.0);
+      const keyLight = new THREE.DirectionalLight(0xffffff, 1.2);
       keyLight.position.set(3, 4, 3);
       scene.add(keyLight);
 
-      const rimLight = new THREE.DirectionalLight(0x2E6BFF, 1.2);
-      rimLight.position.set(-3, 2, -3);
-      scene.add(rimLight);
-
-      const fill = new THREE.DirectionalLight(0xffffff, 0.4);
-      fill.position.set(-2, -1, 2);
+      const fill = new THREE.DirectionalLight(0xffffff, 0.6);
+      fill.position.set(-3, 2, -3);
       scene.add(fill);
+
+      const back = new THREE.DirectionalLight(0xffffff, 0.4);
+      back.position.set(-2, -1, 2);
+      scene.add(back);
 
       // ── Load model ───────────────────────────────────────────────────
       let pivot = null;
