@@ -66,11 +66,11 @@ export default function FieldTape({ entries }) {
           fontFamily: 'Inter Tight, sans-serif', fontWeight: 500,
           fontSize: 'clamp(48px, 7vw, 96px)', lineHeight: 0.98, letterSpacing: '-0.04em',
           color: '#F3F1EC', margin: 0, maxWidth: '14ch',
-        }} data-reveal="lines">Tested in the cold.</h2>
+        }} data-reveal="lines">Endurance.</h2>
         <p data-reveal="fade-up" style={{
           fontFamily: 'Inter Tight, sans-serif', fontSize: 19, lineHeight: 1.5,
           color: '#A8A6A0', maxWidth: '52ch', marginTop: 32, letterSpacing: '-0.005em',
-        }}>Endurance is not a hobby. It is the same practice — systems under load, failure modes, recovery. Scroll to traverse.</p>
+        }}>Triathlon, marathon, table tennis. Selected races and ongoing training.</p>
       </div>
 
       <div ref={pinRef} style={{ height: `${entries.length * 100}vh`, position: 'relative' }}>

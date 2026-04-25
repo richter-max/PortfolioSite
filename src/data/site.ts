@@ -3,7 +3,7 @@ export const SITE = {
   name: 'Maximilian Richter',
   title: 'Maximilian Richter — Security Engineer · Endurance Athlete',
   description:
-    'Systems that perform when they cannot fail. Hardened against adversaries. Tested in the cold.',
+    'Security engineer working on AI agent security and tooling. Endurance athlete. Based in the Allgäu.',
   ogImage: '/img/og-default.jpg',
   author: {
     name: 'Maximilian Richter',

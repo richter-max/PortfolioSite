@@ -15,6 +15,7 @@ export default function ContactRunner() {
     async function init() {
       const THREE = await import('three');
       const { GLTFLoader } = await import('three/examples/jsm/loaders/GLTFLoader.js');
+      const { RoomEnvironment } = await import('three/examples/jsm/environments/RoomEnvironment.js');
 
       if (!mounted || !containerRef.current) return;
 
@@ -32,8 +33,6 @@ export default function ContactRunner() {
       camera.lookAt(0, 0, 0);
 
       // ── Renderer ─────────────────────────────────────────────────────
-      // No tone mapping → preserves the GLB's baked colors 1:1.
-      // SRGBColorSpace ensures sRGB textures display correctly.
       const renderer = new THREE.WebGLRenderer({
         antialias: true,
         alpha: true,
@@ -44,22 +43,23 @@ export default function ContactRunner() {
       renderer.toneMapping = THREE.NoToneMapping;
       container.appendChild(renderer.domElement);
 
+      // ── Environment (IBL) ────────────────────────────────────────────
+      // PBR materials (metallic-roughness) need something to reflect.
+      // Without IBL they go flat/grey. RoomEnvironment is the standard
+      // neutral studio probe — same look you'd get in Blender's default.
+      const pmrem = new THREE.PMREMGenerator(renderer);
+      pmrem.compileEquirectangularShader();
+      const envTexture = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+      scene.environment = envTexture;
+
       // ── Lighting ─────────────────────────────────────────────────────
-      // Pure white, balanced — no color casts on the model.
-      const ambient = new THREE.AmbientLight(0xffffff, 1.0);
+      // Soft white fills only — env map does the heavy lifting for color.
+      const ambient = new THREE.AmbientLight(0xffffff, 0.4);
       scene.add(ambient);
 
-      const keyLight = new THREE.DirectionalLight(0xffffff, 1.2);
+      const keyLight = new THREE.DirectionalLight(0xffffff, 1.0);
       keyLight.position.set(3, 4, 3);
       scene.add(keyLight);
-
-      const fill = new THREE.DirectionalLight(0xffffff, 0.6);
-      fill.position.set(-3, 2, -3);
-      scene.add(fill);
-
-      const back = new THREE.DirectionalLight(0xffffff, 0.4);
-      back.position.set(-2, -1, 2);
-      scene.add(back);
 
       // ── Load model ───────────────────────────────────────────────────
       let pivot = null;
