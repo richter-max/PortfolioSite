@@ -1,0 +1,4 @@
+# Legacy location — see /.well-known/security.txt for the canonical file.
+Contact: mailto:max.richter.dev@proton.me
+Expires: 2027-04-24T00:00:00.000Z
+Canonical: https://richtermax.com/.well-known/security.txt

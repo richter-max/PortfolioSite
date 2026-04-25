@@ -10,7 +10,8 @@
       "Bash(node -e \"import\\('meshoptimizer'\\).then\\(m => console.log\\('keys:', Object.keys\\(m\\).slice\\(0,10\\)\\)\\)\")",
       "Bash(npm uninstall *)",
       "Bash(npm run *)",
-      "Bash(find src *)"
+      "Bash(find src *)",
+      "Bash(node scripts/build-og.mjs)"
     ]
   }
 }

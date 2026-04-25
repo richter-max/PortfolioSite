@@ -7,6 +7,8 @@ export interface Post {
   title: string;
   excerpt: string;
   href: string;
+  /** True until the post has a real body — UI shows a SOON pill and disables navigation. */
+  draft?: boolean;
 }
 
 export const kindColor: Record<PostKind, string> = {
@@ -29,6 +31,7 @@ export const posts: Post[] = [
     title: 'Prompt Injection in RAG',
     excerpt: 'Why retrieval-augmented pipelines leak intent before they leak data.',
     href: '/blog/rag-injection',
+    draft: true,
   },
   {
     slug: 'athletes-engineers',
@@ -37,6 +40,7 @@ export const posts: Post[] = [
     title: 'Athletes as Engineers',
     excerpt: 'Taper weeks taught me more about shipping than any sprint did.',
     href: '/blog/athletes-engineers',
+    draft: true,
   },
   {
     slug: 'berlin-report',
@@ -45,6 +49,7 @@ export const posts: Post[] = [
     title: 'Berlin Race Report',
     excerpt: 'Three hours, flat. No pacer. No music. One pact with myself.',
     href: '/blog/berlin-report',
+    draft: true,
   },
   {
     slug: 'agent-threat-model',
@@ -53,6 +58,7 @@ export const posts: Post[] = [
     title: 'Threat Modeling AI Agents',
     excerpt: 'A framework for evaluating agentic systems before they ship.',
     href: '/blog/agent-threat-model',
+    draft: true,
   },
   {
     slug: 'zone-two',
@@ -61,6 +67,7 @@ export const posts: Post[] = [
     title: 'The Zone Two Question',
     excerpt: 'Cheap watts, expensive patience — why aerobic base still wins.',
     href: '/blog/zone-two',
+    draft: true,
   },
   {
     slug: 'vendor-questionnaires',
@@ -69,5 +76,6 @@ export const posts: Post[] = [
     title: 'On Vendor Questionnaires',
     excerpt: 'What VendorQ taught me about how security actually gets sold.',
     href: '/blog/vendor-questionnaires',
+    draft: true,
   },
 ];

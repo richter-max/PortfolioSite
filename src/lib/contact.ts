@@ -10,6 +10,8 @@ export interface ContactPayload {
   email: string;
   company?: string;
   message: string;
+  /** GDPR / DSGVO consent — must be true to submit */
+  consent: boolean;
   /** honeypot — real users leave this empty, bots fill everything */
   website?: string;
   /** ms the form was on screen before submit — <1500ms is almost certainly a bot */
@@ -44,6 +46,14 @@ export async function submitContact(payload: ContactPayload): Promise<ContactRes
 
   const err = validate(payload);
   if (err) return { ok: false, reason: 'validation', message: err };
+
+  if (!payload.consent) {
+    return {
+      ok: false,
+      reason: 'validation',
+      message: 'Bitte stimme der Verarbeitung deiner Daten zu (DSGVO).',
+    };
+  }
 
   const accessKey = import.meta.env.PUBLIC_WEB3FORMS_KEY;
   if (!accessKey) {

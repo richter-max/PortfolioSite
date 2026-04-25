@@ -22,6 +22,16 @@ export function initMotion() {
     return;
   }
 
+  // Tear down any existing instance before re-initialising (View Transitions).
+  if (window.__lenis) {
+    try { window.__lenis.destroy(); } catch {}
+    window.__lenis = null;
+  }
+  if (window.__motionRaf) {
+    cancelAnimationFrame(window.__motionRaf);
+    window.__motionRaf = null;
+  }
+
   // Lenis smooth scroll — tuned slow-ish for editorial feel
   const lenis = new Lenis({
     duration: 1.15,
@@ -58,6 +68,7 @@ export function initMotion() {
     velTicker = requestAnimationFrame(readVel);
   };
   velTicker = requestAnimationFrame(readVel);
+  window.__motionRaf = velTicker;
 
   // ── REVEAL PRIMITIVES ────────────────────────────────────────────────────
 
@@ -240,11 +251,24 @@ export function initMotion() {
   window.addEventListener('load', () => ScrollTrigger.refresh());
 }
 
-// Auto-init on DOM ready
+// Auto-init on DOM ready + after every Astro view transition.
+// View Transitions swap the document body without firing DOMContentLoaded,
+// so we re-bind motion on `astro:page-load` and tear down on `astro:before-swap`.
 if (typeof window !== 'undefined') {
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initMotion);
   } else {
     initMotion();
   }
+
+  document.addEventListener('astro:before-swap', () => {
+    // Kill all ScrollTriggers so the next page starts clean.
+    if (typeof ScrollTrigger !== 'undefined') {
+      ScrollTrigger.getAll().forEach((t) => t.kill());
+    }
+  });
+
+  document.addEventListener('astro:page-load', () => {
+    initMotion();
+  });
 }

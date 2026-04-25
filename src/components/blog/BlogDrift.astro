@@ -25,10 +25,13 @@ import { posts, kindColor, kindLabel } from '@data/blog';
       {[...posts, ...posts].map((post, i) => {
         const color = kindColor[post.kind];
         const label = kindLabel[post.kind];
+        const Tag = post.draft ? 'div' : 'a';
+        const linkProps = post.draft
+          ? { class: 'drift-post is-draft', 'aria-disabled': 'true' }
+          : { href: post.href, class: 'drift-post' };
         return (
-          <a
-            href={post.href}
-            class="drift-post"
+          <Tag
+            {...linkProps}
             data-post-index={i}
             data-cursor-hover
             style={`--post-accent: ${color};`}
@@ -37,14 +40,15 @@ import { posts, kindColor, kindLabel } from '@data/blog';
               <span class="drift-post__kind">{label}</span>
               <span class="drift-post__sep">/</span>
               <span class="drift-post__date">{post.date}</span>
+              {post.draft && <span class="drift-post__pill">SOON</span>}
             </div>
             <h3 class="drift-post__title">{post.title}</h3>
             <p class="drift-post__excerpt">{post.excerpt}</p>
             <div class="drift-post__read">
-              <span>READ</span>
-              <span class="drift-post__arrow">→</span>
+              <span>{post.draft ? 'IN DRAFT' : 'READ'}</span>
+              {!post.draft && <span class="drift-post__arrow">→</span>}
             </div>
-          </a>
+          </Tag>
         );
       })}
     </div>
@@ -181,6 +185,26 @@ import { posts, kindColor, kindLabel } from '@data/blog';
 
   .drift-post.is-active {
     transform: translateY(-6px);
+  }
+
+  .drift-post.is-draft {
+    cursor: default;
+  }
+  .drift-post.is-draft .drift-post__title {
+    color: rgba(243, 241, 236, 0.6);
+  }
+  .drift-post.is-draft .drift-post__read {
+    color: rgba(243, 241, 236, 0.25);
+  }
+
+  .drift-post__pill {
+    margin-left: auto;
+    padding: 3px 8px;
+    border: 1px solid rgba(243, 241, 236, 0.18);
+    border-radius: 999px;
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    color: rgba(243, 241, 236, 0.55);
   }
 
   .drift-post.is-active .drift-post__title {

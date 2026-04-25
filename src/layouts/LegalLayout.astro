@@ -1,0 +1,112 @@
+---
+// LegalLayout.astro — typographic shell for /impressum and /datenschutz.
+// Same chrome as the main site, narrower measure, prose styles.
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Nav from '@components/layout/Nav.astro';
+import Footer from '@components/layout/Footer.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  kicker: string;
+}
+
+const { title, description, kicker } = Astro.props;
+---
+
+<BaseLayout title={`${title} · richtermax.com`} description={description} noindex>
+  <Nav />
+  <main id="main" class="legal">
+    <article class="prose">
+      <div class="kicker">
+        <span class="num">§</span>
+        <span class="bar" />
+        <span>{kicker}</span>
+      </div>
+      <h1>{title}</h1>
+      <slot />
+    </article>
+  </main>
+  <Footer />
+</BaseLayout>
+
+<style>
+  .legal {
+    padding: 160px 40px 96px;
+    background: #050506;
+    min-height: 100vh;
+  }
+  .prose {
+    max-width: 720px;
+    margin: 0 auto;
+    color: #A8A6A0;
+    font-family: var(--font-display, 'Inter Tight', sans-serif);
+    font-size: 17px;
+    line-height: 1.65;
+    letter-spacing: -0.005em;
+  }
+  .kicker {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: #6B6965;
+    margin-bottom: 32px;
+  }
+  .kicker .num { color: #F3F1EC; }
+  .kicker .bar {
+    width: 32px;
+    height: 1px;
+    background: rgba(243, 241, 236, 0.16);
+    display: inline-block;
+  }
+  .kicker > span:last-child { color: #F3F1EC; }
+  .prose :global(h1) {
+    font-weight: 500;
+    font-size: clamp(40px, 5vw, 64px);
+    line-height: 1.0;
+    letter-spacing: -0.04em;
+    color: #F3F1EC;
+    margin: 0 0 64px;
+  }
+  .prose :global(h2) {
+    font-weight: 500;
+    font-size: 22px;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: #F3F1EC;
+    margin: 56px 0 16px;
+  }
+  .prose :global(h3) {
+    font-weight: 500;
+    font-size: 16px;
+    letter-spacing: -0.01em;
+    color: #F3F1EC;
+    margin: 32px 0 8px;
+  }
+  .prose :global(p) { margin: 0 0 16px; }
+  .prose :global(p + p) { margin-top: 0; }
+  .prose :global(ul) { margin: 0 0 16px; padding-left: 1.2em; }
+  .prose :global(li) { margin: 4px 0; }
+  .prose :global(a) {
+    color: #F3F1EC;
+    text-decoration: underline;
+    text-decoration-color: rgba(243, 241, 236, 0.3);
+    text-underline-offset: 3px;
+    transition: text-decoration-color 0.2s ease;
+  }
+  .prose :global(a:hover) { text-decoration-color: #2E6BFF; }
+  .prose :global(address) {
+    font-style: normal;
+    color: #F3F1EC;
+    margin: 0 0 16px;
+  }
+  .prose :global(.muted) { color: #6B6965; font-size: 13px; }
+  .prose :global(.divider) {
+    border: 0;
+    border-top: 1px solid rgba(243, 241, 236, 0.08);
+    margin: 64px 0;
+  }
+</style>

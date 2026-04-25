@@ -1,0 +1,162 @@
+---
+import LegalLayout from '@layouts/LegalLayout.astro';
+import { SITE } from '@data/site';
+
+const L = SITE.legal;
+const today = new Date().toLocaleDateString('de-DE', {
+  year: 'numeric', month: 'long', day: 'numeric',
+});
+---
+
+<LegalLayout
+  title="Datenschutzerklärung"
+  description={`Datenschutzerklärung nach DSGVO für ${SITE.name}.`}
+  kicker="LEGAL · DATENSCHUTZ"
+>
+  <h2>1. Verantwortlicher</h2>
+  <p>
+    Verantwortlich für die Datenverarbeitung auf dieser Website im Sinne der
+    Datenschutz-Grundverordnung (DSGVO) ist:
+  </p>
+  <address>
+    {L.fullName}<br />
+    {L.street}<br />
+    {L.postalCode} {L.city}<br />
+    {L.country}<br />
+    E-Mail: <a href={`mailto:${SITE.author.email}`}>{SITE.author.email}</a>
+  </address>
+
+  <h2>2. Allgemeines zur Datenverarbeitung</h2>
+  <p>
+    Diese Website verfolgt einen datensparsamen Ansatz. Es werden keine
+    Cookies gesetzt, kein Tracking durchgeführt und keine
+    Drittanbieter-Analyse-Tools eingebunden. Personenbezogene Daten werden
+    ausschließlich verarbeitet, wenn Sie das Kontaktformular nutzen oder mich
+    direkt per E-Mail kontaktieren.
+  </p>
+
+  <h2>3. Hosting (Vercel)</h2>
+  <p>
+    Diese Website wird gehostet bei Vercel Inc., 340 S Lemon Ave #4133,
+    Walnut, CA 91789, USA. Beim Aufruf der Website werden vom Hoster
+    automatisch Server-Logfiles erfasst, die Ihr Browser übermittelt
+    (IP-Adresse, Datum und Uhrzeit der Anfrage, übertragene Datenmenge,
+    Browser, Betriebssystem, Referrer-URL). Diese Daten sind technisch
+    notwendig, um die Website auszuliefern, und werden nicht mit anderen
+    Datenquellen zusammengeführt.
+  </p>
+  <p>
+    Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an
+    einer technisch fehlerfreien Bereitstellung). Vercel verarbeitet Daten
+    auch in den USA; die Übertragung erfolgt auf Grundlage der EU-Standard­vertragsklauseln
+    sowie der Vercel-Datenschutzbestimmungen:
+    <a href="https://vercel.com/legal/privacy-policy" target="_blank" rel="noreferrer">
+      vercel.com/legal/privacy-policy
+    </a>.
+  </p>
+
+  <h2>4. Kontaktformular (Web3Forms)</h2>
+  <p>
+    Wenn Sie das Kontaktformular nutzen, werden die von Ihnen eingegebenen
+    Daten (Name, E-Mail-Adresse, optional Firma, Nachricht) über den Dienst
+    Web3Forms an meine E-Mail-Adresse weitergeleitet. Anbieter ist Web3Forms,
+    betrieben von Codexpedia LLC, 30 N Gould St, Suite R, Sheridan, WY 82801,
+    USA.
+  </p>
+  <p>
+    Die Verarbeitung erfolgt zur Bearbeitung Ihrer Anfrage auf Grundlage Ihrer
+    Einwilligung (Art. 6 Abs. 1 lit. a DSGVO), die Sie durch das aktive
+    Anhaken der Einwilligungs-Checkbox vor dem Absenden erteilen. Sie können
+    diese Einwilligung jederzeit mit Wirkung für die Zukunft per E-Mail an
+    <a href={`mailto:${SITE.author.email}`}>{SITE.author.email}</a> widerrufen.
+  </p>
+  <p>
+    Web3Forms-Datenschutzerklärung:
+    <a href="https://web3forms.com/privacy-policy" target="_blank" rel="noreferrer">
+      web3forms.com/privacy-policy
+    </a>. Die Übertragung in die USA erfolgt auf Grundlage der
+    EU-Standard­vertrags­klauseln. Eingegangene Anfragen verbleiben in meinem
+    E-Mail-Postfach (Proton Mail, Schweiz), bis sie zur Bearbeitung nicht mehr
+    erforderlich sind, längstens 24 Monate.
+  </p>
+  <p>
+    Zum Schutz vor automatisierten Spam-Anfragen werden ein Honeypot-Feld
+    sowie eine Mindestbearbeitungszeit ausgewertet. Es werden dabei keine
+    personenbezogenen Daten gespeichert.
+  </p>
+
+  <h2>5. 3D-Modell (Google Draco-Decoder)</h2>
+  <p>
+    Im Kontaktbereich wird ein 3D-Modell angezeigt, dessen Geometrie mit
+    Google Draco komprimiert ist. Der zugehörige Decoder wird vom CDN von
+    Google (gstatic.com) nachgeladen. Hierbei wird Ihre IP-Adresse an Google
+    übermittelt. Anbieter: Google Ireland Limited, Gordon House, Barrow
+    Street, Dublin 4, Irland.
+  </p>
+  <p>
+    Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an
+    einer performanten Auslieferung). Google-Datenschutzerklärung:
+    <a href="https://policies.google.com/privacy" target="_blank" rel="noreferrer">
+      policies.google.com/privacy
+    </a>.
+  </p>
+
+  <h2>6. Reichweitenmessung (Vercel Web Analytics & Speed Insights)</h2>
+  <p>
+    Zur Messung der Reichweite und der Performance dieser Website werden
+    Vercel Web Analytics und Vercel Speed Insights eingesetzt. Anbieter ist
+    Vercel Inc., 340 S Lemon Ave #4133, Walnut, CA 91789, USA. Die Tools
+    arbeiten <strong>cookie-frei</strong>, setzen keine geräteübergreifenden
+    Identifier und speichern keine IP-Adressen oder personenbezogenen Daten.
+    Erfasst werden ausschließlich aggregierte Seitenaufrufe sowie Core Web
+    Vitals (Ladezeit, Layout-Stabilität, Interaktivität).
+  </p>
+  <p>
+    Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an
+    einer technisch optimierten und nutzerfreundlichen Website). Da keine
+    personenbezogenen Daten verarbeitet werden, ist eine Einwilligung nach
+    § 25 TTDSG nicht erforderlich. Weitere Informationen:
+    <a href="https://vercel.com/docs/analytics/privacy-policy" target="_blank" rel="noreferrer">
+      vercel.com/docs/analytics/privacy-policy
+    </a>.
+  </p>
+  <p>
+    Es werden keine Cookies gesetzt, keine Werbenetzwerke eingebunden und
+    kein Cross-Site-Tracking durchgeführt.
+  </p>
+
+  <h2>7. Ihre Rechte</h2>
+  <p>Sie haben gemäß DSGVO jederzeit das Recht auf:</p>
+  <ul>
+    <li>Auskunft über die Sie betreffenden personenbezogenen Daten (Art. 15)</li>
+    <li>Berichtigung unrichtiger Daten (Art. 16)</li>
+    <li>Löschung („Recht auf Vergessenwerden", Art. 17)</li>
+    <li>Einschränkung der Verarbeitung (Art. 18)</li>
+    <li>Datenübertragbarkeit (Art. 20)</li>
+    <li>Widerspruch gegen die Verarbeitung (Art. 21)</li>
+    <li>Widerruf einer erteilten Einwilligung mit Wirkung für die Zukunft (Art. 7 Abs. 3)</li>
+  </ul>
+  <p>
+    Anfragen richten Sie bitte formlos an
+    <a href={`mailto:${SITE.author.email}`}>{SITE.author.email}</a>.
+  </p>
+
+  <h2>8. Beschwerderecht bei der Aufsichtsbehörde</h2>
+  <p>
+    Sie haben das Recht, sich bei einer Datenschutz-Aufsichtsbehörde über die
+    Verarbeitung Ihrer personenbezogenen Daten zu beschweren (Art. 77 DSGVO).
+    Eine Liste der Aufsichtsbehörden finden Sie unter:
+    <a href="https://www.bfdi.bund.de/DE/Service/Anschriften/anschriften_node.html" target="_blank" rel="noreferrer">
+      bfdi.bund.de
+    </a>.
+  </p>
+
+  <h2>9. SSL-/TLS-Verschlüsselung</h2>
+  <p>
+    Diese Website nutzt aus Sicherheitsgründen und zum Schutz der Übertragung
+    vertraulicher Inhalte eine SSL-/TLS-Verschlüsselung. Eine verschlüsselte
+    Verbindung erkennen Sie am „https://" in der Adresszeile Ihres Browsers.
+  </p>
+
+  <p class="muted">Stand: {today}</p>
+</LegalLayout>

@@ -1,13 +1,25 @@
 import { defineConfig } from 'astro/config';
 import { fileURLToPath } from 'node:url';
 import react from '@astrojs/react';
+import sitemap from '@astrojs/sitemap';
 
 const r = (p) => fileURLToPath(new URL(p, import.meta.url));
 
 // https://astro.build/config
 export default defineConfig({
   site: 'https://richtermax.com',
-  integrations: [react()],
+  integrations: [
+    react(),
+    sitemap({
+      // Legal pages aren't useful in search results — also marked noindex.
+      filter: (page) =>
+        !page.includes('/impressum') &&
+        !page.includes('/datenschutz') &&
+        !page.includes('/404'),
+      changefreq: 'monthly',
+      priority: 0.7,
+    }),
+  ],
   compressHTML: true,
   prefetch: {
     prefetchAll: false,

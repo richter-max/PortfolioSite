@@ -1,0 +1,107 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Nav from '@components/layout/Nav.astro';
+import Footer from '@components/layout/Footer.astro';
+---
+
+<BaseLayout
+  title="404 — Off the trail · richtermax.com"
+  description="This URL doesn't exist on richtermax.com."
+>
+  <Nav />
+  <main id="main" class="not-found">
+    <div class="kicker">
+      <span class="num">404</span>
+      <span class="bar"></span>
+      <span>OFF THE TRAIL</span>
+    </div>
+    <h1>You took<br />a wrong turn.</h1>
+    <p>
+      The page you were looking for isn't here. Either the URL is mistyped,
+      the page has moved, or it never existed in the first place.
+    </p>
+    <div class="actions">
+      <a href="/" class="primary" data-magnetic="0.4" data-cursor-hover>← BACK TO START</a>
+      <a href="/#contact" class="secondary" data-cursor-hover>Get in touch →</a>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>
+
+<style>
+  .not-found {
+    min-height: calc(100vh - 80px);
+    padding: 200px 40px 160px;
+    background: #050506;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .kicker {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: #6B6965;
+    margin-bottom: 32px;
+  }
+  .kicker .num { color: #2E6BFF; font-weight: 600; }
+  .kicker .bar {
+    width: 32px; height: 1px;
+    background: rgba(243, 241, 236, 0.16);
+  }
+  .kicker > span:last-child { color: #F3F1EC; }
+
+  h1 {
+    font-family: var(--font-display, 'Inter Tight', sans-serif);
+    font-weight: 500;
+    font-size: clamp(64px, 10vw, 160px);
+    line-height: 0.92;
+    letter-spacing: -0.045em;
+    color: #F3F1EC;
+    margin: 0 0 48px;
+  }
+
+  p {
+    font-family: var(--font-display, 'Inter Tight', sans-serif);
+    font-size: 19px;
+    line-height: 1.5;
+    color: #A8A6A0;
+    max-width: 52ch;
+    margin: 0 0 64px;
+    letter-spacing: -0.005em;
+  }
+
+  .actions {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .primary {
+    background: transparent;
+    color: #2E6BFF;
+    border: 0.5px solid #2E6BFF;
+    padding: 14px 28px;
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    border-radius: 4px;
+    transition: background 0.25s ease, color 0.25s ease;
+  }
+  .primary:hover {
+    background: #2E6BFF;
+    color: #F3F1EC;
+  }
+  .secondary {
+    font-family: var(--font-display, 'Inter Tight', sans-serif);
+    font-size: 16px;
+    color: #A8A6A0;
+    transition: color 0.2s ease;
+  }
+  .secondary:hover { color: #F3F1EC; }
+</style>

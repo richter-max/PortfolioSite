@@ -4,18 +4,47 @@ import '@styles/fonts.css';
 import '@styles/tokens.css';
 import '@styles/base.css';
 import { SITE } from '@data/site';
+import { ViewTransitions } from 'astro:transitions';
 
 interface Props {
   title?: string;
   description?: string;
   ogImage?: string;
+  noindex?: boolean;
 }
 
 const {
   title = SITE.title,
   description = SITE.description,
   ogImage = SITE.ogImage,
+  noindex = false,
 } = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, SITE.url).toString();
+const ogImageAbs = new URL(ogImage, SITE.url).toString();
+
+const personLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: SITE.author.name,
+  url: SITE.url,
+  email: `mailto:${SITE.author.email}`,
+  jobTitle: 'Security Engineer',
+  sameAs: [
+    'https://github.com/richter-max',
+    'https://www.linkedin.com/in/maximilian-richter-40697a298',
+  ],
+};
+
+const siteLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: SITE.name,
+  url: SITE.url,
+  description: SITE.description,
+  inLanguage: 'en',
+  author: { '@type': 'Person', name: SITE.author.name },
+};
 ---
 
 <!doctype html>
@@ -27,16 +56,28 @@ const {
 
     <title>{title}</title>
     <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <meta name="author" content={SITE.author.name} />
+    <meta name="theme-color" content="#050506" />
 
     <!-- OG -->
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={ogImage} />
+    <meta property="og:image" content={ogImageAbs} />
+    <meta property="og:url" content={canonical} />
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE.name} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageAbs} />
 
     <!-- favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Sitemap discovery -->
+    <link rel="sitemap" type="application/xml" href="/sitemap-index.xml" />
 
     <!-- fonts: self-hosted variable woff2, preload latin for instant render -->
     <link
@@ -56,8 +97,17 @@ const {
 
     <!-- preload hero LCP image -->
     <link rel="preload" as="image" href="/img/opt/laptophero-640.avif" type="image/avif" fetchpriority="high" />
+
+    <!-- Structured data -->
+    <script type="application/ld+json" set:html={JSON.stringify(personLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(siteLd)} />
+
+    <!-- View Transitions — cross-page fade with shared elements -->
+    <ViewTransitions />
   </head>
   <body>
+
+    <a href="#main" class="skip-link">Skip to content</a>
 
     <!-- ── Grain overlay: animated SVG noise + vignette ───────────────────
          Pure CSS, no JS, no npm. Sits above everything via z-index 1000/999.
@@ -77,6 +127,15 @@ const {
 
     <script>
       import '../scripts/motion.js';
+    </script>
+
+    <!-- Vercel Web Analytics + Speed Insights — cookie-free, no PII.
+         Only emits anonymous page views and Core Web Vitals. -->
+    <script>
+      import { inject } from '@vercel/analytics';
+      import { injectSpeedInsights } from '@vercel/speed-insights';
+      inject();
+      injectSpeedInsights();
     </script>
   </body>
 </html>

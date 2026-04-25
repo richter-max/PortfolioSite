@@ -56,3 +56,55 @@ video {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(243, 241, 236, 0.24);
 }
+
+/* ── Focus rings (keyboard-only) ─────────────────────────────────────── */
+:focus { outline: none; }
+:focus-visible {
+  outline: 2px solid var(--accent, #2E6BFF);
+  outline-offset: 3px;
+  border-radius: 2px;
+  transition: outline-offset 0.15s ease;
+}
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline-offset: 4px;
+}
+
+/* ── Skip link ──────────────────────────────────────────────────────────
+   Visually hidden until focused via Tab. First stop in tab order. */
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 10000;
+  padding: 12px 18px;
+  background: var(--ink, #F3F1EC);
+  color: var(--bg, #050506);
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  border-radius: 4px;
+  transform: translateY(-150%);
+  transition: transform 0.2s ease;
+}
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translateY(0);
+  outline: 2px solid var(--accent, #2E6BFF);
+  outline-offset: 2px;
+}
+
+/* ── Reduced motion ─────────────────────────────────────────────────────
+   Site-wide opt-out: disable transitions, animations, and smooth scroll. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

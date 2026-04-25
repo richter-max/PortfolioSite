@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Don't index legal boilerplate
+Disallow: /impressum
+Disallow: /datenschutz
+
+Sitemap: https://richtermax.com/sitemap-index.xml

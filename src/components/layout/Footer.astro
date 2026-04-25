@@ -5,6 +5,10 @@ const socials = [
   { label: 'LINKEDIN', href: 'https://www.linkedin.com/in/maximilian-richter-40697a298' },
   { label: 'STRAVA', href: 'https://strava.app.link/mIlXsvnJL1b' },
 ];
+const legal = [
+  { label: 'IMPRESSUM', href: '/impressum' },
+  { label: 'DATENSCHUTZ', href: '/datenschutz' },
+];
 ---
 
 <footer class="site-footer">
@@ -23,6 +27,13 @@ const socials = [
         © 2026 Maximilian Richter<br />
         Looking for security engineering roles · Germany
       </div>
+    </div>
+    <div class="legal-row">
+      <nav class="legal-links" aria-label="Legal">
+        {legal.map((l) => (
+          <a href={l.href}>{l.label}</a>
+        ))}
+      </nav>
     </div>
   </div>
 </footer>
@@ -75,4 +86,22 @@ const socials = [
     color: var(--ink-low);
     text-align: right;
   }
+  .legal-row {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(243, 241, 236, 0.06);
+  }
+  .legal-links {
+    display: flex;
+    gap: 28px;
+    flex-wrap: wrap;
+  }
+  .legal-links a {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--ink-low);
+    transition: color 0.2s ease;
+  }
+  .legal-links a:hover { color: var(--ink); }
 </style>

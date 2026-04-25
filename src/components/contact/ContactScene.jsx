@@ -10,6 +10,7 @@ export default function ContactScene() {
   const [email, setEmail]     = useState('');
   const [company, setCompany] = useState('');
   const [message, setMessage] = useState('');
+  const [consent, setConsent] = useState(false);
   const [website, setWebsite] = useState(''); // honeypot
   const [focused, setFocused] = useState(null);
   const [status, setStatus]   = useState({ state: 'idle', message: '' });
@@ -32,6 +33,11 @@ export default function ContactScene() {
       return;
     }
 
+    if (!consent) {
+      setStatus({ state: 'error', message: 'Please confirm the privacy notice before sending.' });
+      return;
+    }
+
     setStatus({ state: 'sending', message: '' });
 
     const result = await submitContact({
@@ -39,13 +45,14 @@ export default function ContactScene() {
       email: email.trim(),
       company: company.trim() || undefined,
       message: message.trim(),
+      consent,
       website,
       elapsedMs: Date.now() - mountedAt.current,
     });
 
     if (result.ok) {
       setStatus({ state: 'success', message: 'Message sent. I’ll reply within 48h.' });
-      setName(''); setEmail(''); setCompany(''); setMessage('');
+      setName(''); setEmail(''); setCompany(''); setMessage(''); setConsent(false);
     } else {
       setStatus({ state: 'error', message: result.message });
     }
@@ -120,6 +127,11 @@ export default function ContactScene() {
                 meta={`${message.length} / ${MAX_CHARS} CHARS`}
                 disabled={isSubmitting || isDone}
               />
+            </div>
+
+            {/* Consent — DSGVO/GDPR */}
+            <div style={{ gridColumn: '1 / -1' }}>
+              <ConsentCheckbox checked={consent} onChange={setConsent} disabled={isSubmitting || isDone} />
             </div>
 
             {/* Honeypot — hidden from humans, bots fill it */}
@@ -228,6 +240,78 @@ export default function ContactScene() {
         </div>
       </div>
     </section>
+  );
+}
+
+function ConsentCheckbox({ checked, onChange, disabled }) {
+  const id = 'contact-consent';
+  return (
+    <label
+      htmlFor={id}
+      style={{
+        display: 'flex',
+        gap: 14,
+        alignItems: 'flex-start',
+        cursor: disabled ? 'default' : 'pointer',
+        opacity: disabled ? 0.5 : 1,
+        fontFamily: 'Inter Tight, sans-serif',
+        fontSize: 13,
+        lineHeight: 1.55,
+        color: '#A8A6A0',
+        letterSpacing: '-0.005em',
+      }}
+    >
+      <span
+        aria-hidden="true"
+        style={{
+          flexShrink: 0,
+          width: 16, height: 16,
+          marginTop: 2,
+          border: `1px solid ${checked ? '#2E6BFF' : 'rgba(243,241,236,0.3)'}`,
+          background: checked ? '#2E6BFF' : 'transparent',
+          borderRadius: 3,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          transition: 'background 0.2s ease, border-color 0.2s ease',
+        }}
+      >
+        {checked && (
+          <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+            <path d="M1 4L3.5 6.5L9 1" stroke="#F3F1EC" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        )}
+      </span>
+      <input
+        id={id}
+        type="checkbox"
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+        disabled={disabled}
+        required
+        data-cursor-hover
+        style={{
+          position: 'absolute',
+          width: 1, height: 1,
+          opacity: 0,
+          pointerEvents: 'none',
+        }}
+      />
+      <span>
+        I agree that my submitted data will be transmitted to{' '}
+        <a
+          href="https://web3forms.com/privacy-policy"
+          target="_blank"
+          rel="noreferrer"
+          style={{ color: '#F3F1EC', textDecoration: 'underline', textDecorationColor: 'rgba(243,241,236,0.3)', textUnderlineOffset: 3 }}
+        >Web3Forms</a>{' '}
+        and forwarded to my Proton inbox for the sole purpose of replying to my
+        message. See the{' '}
+        <a
+          href="/datenschutz"
+          style={{ color: '#F3F1EC', textDecoration: 'underline', textDecorationColor: 'rgba(243,241,236,0.3)', textUnderlineOffset: 3 }}
+        >privacy policy</a>{' '}
+        for details. <span style={{ color: '#6B6965' }}>*</span>
+      </span>
+    </label>
   );
 }
 

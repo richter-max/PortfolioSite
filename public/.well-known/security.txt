@@ -1,0 +1,8 @@
+# RFC 9116 — security disclosure contact for richtermax.com
+# https://securitytxt.org
+
+Contact: mailto:max.richter.dev@proton.me
+Expires: 2027-04-24T00:00:00.000Z
+Preferred-Languages: en, de
+Canonical: https://richtermax.com/.well-known/security.txt
+Policy: https://richtermax.com/datenschutz
