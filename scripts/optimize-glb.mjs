@@ -12,11 +12,9 @@ import {
   prune,
   weld,
   resample,
-  textureCompress,
   draco,
 } from '@gltf-transform/functions';
 import draco3d from 'draco3dgltf';
-import sharp from 'sharp';
 
 const IN = path.resolve(process.cwd(), 'public/models/richter.glb');
 const OUT = path.resolve(process.cwd(), 'public/models/richter.opt.glb');
@@ -30,13 +28,15 @@ async function main() {
     });
   const doc = await io.read(IN);
 
-  console.log('Applying transforms: dedup, prune, weld, resample, textureCompress, draco');
+  // Geometry-only compression. Textures are passed through unchanged so
+  // baseColor sRGB profiles, alpha, and exact pixel values are preserved
+  // (re-encoding to WebP via sharp shifted colors visibly on the runner).
+  console.log('Applying transforms: dedup, prune, weld, resample, draco (geometry only)');
   await doc.transform(
     dedup(),
     prune(),
     weld(),
     resample(),
-    textureCompress({ encoder: sharp, targetFormat: 'webp', resize: [2048, 2048] }),
     draco(),
   );
 
