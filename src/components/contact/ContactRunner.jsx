@@ -3,8 +3,7 @@
 // Camera wird automatisch so positioniert, dass das komplette Modell im Frame ist.
 import { useEffect, useRef } from 'react';
 
-const MODEL_URL = '/models/richter.opt.glb';
-const DRACO_DECODER_PATH = 'https://www.gstatic.com/draco/versioned/decoders/1.5.6/';
+const MODEL_URL = '/models/richter.glb';
 
 export default function ContactRunner() {
   const containerRef = useRef(null);
@@ -16,7 +15,6 @@ export default function ContactRunner() {
     async function init() {
       const THREE = await import('three');
       const { GLTFLoader } = await import('three/examples/jsm/loaders/GLTFLoader.js');
-      const { DRACOLoader } = await import('three/examples/jsm/loaders/DRACOLoader.js');
 
       if (!mounted || !containerRef.current) return;
 
@@ -65,11 +63,7 @@ export default function ContactRunner() {
       let pivot = null;
       const clock = new THREE.Clock();
 
-      const dracoLoader = new DRACOLoader();
-      dracoLoader.setDecoderPath(DRACO_DECODER_PATH);
-      dracoLoader.setDecoderConfig({ type: 'js' });
       const loader = new GLTFLoader();
-      loader.setDRACOLoader(dracoLoader);
       loader.load(
         MODEL_URL,
         (gltf) => {
