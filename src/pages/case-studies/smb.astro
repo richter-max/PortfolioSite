@@ -1,0 +1,184 @@
+---
+import CaseStudyLayout from '@layouts/CaseStudyLayout.astro';
+---
+<CaseStudyLayout
+  index="04 / 04"
+  kicker="SECURITY PRODUCT · IN DEVELOPMENT"
+  title="SMB."
+  dek="Enterprise-grade security for the company that does not have a security team."
+  role="Founder · Sole engineer"
+  period="2026 — alpha Q4"
+  status="In development"
+  read="≈ 5 min"
+  description="A security product designed for ten-to-two-hundred-employee companies caught between consumer tools and enterprise SOCs."
+>
+
+  <!-- 01 Brief -->
+  <article class="chapter">
+    <div class="chapter-num mono">
+      <span>CHAPTER</span>
+      <span class="big">01</span>
+    </div>
+    <div>
+      <div class="kicker mono">THE BRIEF</div>
+      <h2>The middle of the market is where security stops working.</h2>
+      <p class="lede">A ten-person company can install antivirus and call it a day. A two-thousand-person company has a SOC. The two hundred companies in between have neither — and they are the ones being phished, ransomed, and silently breached.</p>
+      <div class="body">
+        <p>The product gap is real and well-documented. Tools built for individuals do not understand multi-user environments, role boundaries, or compliance evidence. Tools built for enterprises assume a security team exists to operate them. The mid-market gets sold the enterprise tool, fails to operate it, and ends up with an expensive dashboard nobody reads.</p>
+        <p>I have spent the last year talking to founders, ops leads, and the occasional accidentally-promoted "head of IT" at companies in this band. The conversation always ends the same way: <em>we know we should be doing more, we do not know what, and we cannot hire someone who does</em>.</p>
+        <p>This product exists for the person on the other end of that conversation.</p>
+      </div>
+    </div>
+  </article>
+
+  <!-- 02 Approach -->
+  <article class="chapter">
+    <div class="chapter-num mono">
+      <span>CHAPTER</span>
+      <span class="big">02</span>
+    </div>
+    <div>
+      <div class="kicker mono">THE APPROACH</div>
+      <h2>One backend. Three views of the same truth.</h2>
+      <div class="body">
+        <p>The mistake every product in this space makes is building one dashboard for one persona. The CEO opens it, sees a wall of CVEs, and closes it. The engineer opens it, sees a marketing summary, and closes it. The auditor opens it, finds no evidence, and asks for a spreadsheet.</p>
+        <p>The same data has to answer three different questions. <strong>What should I do today?</strong> for the engineer. <strong>Are we okay?</strong> for the executive. <strong>Can you prove it?</strong> for the auditor. The product collapses these into one backend that emits three views, each tuned for the question its reader is trying to answer.</p>
+        <p>Setup is the hard problem. The engineer wants control; the executive wants it done; the auditor wants a paper trail. The default install is a single OAuth flow against the company's identity provider, a one-click connection to the cloud accounts, and a sensible baseline that explains every choice. Power users can override anything. Nobody has to.</p>
+      </div>
+
+      <div class="diagram">
+        <div class="diagram-label mono">FIG. 01 · ONE BACKEND, THREE VIEWS</div>
+        <svg viewBox="0 0 900 320" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="smbarr" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+              <path d="M0,0 L6,4 L0,8 z" fill="#6B6965"></path>
+            </marker>
+          </defs>
+
+          <g font-family="JetBrains Mono, monospace" font-size="10" fill="#A8A6A0" letter-spacing="1.5">
+            <text x="40" y="60">IDENTITY PROVIDER</text>
+            <text x="40" y="120">CLOUD ACCOUNTS</text>
+            <text x="40" y="180">DEVICE FLEET</text>
+            <text x="40" y="240">SAAS APPS</text>
+          </g>
+
+          <g stroke="#6B6965" stroke-width="1">
+            <line x1="220" y1="56" x2="340" y2="160" marker-end="url(#smbarr)"></line>
+            <line x1="220" y1="116" x2="340" y2="160" marker-end="url(#smbarr)"></line>
+            <line x1="220" y1="176" x2="340" y2="160" marker-end="url(#smbarr)"></line>
+            <line x1="220" y1="236" x2="340" y2="160" marker-end="url(#smbarr)"></line>
+          </g>
+
+          <rect x="340" y="120" width="180" height="80" fill="#2E6BFF"></rect>
+          <text x="430" y="155" text-anchor="middle" font-family="Inter Tight, sans-serif" font-size="14" fill="#F3F1EC" letter-spacing="-0.02em">UNIFIED MODEL</text>
+          <text x="430" y="178" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="rgba(243,241,236,0.7)" letter-spacing="1.2">CONTROLS · EVIDENCE · RISK</text>
+
+          <g stroke="#6B6965" stroke-width="1">
+            <line x1="520" y1="140" x2="660" y2="60" marker-end="url(#smbarr)"></line>
+            <line x1="520" y1="160" x2="660" y2="160" marker-end="url(#smbarr)"></line>
+            <line x1="520" y1="180" x2="660" y2="260" marker-end="url(#smbarr)"></line>
+          </g>
+
+          <rect x="660" y="40" width="180" height="50" fill="none" stroke="#F3F1EC" stroke-width="1"></rect>
+          <text x="750" y="62" text-anchor="middle" font-family="Inter Tight, sans-serif" font-size="13" fill="#F3F1EC" letter-spacing="-0.02em">ENGINEER VIEW</text>
+          <text x="750" y="78" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#6B6965" letter-spacing="1.2">QUEUE · ROOT CAUSE</text>
+
+          <rect x="660" y="135" width="180" height="50" fill="none" stroke="#F3F1EC" stroke-width="1"></rect>
+          <text x="750" y="158" text-anchor="middle" font-family="Inter Tight, sans-serif" font-size="13" fill="#F3F1EC" letter-spacing="-0.02em">EXEC VIEW</text>
+          <text x="750" y="174" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#6B6965" letter-spacing="1.2">RISK · TREND · DELTA</text>
+
+          <rect x="660" y="240" width="180" height="50" fill="none" stroke="#F3F1EC" stroke-width="1"></rect>
+          <text x="750" y="262" text-anchor="middle" font-family="Inter Tight, sans-serif" font-size="13" fill="#F3F1EC" letter-spacing="-0.02em">AUDITOR VIEW</text>
+          <text x="750" y="278" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#6B6965" letter-spacing="1.2">EVIDENCE · TRAIL</text>
+        </svg>
+      </div>
+    </div>
+  </article>
+
+  <div class="pullquote-wrap">
+    <div class="pullquote">
+      "A security product the CEO does not understand is a security product the CEO will not pay for."
+    </div>
+  </div>
+
+  <!-- 03 Findings -->
+  <article class="chapter">
+    <div class="chapter-num mono">
+      <span>CHAPTER</span>
+      <span class="big">03</span>
+    </div>
+    <div>
+      <div class="kicker mono">FROM DISCOVERY</div>
+      <h2>What the conversations keep returning.</h2>
+      <p class="lede">A few dozen interviews into the discovery process, the same set of constraints keeps showing up. None of them are about the technology. All of them shape the product.</p>
+
+      <div class="findings">
+        <div class="finding">
+          <div class="idx mono">D.01 · NO DEDICATED OWNER</div>
+          <h3>Security is the third hat on someone's head.</h3>
+          <p>Almost always the head of engineering, sometimes the founder, occasionally an external MSP. Whoever it is, they have ten minutes a day for this — not ten hours.</p>
+        </div>
+        <div class="finding">
+          <div class="idx mono">D.02 · COMPLIANCE FORCES THE BUY</div>
+          <h3>SOC 2 is the wedge, not the goal.</h3>
+          <p>Few of these companies wake up wanting better security. They wake up wanting to close the next enterprise deal, which requires a SOC 2 letter, which requires the work. The product has to make that path obvious.</p>
+        </div>
+        <div class="finding">
+          <div class="idx mono">D.03 · TOOL FATIGUE IS REAL</div>
+          <h3>Three dashboards is two too many.</h3>
+          <p>Every company I spoke to has at least one half-deployed security product they pay for and do not use. Adding a fourth is a non-starter. Replacing two of them is a compelling pitch.</p>
+        </div>
+        <div class="finding">
+          <div class="idx mono">D.04 · TRUST SCALES WITH EXPLAINABILITY</div>
+          <h3>Why this finding, why now.</h3>
+          <p>A non-engineer reading the report wants to understand what they are looking at. Findings without a one-paragraph explanation get ignored. Findings with one get fixed.</p>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- 04 Harness -->
+  <article class="chapter">
+    <div class="chapter-num mono">
+      <span>CHAPTER</span>
+      <span class="big">04</span>
+    </div>
+    <div>
+      <div class="kicker mono">THE FIRST THIRTY MINUTES</div>
+      <h2>What setup actually looks like.</h2>
+      <div class="body">
+        <p>The product earns or loses the customer in the first session. If the engineer has not seen real, specific findings about their own infrastructure within thirty minutes of signup, they will close the tab and never come back. The onboarding is built around that constraint.</p>
+        <p>OAuth into Google or Microsoft. Connect AWS, GCP, or Azure with a read-only role. Let the agent pick up the device fleet from the existing MDM. The first scan finishes inside fifteen minutes. The first report is in the engineer's hands inside twenty.</p>
+      </div>
+
+      <div class="code-head mono">smb · onboarding state · simplified</div>
+      <pre class="code"><span class="c"># the user-facing checklist that drives the first session</span>
+<span class="k">step 1</span>  <span class="f">connect identity provider</span>      <span class="s">▮ done · 2m</span>
+<span class="k">step 2</span>  <span class="f">connect cloud accounts</span>          <span class="s">▮ done · 4m</span>
+<span class="k">step 3</span>  <span class="f">link mdm (optional)</span>             <span class="s">▮ done · 1m</span>
+<span class="k">step 4</span>  <span class="f">baseline scan</span>                   <span class="s">▮ done · 11m</span>
+<span class="k">step 5</span>  <span class="f">first report ready</span>              <span class="s">▮ done</span>
+
+<span class="c"># first report · summary line</span>
+<span class="s">17 findings · 2 critical · 6 medium · 9 informational · evidence: 41 artifacts</span></pre>
+    </div>
+  </article>
+
+  <!-- 05 Outcome -->
+  <article class="chapter">
+    <div class="chapter-num mono">
+      <span>CHAPTER</span>
+      <span class="big">05</span>
+    </div>
+    <div>
+      <div class="kicker mono">WHERE IT STANDS</div>
+      <h2>Alpha in Q4. Slow on purpose.</h2>
+      <div class="body">
+        <p>The product is mid-build. The unified model is working against a small set of integrations; the three views are wireframed and the engineer view is in code. The closed alpha opens in Q4 2026 with five design-partner companies who agreed to use it as their primary security product for a quarter and tell me everything that is wrong with it.</p>
+        <p>The cadence is intentional. A security product that ships fast and breaks often is a security product that loses customers permanently. Every release path through the product is treated as a trust contract — the kind of release that erodes confidence in week three is worse than a release that takes three weeks longer to land.</p>
+        <p>The thesis is simple. The mid-market does not need a smaller version of an enterprise SOC. It needs a different shape of product entirely — one that respects how little time the operator has and how much the work matters anyway. That product does not exist yet. This is an attempt to build it.</p>
+      </div>
+    </div>
+  </article>
+
+</CaseStudyLayout>

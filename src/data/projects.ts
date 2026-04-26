@@ -28,7 +28,7 @@ export const projects: Project[] = [
     year: '2025',
     summary:
       'Automated reconnaissance — DNS, open ports, subdomains, security headers — in one command. Full scan under thirty seconds. Live demo on the site.',
-    href: '#',
+    href: '/case-studies/scanner',
     image: '/img/opt/blog-extreme-1280.avif',
     tag: 'Open Source',
   },
@@ -39,7 +39,7 @@ export const projects: Project[] = [
     year: '2025',
     summary:
       'AI reads existing security docs and auto-generates answers for vendor questionnaires. Two-week process compressed to a two-hour review. ~70% faster turnaround.',
-    href: '#',
+    href: '/case-studies/vendorq',
     image: '/img/opt/blog-shenzhen-1280.avif',
     tag: 'SaaS · Beta',
   },
@@ -50,7 +50,7 @@ export const projects: Project[] = [
     year: '2026',
     summary:
       'Enterprise-grade security for companies with 10–200 employees. One-click setup, automated scanning, reports a non-technical CEO can understand.',
-    href: '#',
+    href: '/case-studies/smb',
     image: '/img/opt/blog-endurance-640.avif',
     tag: 'In Development',
   },

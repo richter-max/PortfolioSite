@@ -1,0 +1,155 @@
+---
+// CaseStudyLayout.astro — shared shell for /case-studies/*.
+// Editorial layout: dark cover → cream article body
+// with chaptered structure, pullquotes, code blocks, and back nav.
+import BaseLayout from '@layouts/BaseLayout.astro';
+
+interface Props {
+  index: string;       // "02 / 04"
+  kicker: string;      // "CLI TOOL · OPEN SOURCE"
+  title: string;       // "Scanner."
+  dek: string;         // one-line summary
+  role: string;
+  period: string;
+  status: string;
+  read: string;        // "≈ 5 min"
+  description?: string;
+}
+
+const { index, kicker, title, dek, role, period, status, read, description } = Astro.props;
+---
+
+<BaseLayout title={`${title} — Case Study · Maximilian Richter`} description={description ?? dek}>
+
+  <div class="cs">
+
+    <!-- COVER -->
+    <section id="main" class="cover">
+      <div class="top-bar">
+        <a class="mark" href="/">MR.</a>
+        <div class="mono top-meta">CASE&nbsp;STUDY · {index}</div>
+      </div>
+
+      <div>
+        <div class="mono cover-kicker">
+          <span class="dot"></span>
+          {kicker}
+        </div>
+        <h1 class="display cover-title">{title}</h1>
+        <div class="cover-dek">{dek}</div>
+      </div>
+
+      <div class="cover-meta mono">
+        <div><div class="k">ROLE</div><div class="v">{role}</div></div>
+        <div><div class="k">PERIOD</div><div class="v">{period}</div></div>
+        <div><div class="k">STATUS</div><div class="v">{status}</div></div>
+        <div><div class="k">READ</div><div class="v">{read}</div></div>
+      </div>
+    </section>
+
+    <!-- ARTICLE -->
+    <main>
+      <slot />
+      <div class="endmark mono">— END OF REPORT —</div>
+    </main>
+
+    <nav class="backnav mono">
+      <a href="/">← BACK · MR.</a>
+      <a href="mailto:max.richter.dev@proton.me">WRITE → MAX.RICHTER.DEV@PROTON.ME</a>
+    </nav>
+
+  </div>
+
+</BaseLayout>
+
+<style is:global>
+  html:has(.cs), body:has(.cs) { background: #F3F1EC !important; color: #0a0a0b; }
+  body:has(.cs) ::selection { background: #2E6BFF; color: #F3F1EC; }
+
+  .cs .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+  .cs .display { font-family: 'Inter Tight', sans-serif; font-weight: 500; letter-spacing: -0.04em; line-height: 0.98; }
+  .cs .body { font-family: 'Inter Tight', sans-serif; font-size: 19px; line-height: 1.65; letter-spacing: -0.005em; color: #1c1c1e; }
+  .cs .body p { margin: 0 0 28px; }
+  .cs .body p:first-of-type::first-letter {
+    font-family: 'Inter Tight', sans-serif; font-weight: 500; font-size: 84px;
+    float: left; line-height: 0.82; padding: 8px 14px 0 0; color: #0a0a0b;
+  }
+  .cs .kicker { font-size: 10px; letter-spacing: 0.24em; text-transform: uppercase; color: #6B6965; }
+
+  .cs .pullquote-wrap { max-width: 1200px; margin: 0 auto; padding: 0 40px; }
+  .cs .pullquote {
+    font-family: 'Inter Tight', sans-serif; font-weight: 400;
+    font-size: clamp(28px, 3.2vw, 44px); line-height: 1.15; letter-spacing: -0.025em;
+    color: #0a0a0b; padding: 48px 0; margin: 56px 0;
+    border-top: 1px solid rgba(10,10,11,0.14);
+    border-bottom: 1px solid rgba(10,10,11,0.14);
+    max-width: 28ch;
+  }
+
+  .cs .cover {
+    position: relative; min-height: 100vh; width: 100%;
+    background: #050506; color: #F3F1EC;
+    display: flex; flex-direction: column; justify-content: space-between;
+    padding: 40px; overflow: hidden;
+  }
+  .cs .cover::before {
+    content: ""; position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 80%, rgba(46,107,255,0.16), transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(90,100,120,0.12), transparent 55%),
+      linear-gradient(180deg, #0a0c10 0%, #050506 100%);
+    pointer-events: none;
+  }
+  .cs .cover > * { position: relative; }
+  .cs .top-bar { display: flex; justify-content: space-between; align-items: center; }
+  .cs .mark { font-family: 'Inter Tight', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: -0.02em; color: #F3F1EC; text-decoration: none; }
+  .cs .top-meta { font-size: 10px; letter-spacing: 0.22em; color: #A8A6A0; }
+  .cs .cover-kicker {
+    font-size: 10px; letter-spacing: 0.24em; color: #2E6BFF;
+    margin-bottom: 40px; display: flex; align-items: center; gap: 12px;
+  }
+  .cs .cover-kicker .dot { width: 6px; height: 6px; background: #2E6BFF; display: inline-block; }
+  .cs .cover-title { font-size: clamp(72px, 13vw, 220px); max-width: 12ch; color: #F3F1EC; margin: 0; }
+  .cs .cover-dek { color: #D9D7D2; font-size: 22px; max-width: 44ch; margin-top: 40px; font-family: 'Inter Tight', sans-serif; }
+  .cs .cover-meta { display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px; padding-top: 32px; border-top: 1px solid rgba(243,241,236,0.16); }
+  .cs .cover-meta .k { color: #A8A6A0; font-size: 10px; letter-spacing: 0.22em; }
+  .cs .cover-meta .v { color: #F3F1EC; font-size: 15px; margin-top: 10px; font-family: 'Inter Tight', sans-serif; letter-spacing: -0.01em; }
+
+  .cs main { max-width: 1200px; margin: 0 auto; padding: 120px 40px 64px; }
+  .cs .chapter { display: grid; grid-template-columns: 180px 1fr; gap: 80px; padding: 64px 0; border-top: 1px solid rgba(10,10,11,0.14); }
+  .cs .chapter:first-of-type { border-top: none; }
+  .cs .chapter-num { font-size: 10px; letter-spacing: 0.24em; color: #6B6965; }
+  .cs .chapter-num .big { display: block; font-family: 'Inter Tight', sans-serif; font-weight: 300; font-size: 64px; line-height: 1; letter-spacing: -0.04em; color: #0a0a0b; margin-top: 10px; }
+  .cs .chapter h2 { font-family: 'Inter Tight', sans-serif; font-weight: 500; font-size: clamp(36px, 4.4vw, 56px); line-height: 1; letter-spacing: -0.035em; margin: 0 0 40px; max-width: 18ch; color: #0a0a0b; }
+  .cs .lede { font-size: 24px; line-height: 1.45; color: #0a0a0b; max-width: 40ch; margin-bottom: 40px; letter-spacing: -0.01em; font-family: 'Inter Tight', sans-serif; }
+
+  .cs .findings { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0; margin: 40px 0; }
+  .cs .finding { padding: 32px 32px 32px 0; border-top: 1px solid rgba(10,10,11,0.14); }
+  .cs .finding:nth-child(even) { padding-left: 32px; border-left: 1px solid rgba(10,10,11,0.14); padding-right: 0; }
+  .cs .finding .idx { font-size: 10px; letter-spacing: 0.22em; color: #2E6BFF; margin-bottom: 14px; font-family: 'JetBrains Mono', monospace; }
+  .cs .finding h3 { font-family: 'Inter Tight', sans-serif; font-weight: 500; font-size: 22px; line-height: 1.2; letter-spacing: -0.02em; margin: 0 0 12px; color: #0a0a0b; }
+  .cs .finding p { font-family: 'Inter Tight', sans-serif; font-size: 15px; line-height: 1.55; color: #1c1c1e; margin: 0; max-width: 40ch; }
+
+  .cs .diagram { margin: 40px 0; padding: 40px; background: #0a0a0b; color: #F3F1EC; border: 1px solid rgba(10,10,11,0.14); }
+  .cs .diagram-label { font-size: 10px; letter-spacing: 0.22em; color: #6B6965; margin-bottom: 32px; font-family: 'JetBrains Mono', monospace; }
+  .cs .diagram svg { width: 100%; height: auto; display: block; }
+
+  .cs .code { margin: 40px 0; background: #0a0a0b; color: #D9D7D2; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.7; padding: 28px 32px; overflow-x: auto; letter-spacing: 0.005em; }
+  .cs .code .c { color: #6B6965; }
+  .cs .code .k { color: #9FB2E0; }
+  .cs .code .s { color: #C9B38C; }
+  .cs .code .f { color: #E8E6E1; }
+  .cs .code-head { font-size: 10px; letter-spacing: 0.22em; color: #6B6965; margin-bottom: 14px; font-family: 'JetBrains Mono', monospace; }
+
+  .cs .endmark { text-align: center; padding: 80px 0 40px; font-size: 10px; letter-spacing: 0.3em; color: #6B6965; font-family: 'JetBrains Mono', monospace; }
+  .cs .backnav { padding: 40px; display: flex; justify-content: space-between; font-size: 10px; letter-spacing: 0.22em; color: #6B6965; border-top: 1px solid rgba(10,10,11,0.14); background: #F3F1EC; font-family: 'JetBrains Mono', monospace; }
+  .cs .backnav a { text-decoration: none; color: inherit; }
+  .cs .backnav a:hover { color: #0a0a0b; }
+
+  @media (max-width: 900px) {
+    .cs .chapter { grid-template-columns: 1fr; gap: 24px; padding: 48px 0; }
+    .cs .findings { grid-template-columns: 1fr; }
+    .cs .finding:nth-child(even) { padding-left: 0; border-left: none; }
+    .cs .cover-meta { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+  }
+</style>

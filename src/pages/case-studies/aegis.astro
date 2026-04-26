@@ -1,36 +1,17 @@
 ---
-import BaseLayout from '@layouts/BaseLayout.astro';
+import CaseStudyLayout from '@layouts/CaseStudyLayout.astro';
 ---
-<BaseLayout title="AEGIS — Case Study · Maximilian Richter" description="Measuring how badly an AI agent breaks when you push on it.">
-
-<!-- COVER -->
-<section id="main" class="cover">
-  <div class="top-bar">
-    <a class="mark" href="/">MR.</a>
-    <div class="mono top-meta">CASE&nbsp;STUDY · 01 / 04</div>
-  </div>
-
-  <div>
-    <div class="mono cover-kicker">
-      <span class="dot"></span>
-      SECURITY FRAMEWORK · AI AGENTS
-    </div>
-    <h1 class="display cover-title">AEGIS.</h1>
-    <div class="cover-dek">
-      Measuring how badly an AI agent breaks when you push on it.
-    </div>
-  </div>
-
-  <div class="cover-meta mono">
-    <div><div class="k">ROLE</div><div class="v">Sole author</div></div>
-    <div><div class="k">PERIOD</div><div class="v">2025 — ongoing</div></div>
-    <div><div class="k">STATUS</div><div class="v">Private project</div></div>
-    <div><div class="k">READ</div><div class="v">≈ 6 min</div></div>
-  </div>
-</section>
-
-<!-- ARTICLE -->
-<main>
+<CaseStudyLayout
+  index="01 / 04"
+  kicker="SECURITY FRAMEWORK · AI AGENTS"
+  title="AEGIS."
+  dek="Measuring how badly an AI agent breaks when you push on it."
+  role="Sole author"
+  period="2025 — ongoing"
+  status="Private project"
+  read="≈ 6 min"
+  description="Measuring how badly an AI agent breaks when you push on it."
+>
 
   <!-- 01 Brief -->
   <article class="chapter">
@@ -204,107 +185,4 @@ report.<span class="f">save</span>(<span class="s">"report.html"</span>)</pre>
     </div>
   </article>
 
-  <div class="endmark mono">— END OF REPORT —</div>
-
-</main>
-
-<nav class="backnav mono">
-  <a href="/">← BACK · MR.</a>
-  <a href="mailto:max.richter.dev@proton.me">WRITE → MAX.RICHTER.DEV@PROTON.ME</a>
-</nav>
-
-</BaseLayout>
-
-<style is:global>
-  html, body { background: #F3F1EC !important; color: #0a0a0b; }
-  ::selection { background: #2E6BFF; color: #F3F1EC; }
-</style>
-
-<style>
-  .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
-  .display { font-family: 'Inter Tight', sans-serif; font-weight: 500; letter-spacing: -0.04em; line-height: 0.98; }
-  .body { font-family: 'Inter Tight', sans-serif; font-size: 19px; line-height: 1.65; letter-spacing: -0.005em; color: #1c1c1e; }
-  .body :global(p) { margin: 0 0 28px; }
-  .body :global(p:first-of-type::first-letter) {
-    font-family: 'Inter Tight', sans-serif; font-weight: 500; font-size: 84px;
-    float: left; line-height: 0.82; padding: 8px 14px 0 0; color: #0a0a0b;
-  }
-  .kicker { font-size: 10px; letter-spacing: 0.24em; text-transform: uppercase; color: #6B6965; }
-
-  .pullquote-wrap { max-width: 1200px; margin: 0 auto; padding: 0 40px; }
-  .pullquote {
-    font-family: 'Inter Tight', sans-serif; font-weight: 400;
-    font-size: clamp(28px, 3.2vw, 44px); line-height: 1.15; letter-spacing: -0.025em;
-    color: #0a0a0b; padding: 48px 0; margin: 56px 0;
-    border-top: 1px solid rgba(10,10,11,0.14);
-    border-bottom: 1px solid rgba(10,10,11,0.14);
-    max-width: 28ch;
-  }
-
-  .cover {
-    position: relative; min-height: 100vh; width: 100%;
-    background: #050506; color: #F3F1EC;
-    display: flex; flex-direction: column; justify-content: space-between;
-    padding: 40px; overflow: hidden;
-  }
-  .cover::before {
-    content: ""; position: absolute; inset: 0;
-    background:
-      radial-gradient(ellipse at 20% 80%, rgba(46,107,255,0.16), transparent 60%),
-      radial-gradient(ellipse at 80% 20%, rgba(90,100,120,0.12), transparent 55%),
-      linear-gradient(180deg, #0a0c10 0%, #050506 100%);
-    pointer-events: none;
-  }
-  .cover > * { position: relative; }
-  .top-bar { display: flex; justify-content: space-between; align-items: center; }
-  .mark { font-family: 'Inter Tight', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: -0.02em; color: #F3F1EC; }
-  .top-meta { font-size: 10px; letter-spacing: 0.22em; color: #A8A6A0; }
-  .cover-kicker {
-    font-size: 10px; letter-spacing: 0.24em; color: #2E6BFF;
-    margin-bottom: 40px; display: flex; align-items: center; gap: 12px;
-  }
-  .cover-kicker .dot { width: 6px; height: 6px; background: #2E6BFF; display: inline-block; }
-  .cover-title { font-size: clamp(72px, 13vw, 220px); max-width: 12ch; color: #F3F1EC; margin: 0; }
-  .cover-dek { color: #D9D7D2; font-size: 22px; max-width: 44ch; margin-top: 40px; font-family: 'Inter Tight', sans-serif; }
-  .cover-meta { display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px; padding-top: 32px; border-top: 1px solid rgba(243,241,236,0.16); }
-  .cover-meta .k { color: #A8A6A0; font-size: 10px; letter-spacing: 0.22em; }
-  .cover-meta .v { color: #F3F1EC; font-size: 15px; margin-top: 10px; font-family: 'Inter Tight', sans-serif; letter-spacing: -0.01em; }
-
-  main { max-width: 1200px; margin: 0 auto; padding: 120px 40px 64px; }
-  .chapter { display: grid; grid-template-columns: 180px 1fr; gap: 80px; padding: 64px 0; border-top: 1px solid rgba(10,10,11,0.14); }
-  .chapter:first-of-type { border-top: none; }
-  .chapter-num { font-size: 10px; letter-spacing: 0.24em; color: #6B6965; }
-  .chapter-num .big { display: block; font-family: 'Inter Tight', sans-serif; font-weight: 300; font-size: 64px; line-height: 1; letter-spacing: -0.04em; color: #0a0a0b; margin-top: 10px; }
-  .chapter h2 { font-family: 'Inter Tight', sans-serif; font-weight: 500; font-size: clamp(36px, 4.4vw, 56px); line-height: 1; letter-spacing: -0.035em; margin: 0 0 40px; max-width: 18ch; color: #0a0a0b; }
-  .lede { font-size: 24px; line-height: 1.45; color: #0a0a0b; max-width: 40ch; margin-bottom: 40px; letter-spacing: -0.01em; font-family: 'Inter Tight', sans-serif; }
-
-  .findings { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0; margin: 40px 0; }
-  .finding { padding: 32px 32px 32px 0; border-top: 1px solid rgba(10,10,11,0.14); }
-  .finding:nth-child(even) { padding-left: 32px; border-left: 1px solid rgba(10,10,11,0.14); padding-right: 0; }
-  .finding .idx { font-size: 10px; letter-spacing: 0.22em; color: #2E6BFF; margin-bottom: 14px; }
-  .finding h3 { font-family: 'Inter Tight', sans-serif; font-weight: 500; font-size: 22px; line-height: 1.2; letter-spacing: -0.02em; margin: 0 0 12px; color: #0a0a0b; }
-  .finding p { font-family: 'Inter Tight', sans-serif; font-size: 15px; line-height: 1.55; color: #1c1c1e; margin: 0; max-width: 40ch; }
-
-  .diagram { margin: 40px 0; padding: 40px; background: #0a0a0b; color: #F3F1EC; border: 1px solid rgba(10,10,11,0.14); }
-  .diagram-label { font-size: 10px; letter-spacing: 0.22em; color: #6B6965; margin-bottom: 32px; }
-  .diagram svg { width: 100%; height: auto; display: block; }
-
-  .code { margin: 40px 0; background: #0a0a0b; color: #D9D7D2; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.7; padding: 28px 32px; overflow-x: auto; letter-spacing: 0.005em; }
-  .code :global(.c) { color: #6B6965; }
-  .code :global(.k) { color: #9FB2E0; }
-  .code :global(.s) { color: #C9B38C; }
-  .code :global(.f) { color: #E8E6E1; }
-  .code-head { font-size: 10px; letter-spacing: 0.22em; color: #6B6965; margin-bottom: 14px; }
-
-  .endmark { text-align: center; padding: 80px 0 40px; font-size: 10px; letter-spacing: 0.3em; color: #6B6965; }
-  .backnav { padding: 40px; display: flex; justify-content: space-between; font-size: 10px; letter-spacing: 0.22em; color: #6B6965; border-top: 1px solid rgba(10,10,11,0.14); background: #F3F1EC; }
-  .backnav a { text-decoration: none; color: inherit; }
-  .backnav a:hover { color: #0a0a0b; }
-
-  @media (max-width: 900px) {
-    .chapter { grid-template-columns: 1fr; gap: 24px; padding: 48px 0; }
-    .findings { grid-template-columns: 1fr; }
-    .finding:nth-child(even) { padding-left: 0; border-left: none; }
-    .cover-meta { grid-template-columns: repeat(2, 1fr); gap: 24px; }
-  }
-</style>
+</CaseStudyLayout>

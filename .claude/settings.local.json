@@ -11,7 +11,8 @@
       "Bash(npm uninstall *)",
       "Bash(npm run *)",
       "Bash(find src *)",
-      "Bash(node scripts/build-og.mjs)"
+      "Bash(node scripts/build-og.mjs)",
+      "Bash(awk 'NR==30 {print length\\($0\\); print $0}' /Users/maxxx/Desktop/GitHub/PortfolioSite/src/pages/case-studies/vendorq.astro)"
     ]
   }
 }
