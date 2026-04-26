@@ -255,6 +255,17 @@ export function initMotion() {
 // View Transitions swap the document body without firing DOMContentLoaded,
 // so we re-bind motion on `astro:page-load` and tear down on `astro:before-swap`.
 if (typeof window !== 'undefined') {
+  // Take scroll restoration out of the browser's hands. With a smooth-scroll
+  // wrapper (Lenis) in front of native scroll, the browser's "remember where
+  // you were on reload" produces a half-scrolled, broken-feeling start.
+  // We always start at the top — same as Stripe / Linear / Vercel.
+  if ('scrollRestoration' in history) {
+    history.scrollRestoration = 'manual';
+  }
+  // Belt-and-braces: some browsers still restore before this line runs.
+  window.addEventListener('beforeunload', () => window.scrollTo(0, 0));
+  window.scrollTo(0, 0);
+
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initMotion);
   } else {
@@ -268,7 +279,24 @@ if (typeof window !== 'undefined') {
     }
   });
 
+  // After the new DOM is in place but before page-load fires: hard-snap to
+  // the top (or to the #hash target). View Transitions does not do this for
+  // us, and Lenis's internal scroll position would otherwise carry over.
+  document.addEventListener('astro:after-swap', () => {
+    const hash = window.location.hash;
+    if (hash && document.querySelector(hash)) {
+      document.querySelector(hash).scrollIntoView({ behavior: 'instant', block: 'start' });
+    } else {
+      window.scrollTo(0, 0);
+    }
+  });
+
   document.addEventListener('astro:page-load', () => {
     initMotion();
+    // Lenis was just (re)created in initMotion — sync it to the real scroll
+    // position so it doesn't animate from the old page's offset.
+    if (window.__lenis) {
+      try { window.__lenis.scrollTo(window.scrollY, { immediate: true, force: true }); } catch {}
+    }
   });
 }

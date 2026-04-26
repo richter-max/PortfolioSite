@@ -12,7 +12,17 @@
       "Bash(npm run *)",
       "Bash(find src *)",
       "Bash(node scripts/build-og.mjs)",
-      "Bash(awk 'NR==30 {print length\\($0\\); print $0}' /Users/maxxx/Desktop/GitHub/PortfolioSite/src/pages/case-studies/vendorq.astro)"
+      "Bash(awk 'NR==30 {print length\\($0\\); print $0}' /Users/maxxx/Desktop/GitHub/PortfolioSite/src/pages/case-studies/vendorq.astro)",
+      "WebFetch(domain:skeleton-rebuild.preview.emergentagent.com)",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "Bash(curl -sL -A \"Mozilla/5.0 \\(Macintosh; Intel Mac OS X 10_15_7\\) AppleWebKit/537.36 \\(KHTML, like Gecko\\) Chrome/120.0.0.0 Safari/537.36\" https://skeleton-rebuild.preview.emergentagent.com/ -o /tmp/emergent.html)",
+      "Read(//tmp/**)",
+      "Bash(curl -sL https://skeleton-rebuild.preview.emergentagent.com/static/js/bundle.js -o /tmp/emergent-bundle.js)",
+      "Bash(grep -oE '\"[A-Za-z][A-Za-z0-9 _·.,/&!?\\\\?\\\\u2019\\\\u2014\\\\-]{8,140}\"' /tmp/emergent-bundle.js)",
+      "Bash(grep -oE '\"[A-Za-z][^\"]{8,200}\"' /tmp/emergent-bundle.js)",
+      "Bash(grep -oE '\"HERO_STAGES\":\\\\[[^]]{0,2000}\\\\]' /tmp/emergent-bundle.js)",
+      "Bash(grep -oE 'HERO_STAGES\\\\s*=\\\\s*\\\\[[^]]{0,3000}\\\\]' /tmp/emergent-bundle.js)",
+      "Bash(python3 -c ' *)"
     ]
   }
 }
