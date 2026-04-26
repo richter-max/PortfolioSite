@@ -44,22 +44,28 @@ export default function ContactRunner() {
       container.appendChild(renderer.domElement);
 
       // ── Environment (IBL) ────────────────────────────────────────────
-      // PBR materials (metallic-roughness) need something to reflect.
-      // Without IBL they go flat/grey. RoomEnvironment is the standard
-      // neutral studio probe — same look you'd get in Blender's default.
+      // PBR materials (metallic-roughness) need an env map to reflect.
+      // fromScene() goes through the cubemap path — DO NOT precompile
+      // the equirect shader, that's the wrong path and causes desktop
+      // GPUs (Mac/Chrome ANGLE in particular) to render the probe gray.
       const pmrem = new THREE.PMREMGenerator(renderer);
-      pmrem.compileEquirectangularShader();
-      const envTexture = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-      scene.environment = envTexture;
+      const envRT = pmrem.fromScene(new RoomEnvironment(), 0.04);
+      scene.environment = envRT.texture;
+      pmrem.dispose();
 
       // ── Lighting ─────────────────────────────────────────────────────
-      // Soft white fills only — env map does the heavy lifting for color.
-      const ambient = new THREE.AmbientLight(0xffffff, 0.4);
-      scene.add(ambient);
+      // Hemisphere acts as a colour-safe floor so materials never go
+      // fully grey if the env probe is weak on a given GPU path.
+      const hemi = new THREE.HemisphereLight(0xffffff, 0xb8b6b0, 0.6);
+      scene.add(hemi);
 
-      const keyLight = new THREE.DirectionalLight(0xffffff, 1.0);
+      const keyLight = new THREE.DirectionalLight(0xffffff, 1.2);
       keyLight.position.set(3, 4, 3);
       scene.add(keyLight);
+
+      const fillLight = new THREE.DirectionalLight(0xffffff, 0.5);
+      fillLight.position.set(-2, 1, -2);
+      scene.add(fillLight);
 
       // ── Load model ───────────────────────────────────────────────────
       let pivot = null;
@@ -72,6 +78,20 @@ export default function ContactRunner() {
           if (!mounted) return;
 
           const model = gltf.scene;
+
+          // 0) Force env contribution + sRGB on every material.
+          //    Avoids the "looks grey on desktop, fine on mobile" trap
+          //    where some GPUs underweight the env probe.
+          model.traverse((child) => {
+            if (!child.isMesh || !child.material) return;
+            const mats = Array.isArray(child.material) ? child.material : [child.material];
+            for (const m of mats) {
+              if ('envMapIntensity' in m) m.envMapIntensity = 1.4;
+              if (m.map)         m.map.colorSpace         = THREE.SRGBColorSpace;
+              if (m.emissiveMap) m.emissiveMap.colorSpace = THREE.SRGBColorSpace;
+              m.needsUpdate = true;
+            }
+          });
 
           // 1) Measure original bounding box
           const box    = new THREE.Box3().setFromObject(model);
