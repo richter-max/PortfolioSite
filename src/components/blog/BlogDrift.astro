@@ -485,21 +485,32 @@ const kindLabel = {
     // (applied in the tick loop)
   });
 
-  // Prevent links from triggering navigation during drag
+  // Prevent links from triggering navigation only when ACTUALLY dragged.
+  // Track distance only while the pointer is held down.
   let dragDistance = 0;
   let pointerDownX = 0;
+  let pointerIsDown = false;
   viewport.addEventListener('pointerdown', (e) => {
     pointerDownX = e.clientX;
+    pointerIsDown = true;
     dragDistance = 0;
   });
   viewport.addEventListener('pointermove', (e) => {
-    dragDistance = Math.abs(e.clientX - pointerDownX);
+    if (pointerIsDown) {
+      dragDistance = Math.abs(e.clientX - pointerDownX);
+    }
+  });
+  viewport.addEventListener('pointerup', () => {
+    pointerIsDown = false;
   });
   posts.forEach(post => {
     post.addEventListener('click', (e) => {
-      if (dragDistance > 8) {
-        e.preventDefault(); // user was dragging, not clicking
+      // Only prevent click if the user clearly dragged (>15px)
+      if (dragDistance > 15) {
+        e.preventDefault();
       }
+      // Reset for next interaction
+      dragDistance = 0;
     });
   });
 </script>
