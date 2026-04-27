@@ -1,5 +1,85 @@
 ---
-import { posts, kindColor, kindLabel } from '@data/blog';
+// BlogDrift.astro
+// "The Drift" — Posts drift horizontally. Mouse hover pauses and focuses.
+// Click triggers navigation to the post page.
+//
+// USAGE in index.astro:
+//   import BlogDrift from '../components/BlogDrift.astro';
+//   <BlogDrift />  // between MassiveNumbers and ContactScene
+
+interface Post {
+  slug: string;
+  kind: 'SEC' | 'FLD' | 'NTE';
+  date: string;    // YYYY · MM
+  title: string;
+  excerpt: string;
+  href: string;
+}
+
+// Placeholder posts — replace with your actual content later.
+// Mix of all three tracks: Security, Field (endurance), Notes (lessons).
+const posts: Post[] = [
+  {
+    slug: 'two-weeks-in-shenzhen',
+    kind: 'NTE',
+    date: '2026 · 03',
+    title: 'Two weeks in Shenzhen',
+    excerpt: 'An exchange program, a drone license, and the realization that the technical training was the least interesting thing I brought home.',
+    href: '/blog/two-weeks-in-shenzhen',
+  },
+  {
+    slug: 'rag-injection',
+    kind: 'SEC',
+    date: '2026 · 10',
+    title: 'Prompt Injection in RAG',
+    excerpt: 'Why retrieval-augmented pipelines leak intent before they leak data.',
+    href: '#',
+  },
+  {
+    slug: 'athletes-engineers',
+    kind: 'NTE',
+    date: '2026 · 09',
+    title: 'Athletes as Engineers',
+    excerpt: 'Taper weeks taught me more about shipping than any sprint did.',
+    href: '#',
+  },
+  {
+    slug: 'berlin-report',
+    kind: 'FLD',
+    date: '2026 · 09',
+    title: 'Berlin Race Report',
+    excerpt: 'Three hours, flat. No pacer. No music. One pact with myself.',
+    href: '#',
+  },
+  {
+    slug: 'agent-threat-model',
+    kind: 'SEC',
+    date: '2026 · 08',
+    title: 'Threat Modeling AI Agents',
+    excerpt: 'A framework for evaluating agentic systems before they ship.',
+    href: '#',
+  },
+  {
+    slug: 'zone-two',
+    kind: 'FLD',
+    date: '2026 · 07',
+    title: 'The Zone Two Question',
+    excerpt: 'Cheap watts, expensive patience — why aerobic base still wins.',
+    href: '#',
+  },
+];
+
+const kindColor = {
+  SEC: '#2E6BFF',
+  FLD: '#E8A23C',
+  NTE: '#A8A6A0',
+};
+
+const kindLabel = {
+  SEC: 'SECURITY',
+  FLD: 'FIELD',
+  NTE: 'NOTE',
+};
 ---
 
 <section id="blog" class="drift-section">
@@ -13,7 +93,7 @@ import { posts, kindColor, kindLabel } from '@data/blog';
     </div>
     <h2 class="drift-heading">Currently thinking<br/>about —</h2>
     <p class="drift-sub">
-      Notes on security engineering, training, and everything else in life.<br/>
+      Long-form essays on security, endurance, and what one teaches the other.<br/>
       Hover to pause. Click to read.
     </p>
   </div>
@@ -25,13 +105,10 @@ import { posts, kindColor, kindLabel } from '@data/blog';
       {[...posts, ...posts].map((post, i) => {
         const color = kindColor[post.kind];
         const label = kindLabel[post.kind];
-        const Tag = post.draft ? 'div' : 'a';
-        const linkProps = post.draft
-          ? { class: 'drift-post is-draft', 'aria-disabled': 'true' }
-          : { href: post.href, class: 'drift-post' };
         return (
-          <Tag
-            {...linkProps}
+          <a
+            href={post.href}
+            class="drift-post"
             data-post-index={i}
             data-cursor-hover
             style={`--post-accent: ${color};`}
@@ -40,15 +117,14 @@ import { posts, kindColor, kindLabel } from '@data/blog';
               <span class="drift-post__kind">{label}</span>
               <span class="drift-post__sep">/</span>
               <span class="drift-post__date">{post.date}</span>
-              {post.draft && <span class="drift-post__pill">SOON</span>}
             </div>
             <h3 class="drift-post__title">{post.title}</h3>
             <p class="drift-post__excerpt">{post.excerpt}</p>
             <div class="drift-post__read">
-              <span>{post.draft ? 'IN DRAFT' : 'READ'}</span>
-              {!post.draft && <span class="drift-post__arrow">→</span>}
+              <span>READ</span>
+              <span class="drift-post__arrow">→</span>
             </div>
-          </Tag>
+          </a>
         );
       })}
     </div>
@@ -185,26 +261,6 @@ import { posts, kindColor, kindLabel } from '@data/blog';
 
   .drift-post.is-active {
     transform: translateY(-6px);
-  }
-
-  .drift-post.is-draft {
-    cursor: default;
-  }
-  .drift-post.is-draft .drift-post__title {
-    color: rgba(243, 241, 236, 0.6);
-  }
-  .drift-post.is-draft .drift-post__read {
-    color: rgba(243, 241, 236, 0.25);
-  }
-
-  .drift-post__pill {
-    margin-left: auto;
-    padding: 3px 8px;
-    border: 1px solid rgba(243, 241, 236, 0.18);
-    border-radius: 999px;
-    font-size: 9px;
-    letter-spacing: 0.22em;
-    color: rgba(243, 241, 236, 0.55);
   }
 
   .drift-post.is-active .drift-post__title {

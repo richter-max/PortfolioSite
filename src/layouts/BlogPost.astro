@@ -1,0 +1,307 @@
+---
+// BlogPost.astro — shared layout for individual blog posts
+// Uses BaseLayout for nav + global styles, adds article-specific layout
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  date: string;       // formatted: "MARCH 2026"
+  readTime: string;   // "4 min"
+  kind: 'SEC' | 'FLD' | 'NTE';
+  tags?: string[];
+  heroImage?: string;
+}
+
+const { title, description, date, readTime, kind, tags = [], heroImage } = Astro.props;
+
+const kindLabel = { SEC: 'SECURITY', FLD: 'FIELD', NTE: 'NOTE' }[kind];
+const kindColor = { SEC: '#2E6BFF', FLD: '#E8A23C', NTE: '#A8A6A0' }[kind];
+---
+
+<BaseLayout title={`${title} — Maximilian Richter`} description={description}>
+
+  <article class="post">
+
+    {/* ── Header ─────────────────────────────────────────────────────── */}
+    <header class="post-header">
+      <div class="post-header__inner">
+        <a href="/#blog" class="post-back" data-cursor-hover>
+          ← BACK TO INDEX
+        </a>
+
+        <div class="post-meta">
+          <span class="post-kind" style={`color: ${kindColor};`}>{kindLabel}</span>
+          <span class="post-meta__sep">/</span>
+          <span class="post-date">{date}</span>
+          <span class="post-meta__sep">/</span>
+          <span class="post-readtime">{readTime} READ</span>
+        </div>
+
+        <h1 class="post-title">{title}</h1>
+
+        {description && <p class="post-description">{description}</p>}
+      </div>
+    </header>
+
+    {/* ── Hero image (optional) ─────────────────────────────────────── */}
+    {heroImage && (
+      <div class="post-hero">
+        <img src={heroImage} alt="" />
+      </div>
+    )}
+
+    {/* ── Body ──────────────────────────────────────────────────────── */}
+    <div class="post-body">
+      <div class="post-body__inner">
+        <slot />
+      </div>
+    </div>
+
+    {/* ── Tags + footer ─────────────────────────────────────────────── */}
+    <footer class="post-footer">
+      <div class="post-footer__inner">
+        {tags.length > 0 && (
+          <div class="post-tags">
+            {tags.map((tag) => (
+              <span class="post-tag">{tag}</span>
+            ))}
+          </div>
+        )}
+        <div class="post-author">
+          <div class="post-author__name">MAXIMILIAN RICHTER</div>
+          <div class="post-author__role">Security Engineer · Endurance Athlete · Allgäu, CET</div>
+        </div>
+        <a href="/#blog" class="post-back-bottom" data-cursor-hover>
+          ← BACK TO INDEX
+        </a>
+      </div>
+    </footer>
+
+  </article>
+
+</BaseLayout>
+
+<style>
+  .post {
+    max-width: 100%;
+    padding: 96px 0 0;
+  }
+
+  /* ── Header ──────────────────────────────────────────────────────── */
+  .post-header {
+    padding: 64px 40px 80px;
+  }
+
+  .post-header__inner {
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  .post-back {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    color: var(--ink-low, #6B6965);
+    text-decoration: none;
+    margin-bottom: 64px;
+    transition: color 0.25s ease;
+  }
+  .post-back:hover { color: var(--ink, #F3F1EC); }
+
+  .post-meta {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 32px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    color: var(--ink-low, #6B6965);
+  }
+  .post-kind { font-weight: 500; }
+  .post-meta__sep { color: rgba(243, 241, 236, 0.2); }
+
+  .post-title {
+    font-family: var(--font-display, 'Inter Tight', sans-serif);
+    font-weight: 500;
+    font-size: clamp(40px, 6vw, 80px);
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+    color: var(--ink, #F3F1EC);
+    margin: 0 0 28px;
+  }
+
+  .post-description {
+    font-family: var(--font-display, 'Inter Tight', sans-serif);
+    font-size: clamp(18px, 1.8vw, 22px);
+    line-height: 1.5;
+    color: var(--ink-mid, #A8A6A0);
+    margin: 0;
+    letter-spacing: -0.005em;
+    max-width: 56ch;
+  }
+
+  /* ── Hero image ──────────────────────────────────────────────────── */
+  .post-hero {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto 80px;
+    padding: 0 40px;
+  }
+  .post-hero img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: 8px;
+    filter: saturate(0.85);
+  }
+
+  /* ── Body ────────────────────────────────────────────────────────── */
+  .post-body {
+    padding: 0 40px 96px;
+  }
+
+  .post-body__inner {
+    max-width: 720px;
+    margin: 0 auto;
+    font-family: var(--font-display, 'Inter Tight', sans-serif);
+    font-size: 18px;
+    line-height: 1.7;
+    color: var(--ink-mid, #A8A6A0);
+    letter-spacing: -0.005em;
+  }
+
+  /* Slot content — typography for prose */
+  .post-body__inner :global(p) {
+    margin: 0 0 1.6em;
+  }
+
+  .post-body__inner :global(h2) {
+    font-family: var(--font-display, 'Inter Tight', sans-serif);
+    font-weight: 500;
+    font-size: clamp(26px, 2.8vw, 36px);
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+    color: var(--ink, #F3F1EC);
+    margin: 4em 0 1em;
+  }
+
+  .post-body__inner :global(h3) {
+    font-family: var(--font-display, 'Inter Tight', sans-serif);
+    font-weight: 500;
+    font-size: clamp(20px, 2vw, 24px);
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+    color: var(--ink, #F3F1EC);
+    margin: 3em 0 0.8em;
+  }
+
+  .post-body__inner :global(blockquote) {
+    border-left: 2px solid var(--accent, #2E6BFF);
+    padding-left: 24px;
+    margin: 2em 0;
+    font-style: italic;
+    font-size: 1.1em;
+    color: var(--ink, #F3F1EC);
+    letter-spacing: -0.01em;
+  }
+
+  .post-body__inner :global(figure) {
+    margin: 3em -80px;
+    padding: 0;
+  }
+  .post-body__inner :global(figure img) {
+    width: 100%;
+    height: auto;
+    border-radius: 6px;
+    filter: saturate(0.85);
+    display: block;
+  }
+  .post-body__inner :global(figure figcaption) {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: var(--ink-low, #6B6965);
+    text-align: center;
+    margin-top: 14px;
+    text-transform: uppercase;
+  }
+
+  .post-body__inner :global(a) {
+    color: var(--accent, #2E6BFF);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease;
+  }
+  .post-body__inner :global(a:hover) {
+    border-bottom-color: var(--accent, #2E6BFF);
+  }
+
+  .post-body__inner :global(strong) {
+    color: var(--ink, #F3F1EC);
+    font-weight: 500;
+  }
+
+  /* ── Footer ──────────────────────────────────────────────────────── */
+  .post-footer {
+    border-top: 1px solid rgba(243, 241, 236, 0.08);
+    padding: 64px 40px 128px;
+  }
+  .post-footer__inner {
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+  .post-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .post-tag {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    color: var(--ink-low, #6B6965);
+    padding: 4px 10px;
+    border: 1px solid rgba(243, 241, 236, 0.12);
+    border-radius: 100px;
+  }
+  .post-author__name {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    color: var(--ink, #F3F1EC);
+    margin-bottom: 6px;
+  }
+  .post-author__role {
+    font-family: var(--font-display, 'Inter Tight', sans-serif);
+    font-size: 14px;
+    color: var(--ink-low, #6B6965);
+    letter-spacing: -0.005em;
+  }
+  .post-back-bottom {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    color: var(--ink-low, #6B6965);
+    text-decoration: none;
+    transition: color 0.25s ease;
+    align-self: flex-start;
+  }
+  .post-back-bottom:hover { color: var(--ink, #F3F1EC); }
+
+  /* ── Responsive ──────────────────────────────────────────────────── */
+  @media (max-width: 720px) {
+    .post-header,
+    .post-body,
+    .post-footer { padding-left: 20px; padding-right: 20px; }
+    .post-body__inner :global(figure) {
+      margin: 2.5em -20px;
+    }
+  }
+</style>
