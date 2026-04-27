@@ -132,7 +132,7 @@ const kindLabel = {
 
   {/* ── Progress indicator ──────────────────────────────────────────── */}
   <div class="drift-indicator">
-    <span class="drift-indicator__hint">DRAG OR HOVER</span>
+    <span class="drift-indicator__hint">HOVER TO PAUSE</span>
     <div class="drift-indicator__bar">
       <div class="drift-indicator__fill" id="drift-progress"></div>
     </div>
@@ -203,13 +203,6 @@ const kindLabel = {
     position: relative;
     width: 100%;
     padding: 0;
-    cursor: grab;
-    -webkit-user-select: none;
-    user-select: none;
-  }
-
-  .drift-viewport.is-dragging {
-    cursor: grabbing;
   }
 
   /* Fade edges */
@@ -386,46 +379,28 @@ const kindLabel = {
 
   // ── Constants ──────────────────────────────────────────────────────
   const DRIFT_SPEED = 0.4; // px per frame at 60fps — slow ambient drift
-  const POSTS_COUNT = posts.length;     // 12 (6 original × 2)
-  const LOOP_LENGTH = track.scrollWidth / 2; // we duplicated, so half = one loop
+  const LOOP_LENGTH = track.scrollWidth / 2; // duplicated, so half = one loop
 
   // ── State ──────────────────────────────────────────────────────────
-  let offset           = 0;  // current track X translation (negative = leftward)
-  let isPaused         = false;
-  let isDragging       = false;
-  let dragStartX       = 0;
-  let dragStartOffset  = 0;
-  let velocity         = 0;  // momentum after drag release
-  let activePost: HTMLElement | null = null;
+  let offset   = 0;
+  let isPaused = false;
 
   // ── Render loop ────────────────────────────────────────────────────
-  let rafId: number;
   function tick() {
-    rafId = requestAnimationFrame(tick);
+    requestAnimationFrame(tick);
 
-    if (!isDragging) {
-      if (isPaused) {
-        // Gentle deceleration while hover-paused
-        velocity *= 0.88;
-        offset += velocity;
-      } else {
-        // Natural drift leftward (posts scroll right → left visually)
-        offset -= DRIFT_SPEED;
-        // Apply any residual momentum from drag
-        offset += velocity;
-        velocity *= 0.92;
-      }
+    if (!isPaused) {
+      offset -= DRIFT_SPEED;
     }
 
-    // Loop seamlessly — when offset exceeds one loop length, wrap
+    // Loop seamlessly
     if (offset <= -LOOP_LENGTH) offset += LOOP_LENGTH;
     if (offset > 0)             offset -= LOOP_LENGTH;
 
     track.style.transform = `translateX(${offset}px)`;
 
-    // Progress bar position — always moves (visually reassures user
-    // that the section is alive)
-    const p = (-offset / LOOP_LENGTH) % 1; // 0 → 1
+    // Progress bar
+    const p = (-offset / LOOP_LENGTH) % 1;
     const barW = progress.parentElement!.offsetWidth;
     const fillW = progress.offsetWidth;
     progress.style.transform = `translateX(${p * (barW - fillW)}px)`;
@@ -435,82 +410,16 @@ const kindLabel = {
   // ── Hover: pause drift + focus one post ────────────────────────────
   posts.forEach((post) => {
     post.addEventListener('mouseenter', () => {
-      if (isDragging) return;
       isPaused = true;
-      activePost = post;
       track.classList.add('is-focused');
       posts.forEach(p => p.classList.toggle('is-active', p === post));
-    });
-
-    post.addEventListener('mouseleave', () => {
-      // Only clear if we're leaving the post without entering another
-      // (mouseenter on the new post will fire first, keeping isPaused true)
     });
   });
 
   // When cursor leaves the entire viewport, resume drift
   viewport.addEventListener('mouseleave', () => {
-    if (isDragging) return;
     isPaused = false;
-    activePost = null;
     track.classList.remove('is-focused');
     posts.forEach(p => p.classList.remove('is-active'));
-  });
-
-  // ── Drag to scroll ─────────────────────────────────────────────────
-  viewport.addEventListener('pointerdown', (e) => {
-    isDragging     = true;
-    dragStartX     = e.clientX;
-    dragStartOffset = offset;
-    velocity       = 0;
-    viewport.classList.add('is-dragging');
-    viewport.setPointerCapture(e.pointerId);
-    // Clear focus state while dragging
-    track.classList.remove('is-focused');
-    posts.forEach(p => p.classList.remove('is-active'));
-  });
-
-  viewport.addEventListener('pointermove', (e) => {
-    if (!isDragging) return;
-    const dx = e.clientX - dragStartX;
-    offset = dragStartOffset + dx;
-    velocity = dx * 0.05; // store recent velocity for momentum
-  });
-
-  viewport.addEventListener('pointerup', (e) => {
-    if (!isDragging) return;
-    isDragging = false;
-    viewport.classList.remove('is-dragging');
-    // Small momentum continues for a moment after release
-    // (applied in the tick loop)
-  });
-
-  // Prevent links from triggering navigation only when ACTUALLY dragged.
-  // Track distance only while the pointer is held down.
-  let dragDistance = 0;
-  let pointerDownX = 0;
-  let pointerIsDown = false;
-  viewport.addEventListener('pointerdown', (e) => {
-    pointerDownX = e.clientX;
-    pointerIsDown = true;
-    dragDistance = 0;
-  });
-  viewport.addEventListener('pointermove', (e) => {
-    if (pointerIsDown) {
-      dragDistance = Math.abs(e.clientX - pointerDownX);
-    }
-  });
-  viewport.addEventListener('pointerup', () => {
-    pointerIsDown = false;
-  });
-  posts.forEach(post => {
-    post.addEventListener('click', (e) => {
-      // Only prevent click if the user clearly dragged (>15px)
-      if (dragDistance > 15) {
-        e.preventDefault();
-      }
-      // Reset for next interaction
-      dragDistance = 0;
-    });
   });
 </script>
