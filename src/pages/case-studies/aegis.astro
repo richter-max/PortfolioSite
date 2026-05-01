@@ -3,14 +3,14 @@ import CaseStudyLayout from '@layouts/CaseStudyLayout.astro';
 ---
 <CaseStudyLayout
   index="01 / 04"
-  kicker="SECURITY FRAMEWORK · AI AGENTS"
+  kicker="SECURITY HARNESS · AI AGENTS"
   title="AEGIS."
-  dek="Measuring how badly an AI agent breaks when you push on it."
+  dek="A deterministic security evaluation harness for tool-using agents."
   role="Sole author"
-  period="2025 — ongoing"
-  status="Private project"
-  read="≈ 6 min"
-  description="Measuring how badly an AI agent breaks when you push on it."
+  period="2026"
+  status="Open source · MIT"
+  read="≈ 5 min"
+  description="Reproducible, layered defense evaluation for tool-using agent workflows — policy → keyword → semantic guards, every decision traced."
 >
 
   <!-- 01 Brief -->
@@ -21,12 +21,11 @@ import CaseStudyLayout from '@layouts/CaseStudyLayout.astro';
     </div>
     <div>
       <div class="kicker mono">THE BRIEF</div>
-      <h2>Agents act. Nobody checks what happens when they act wrong.</h2>
-      <p class="lede">An AI agent can read the web, write to a database, call an API, ship a deploy. A chatbot cannot. That difference is the entire security story, and almost nobody is treating it like one yet.</p>
+      <h2>Agent security needs reproducible numbers, not anecdotes.</h2>
+      <p class="lede">A tool-using agent fails differently from a chatbot. Most published evaluations treat the two the same — accuracy on a benchmark, a few hand-picked exploits, no shared apparatus. The result is that "this defense works" is a vibe, not a measurement.</p>
       <div class="body">
-        <p>For a year I watched the industry ship agent after agent — in customer support, in ops, in code review — with the same evaluation harness one would use for a text model. Accuracy on a fixed benchmark. Average completion rate. A spot check of outputs.</p>
-        <p>None of those measure what I wanted to know. If a hostile user slips a line into a calendar invite, will the agent exfiltrate the contents of the inbox? If an internal tool returns a crafted error, will the agent retry it thirty times against production? If the system prompt drifts, does the agent still refuse the requests it is supposed to refuse?</p>
-        <p>I started AEGIS in the margin hours around a full-time job to answer questions like that — not as a research paper, but as a tool an engineer could actually run against their own agent and get a readable report back from.</p>
+        <p>AEGIS exists to make defense comparisons boring. Same scenarios. Same payloads. Same scoring. Different guard stack — and a number you can defend in a code review. The harness is deterministic on purpose: every run produces the same trace from the same config, so a delta between two runs is a defense delta, not noise.</p>
+        <p>The first version uses a deterministic demo runner instead of a live LLM. That is a feature, not a shortcut: it removes model variance from the experiment, exposes the guard logic on its own terms, and keeps the host machine safe while exploring tool-misuse scenarios.</p>
       </div>
     </div>
   </article>
@@ -39,16 +38,15 @@ import CaseStudyLayout from '@layouts/CaseStudyLayout.astro';
     </div>
     <div>
       <div class="kicker mono">THE APPROACH</div>
-      <h2>Treat the agent like software. Attack it like software.</h2>
+      <h2>Layered defense, observable at every step.</h2>
       <div class="body">
-        <p>Security testing for traditional software has a vocabulary: surface, vector, payload, impact. Most "AI safety" work has none of that. It speaks in alignment and intent. Useful, but not something you can run in CI.</p>
-        <p>AEGIS lifts the security vocabulary directly. An agent is a service. Its tools are endpoints. Its memory is state. Its system prompt is a trust boundary. Every place a piece of text enters the agent — the user turn, a tool result, a retrieved document, a file name — is an ingress point, and ingress points can carry payloads.</p>
-        <p>From there the framework is almost boring. For each ingress point, enumerate the payload classes that could arrive there. For each payload, observe what the agent does. Score the delta from intended behavior. Report.</p>
+        <p>Every tool proposal flows through a stack of guards before it can run. <strong>Policy</strong> enforces the allowlist — which tools may be invoked at all. <strong>Keyword</strong> rejects the obvious high-risk patterns. <strong>Semantic</strong> compares the payload against a corpus of known attack shapes using n-gram cosine similarity — no heavy ML, no black box. Anything that passes all three reaches the (mocked) tool. Anything that doesn't lands in the trace as a typed block event.</p>
+        <p>Tool execution itself is mocked. Simulated email exfiltration, simulated shell, simulated network egress — never a real side effect. The harness is a security lab, not a deploy target.</p>
       </div>
 
       <div class="diagram">
-        <div class="diagram-label mono">FIG. 01 · INGRESS POINTS &amp; EVALUATION LOOP</div>
-        <svg viewBox="0 0 900 360" xmlns="http://www.w3.org/2000/svg">
+        <div class="diagram-label mono">FIG. 01 · DEFENSE PIPELINE</div>
+        <svg viewBox="0 0 900 320" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
               <path d="M0,0 L6,4 L0,8 z" fill="#6B6965"></path>
@@ -58,28 +56,36 @@ import CaseStudyLayout from '@layouts/CaseStudyLayout.astro';
             </marker>
           </defs>
           <g font-family="JetBrains Mono, monospace" font-size="10" fill="#A8A6A0" letter-spacing="1.5">
-            <text x="40" y="60">USER TURN</text>
-            <text x="40" y="130">TOOL RESULT</text>
-            <text x="40" y="200">RETRIEVED DOC</text>
-            <text x="40" y="270">SYSTEM PROMPT</text>
+            <text x="40" y="170">SCENARIO</text>
+            <text x="40" y="190">+ AGENT</text>
           </g>
-          <g stroke="#6B6965" stroke-width="1">
-            <line x1="180" y1="56" x2="340" y2="170" marker-end="url(#arrow)"></line>
-            <line x1="180" y1="126" x2="340" y2="170" marker-end="url(#arrow)"></line>
-            <line x1="180" y1="196" x2="340" y2="170" marker-end="url(#arrow)"></line>
-            <line x1="180" y1="266" x2="340" y2="170" marker-end="url(#arrow)"></line>
-          </g>
-          <rect x="340" y="130" width="220" height="100" fill="none" stroke="#F3F1EC" stroke-width="1"></rect>
-          <text x="450" y="165" text-anchor="middle" font-family="Inter Tight, sans-serif" font-size="16" fill="#F3F1EC" letter-spacing="-0.02em">AGENT</text>
-          <text x="450" y="188" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#6B6965" letter-spacing="1.2">MODEL + TOOLS + MEMORY</text>
-          <text x="450" y="210" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#6B6965" letter-spacing="1.2">UNDER TEST</text>
-          <line x1="560" y1="180" x2="700" y2="180" stroke="#2E6BFF" stroke-width="1" marker-end="url(#arrowblue)"></line>
-          <text x="630" y="170" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#2E6BFF" letter-spacing="1.5">OBSERVE</text>
-          <rect x="700" y="130" width="160" height="100" fill="#2E6BFF"></rect>
-          <text x="780" y="170" text-anchor="middle" font-family="Inter Tight, sans-serif" font-size="14" fill="#F3F1EC" letter-spacing="-0.02em">SCORE</text>
-          <text x="780" y="192" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="rgba(243,241,236,0.7)" letter-spacing="1.2">DELTA FROM INTENDED</text>
-          <path d="M780,230 Q780,310 450,310 Q120,310 120,290" fill="none" stroke="#6B6965" stroke-width="1" stroke-dasharray="3 4" marker-end="url(#arrow)"></path>
-          <text x="450" y="335" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#6B6965" letter-spacing="1.5">FEED BACK · NEXT PAYLOAD</text>
+          <line x1="160" y1="180" x2="240" y2="180" stroke="#6B6965" stroke-width="1" marker-end="url(#arrow)"></line>
+
+          <rect x="240" y="140" width="130" height="80" fill="none" stroke="#F3F1EC" stroke-width="1"></rect>
+          <text x="305" y="170" text-anchor="middle" font-family="Inter Tight, sans-serif" font-size="13" fill="#F3F1EC" letter-spacing="-0.02em">POLICY</text>
+          <text x="305" y="190" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#6B6965" letter-spacing="1.2">ALLOWLIST</text>
+
+          <line x1="370" y1="180" x2="430" y2="180" stroke="#6B6965" stroke-width="1" marker-end="url(#arrow)"></line>
+
+          <rect x="430" y="140" width="130" height="80" fill="none" stroke="#F3F1EC" stroke-width="1"></rect>
+          <text x="495" y="170" text-anchor="middle" font-family="Inter Tight, sans-serif" font-size="13" fill="#F3F1EC" letter-spacing="-0.02em">KEYWORD</text>
+          <text x="495" y="190" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#6B6965" letter-spacing="1.2">PATTERN GUARD</text>
+
+          <line x1="560" y1="180" x2="620" y2="180" stroke="#6B6965" stroke-width="1" marker-end="url(#arrow)"></line>
+
+          <rect x="620" y="140" width="130" height="80" fill="none" stroke="#F3F1EC" stroke-width="1"></rect>
+          <text x="685" y="170" text-anchor="middle" font-family="Inter Tight, sans-serif" font-size="13" fill="#F3F1EC" letter-spacing="-0.02em">SEMANTIC</text>
+          <text x="685" y="190" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#6B6965" letter-spacing="1.2">N-GRAM COSINE</text>
+
+          <line x1="750" y1="180" x2="810" y2="180" stroke="#2E6BFF" stroke-width="1" marker-end="url(#arrowblue)"></line>
+          <text x="855" y="178" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#2E6BFF" letter-spacing="1.5">TOOL</text>
+          <text x="855" y="194" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#6B6965" letter-spacing="1.2">(MOCKED)</text>
+
+          <path d="M305,220 Q305,275 685,275" fill="none" stroke="#6B6965" stroke-width="1" stroke-dasharray="3 4"></path>
+          <path d="M495,220 L495,275" fill="none" stroke="#6B6965" stroke-width="1" stroke-dasharray="3 4"></path>
+          <path d="M685,220 L685,275" fill="none" stroke="#6B6965" stroke-width="1" stroke-dasharray="3 4"></path>
+          <line x1="685" y1="275" x2="685" y2="295" stroke="#6B6965" stroke-width="1" marker-end="url(#arrow)"></line>
+          <text x="685" y="312" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#6B6965" letter-spacing="1.5">BLOCK EVENT → TRACE.JSONL</text>
         </svg>
       </div>
     </div>
@@ -87,7 +93,7 @@ import CaseStudyLayout from '@layouts/CaseStudyLayout.astro';
 
   <div class="pullquote-wrap">
     <div class="pullquote">
-      "Alignment tells you what the agent should do. Security tells you what it actually does when you lie to it."
+      "Evidence is the primary output. If it isn't logged, it didn't happen."
     </div>
   </div>
 
@@ -98,89 +104,79 @@ import CaseStudyLayout from '@layouts/CaseStudyLayout.astro';
       <span class="big">03</span>
     </div>
     <div>
-      <div class="kicker mono">THE FINDINGS</div>
-      <h2>What actually breaks.</h2>
-      <p class="lede">Five agent architectures tested in the first pass. The pattern was more consistent than expected: the same handful of failure modes kept showing up, independent of the model underneath.</p>
+      <div class="kicker mono">THE NUMBERS</div>
+      <h2>Layered guards measurably reduce attack success.</h2>
+      <p class="lede">The benchmark suite runs the same adversarial scenarios against four configurations. The numbers are reproducible from the committed configs under <span class="mono">configs/experiments/</span> — anyone can re-run them and get identical traces.</p>
 
       <div class="findings">
         <div class="finding">
-          <div class="idx mono">F.01 · INDIRECT INJECTION</div>
-          <h3>Payloads in retrieved documents.</h3>
-          <p>Hostile instructions inside a PDF the agent was asked to summarize were executed as if they came from the user. No architecture caught this reliably.</p>
+          <div class="idx mono">B.01 · BASELINE</div>
+          <h3>Permissive policy, no guards: 82% attack success.</h3>
+          <p>Agent has no allowlist and no payload filtering. The headline number nobody wants on a post-incident review.</p>
         </div>
         <div class="finding">
-          <div class="idx mono">F.02 · TOOL RESULT TRUST</div>
-          <h3>Crafted error strings redirect execution.</h3>
-          <p>When a fake tool returned an error that looked like new instructions, most agents followed them. The system prompt's "only trust the user" clause did not survive contact.</p>
+          <div class="idx mono">B.02 · POLICY ONLY</div>
+          <h3>Strict allowlist, no guards: 47%.</h3>
+          <p>Tool restriction alone halves attack success. Most attacks still go through because the allowlisted tools can be misused.</p>
         </div>
         <div class="finding">
-          <div class="idx mono">F.03 · MEMORY EXFIL</div>
-          <h3>Long-term memory leaks across sessions.</h3>
-          <p>On agents with persistent memory, a single adversarial turn could plant an instruction that fired days later for a different user on the same store.</p>
+          <div class="idx mono">B.03 · POLICY + KEYWORDS</div>
+          <h3>Allowlist plus keyword guard: 23%.</h3>
+          <p>Pattern matching catches the obvious payloads. Obfuscation and fragmentation still slip through.</p>
         </div>
         <div class="finding">
-          <div class="idx mono">F.04 · UNBOUNDED RETRY</div>
-          <h3>No cost ceiling under failure.</h3>
-          <p>Given a tool that always errored, several agents looped until budget exhausted — dozens to hundreds of calls — with no backoff and no escalation.</p>
-        </div>
-        <div class="finding">
-          <div class="idx mono">F.05 · SYSTEM PROMPT DRIFT</div>
-          <h3>Refusals weaken over long contexts.</h3>
-          <p>Requests the agent refused on turn one were quietly accepted by turn forty. The trust boundary erodes as the conversation grows.</p>
-        </div>
-        <div class="finding">
-          <div class="idx mono">F.06 · TOOL COMPOSITION</div>
-          <h3>Safe tools combine into unsafe actions.</h3>
-          <p>Read-email and send-email, each audited and benign, chained into a credible phishing pipeline when the agent was asked nicely enough.</p>
+          <div class="idx mono">B.04 · LAYERED</div>
+          <h3>Allowlist + keyword + semantic: 9%.</h3>
+          <p>Adding the n-gram semantic guard catches the encoded and fragmented attempts the keyword layer misses. The remaining 9% is the interesting research surface.</p>
         </div>
       </div>
     </div>
   </article>
 
-  <!-- 04 Harness -->
+  <!-- 04 Threat model -->
   <article class="chapter">
     <div class="chapter-num mono">
       <span>CHAPTER</span>
       <span class="big">04</span>
     </div>
     <div>
-      <div class="kicker mono">THE HARNESS</div>
-      <h2>What the engineer actually runs.</h2>
+      <div class="kicker mono">THREAT MODEL</div>
+      <h2>What the harness is built to find.</h2>
       <div class="body">
-        <p>The framework ships as a Python package. Point it at an agent endpoint, declare the tools and ingress points, and it runs the payload corpus against each one in parallel. Results land as a readable report — not a confusion matrix, a document.</p>
-        <p>The harness is designed to be boring on purpose. A single config file. A single command. A report that an engineer can forward to a PM without a glossary. The interesting work is in the corpus; the tool just gets out of the way.</p>
+        <p>Four attack classes get first-class treatment in the corpus. <strong>Indirect prompt injection</strong> — instructions hidden in untrusted content the agent retrieves. <strong>Context fragmentation</strong> — payloads split across turns to slip past single-message filters. <strong>Token smuggling</strong> — Base64 and other encodings used to hide intent from string-level checks. <strong>Tool misuse</strong> — chains of allowlisted actions that compose into something the agent should never do.</p>
+        <p>Each class is exercised through the same harness, scored the same way, and lands in the same trace format. That uniformity is what makes the comparisons in Chapter 03 actually mean something.</p>
       </div>
 
-      <div class="code-head mono">aegis_run.py · simplified</div>
-      <pre class="code"><span class="c"># point AEGIS at an agent and run the full payload corpus</span>
-<span class="k">from</span> aegis <span class="k">import</span> Harness, Agent, Corpus
+      <div class="code-head mono">aegis · benchmark run · simplified</div>
+      <pre class="code"><span class="c"># reproduce the layered-defense number from Chapter 03</span>
+$ pip install -e .
+$ aegis bench --config configs/experiments/bench_layered.json
 
-agent = Agent(
-    endpoint=<span class="s">"https://my-agent.internal/chat"</span>,
-    tools=[<span class="s">"read_email"</span>, <span class="s">"send_email"</span>, <span class="s">"fetch_url"</span>],
-    ingress=[<span class="s">"user"</span>, <span class="s">"tool_result"</span>, <span class="s">"retrieved"</span>],
-)
-
-corpus = Corpus.load(<span class="s">"default"</span>)   <span class="c"># 340+ payloads across 6 classes</span>
-
-report = Harness(agent, corpus).<span class="f">run</span>(parallel=8)
-report.<span class="f">save</span>(<span class="s">"report.html"</span>)</pre>
+<span class="c"># outputs:</span>
+reports/bench/trace.jsonl          <span class="c"># every event, typed</span>
+reports/bench/bench_summary.json   <span class="c"># machine-readable metrics</span>
+reports/bench/bench_summary.md     <span class="c"># human-readable summary</span></pre>
     </div>
   </article>
 
-  <!-- 05 Outcome -->
+  <!-- 05 Engineering -->
   <article class="chapter">
     <div class="chapter-num mono">
       <span>CHAPTER</span>
       <span class="big">05</span>
     </div>
     <div>
-      <div class="kicker mono">THE OUTCOME</div>
-      <h2>Quiet findings, loud implications.</h2>
+      <div class="kicker mono">ENGINEERING DISCIPLINE</div>
+      <h2>The harness has to be trusted before its results are.</h2>
       <div class="body">
-        <p>The first production agent I pointed AEGIS at passed its own team's evaluation suite and failed half the payload classes above. Not because the team was careless — because the team was evaluating for the wrong thing, with the wrong vocabulary, in a model of the problem that predated the tool-using agent entirely.</p>
-        <p>That gap is the thesis. Agents are not chatbots. The evaluation methodology must catch up, and it will catch up faster if engineers have a tool they can run on a Tuesday afternoon without reading a paper.</p>
-        <p>AEGIS is still private and still evolving. Next on the list: expanding the payload corpus, building a continuous mode that runs against a canary agent in pre-production, and a calmer way of presenting the score so that "AEGIS failed your agent" is a fact people can act on instead of argue with.</p>
+        <p>A security tool with weak engineering hygiene is worse than no tool at all — it produces numbers people quote. AEGIS treats the harness itself as the thing under test: <span class="mono">pytest</span> for unit and integration coverage, <span class="mono">Hypothesis</span> property-based fuzzing against each guard layer, strict <span class="mono">mypy</span>, <span class="mono">Bandit</span> static analysis, full GitHub Actions CI on every push.</p>
+        <p>A Streamlit dashboard sits on top for trace inspection, policy outcome comparison, and benchmark summaries — useful when iterating on a guard, but not load-bearing. The traces are the source of truth; the dashboard is a viewer.</p>
+        <p>Next steps are unsexy and on purpose: live LLM integration behind the same provider-agnostic interface, expanding the payload corpus, and a continuous mode that runs the suite against a canary agent in pre-production.</p>
+      </div>
+
+      <div class="repo-card mono">
+        <div class="k">REPOSITORY</div>
+        <a href="https://github.com/richter-max/aegis" target="_blank" rel="noreferrer">github.com/richter-max/aegis →</a>
       </div>
     </div>
   </article>

@@ -5,12 +5,12 @@ import CaseStudyLayout from '@layouts/CaseStudyLayout.astro';
   index="02 / 04"
   kicker="CLI TOOL · OPEN SOURCE"
   title="Scanner."
-  dek="Reconnaissance for the engineer who has thirty seconds and a domain."
+  dek="Non-intrusive attack surface and transport security scanning for SaaS."
   role="Sole author"
-  period="2025 — ongoing"
+  period="2026"
   status="Open source · MIT"
   read="≈ 5 min"
-  description="A single-binary CLI that sweeps DNS, ports, subdomains, and security headers in under thirty seconds."
+  description="A non-intrusive scanner for SaaS attack surface, TLS posture, and HTTP security headers — emphasis on visibility and explainability over exploitation."
 >
 
   <!-- 01 Brief -->
@@ -21,11 +21,11 @@ import CaseStudyLayout from '@layouts/CaseStudyLayout.astro';
     </div>
     <div>
       <div class="kicker mono">THE BRIEF</div>
-      <h2>Most companies have no idea what their attack surface looks like.</h2>
-      <p class="lede">A small team owns five domains, twelve subdomains, and an old marketing landing page nobody has touched in three years. The marketing page still has SSH open. They will not find this until somebody else does.</p>
+      <h2>What is publicly exposed — and how risky is it?</h2>
+      <p class="lede">Most real-world SaaS incidents do not start with a clever exploit. They start with a forgotten subdomain, an expired certificate, a missing security header, or a CDN frontend nobody documented. The attack surface drifts and nobody notices.</p>
       <div class="body">
-        <p>Commercial attack-surface tools solve this — at five figures a year and a procurement cycle the kind of company that needs them most cannot run. The free tools solve fragments of it: a port scanner here, a subdomain enumerator there, a header checker as a browser extension. None of them produce a single artifact you can hand to an engineer on a Monday morning.</p>
-        <p>I built Scanner because I kept stitching those fragments together by hand on every personal pentest engagement and got tired of it. The goal was modest: one binary, one command, one readable report that fits on the screen.</p>
+        <p>The scanner answers one question, in one command: what is publicly visible about this domain right now, and where is the security posture weakest. Asset discovery, transport security, HTTP headers — combined into a single deterministic risk view that a security engineer can hand to an ops team on a Monday.</p>
+        <p>The scope is intentional. This is not a penetration test runner. There is no exploitation, no authentication, no port brute-forcing, no traffic that an enterprise NDR team would have to defend. Everything is passive enumeration plus standard HTTPS — the same kind of traffic any browser already produces.</p>
       </div>
     </div>
   </article>
@@ -38,62 +38,53 @@ import CaseStudyLayout from '@layouts/CaseStudyLayout.astro';
     </div>
     <div>
       <div class="kicker mono">THE APPROACH</div>
-      <h2>One binary. Concurrent everything. Two outputs.</h2>
+      <h2>Passive intelligence, deterministic scoring, structured output.</h2>
       <div class="body">
-        <p>The hard part of recon is not any individual probe — it is doing all of them in parallel without melting the network or the target. Scanner runs each module as an async task with bounded concurrency, shared rate limits, and a single result bus that the report writer drains.</p>
-        <p>Every check writes two outputs: a coloured terminal block for the engineer running it live, and a structured JSON entry for whatever pipeline picks it up downstream. The same run can drive a CI failure, a Slack alert, or just a human reading the screen.</p>
-        <p>The modules are deliberately small. DNS resolution. Subdomain enumeration via certificate transparency logs. Port scan with banner grab. TLS configuration. Security header audit. Six modules that, together, cover most of the surface a stranger could see from the internet without touching anything sensitive.</p>
+        <p>Discovery starts with Certificate Transparency logs — a public, append-only record of every certificate ever issued for a domain. CT-based enumeration is the closest thing to ground truth for "what subdomains exist", without ever sending a packet to the target. Brute-force wordlists are explicitly avoided; they are noisy, never complete, and produce false positives that erode trust in the report.</p>
+        <p>Discovered assets are resolved (A / AAAA), probed over HTTP and HTTPS with redirect awareness, and inspected for transport security and HTTP header configuration. Each finding ships with a severity, a one-paragraph technical explanation, and a concrete remediation hint. Risk is scored deterministically — explainable rules, no ML, no black box. The same domain produces the same risk view on every run.</p>
       </div>
 
       <div class="diagram">
-        <div class="diagram-label mono">FIG. 01 · MODULE PIPELINE</div>
-        <svg viewBox="0 0 900 300" xmlns="http://www.w3.org/2000/svg">
+        <div class="diagram-label mono">FIG. 01 · SCAN PIPELINE</div>
+        <svg viewBox="0 0 900 360" xmlns="http://www.w3.org/2000/svg">
           <defs>
-            <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+            <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
               <path d="M0,0 L6,4 L0,8 z" fill="#6B6965"></path>
             </marker>
-            <marker id="arrb" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+            <marker id="arrowblue" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
               <path d="M0,0 L6,4 L0,8 z" fill="#2E6BFF"></path>
             </marker>
           </defs>
-          <rect x="40" y="120" width="140" height="60" fill="#2E6BFF"></rect>
-          <text x="110" y="148" text-anchor="middle" font-family="Inter Tight, sans-serif" font-size="14" fill="#F3F1EC" letter-spacing="-0.02em">scanner</text>
-          <text x="110" y="166" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="rgba(243,241,236,0.7)" letter-spacing="1.2">DOMAIN INPUT</text>
 
-          <g font-family="JetBrains Mono, monospace" font-size="10" fill="#A8A6A0" letter-spacing="1.5">
-            <text x="320" y="40">DNS</text>
-            <text x="320" y="80">SUBDOMAINS</text>
-            <text x="320" y="120">PORTS</text>
-            <text x="320" y="160">TLS</text>
-            <text x="320" y="200">HEADERS</text>
-            <text x="320" y="240">FINGERPRINT</text>
-          </g>
-          <g stroke="#6B6965" stroke-width="1">
-            <line x1="180" y1="150" x2="300" y2="36" marker-end="url(#arr)"></line>
-            <line x1="180" y1="150" x2="300" y2="76" marker-end="url(#arr)"></line>
-            <line x1="180" y1="150" x2="300" y2="116" marker-end="url(#arr)"></line>
-            <line x1="180" y1="150" x2="300" y2="156" marker-end="url(#arr)"></line>
-            <line x1="180" y1="150" x2="300" y2="196" marker-end="url(#arr)"></line>
-            <line x1="180" y1="150" x2="300" y2="236" marker-end="url(#arr)"></line>
-          </g>
+          <rect x="40" y="150" width="160" height="60" fill="#2E6BFF"></rect>
+          <text x="120" y="180" text-anchor="middle" font-family="Inter Tight, sans-serif" font-size="14" fill="#F3F1EC" letter-spacing="-0.02em">DOMAIN</text>
+          <text x="120" y="198" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="rgba(243,241,236,0.7)" letter-spacing="1.2">EXAMPLE.COM</text>
 
-          <rect x="500" y="120" width="160" height="60" fill="none" stroke="#F3F1EC" stroke-width="1"></rect>
-          <text x="580" y="150" text-anchor="middle" font-family="Inter Tight, sans-serif" font-size="14" fill="#F3F1EC" letter-spacing="-0.02em">RESULT BUS</text>
-          <text x="580" y="170" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#6B6965" letter-spacing="1.2">BOUNDED CONCURRENCY</text>
+          <line x1="200" y1="180" x2="260" y2="180" stroke="#6B6965" stroke-width="1" marker-end="url(#arrow)"></line>
 
-          <g stroke="#6B6965" stroke-width="1">
-            <line x1="430" y1="36" x2="500" y2="140" marker-end="url(#arr)"></line>
-            <line x1="430" y1="76" x2="500" y2="148" marker-end="url(#arr)"></line>
-            <line x1="430" y1="116" x2="500" y2="152" marker-end="url(#arr)"></line>
-            <line x1="430" y1="156" x2="500" y2="158" marker-end="url(#arr)"></line>
-            <line x1="430" y1="196" x2="500" y2="162" marker-end="url(#arr)"></line>
-            <line x1="430" y1="236" x2="500" y2="170" marker-end="url(#arr)"></line>
-          </g>
+          <rect x="260" y="120" width="180" height="120" fill="none" stroke="#F3F1EC" stroke-width="1"></rect>
+          <text x="350" y="148" text-anchor="middle" font-family="Inter Tight, sans-serif" font-size="13" fill="#F3F1EC" letter-spacing="-0.02em">DISCOVER</text>
+          <text x="350" y="170" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#6B6965" letter-spacing="1.2">CT LOGS</text>
+          <text x="350" y="186" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#6B6965" letter-spacing="1.2">DNS A / AAAA</text>
+          <text x="350" y="202" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#6B6965" letter-spacing="1.2">HTTP/HTTPS PROBE</text>
+          <text x="350" y="218" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#6B6965" letter-spacing="1.2">REDIRECT-AWARE</text>
 
-          <line x1="660" y1="140" x2="780" y2="80" stroke="#2E6BFF" stroke-width="1" marker-end="url(#arrb)"></line>
-          <line x1="660" y1="160" x2="780" y2="220" stroke="#2E6BFF" stroke-width="1" marker-end="url(#arrb)"></line>
-          <text x="820" y="84" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#2E6BFF" letter-spacing="1.5">TTY</text>
-          <text x="820" y="224" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#2E6BFF" letter-spacing="1.5">JSON</text>
+          <line x1="440" y1="180" x2="500" y2="180" stroke="#6B6965" stroke-width="1" marker-end="url(#arrow)"></line>
+
+          <rect x="500" y="120" width="180" height="120" fill="none" stroke="#F3F1EC" stroke-width="1"></rect>
+          <text x="590" y="148" text-anchor="middle" font-family="Inter Tight, sans-serif" font-size="13" fill="#F3F1EC" letter-spacing="-0.02em">CHECK</text>
+          <text x="590" y="170" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#6B6965" letter-spacing="1.2">TLS VERSION</text>
+          <text x="590" y="186" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#6B6965" letter-spacing="1.2">CERT EXPIRY</text>
+          <text x="590" y="202" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#6B6965" letter-spacing="1.2">HSTS · CSP · XFO</text>
+          <text x="590" y="218" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#6B6965" letter-spacing="1.2">XCTO · REFERRER</text>
+
+          <line x1="680" y1="180" x2="740" y2="180" stroke="#2E6BFF" stroke-width="1" marker-end="url(#arrowblue)"></line>
+
+          <rect x="740" y="140" width="120" height="80" fill="#2E6BFF"></rect>
+          <text x="800" y="170" text-anchor="middle" font-family="Inter Tight, sans-serif" font-size="13" fill="#F3F1EC" letter-spacing="-0.02em">SCORE</text>
+          <text x="800" y="190" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="rgba(243,241,236,0.7)" letter-spacing="1.2">DETERMINISTIC</text>
+
+          <text x="450" y="290" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#6B6965" letter-spacing="1.5">OUTPUT: scan_&lt;timestamp&gt;.json + RICH CLI SUMMARY</text>
         </svg>
       </div>
     </div>
@@ -101,7 +92,7 @@ import CaseStudyLayout from '@layouts/CaseStudyLayout.astro';
 
   <div class="pullquote-wrap">
     <div class="pullquote">
-      "The cheapest pentest is the one that runs every night without anybody asking for it."
+      "The goal is visibility and prioritisation, not exploitation."
     </div>
   </div>
 
@@ -112,91 +103,85 @@ import CaseStudyLayout from '@layouts/CaseStudyLayout.astro';
       <span class="big">03</span>
     </div>
     <div>
-      <div class="kicker mono">THE FINDINGS</div>
-      <h2>What it keeps catching.</h2>
-      <p class="lede">Run on a few dozen domains across personal engagements and friends-of-friends startups, the same patterns kept landing on the report. None of them are exotic. All of them are exploitable.</p>
+      <div class="kicker mono">WHAT IT CHECKS</div>
+      <h2>Five signal classes, every finding explained.</h2>
+      <p class="lede">Every check produces the same shape of result — a severity, a short technical reason, and a concrete remediation. The risk score is the rolled-up view; the per-finding output is what an engineer actually fixes from.</p>
 
       <div class="findings">
         <div class="finding">
-          <div class="idx mono">F.01 · STALE DEV SUBDOMAINS</div>
-          <h3>Forgotten staging boxes pointing at production data.</h3>
-          <p>A <code>staging.acme.com</code> from a launch two years ago, still resolving, still serving an old Rails admin panel with a default credential set.</p>
+          <div class="idx mono">C.01 · ASSET DISCOVERY</div>
+          <h3>Subdomains via Certificate Transparency.</h3>
+          <p>Passive enumeration over public CT logs. Deterministic — no wordlists, no brute force. Degrades gracefully when corporate proxies block the lookup.</p>
         </div>
         <div class="finding">
-          <div class="idx mono">F.02 · MISSING SECURITY HEADERS</div>
-          <h3>HSTS, CSP, and frame-options absent on the marketing site.</h3>
-          <p>Easy to fix, almost universally missing. The marketing page is the one most likely to be cloned for phishing — and the one nobody on the security team owns.</p>
+          <div class="idx mono">C.02 · TRANSPORT SECURITY</div>
+          <h3>TLS protocol versions and certificate expiry.</h3>
+          <p>Detects deprecated TLS 1.0 / 1.1 endpoints and certificates approaching expiry. Both are silent failures until the day they aren't.</p>
         </div>
         <div class="finding">
-          <div class="idx mono">F.03 · DEPRECATED TLS</div>
-          <h3>TLS 1.0/1.1 still enabled on internal-looking endpoints.</h3>
-          <p>Usually a load balancer somebody set up before the rest of the stack moved. Modern clients refuse the connection; older bots cheerfully downgrade.</p>
+          <div class="idx mono">C.03 · HTTP HEADERS</div>
+          <h3>HSTS, CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy.</h3>
+          <p>The header set the OWASP Secure Headers Project treats as table stakes. Each missing or weak value produces an explicit finding with a fix.</p>
         </div>
         <div class="finding">
-          <div class="idx mono">F.04 · EXPOSED ADMIN PORTS</div>
-          <h3>SSH, Postgres, Redis on public IPs without an IP allowlist.</h3>
-          <p>Bound to <code>0.0.0.0</code> behind a security group nobody re-audited after the last cloud migration. The port scan finds them in seconds.</p>
+          <div class="idx mono">C.04 · RISK SCORING</div>
+          <h3>Asset-level risk, scan-level summary, top contributors.</h3>
+          <p>Rules-based, explainable, reproducible. The summary names the top reasons the score is what it is — no opaque number to argue with.</p>
         </div>
         <div class="finding">
-          <div class="idx mono">F.05 · DNS MISCONFIGURATION</div>
-          <h3>SPF, DKIM, and DMARC missing or set to <code>p=none</code>.</h3>
-          <p>The mailbox is configured. The records are not. Domain spoofing is one DNS query away from being trivial.</p>
-        </div>
-        <div class="finding">
-          <div class="idx mono">F.06 · LEAKED INTERNAL HOSTS</div>
-          <h3>Certificate transparency reveals internal naming.</h3>
-          <p>Internal subdomains the team never expected to be public — <code>vault.</code>, <code>hr.</code>, <code>build.</code> — listed in CT logs. The hostnames alone tell an attacker where to push.</p>
+          <div class="idx mono">C.05 · ENTERPRISE FALLBACK</div>
+          <h3>Proxy-aware degradation.</h3>
+          <p>In restricted networks where CT lookups or HTTPS probes fail, the scanner emits structured warnings instead of crashing. The report says exactly what was skipped and why.</p>
         </div>
       </div>
     </div>
   </article>
 
-  <!-- 04 Harness -->
+  <!-- 04 Out of scope -->
   <article class="chapter">
     <div class="chapter-num mono">
       <span>CHAPTER</span>
       <span class="big">04</span>
     </div>
     <div>
-      <div class="kicker mono">THE HARNESS</div>
-      <h2>One command, two surfaces.</h2>
+      <div class="kicker mono">OUT OF SCOPE</div>
+      <h2>What the tool intentionally does not do.</h2>
       <div class="body">
-        <p>The interface is intentionally narrow. A target, optional flags for which modules to run, and a destination for the report. Nothing else needs configuration — the defaults are tuned for the case where the engineer just wants the answer.</p>
-        <p>The JSON output is stable: each finding has an id, a severity, a module, a target, and a payload. CI integrations diff yesterday's run against today's and only fail when something new appears. The terminal output is what people show in a screenshot when they file the ticket.</p>
+        <p>No exploitation. No authenticated crawling. No port scanning beyond the standard HTTP/HTTPS probe. No vulnerability scanning. No brute forcing. No intrusive traffic generation. No credentials, secrets, or sensitive data are collected.</p>
+        <p>The boundary is the entire point. A scanner that stays inside this boundary is safe to run against production-like environments, safe to wire into CI for drift detection, and safe to point at a partner's domain during a procurement review without writing a memo first.</p>
       </div>
 
-      <div class="code-head mono">scanner · terminal session</div>
-      <pre class="code"><span class="c"># sweep a domain, write JSON, surface findings to the terminal</span>
-$ scanner scan acme.com --modules all --out report.json
+      <div class="code-head mono">scanner · usage · simplified</div>
+      <pre class="code"><span class="c"># single command, single domain</span>
+$ python -m ass.cli example.com
 
-<span class="k">→</span> dns         <span class="f">resolved 4 records · 11ms</span>
-<span class="k">→</span> subdomains  <span class="f">found 23 via CT · 412ms</span>
-<span class="k">→</span> ports       <span class="f">scanned 1024 · 3 open · 6.1s</span>
-<span class="k">→</span> tls         <span class="f">tls 1.0 enabled on api.acme.com · weak</span>
-<span class="k">→</span> headers     <span class="f">missing HSTS, CSP, X-Frame-Options</span>
-<span class="k">→</span> fingerprint <span class="f">nginx 1.18 · openssh 7.4</span>
-
-<span class="s">findings: 6 (1 high · 3 medium · 2 low)   total: 28.4s</span></pre>
-
-      <div class="body" style="margin-top: 32px;">
-        <p>The continuous mode is a thin wrapper around the same binary: a cron entry, a JSON diff, a webhook. Nothing about the engine had to change to make it work — which was the point of the design.</p>
-      </div>
+<span class="c"># produces:</span>
+results/scan_&lt;timestamp&gt;.json   <span class="c"># structured artifact</span>
+                                <span class="c"># + rich CLI summary:</span>
+                                <span class="c">#   risk overview</span>
+                                <span class="c">#   top risky assets</span>
+                                <span class="c">#   finding counts</span>
+                                <span class="c">#   environment warnings</span></pre>
     </div>
   </article>
 
-  <!-- 05 Outcome -->
+  <!-- 05 Engineering -->
   <article class="chapter">
     <div class="chapter-num mono">
       <span>CHAPTER</span>
       <span class="big">05</span>
     </div>
     <div>
-      <div class="kicker mono">THE OUTCOME</div>
-      <h2>Boring tool, real findings.</h2>
+      <div class="kicker mono">ENGINEERING</div>
+      <h2>Boring on purpose.</h2>
       <div class="body">
-        <p>Scanner is open source and intentionally unflashy. There is no dashboard, no SaaS, no login. It is a single binary that does one thing well and stays out of the way of the engineer running it. A handful of teams use it as the first step of their pentest engagements; a smaller handful run it on a nightly cron against their own surface.</p>
-        <p>The interesting outcome is not the tool itself — it is what showed up in the reports. The finding pattern above repeated almost verbatim across every engagement. Not exotic vulnerabilities. Forgotten infrastructure. Configurations that nobody owned. Things that one nightly run would have caught months earlier.</p>
-        <p>That is the case for a tool like this existing in the open: most companies do not have an attack-surface problem because they cannot fix the issues. They have one because nobody is looking. Scanner makes looking the cheap part.</p>
+        <p>Clean <span class="mono">src/</span>-layout Python package. Pydantic models for typed data flow. Deterministic scoring logic with unit-test coverage. <span class="mono">ruff</span> for static analysis, <span class="mono">pytest</span> matrix across Python 3.10 / 3.11 / 3.12, GitHub Actions CI on every push. Nothing exotic — the kind of engineering hygiene a security tool earns its trust from.</p>
+        <p>Roadmap is incremental: baseline comparison and drift detection across runs, extended TLS analysis (cipher suites, curves), JSON schema versioning so downstream consumers stay stable, and a containerised read-only execution mode for cloud runners.</p>
+      </div>
+
+      <div class="repo-card mono">
+        <div class="k">REPOSITORY</div>
+        <a href="https://github.com/richter-max/attack-surface-scanner" target="_blank" rel="noreferrer">github.com/richter-max/attack-surface-scanner →</a>
       </div>
     </div>
   </article>
