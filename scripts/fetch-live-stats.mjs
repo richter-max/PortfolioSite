@@ -119,32 +119,58 @@ async function fetchStrava() {
 }
 
 async function fetchGitHubCommits30d() {
-  // Counts commits the user authored across all public repos in the
-  // last 30 days. Search API needs auth to be reliable — anonymous
-  // queries return 0 for many users (index visibility constraints).
-  // We require a PAT and bail out otherwise so the fallback value
-  // keeps shipping.
+  // GraphQL contributionsCollection — same number that drives the
+  // green heatmap on github.com/<user>. Includes private repos when
+  // the user has "Include private contributions on my profile"
+  // enabled in their GitHub settings. Far more representative than
+  // search/commits, which is public-only and index-lagged.
   if (!GITHUB_TOKEN) {
     throw new Error('GITHUB_TOKEN missing — keeping previous commit count.');
   }
-  const since = new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10);
-  const url = `https://api.github.com/search/commits?q=author:${GITHUB_USER}+author-date:%3E${since}&per_page=1`;
-  const r = await fetch(url, {
+  const to   = new Date();
+  const from = new Date(Date.now() - 30 * 86400000);
+
+  const query = `
+    query($login: String!, $from: DateTime!, $to: DateTime!) {
+      user(login: $login) {
+        contributionsCollection(from: $from, to: $to) {
+          totalCommitContributions
+          contributionCalendar { totalContributions }
+        }
+      }
+    }
+  `;
+
+  const r = await fetch('https://api.github.com/graphql', {
+    method: 'POST',
     headers: {
-      Accept: 'application/vnd.github.cloak-preview+json',
-      'User-Agent': 'richtermax-portfolio-build',
       Authorization: `Bearer ${GITHUB_TOKEN}`,
+      'User-Agent': 'richtermax-portfolio-build',
+      'Content-Type': 'application/json',
     },
+    body: JSON.stringify({
+      query,
+      variables: {
+        login: GITHUB_USER,
+        from: from.toISOString(),
+        to:   to.toISOString(),
+      },
+    }),
   });
-  if (!r.ok) throw new Error(`GitHub search/commits: ${r.status} ${await r.text()}`);
+  if (!r.ok) throw new Error(`GitHub GraphQL: ${r.status} ${await r.text()}`);
   const j = await r.json();
-  // Sanity guard: a return of 0 is nearly always a transient API
-  // failure for an active user. Treat it as "don't update" rather
-  // than overwriting a real number with a misleading zero.
-  if (typeof j.total_count !== 'number' || j.total_count === 0) {
-    throw new Error('GitHub search returned 0 — treating as transient and keeping previous value.');
+  if (j.errors?.length) throw new Error(`GitHub GraphQL: ${JSON.stringify(j.errors)}`);
+
+  const cc = j.data?.user?.contributionsCollection;
+  if (!cc) throw new Error('GitHub GraphQL: no contributionsCollection in response.');
+
+  // Prefer commit-only as the headline figure (matches the cell label
+  // "COMMITS / 30 D" honestly). Sanity-guard zero as transient.
+  const commits = cc.totalCommitContributions;
+  if (typeof commits !== 'number' || commits === 0) {
+    throw new Error('GitHub returned 0 commits — treating as transient and keeping previous value.');
   }
-  return j.total_count;
+  return commits;
 }
 
 async function main() {
