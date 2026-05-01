@@ -146,16 +146,27 @@ import CaseStudyLayout from '@layouts/CaseStudyLayout.astro';
       <div class="code-head mono">security.txt · live</div>
       <pre class="code"><span class="c"># https://www.richtermax.com/.well-known/security.txt</span>
 Contact: mailto:max.richter.dev@proton.me
+Encryption: https://www.richtermax.com/pgp/maxrichter.asc
 Expires: 2027-05-01T00:00:00.000Z
 Preferred-Languages: en, de
 Canonical: https://www.richtermax.com/.well-known/security.txt
 Policy: https://www.richtermax.com/security</pre>
 
       <div class="code-head mono" style="margin-top: 32px;">PGP · public key</div>
-      <pre class="code"><span class="c"># A PGP key will be linked here once published.</span>
-<span class="c"># For now: email above is reachable end-to-end via Proton.</span>
-<span class="c"># If you require encryption right now, reply with your public</span>
-<span class="c"># key on first contact and I'll respond in kind.</span></pre>
+      <pre class="code"><span class="c"># Ed25519 · valid through 2028-04-30</span>
+<span class="c"># Fingerprint:</span>
+2A11 41D8 7D21 6D3B 2DF6  22AB 00D4 248C 65D3 E5AF
+
+<span class="c"># Download:</span>
+<span class="c"># https://www.richtermax.com/pgp/maxrichter.asc</span>
+
+<span class="c"># Verify on the command line:</span>
+$ curl -s https://www.richtermax.com/pgp/maxrichter.asc | gpg --show-keys</pre>
+
+      <div class="repo-card mono" style="margin-top: 24px;">
+        <div class="k">PGP KEY</div>
+        <a href="/pgp/maxrichter.asc" target="_blank" rel="noreferrer">/pgp/maxrichter.asc · download →</a>
+      </div>
     </div>
   </article>
 
