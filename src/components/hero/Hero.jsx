@@ -5,27 +5,6 @@
 // Background flips from dark → dark → cream for stage 3.
 import { useEffect, useRef, useState } from 'react';
 
-// Stages reuse the optimized AVIF pipeline. image-set() picks AVIF
-// where supported and falls back to JPG. Each stage uses the largest
-// width currently produced by `npm run optimize:images` for the master.
-const STAGES = [
-  {
-    avif: '/img/opt/portrait-salomon-1280.avif',
-    jpg:  '/img/opt/portrait-salomon-1280.jpg',
-    size: '85%',  position: 'center 35%',
-  },
-  {
-    avif: '/img/opt/laptophero-640.avif',
-    jpg:  '/img/opt/laptophero-640.jpg',
-    size: '90%',  position: 'center 50%',
-  },
-  {
-    avif: '/img/opt/berlin-marathon-1920.avif',
-    jpg:  '/img/opt/berlin-marathon-1920.jpg',
-    size: '78%',  position: 'center 50%',
-  },
-];
-
 // Returns 0..1 opacity for a stage, given scroll progress.
 // in/peak/out are the cross-fade keyframes per stage.
 function stageOpacity(p, ranges) {
@@ -148,11 +127,6 @@ export default function Hero() {
   const stage2Visible = op2;
   const stage3Visible = op3;
 
-  // Subtle scrub-driven scale on each stage for parallax feel
-  const scale1 = 1 + op1 * 0.04 - (1 - op1) * 0.02;
-  const scale2 = 1.04 - op2 * 0.04;
-  const scale3 = 1.06 - op3 * 0.06;
-
   return (
     <>
       {!loaderGone && <HeroLoader mounted={mounted} />}
@@ -176,26 +150,9 @@ export default function Hero() {
           transition: 'background 200ms linear',
         }}>
 
-          {/* Stage 1 — clean head */}
-          <StageImage stage={STAGES[0]} opacity={op1} scale={scale1} z={0} />
-
-          {/* Stage 2 — laptop */}
-          <StageImage stage={STAGES[1]} opacity={op2} scale={scale2} z={1} />
-
-          {/* Stage 3 — runner on topo */}
-          <StageImage stage={STAGES[2]} opacity={op3} scale={scale3} z={2} />
-
-          {/* Subtle vignette so text remains legible over any stage */}
-          <div style={{
-            position: 'absolute',
-            inset: 0,
-            pointerEvents: 'none',
-            background: creamMix > 0.5
-              ? 'linear-gradient(to top, rgba(243,241,236,0.55) 0%, rgba(243,241,236,0) 45%)'
-              : 'linear-gradient(to top, rgba(5,5,6,0.65) 0%, rgba(5,5,6,0.25) 50%, transparent 100%)',
-            zIndex: 4,
-            transition: 'background 200ms linear',
-          }} />
+          {/* Hero imagery temporarily removed — pending redesign. Stage
+              opacity logic + bg-color flip is preserved so the eyebrow
+              text + countdown still react to scroll progress. */}
 
           {/* Foreground */}
           <div style={{
@@ -282,28 +239,6 @@ export default function Hero() {
         }
       `}</style>
     </>
-  );
-}
-
-function StageImage({ stage, opacity, scale, z }) {
-  // image-set() lets the browser pick AVIF where supported; JPG is the
-  // fallback for very old engines. The url() fallback is for browsers
-  // that don't understand image-set() at all.
-  const bg = `image-set(url("${stage.avif}") type("image/avif"), url("${stage.jpg}") type("image/jpeg"))`;
-  return (
-    <div style={{
-      position: 'absolute',
-      inset: 0,
-      backgroundImage: `url("${stage.jpg}"), ${bg}`,
-      backgroundSize: stage.size,
-      backgroundPosition: stage.position,
-      backgroundRepeat: 'no-repeat',
-      opacity,
-      transform: `scale(${scale})`,
-      transformOrigin: 'center center',
-      willChange: 'opacity, transform',
-      zIndex: z,
-    }} />
   );
 }
 
