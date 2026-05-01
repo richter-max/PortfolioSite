@@ -20,13 +20,19 @@ import { projects } from '@data/projects';
 
   <!-- ── Cards stack directly beneath the pinned header ── -->
   <div class="work-stack" id="work-stack">
-    {projects.map((p, i) => (
+    {projects.map((p, i) => {
+      const linkable = !!p.href;
+      const Inner = linkable ? 'a' : 'div';
+      const innerProps = linkable
+        ? { href: p.href, 'data-cursor-hover': true }
+        : { 'aria-disabled': 'true' };
+      return (
       <div
-        class="work-card"
+        class={`work-card ${linkable ? '' : 'work-card--unlinked'}`}
         data-card-index={i}
         style={`z-index: ${10 + i};`}
       >
-        <a href={p.href} class="work-card__inner" data-cursor-hover>
+        <Inner class="work-card__inner" {...innerProps}>
 
           <div class="work-card__left">
             <div class="work-card__meta">
@@ -37,7 +43,7 @@ import { projects } from '@data/projects';
             <div class="work-card__body">
               <h3 class="work-card__client">
                 {p.client}
-                <span class="work-card__arrow">→</span>
+                {linkable && <span class="work-card__arrow">→</span>}
               </h3>
               <p class="work-card__summary">{p.summary}</p>
               <div class="work-card__role">
@@ -61,9 +67,10 @@ import { projects } from '@data/projects';
             </div>
           </div>
 
-        </a>
+        </Inner>
       </div>
-    ))}
+    );
+    })}
   </div>
 
 </section>

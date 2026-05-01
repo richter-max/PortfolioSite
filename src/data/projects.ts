@@ -4,6 +4,7 @@ export interface Project {
   role: string;
   year: string;
   summary: string;
+  /** Empty string = no detail page yet; the card renders un-clickable. */
   href: string;
   image: string;
   tag: string;
@@ -35,13 +36,13 @@ export const projects: Project[] = [
   {
     index: '01.03',
     client: 'VendorQ',
-    role: 'B2B SaaS · Beta',
+    role: 'B2B SaaS · Closed beta',
     year: '2025',
     summary:
       'AI reads existing security docs and auto-generates answers for vendor questionnaires. Two-week process compressed to a two-hour review. ~70% faster turnaround.',
-    href: '/case-studies/vendorq',
+    href: '', // private repo — no public case study yet
     image: '/img/opt/blog-shenzhen-1280.avif',
-    tag: 'SaaS · Beta',
+    tag: 'Private · Beta',
   },
   {
     index: '01.04',
@@ -50,7 +51,7 @@ export const projects: Project[] = [
     year: '2026',
     summary:
       'Enterprise-grade security for companies with 10–200 employees. One-click setup, automated scanning, reports a non-technical CEO can understand.',
-    href: '/case-studies/smb',
+    href: '', // not public yet
     image: '/img/opt/blog-endurance-640.avif',
     tag: 'In Development',
   },
