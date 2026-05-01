@@ -1,0 +1,187 @@
+---
+import CaseStudyLayout from '@layouts/CaseStudyLayout.astro';
+---
+<CaseStudyLayout
+  index="META"
+  kicker="THREAT MODEL · SELF-AUDIT"
+  title="Threats."
+  dek="The portfolio site, audited by its own author. Assets, adversaries, mitigations — written down so they can be argued with."
+  role="Sole architect"
+  period="Continuous"
+  status="Live · richtermax.com"
+  read="≈ 6 min"
+  description="Threat model for richtermax.com — assets, adversary classes, defenses-in-depth, and a disclosure flow. Recursion is the joke; substance is the point."
+>
+
+  <!-- 01 Why this page -->
+  <article class="chapter">
+    <div class="chapter-num mono">
+      <span>CHAPTER</span>
+      <span class="big">01</span>
+    </div>
+    <div>
+      <div class="kicker mono">WHY THIS PAGE EXISTS</div>
+      <h2>If you sell security, you publish your threat model.</h2>
+      <p class="lede">Anyone can claim to ship secure software. The proof is whether you've thought through your own surface area, written it down, and offered an honest place to send a report. That's what this page is.</p>
+      <div class="body">
+        <p>The site you're reading is a static Astro build deployed on Vercel. It has no user accounts, no payment flow, no CMS. The attack surface is small — but small is not zero, and "static" is not a synonym for "safe." The same supply-chain, header, and form-pivot risks that hit any production app apply here.</p>
+        <p>What follows is the threat model: what's worth attacking, who would attack it, and what's in place to make that hard. Read with skepticism. If something looks wrong, the disclosure flow is at the bottom.</p>
+      </div>
+    </div>
+  </article>
+
+  <!-- 02 Threat model -->
+  <article class="chapter">
+    <div class="chapter-num mono">
+      <span>CHAPTER</span>
+      <span class="big">02</span>
+    </div>
+    <div>
+      <div class="kicker mono">ASSETS &amp; ADVERSARIES</div>
+      <h2>Small surface, real edges.</h2>
+      <p class="lede">Four assets carry meaningful risk. Five adversary classes get first-class consideration. Everything else is out of scope, named explicitly so it stays out.</p>
+
+      <div class="findings">
+        <div class="finding">
+          <div class="idx mono">A.01 · ASSETS</div>
+          <h3>What's actually worth defending.</h3>
+          <p><strong>Reputation</strong> via the served HTML. <strong>Inbound mail</strong> from the contact form (PII in transit). <strong>Build-time secrets</strong> for the Strava + GitHub data refresh. The <strong>domain itself</strong>: a takeover would route everything elsewhere.</p>
+        </div>
+        <div class="finding">
+          <div class="idx mono">A.02 · ADVERSARIES</div>
+          <h3>Who's modeled, who's not.</h3>
+          <p><strong>In:</strong> drive-by scanners, SEO/defacement injectors, supply-chain compromise of npm dependencies, contact-form abuse for phishing pivots, DNS / hosting account takeover. <strong>Out:</strong> nation-state actors, physical access, browser zero-days. Realistic threat-modeling, not theatre.</p>
+        </div>
+        <div class="finding">
+          <div class="idx mono">A.03 · NON-TARGETS</div>
+          <h3>What this page is not claiming.</h3>
+          <p>Vercel's platform itself, GitHub, Strava, Web3Forms — all third-party services, out of scope. Anything served from <span class="mono">richtermax.com</span> is in scope. Browser bugs, your local machine, your DNS resolver: not in scope.</p>
+        </div>
+        <div class="finding">
+          <div class="idx mono">A.04 · DATA AT REST</div>
+          <h3>What this site stores about you.</h3>
+          <p>Nothing. No cookies set by this domain. Vercel Analytics is cookie-free and anonymized. Form submissions go directly to Web3Forms over HTTPS and land in a Proton inbox — they are never persisted in this site's storage.</p>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <div class="pullquote-wrap">
+    <div class="pullquote">
+      "Static is not a synonym for safe. The threat model is the proof of work."
+    </div>
+  </div>
+
+  <!-- 03 Defenses -->
+  <article class="chapter">
+    <div class="chapter-num mono">
+      <span>CHAPTER</span>
+      <span class="big">03</span>
+    </div>
+    <div>
+      <div class="kicker mono">DEFENSES IN DEPTH</div>
+      <h2>Layered, named, verifiable.</h2>
+      <p class="lede">Each control below sits on a real header, file, or workflow. You can verify them yourself — the source repo is linked in chapter 05, and every header is observable on the live response.</p>
+
+      <div class="findings">
+        <div class="finding">
+          <div class="idx mono">D.01 · TRANSPORT</div>
+          <h3>HTTPS everywhere, HSTS preloaded.</h3>
+          <p><span class="mono">Strict-Transport-Security: max-age=63072000; includeSubDomains; preload</span>. Two-year max-age, subdomain coverage, eligible for browser preload lists.</p>
+        </div>
+        <div class="finding">
+          <div class="idx mono">D.02 · CONTENT POLICY</div>
+          <h3>Strict CSP, allowlist not denylist.</h3>
+          <p><span class="mono">default-src 'self'</span>. Inline styles only (no inline scripts beyond the build's own). <span class="mono">blob:</span> permitted only on <span class="mono">connect-src</span> + <span class="mono">worker-src</span> — required by the WebGL texture loader, scoped tightly.</p>
+        </div>
+        <div class="finding">
+          <div class="idx mono">D.03 · ISOLATION</div>
+          <h3>COOP, CORP, frame-deny.</h3>
+          <p><span class="mono">Cross-Origin-Opener-Policy: same-origin</span> blocks Spectre-class window probing. <span class="mono">Cross-Origin-Resource-Policy: same-origin</span> stops third-party embedding of static resources. <span class="mono">X-Frame-Options: DENY</span> rejects clickjacking entirely.</p>
+        </div>
+        <div class="finding">
+          <div class="idx mono">D.04 · PERMISSIONS</div>
+          <h3>Browser features off by default.</h3>
+          <p>Camera, microphone, geolocation, payment, USB, accelerometer, gyroscope, magnetometer — all denied via <span class="mono">Permissions-Policy</span>. The site has no reason to request any of them; the policy header makes that contract explicit.</p>
+        </div>
+        <div class="finding">
+          <div class="idx mono">D.05 · FORM ABUSE</div>
+          <h3>Honeypot + Web3Forms + explicit consent.</h3>
+          <p>Hidden honeypot field on the contact form catches naive bots. Web3Forms applies server-side spam scoring. A pre-submit checkbox makes consent explicit (no automated submission). No client-side API keys: the access token is non-secret by design.</p>
+        </div>
+        <div class="finding">
+          <div class="idx mono">D.06 · SUPPLY CHAIN</div>
+          <h3>Pinned, locked, audited.</h3>
+          <p>All npm dependencies pinned via <span class="mono">package-lock.json</span>. Three.js bundled locally — no Google CDN, no jsDelivr, no jsdelivr-shaped untrusted scripts. The Draco WASM decoder is self-hosted under <span class="mono">/draco</span>.</p>
+        </div>
+        <div class="finding">
+          <div class="idx mono">D.07 · BUILD-TIME SECRETS</div>
+          <h3>Tokens never reach the browser.</h3>
+          <p>Strava + GitHub data is fetched at CI build time only. The resulting JSON is committed to the repo and served as a static asset. The browser never sees a token; the site never holds one.</p>
+        </div>
+        <div class="finding">
+          <div class="idx mono">D.08 · INTEGRITY</div>
+          <h3>Reproducible builds, observable headers.</h3>
+          <p>Astro static export — every page is byte-identical given the same inputs. Vercel ships the <span class="mono">dist/</span> output verbatim. Run <span class="mono">curl -I https://www.richtermax.com</span> to verify the live header set against the policy committed in <span class="mono">vercel.json</span>.</p>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- 04 Disclosure -->
+  <article class="chapter">
+    <div class="chapter-num mono">
+      <span>CHAPTER</span>
+      <span class="big">04</span>
+    </div>
+    <div>
+      <div class="kicker mono">RESPONSIBLE DISCLOSURE</div>
+      <h2>Found something? Here's the path.</h2>
+      <div class="body">
+        <p>Email <a href="mailto:max.richter.dev@proton.me"><span class="mono">max.richter.dev@proton.me</span></a> with a clear write-up. A working proof-of-concept beats a hypothesis. Initial acknowledgement within <strong>72 hours</strong>; substantive reply within <strong>seven days</strong>. If the issue is critical and being actively exploited, mark the subject line <span class="mono">[CRITICAL]</span> and I'll page myself.</p>
+        <p><strong>In scope:</strong> anything served from <span class="mono">richtermax.com</span> or <span class="mono">www.richtermax.com</span>. <strong>Out of scope:</strong> issues in third-party platforms (Vercel, GitHub, Strava, Web3Forms) — please report those to the upstream provider directly. <strong>Please don't:</strong> run automated scanners that generate hundreds of contact-form submissions, attempt to take the site offline, or pivot from any finding into other systems.</p>
+        <p>Machine-readable contact info follows <a href="/.well-known/security.txt">RFC 9116</a> at <span class="mono">/.well-known/security.txt</span>.</p>
+      </div>
+
+      <div class="code-head mono">security.txt · live</div>
+      <pre class="code"><span class="c"># https://www.richtermax.com/.well-known/security.txt</span>
+Contact: mailto:max.richter.dev@proton.me
+Expires: 2027-05-01T00:00:00.000Z
+Preferred-Languages: en, de
+Canonical: https://www.richtermax.com/.well-known/security.txt
+Policy: https://www.richtermax.com/security</pre>
+
+      <div class="code-head mono" style="margin-top: 32px;">PGP · public key</div>
+      <pre class="code"><span class="c"># A PGP key will be linked here once published.</span>
+<span class="c"># For now: email above is reachable end-to-end via Proton.</span>
+<span class="c"># If you require encryption right now, reply with your public</span>
+<span class="c"># key on first contact and I'll respond in kind.</span></pre>
+    </div>
+  </article>
+
+  <!-- 05 Open audit -->
+  <article class="chapter">
+    <div class="chapter-num mono">
+      <span>CHAPTER</span>
+      <span class="big">05</span>
+    </div>
+    <div>
+      <div class="kicker mono">OPEN AUDIT</div>
+      <h2>The source is public. Verify, don't trust.</h2>
+      <div class="body">
+        <p>Everything on this page is checkable. The Vercel headers are observable on every response. The CSP lives in <span class="mono">vercel.json</span>. The build pipeline is in <span class="mono">.github/workflows/</span>. The fetch script for live data is in <span class="mono">scripts/fetch-live-stats.mjs</span>. If a claim above doesn't match the repo, it's a bug — please send the diff.</p>
+        <p>Hall of thanks: empty so far. First valid finding gets credited here, with a link of your choosing.</p>
+      </div>
+
+      <div class="repo-card mono">
+        <div class="k">SOURCE</div>
+        <a href="https://github.com/richter-max/PortfolioSite" target="_blank" rel="noreferrer">github.com/richter-max/PortfolioSite →</a>
+      </div>
+      <div class="repo-card mono" style="margin-top: 16px;">
+        <div class="k">LIVE HEADERS</div>
+        <a href="https://securityheaders.com/?q=www.richtermax.com&followRedirects=on" target="_blank" rel="noreferrer">securityheaders.com / www.richtermax.com →</a>
+      </div>
+    </div>
+  </article>
+
+</CaseStudyLayout>
