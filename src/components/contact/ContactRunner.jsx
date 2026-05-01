@@ -1,9 +1,11 @@
 // ContactRunner.jsx — 3D runner
-// Lädt ein .glb Modell, rendert es mit Three.js, langsame Y-Rotation.
-// Camera wird automatisch so positioniert, dass das komplette Modell im Frame ist.
+// Lädt das Draco-komprimierte richter.opt.glb (~6 MB statt 55 MB),
+// rendert mit Three.js + RoomEnvironment IBL für korrekte PBR-Farben,
+// langsame Y-Rotation. Camera fitted automatisch ans Modell.
 import { useEffect, useRef } from 'react';
 
-const MODEL_URL = '/models/richter.glb';
+const MODEL_URL  = '/models/richter.opt.glb';
+const DRACO_PATH = '/draco/';
 
 export default function ContactRunner() {
   const containerRef = useRef(null);
@@ -14,7 +16,9 @@ export default function ContactRunner() {
 
     async function init() {
       const THREE = await import('three');
-      const { GLTFLoader } = await import('three/examples/jsm/loaders/GLTFLoader.js');
+      const { GLTFLoader }  = await import('three/examples/jsm/loaders/GLTFLoader.js');
+      const { DRACOLoader } = await import('three/examples/jsm/loaders/DRACOLoader.js');
+      const { RoomEnvironment } = await import('three/examples/jsm/environments/RoomEnvironment.js');
 
       if (!mounted || !containerRef.current) return;
 
@@ -32,6 +36,8 @@ export default function ContactRunner() {
       camera.lookAt(0, 0, 0);
 
       // ── Renderer ─────────────────────────────────────────────────────
+      // NoToneMapping bewahrt die GLB-Farben 1:1 — kein ACES-Roll-Off, der
+      // gesättigte Farben Richtung grau zieht.
       const renderer = new THREE.WebGLRenderer({
         antialias: true,
         alpha: true,
@@ -39,31 +45,46 @@ export default function ContactRunner() {
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       renderer.setSize(width, height);
       renderer.outputColorSpace = THREE.SRGBColorSpace;
-      renderer.toneMapping = THREE.ACESFilmicToneMapping;
-      renderer.toneMappingExposure = 0.9;
+      renderer.toneMapping = THREE.NoToneMapping;
       container.appendChild(renderer.domElement);
 
-      // ── Lighting ─────────────────────────────────────────────────────
-      const ambient = new THREE.AmbientLight(0xffffff, 0.4);
-      scene.add(ambient);
+      // ── Environment (IBL) ────────────────────────────────────────────
+      // PBR-Materialien (metallic-roughness) brauchen ein Env-Map zum
+      // Reflektieren — sonst werden sie flach/grau. fromScene() geht den
+      // Cubemap-Pfad. Equirect-Shader NICHT precompilen — auf manchen
+      // Mac/Chrome-ANGLE-GPUs rendert das die Probe grau.
+      const pmrem = new THREE.PMREMGenerator(renderer);
+      const envRT = pmrem.fromScene(new RoomEnvironment(), 0.04);
+      scene.environment = envRT.texture;
+      pmrem.dispose();
 
-      const keyLight = new THREE.DirectionalLight(0xffffff, 2.0);
+      // ── Lighting ─────────────────────────────────────────────────────
+      // Hemisphere-Light als farb-sicherer Fallback, falls eine GPU die
+      // Env-Probe schwach gewichtet — Materialien bleiben so nie komplett
+      // grau. Key + Fill geben Form, kein blauer Rim mehr (verfälscht).
+      const hemi = new THREE.HemisphereLight(0xffffff, 0xb8b6b0, 0.55);
+      scene.add(hemi);
+
+      const keyLight = new THREE.DirectionalLight(0xffffff, 1.0);
       keyLight.position.set(3, 4, 3);
       scene.add(keyLight);
 
-      const rimLight = new THREE.DirectionalLight(0x2E6BFF, 1.2);
-      rimLight.position.set(-3, 2, -3);
-      scene.add(rimLight);
+      const fillLight = new THREE.DirectionalLight(0xffffff, 0.4);
+      fillLight.position.set(-2, 1, -2);
+      scene.add(fillLight);
 
-      const fill = new THREE.DirectionalLight(0xffffff, 0.4);
-      fill.position.set(-2, -1, 2);
-      scene.add(fill);
+      // ── Loader: GLTF + Draco decoder (lokal in /public/draco) ────────
+      const dracoLoader = new DRACOLoader();
+      dracoLoader.setDecoderPath(DRACO_PATH);
+      dracoLoader.setDecoderConfig({ type: 'js' });
+
+      const loader = new GLTFLoader();
+      loader.setDRACOLoader(dracoLoader);
 
       // ── Load model ───────────────────────────────────────────────────
       let pivot = null;
       const clock = new THREE.Clock();
 
-      const loader = new GLTFLoader();
       loader.load(
         MODEL_URL,
         (gltf) => {
@@ -71,25 +92,39 @@ export default function ContactRunner() {
 
           const model = gltf.scene;
 
-          // 1) Measure original bounding box
+          // sRGB für Color-Maps + Env-Beitrag forcieren — verhindert den
+          // "grey on desktop, fine on mobile"-Drift, wo manche GPUs die
+          // Env-Probe unter-gewichten.
+          model.traverse((child) => {
+            if (!child.isMesh || !child.material) return;
+            const mats = Array.isArray(child.material) ? child.material : [child.material];
+            for (const m of mats) {
+              if ('envMapIntensity' in m) m.envMapIntensity = 1.2;
+              if (m.map)         m.map.colorSpace         = THREE.SRGBColorSpace;
+              if (m.emissiveMap) m.emissiveMap.colorSpace = THREE.SRGBColorSpace;
+              m.needsUpdate = true;
+            }
+          });
+
+          // 1) Bounding Box messen
           const box    = new THREE.Box3().setFromObject(model);
           const size   = box.getSize(new THREE.Vector3());
           const center = box.getCenter(new THREE.Vector3());
 
-          // 2) Shift model so its CENTER is at origin (0,0,0)
+          // 2) Modell zentrieren — Rotation läuft um den Körpermittelpunkt
           model.position.x -= center.x;
           model.position.y -= center.y;
           model.position.z -= center.z;
 
-          // 3) Wrap in pivot group — rotate pivot, model stays put
+          // 3) Pivot-Group für Rotation
           pivot = new THREE.Group();
           pivot.add(model);
           scene.add(pivot);
 
-          // 4) Auto-fit camera distance based on model size
-          const maxDim  = Math.max(size.x, size.y, size.z);
-          const fovRad  = camera.fov * (Math.PI / 180);
-          const padding = 1.6; // 1.0 = model fills frame, higher = more space
+          // 4) Camera auto-fit — Distanz aus Bounding-Box + FOV
+          const maxDim   = Math.max(size.x, size.y, size.z);
+          const fovRad   = camera.fov * (Math.PI / 180);
+          const padding  = 1.6;
           const distance = (maxDim / 2) / Math.tan(fovRad / 2) * padding;
 
           camera.position.set(0, 0, distance);
@@ -111,7 +146,7 @@ export default function ContactRunner() {
         const delta = clock.getDelta();
 
         if (pivot) {
-          pivot.rotation.y += delta * (Math.PI * 2) / 16; // 1 full turn per 16s
+          pivot.rotation.y += delta * (Math.PI * 2) / 16; // 1 Umdrehung / 16 s
         }
 
         renderer.render(scene, camera);
@@ -136,6 +171,7 @@ export default function ContactRunner() {
           renderer.domElement.parentNode.removeChild(renderer.domElement);
         }
         renderer.dispose();
+        dracoLoader.dispose();
         scene.traverse((obj) => {
           if (obj.geometry) obj.geometry.dispose();
           if (obj.material) {
