@@ -36,8 +36,12 @@ export default function ContactRunner() {
       camera.lookAt(0, 0, 0);
 
       // ── Renderer ─────────────────────────────────────────────────────
-      // NoToneMapping bewahrt die GLB-Farben 1:1 — kein ACES-Roll-Off, der
-      // gesättigte Farben Richtung grau zieht.
+      // AgXToneMapping (three r156+) ist farb-erhaltend: komprimiert HDR-
+      // Eingangswerte ohne Sättigung in Richtung Grau zu ziehen wie ACES.
+      // NoToneMapping war hier falsch — bei mehreren Lichtern + IBL liegt
+      // die einkommende Radiance > 1.0, dann clippen die hellen Bereiche
+      // (Stirn, Schultern, weisse T-Shirt-Streifen) zu reinem Weiss und
+      // alles dazwischen sieht grau aus, weil die Textur nie sichtbar ist.
       const renderer = new THREE.WebGLRenderer({
         antialias: true,
         alpha: true,
@@ -45,31 +49,27 @@ export default function ContactRunner() {
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       renderer.setSize(width, height);
       renderer.outputColorSpace = THREE.SRGBColorSpace;
-      renderer.toneMapping = THREE.NoToneMapping;
+      renderer.toneMapping = THREE.AgXToneMapping;
+      renderer.toneMappingExposure = 1.0;
       container.appendChild(renderer.domElement);
 
       // ── Environment (IBL) ────────────────────────────────────────────
-      // PBR-Materialien (metallic-roughness) brauchen ein Env-Map zum
-      // Reflektieren — sonst werden sie flach/grau. fromScene() geht den
-      // Cubemap-Pfad. Equirect-Shader NICHT precompilen — auf manchen
-      // Mac/Chrome-ANGLE-GPUs rendert das die Probe grau.
+      // RoomEnvironment liefert diffuse + specular IBL. Das übernimmt das
+      // ambiente Licht — kein zusätzlicher HemisphereLight nötig, der nur
+      // doppelt-belichten würde.
       const pmrem = new THREE.PMREMGenerator(renderer);
       const envRT = pmrem.fromScene(new RoomEnvironment(), 0.04);
       scene.environment = envRT.texture;
       pmrem.dispose();
 
       // ── Lighting ─────────────────────────────────────────────────────
-      // Hemisphere-Light als farb-sicherer Fallback, falls eine GPU die
-      // Env-Probe schwach gewichtet — Materialien bleiben so nie komplett
-      // grau. Key + Fill geben Form, kein blauer Rim mehr (verfälscht).
-      const hemi = new THREE.HemisphereLight(0xffffff, 0xb8b6b0, 0.55);
-      scene.add(hemi);
-
-      const keyLight = new THREE.DirectionalLight(0xffffff, 1.0);
+      // Sparsam direktional, damit AgX nicht in den Kompressions-Bereich
+      // muss. Key gibt Modellierung, Fill verhindert harte Schattenseiten.
+      const keyLight = new THREE.DirectionalLight(0xffffff, 1.6);
       keyLight.position.set(3, 4, 3);
       scene.add(keyLight);
 
-      const fillLight = new THREE.DirectionalLight(0xffffff, 0.4);
+      const fillLight = new THREE.DirectionalLight(0xffffff, 0.5);
       fillLight.position.set(-2, 1, -2);
       scene.add(fillLight);
 
@@ -92,18 +92,17 @@ export default function ContactRunner() {
 
           const model = gltf.scene;
 
-          // Tripo (AI-Generator) exportiert Materialien mit metallic=1 +
-          // roughness=1 — ein vollmetallisches Material reflektiert nur die
-          // Env-Probe und ignoriert seine baseColor-Textur, daher rendert
-          // das Modell grau. Der Mensch ist kein Metall: metalness auf 0
-          // zwingen, roughness leicht senken für sauberes Hautlicht.
+          // Tripo exportiert metallicFactor=1 — die ORM-Textur dieses Models
+          // hat zwar B≈0 (also per-Pixel-Metalness ≈ 0), aber wir überschreiben
+          // den Faktor defensiv, falls eine spätere Re-Optimierung die Textur
+          // verliert. Roughness 0.75 sorgt für weiches Hautlicht.
           model.traverse((child) => {
             if (!child.isMesh || !child.material) return;
             const mats = Array.isArray(child.material) ? child.material : [child.material];
             for (const m of mats) {
               if ('metalness' in m)  m.metalness = 0;
-              if ('roughness' in m)  m.roughness = 0.75;
-              if ('envMapIntensity' in m) m.envMapIntensity = 1.0;
+              if ('roughness' in m)  m.roughness = 0.85;
+              if ('envMapIntensity' in m) m.envMapIntensity = 0.7;
               if (m.map)         m.map.colorSpace         = THREE.SRGBColorSpace;
               if (m.emissiveMap) m.emissiveMap.colorSpace = THREE.SRGBColorSpace;
               m.needsUpdate = true;
