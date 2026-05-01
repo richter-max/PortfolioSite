@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 // optimize-glb.mjs
-// Compresses public/models/richter.glb → richter.opt.glb using Meshopt
-// and resamples textures to WebP. The original file is left untouched.
+// Compresses assets-src/models/richter.glb → public/models/richter.opt.glb
+// (Draco geometry compression). The 55 MB master lives outside `public/`
+// so it isn't shipped to visitors; only the ~6 MB optimized output is
+// served.
 
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
@@ -16,7 +18,7 @@ import {
 } from '@gltf-transform/functions';
 import draco3d from 'draco3dgltf';
 
-const IN = path.resolve(process.cwd(), 'public/models/richter.glb');
+const IN  = path.resolve(process.cwd(), 'assets-src/models/richter.glb');
 const OUT = path.resolve(process.cwd(), 'public/models/richter.opt.glb');
 
 async function main() {

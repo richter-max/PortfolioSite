@@ -67,11 +67,15 @@ render-time check (bots submit too fast), and Web3Forms' own filtering.
 
 ```
 .
+├── assets-src/              # masters — NOT served, processed at build
+│   ├── img/                 #   *.{jpg,png}  → public/img/opt/
+│   └── models/              #   richter.glb  → public/models/richter.opt.glb
 ├── public/
 │   ├── favicon.svg
 │   ├── fonts/               # self-hosted woff2 (preloaded)
+│   ├── draco/               # self-hosted Draco decoder (CSP-friendly)
 │   ├── img/
-│   │   ├── *.{jpg,png}      # masters, not served
+│   │   ├── og-default.jpg   # OG image, served as-is
 │   │   └── opt/             # responsive AVIF / WebP / JPG (served)
 │   └── models/
 │       └── richter.opt.glb  # Draco-compressed geometry

@@ -1,15 +1,16 @@
 #!/usr/bin/env node
 // optimize-images.mjs
-// Reads public/img/*.{jpg,jpeg,png}, emits responsive AVIF + WebP + JPG fallbacks
-// into public/img/opt/. Original masters are preserved (untouched).
+// Reads assets-src/img/*.{jpg,jpeg,png} (masters live outside `public/`
+// so they aren't shipped to visitors) and emits responsive AVIF + WebP
+// + JPG fallbacks into public/img/opt/.
 // Usage: node scripts/optimize-images.mjs
 
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
 
-const ROOT = path.resolve(process.cwd(), 'public/img');
-const OUT = path.resolve(ROOT, 'opt');
+const ROOT = path.resolve(process.cwd(), 'assets-src/img');
+const OUT  = path.resolve(process.cwd(), 'public/img/opt');
 
 const WIDTHS = [640, 1280, 1920, 2560];
 const AVIF_QUALITY = 50;
