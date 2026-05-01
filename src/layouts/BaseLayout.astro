@@ -11,6 +11,9 @@ interface Props {
   description?: string;
   ogImage?: string;
   noindex?: boolean;
+  /** Adds a class to <body>. Used by article layouts to enable
+   *  the reading-cursor variant ("is-reading"). */
+  bodyClass?: string;
 }
 
 const {
@@ -18,6 +21,7 @@ const {
   description = SITE.description,
   ogImage = SITE.ogImage,
   noindex = false,
+  bodyClass = '',
 } = Astro.props;
 
 const canonical = new URL(Astro.url.pathname, SITE.url).toString();
@@ -105,7 +109,7 @@ const siteLd = {
     <!-- View Transitions — cross-page fade with shared elements -->
     <ViewTransitions />
   </head>
-  <body>
+  <body class={bodyClass}>
 
     <a href="#main" class="skip-link">Skip to content</a>
 
@@ -120,10 +124,12 @@ const siteLd = {
 
     <!-- ── Custom cursor ──────────────────────────────────────────────────
          Dot + lagging ring with magnetic pull on links/buttons.
-         Hidden automatically on touch devices via CSS.
+         transition:persist keeps the SAME DOM nodes across Astro view
+         transitions — so script references stay valid and the cursor
+         doesn't reset to (0,0) on every page change.
     ──────────────────────────────────────────────────────────────────────── -->
-    <div id="cursor-dot" aria-hidden="true"></div>
-    <div id="cursor-ring" aria-hidden="true"></div>
+    <div id="cursor-dot"  aria-hidden="true" transition:persist></div>
+    <div id="cursor-ring" aria-hidden="true" transition:persist></div>
 
     <script>
       import '../scripts/motion.js';
@@ -236,6 +242,47 @@ const siteLd = {
     background: rgba(255, 255, 255, 0.15);
   }
 
+  /* ── Reading mode (article pages) ────────────────────────────────────
+     On article-like pages we replace the dot+ring with a single thin
+     I-beam that's tuned for reading prose. Hovering links keeps the
+     ring expansion so navigation still feels interactive. */
+  body.is-reading #cursor-dot {
+    opacity: 0;
+  }
+  body.is-reading #cursor-ring {
+    width: 2px;
+    height: 22px;
+    margin: -11px 0 0 -1px;
+    border-radius: 1px;
+    border: none;
+    background: rgba(255, 255, 255, 0.85);
+    mix-blend-mode: difference;
+  }
+  body.is-reading #cursor-ring.is-text {
+    /* Same I-beam shape — but a touch taller + a horizontal serif on
+       top/bottom drawn via box-shadow, like a real text caret. */
+    width: 2px;
+    height: 24px;
+    margin: -12px 0 0 -1px;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow:
+      -3px -11px 0 -1px rgba(255, 255, 255, 0.95),
+       3px -11px 0 -1px rgba(255, 255, 255, 0.95),
+      -3px  11px 0 -1px rgba(255, 255, 255, 0.95),
+       3px  11px 0 -1px rgba(255, 255, 255, 0.95);
+  }
+  body.is-reading #cursor-ring.is-hovering {
+    /* Tasteful smaller hover ring on links inside articles — doesn't
+       overwhelm the prose like the 64px global hover state would. */
+    width: 32px;
+    height: 32px;
+    margin: -16px 0 0 -16px;
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: none;
+  }
+
   /* Hide native cursor sitewide */
   html {
     cursor: none;
@@ -327,22 +374,45 @@ const siteLd = {
       start();
     });
 
-    document.addEventListener('mouseover', (e) => {
-      const t = e.target as Element;
+    function updateHoverFromTarget(t: Element | null) {
+      if (!t) {
+        ring!.classList.remove('is-hovering', 'is-text');
+        magnetTarget = null;
+        return;
+      }
       const el = t.closest('a, button, [data-cursor-hover]');
-      const tx = t.closest('p, h1, h2, h3, h4, span, label');
+      const tx = t.closest('p, h1, h2, h3, h4, h5, h6, li, blockquote, figcaption, span, label');
       if (el) {
-        ring.classList.add('is-hovering');
-        ring.classList.remove('is-text');
+        ring!.classList.add('is-hovering');
+        ring!.classList.remove('is-text');
         magnetTarget = el;
       } else if (tx) {
-        ring.classList.add('is-text');
-        ring.classList.remove('is-hovering');
+        ring!.classList.add('is-text');
+        ring!.classList.remove('is-hovering');
         magnetTarget = null;
       } else {
-        ring.classList.remove('is-hovering', 'is-text');
+        ring!.classList.remove('is-hovering', 'is-text');
         magnetTarget = null;
       }
+    }
+
+    document.addEventListener('mouseover', (e) => {
+      updateHoverFromTarget(e.target as Element);
+    });
+
+    // After an Astro view transition the body content has been swapped
+    // but the user's mouse hasn't moved — no fresh `mouseover` event
+    // fires, so the cursor state would carry over from the previous page
+    // (e.g. stuck in `is-hovering` after clicking a link). Re-evaluate
+    // what's under the cursor as soon as the new DOM is in place.
+    document.addEventListener('astro:page-load', () => {
+      const under = document.elementFromPoint(mouseX, mouseY);
+      updateHoverFromTarget(under);
+      // Force a tick of the RAF loop so the dot/ring snap to the right
+      // place (the elements persisted, but their transforms are still
+      // those left over from when the previous page unmounted).
+      lastMoveAt = performance.now();
+      start();
     });
 
     document.addEventListener('visibilitychange', () => {

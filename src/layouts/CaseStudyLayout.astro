@@ -19,7 +19,7 @@ interface Props {
 const { index, kicker, title, dek, role, period, status, read, description } = Astro.props;
 ---
 
-<BaseLayout title={`${title} — Case Study · Maximilian Richter`} description={description ?? dek}>
+<BaseLayout title={`${title} — Case Study · Maximilian Richter`} description={description ?? dek} bodyClass="is-reading">
 
   <div class="cs">
 
