@@ -5,10 +5,25 @@
 // Background flips from dark → dark → cream for stage 3.
 import { useEffect, useRef, useState } from 'react';
 
+// Stages reuse the optimized AVIF pipeline. image-set() picks AVIF
+// where supported and falls back to JPG. Each stage uses the largest
+// width currently produced by `npm run optimize:images` for the master.
 const STAGES = [
-  { src: '/img/hero/potrait-1.png', size: '85%',  position: 'center 35%' },
-  { src: '/img/hero/potrait-2.png', size: '90%',  position: 'center 50%' },
-  { src: '/img/hero/potrait-3.png', size: '78%',  position: 'center 50%' },
+  {
+    avif: '/img/opt/portrait-salomon-1280.avif',
+    jpg:  '/img/opt/portrait-salomon-1280.jpg',
+    size: '85%',  position: 'center 35%',
+  },
+  {
+    avif: '/img/opt/laptophero-640.avif',
+    jpg:  '/img/opt/laptophero-640.jpg',
+    size: '90%',  position: 'center 50%',
+  },
+  {
+    avif: '/img/opt/berlin-marathon-1920.avif',
+    jpg:  '/img/opt/berlin-marathon-1920.jpg',
+    size: '78%',  position: 'center 50%',
+  },
 ];
 
 // Returns 0..1 opacity for a stage, given scroll progress.
@@ -271,11 +286,15 @@ export default function Hero() {
 }
 
 function StageImage({ stage, opacity, scale, z }) {
+  // image-set() lets the browser pick AVIF where supported; JPG is the
+  // fallback for very old engines. The url() fallback is for browsers
+  // that don't understand image-set() at all.
+  const bg = `image-set(url("${stage.avif}") type("image/avif"), url("${stage.jpg}") type("image/jpeg"))`;
   return (
     <div style={{
       position: 'absolute',
       inset: 0,
-      backgroundImage: `url("${stage.src}")`,
+      backgroundImage: `url("${stage.jpg}"), ${bg}`,
       backgroundSize: stage.size,
       backgroundPosition: stage.position,
       backgroundRepeat: 'no-repeat',
