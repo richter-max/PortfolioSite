@@ -243,13 +243,24 @@ async function fetchGitHubCommits30d() {
   const cc = j.data?.user?.contributionsCollection;
   if (!cc) throw new Error('GitHub GraphQL: no contributionsCollection in response.');
 
-  // Prefer commit-only as the headline figure (matches the cell label
-  // "COMMITS / 30 D" honestly). Sanity-guard zero as transient.
-  const commits = cc.totalCommitContributions;
-  if (typeof commits !== 'number' || commits === 0) {
-    throw new Error('GitHub returned 0 commits — treating as transient and keeping previous value.');
+  // Prefer the calendar total (commits + PRs + issues + reviews) over
+  // commits-only — same number visitors see on the green heatmap and
+  // less prone to under-counting when commit author-email doesn't match
+  // the GitHub user (a common gotcha after a username rename: old
+  // commits stay tied to the previous noreply email and don't roll up
+  // to the renamed profile).
+  const total = cc.contributionCalendar?.totalContributions
+             ?? cc.totalCommitContributions
+             ?? 0;
+
+  // Sanity floor: anything under 5 is almost certainly the underrun
+  // we're trying to avoid (auth/email-attribution issue), not a real
+  // sub-5 month. Keep the previous value rather than ship a misleading
+  // small number.
+  if (typeof total !== 'number' || total < 5) {
+    throw new Error(`GitHub returned ${total} contributions — treating as under-counting, keeping previous value.`);
   }
-  return commits;
+  return total;
 }
 
 async function main() {
