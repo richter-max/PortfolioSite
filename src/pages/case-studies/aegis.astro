@@ -9,8 +9,8 @@ import CaseStudyLayout from '@layouts/CaseStudyLayout.astro';
   role="Sole author"
   period="2026"
   status="Open source · MIT"
-  read="≈ 5 min"
-  description="Reproducible, layered defense evaluation for tool-using agent workflows — policy → keyword → semantic guards, every decision traced."
+  read="≈ 8 min"
+  description="Reproducible, layered defense evaluation for tool-using agent workflows — policy → keyword → semantic guards, every decision traced. Cuts attack success from 82% to 9% across the same scenarios."
 >
 
   <!-- 01 Brief -->
@@ -24,8 +24,10 @@ import CaseStudyLayout from '@layouts/CaseStudyLayout.astro';
       <h2>Agent security needs reproducible numbers, not anecdotes.</h2>
       <p class="lede">A tool-using agent fails differently from a chatbot. Most published evaluations treat the two the same — accuracy on a benchmark, a few hand-picked exploits, no shared apparatus. The result is that "this defense works" is a vibe, not a measurement.</p>
       <div class="body">
-        <p>AEGIS exists to make defense comparisons boring. Same scenarios. Same payloads. Same scoring. Different guard stack — and a number you can defend in a code review. The harness is deterministic on purpose: every run produces the same trace from the same config, so a delta between two runs is a defense delta, not noise.</p>
-        <p>The first version uses a deterministic demo runner instead of a live LLM. That is a feature, not a shortcut: it removes model variance from the experiment, exposes the guard logic on its own terms, and keeps the host machine safe while exploring tool-misuse scenarios.</p>
+        <p>Read any agent-security threadnought from the past year. The pattern repeats: a researcher demonstrates a clever prompt-injection trick, a vendor adds a filter, the next blog post shows the filter being bypassed by an obfuscation a junior would think of in five minutes. Nothing is comparable. No scenario is reproducible. Two defenses can't be ranked because there's no shared apparatus to run them through. The field is full of evidence that something happens, and almost no evidence about how often, against what, and with what variance.</p>
+        <p>AEGIS exists to make defense comparisons boring. Same scenarios. Same payloads. Same scoring. Different guard stack — and a number you can defend in a code review. The harness is deterministic on purpose: every run produces the same trace from the same config, so a delta between two runs is a defense delta, not noise. Variance comes from the experiment design, never from the apparatus.</p>
+        <p>The first version uses a deterministic demo runner instead of a live LLM. That is a feature, not a shortcut: it removes model variance from the experiment, exposes the guard logic on its own terms, and keeps the host machine safe while exploring tool-misuse scenarios. A live-LLM integration sits behind the same provider-agnostic interface and ships once the deterministic apparatus has earned trust.</p>
+        <p>Audience is narrow on purpose: security engineers evaluating agent platforms, ML safety researchers running comparative studies, and product teams who want to argue with their own numbers before shipping. The output isn't a verdict. It's evidence — typed, timestamped, JSONL.</p>
       </div>
     </div>
   </article>
@@ -41,7 +43,9 @@ import CaseStudyLayout from '@layouts/CaseStudyLayout.astro';
       <h2>Layered defense, observable at every step.</h2>
       <div class="body">
         <p>Every tool proposal flows through a stack of guards before it can run. <strong>Policy</strong> enforces the allowlist — which tools may be invoked at all. <strong>Keyword</strong> rejects the obvious high-risk patterns. <strong>Semantic</strong> compares the payload against a corpus of known attack shapes using n-gram cosine similarity — no heavy ML, no black box. Anything that passes all three reaches the (mocked) tool. Anything that doesn't lands in the trace as a typed block event.</p>
-        <p>Tool execution itself is mocked. Simulated email exfiltration, simulated shell, simulated network egress — never a real side effect. The harness is a security lab, not a deploy target.</p>
+        <p>The layers are intentionally cheap. Policy is a set lookup. Keyword is a regex pass. Semantic is character-n-gram vectors with cosine similarity against a small corpus — milliseconds, no model weights, no GPU. The point is not to ship an enterprise NLP stack; it is to demonstrate that surprisingly thin defense layers, when stacked, stop most of what brittle single-layer filters miss. Cheap layers are also auditable layers. Anyone can read the keyword list and the corpus, and reason about what they catch and what they don't.</p>
+        <p>Tool execution itself is mocked. Simulated email exfiltration, simulated shell, simulated network egress — never a real side effect. The harness is a security lab, not a deploy target. Every "attack succeeded" event in the trace corresponds to a tool stub being called with payload data the engine should have rejected; no actual email is sent, no actual shell runs.</p>
+        <p>Every decision the engine makes — policy hit, keyword match, similarity score, mock tool call, post-event metric — is written to <span class="mono">trace.jsonl</span> as a typed event. That file is the source of truth. The summary numbers in <span class="mono">bench_summary.md</span> are derived from it, not produced alongside it. If a metric disagrees with the trace, the trace wins. This is the discipline of a flight recorder, applied to a security experiment.</p>
       </div>
 
       <div class="diagram">
@@ -88,6 +92,22 @@ import CaseStudyLayout from '@layouts/CaseStudyLayout.astro';
           <text x="685" y="312" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#6B6965" letter-spacing="1.5">BLOCK EVENT → TRACE.JSONL</text>
         </svg>
       </div>
+
+      <div class="code-head mono">trace.jsonl · sample event</div>
+      <pre class="code"><span class="c">// One line per decision. Every block carries the layer that fired,</span>
+<span class="c">// the score (where applicable), and a reason string for triage.</span>
+&#123;
+  "ts": "2026-02-18T14:33:21.114Z",
+  "scenario_id": "ipi.email-exfil.04",
+  "step": 7,
+  "actor": "agent",
+  "tool_proposed": "send_email",
+  "decision": "block",
+  "layer": "semantic",
+  "score": 0.83,
+  "threshold": 0.6,
+  "reason": "ngram-cosine match against corpus.exfil-v1#017"
+&#125;</pre>
     </div>
   </article>
 
@@ -112,38 +132,71 @@ import CaseStudyLayout from '@layouts/CaseStudyLayout.astro';
         <div class="finding">
           <div class="idx mono">B.01 · BASELINE</div>
           <h3>Permissive policy, no guards: 82% attack success.</h3>
-          <p>Agent has no allowlist and no payload filtering. The headline number nobody wants on a post-incident review.</p>
+          <p>Agent has no allowlist and no payload filtering. The headline number nobody wants on a post-incident review. The remaining 18% are scenarios where the attack relies on a tool the agent simply doesn't reach — the failure case for the attacker, not the defender.</p>
         </div>
         <div class="finding">
           <div class="idx mono">B.02 · POLICY ONLY</div>
           <h3>Strict allowlist, no guards: 47%.</h3>
-          <p>Tool restriction alone halves attack success. Most attacks still go through because the allowlisted tools can be misused.</p>
+          <p>Tool restriction alone halves attack success. Most attacks still go through because the allowlisted tools can be misused — a "send_email" tool is allowed, but the model is talked into sending the wrong email.</p>
         </div>
         <div class="finding">
           <div class="idx mono">B.03 · POLICY + KEYWORDS</div>
           <h3>Allowlist plus keyword guard: 23%.</h3>
-          <p>Pattern matching catches the obvious payloads. Obfuscation and fragmentation still slip through.</p>
+          <p>Pattern matching catches the obvious payloads — strings like "ignore previous", "exfiltrate", "Base64", and the recognizable openings of common jailbreaks. Obfuscation and fragmentation still slip through because keyword guards have no memory and no semantic distance.</p>
         </div>
         <div class="finding">
           <div class="idx mono">B.04 · LAYERED</div>
           <h3>Allowlist + keyword + semantic: 9%.</h3>
-          <p>Adding the n-gram semantic guard catches the encoded and fragmented attempts the keyword layer misses. The remaining 9% is the interesting research surface.</p>
+          <p>Adding the n-gram semantic guard catches the encoded and fragmented attempts the keyword layer misses. The remaining 9% is the interesting research surface: novel obfuscations, payloads constructed from benign-looking primitives, and adversarial prompts that exploit the threshold itself.</p>
+        </div>
+        <div class="finding">
+          <div class="idx mono">B.05 · METHODOLOGY</div>
+          <h3>How the scenarios are constructed.</h3>
+          <p>Each scenario is a deterministic agent transcript with a single goal: get a forbidden tool call to execute. Scenarios are versioned, hashed, and committed alongside the engine code. Adding a scenario is a pull request; changing one is a breaking change. The corpus grows; the methodology doesn't drift.</p>
+        </div>
+        <div class="finding">
+          <div class="idx mono">B.06 · WHAT THE 9% TELLS YOU</div>
+          <h3>The remaining surface is where the work is.</h3>
+          <p>Nine percent is not "good enough." It is a research budget. Each surviving attack in the trace is a new datapoint for the next iteration of the corpus or the next tightening of the threshold. The pipeline is built to make iterating on those 9% boring instead of heroic.</p>
         </div>
       </div>
     </div>
   </article>
 
-  <!-- 04 Threat model -->
+  <!-- 04 Decisions -->
   <article class="chapter">
     <div class="chapter-num mono">
       <span>CHAPTER</span>
       <span class="big">04</span>
     </div>
     <div>
+      <div class="kicker mono">DESIGN DECISIONS</div>
+      <h2>Why this shape, and what it isn't.</h2>
+      <div class="body">
+        <p><strong>Deterministic over LLM-judged.</strong> Other harnesses use a second LLM to evaluate the first. That replaces variance with someone else's variance and makes results un-reproducible across model versions. AEGIS scoring is rule-based and deterministic; the same trace produces the same number every time, six months from now, on someone else's machine.</p>
+        <p><strong>N-gram cosine over embeddings.</strong> Sentence embeddings catch more, but they ship a model dependency, GPU pressure, and a black box. Character n-grams plus a small attack corpus catch most of what matters in a security context where the attacker is constrained to certain payload <em>shapes</em>. When that approximation breaks, the layer is small enough to swap. Until it does, the simplicity is itself a feature.</p>
+        <p><strong>Mocked tools, always.</strong> The temptation to wire a real shell or a real SMTP for "more realistic" runs is a trap. The first time a fuzz test is allowed to run a real command in anger, the harness becomes a vulnerability. AEGIS treats the host machine as untrusted and refuses to break that boundary. Realism comes from the scenarios, not from real side effects.</p>
+        <p><strong>Trace before metrics.</strong> Many evaluation tools emit aggregate scores and call it a day. AEGIS writes <span class="mono">trace.jsonl</span> first; metrics are derived in a second, separate pass. That makes it possible to re-aggregate after the fact, to slice by scenario class, to compare two runs at the event level. It also makes the harness itself auditable — you can read its own decisions like a flight recorder, not just its conclusions.</p>
+        <p><strong>Harness separated from agent.</strong> The agent does not know it is being evaluated. The evaluator does not see internal agent state. This is the same separation that keeps human research clean: no self-evaluation bias, no leakage between scenarios, no accidental shortcuts.</p>
+      </div>
+    </div>
+  </article>
+
+  <!-- 05 Threat model -->
+  <article class="chapter">
+    <div class="chapter-num mono">
+      <span>CHAPTER</span>
+      <span class="big">05</span>
+    </div>
+    <div>
       <div class="kicker mono">THREAT MODEL</div>
       <h2>What the harness is built to find.</h2>
       <div class="body">
-        <p>Four attack classes get first-class treatment in the corpus. <strong>Indirect prompt injection</strong> — instructions hidden in untrusted content the agent retrieves. <strong>Context fragmentation</strong> — payloads split across turns to slip past single-message filters. <strong>Token smuggling</strong> — Base64 and other encodings used to hide intent from string-level checks. <strong>Tool misuse</strong> — chains of allowlisted actions that compose into something the agent should never do.</p>
+        <p>Four attack classes get first-class treatment in the corpus. They were not chosen because they are the most novel; they were chosen because they are what tool-using agents actually fail to. Other harnesses can chase exotic threats once these four are routinely caught.</p>
+        <p><strong>Indirect prompt injection.</strong> Instructions hidden in untrusted content the agent retrieves. The agent reads a webpage, an email body, a search result, and the content tells it to do something unrelated to the user's actual request. This is the dominant attack class for agents that retrieve. AEGIS scenarios test variations: instruction-as-comment, instruction-as-fake-system-prompt, instruction-spread-across-pages.</p>
+        <p><strong>Context fragmentation.</strong> Payloads split across turns to slip past single-message filters. The benign turn establishes a frame ("you are a translator"), the second turn changes the target language to a fake language whose translation rules contain the actual attack. Single-message keyword filters never see a full payload. AEGIS scenarios reassemble across turns and test that the semantic layer catches the fragments in aggregate.</p>
+        <p><strong>Token smuggling.</strong> Base64, URL-encoding, ROT13, zero-width characters, and language-game encodings used to hide intent from string-level checks. The keyword layer is blind to all of them. The semantic layer is partially blind: encoded payloads collapse to high-entropy strings whose n-grams don't match the corpus. Scenarios in this class probe the failure boundary explicitly: which encodings the layer catches, which it doesn't, and where the threshold sits on each.</p>
+        <p><strong>Tool misuse.</strong> Chains of allowlisted actions that compose into something the agent should never do. The agent is allowed to read files, allowed to send emails, and the attack walks it through reading a sensitive file and emailing the contents to an attacker-controlled address. No single step is forbidden by policy; the composition is. AEGIS makes the composition observable in the trace, which is the precondition for catching it.</p>
         <p>Each class is exercised through the same harness, scored the same way, and lands in the same trace format. That uniformity is what makes the comparisons in Chapter 03 actually mean something.</p>
       </div>
 
@@ -159,19 +212,41 @@ reports/bench/bench_summary.md     <span class="c"># human-readable summary</spa
     </div>
   </article>
 
-  <!-- 05 Engineering -->
+  <!-- 06 Engineering -->
   <article class="chapter">
     <div class="chapter-num mono">
       <span>CHAPTER</span>
-      <span class="big">05</span>
+      <span class="big">06</span>
     </div>
     <div>
       <div class="kicker mono">ENGINEERING DISCIPLINE</div>
       <h2>The harness has to be trusted before its results are.</h2>
       <div class="body">
-        <p>A security tool with weak engineering hygiene is worse than no tool at all — it produces numbers people quote. AEGIS treats the harness itself as the thing under test: <span class="mono">pytest</span> for unit and integration coverage, <span class="mono">Hypothesis</span> property-based fuzzing against each guard layer, strict <span class="mono">mypy</span>, <span class="mono">Bandit</span> static analysis, full GitHub Actions CI on every push.</p>
-        <p>A Streamlit dashboard sits on top for trace inspection, policy outcome comparison, and benchmark summaries — useful when iterating on a guard, but not load-bearing. The traces are the source of truth; the dashboard is a viewer.</p>
-        <p>Next steps are unsexy and on purpose: live LLM integration behind the same provider-agnostic interface, expanding the payload corpus, and a continuous mode that runs the suite against a canary agent in pre-production.</p>
+        <p>A security tool with weak engineering hygiene is worse than no tool at all — it produces numbers people quote. AEGIS treats the harness itself as the thing under test. That posture shapes every choice in the repo.</p>
+        <p><strong>Type safety, strict.</strong> <span class="mono">mypy</span> in strict mode across the full codebase. Every module has full annotations, every public function has explicit types. Type holes get caught by CI before they reach a benchmark run, where they would silently corrupt a metric and never get noticed.</p>
+        <p><strong>Property-based fuzzing.</strong> Each guard layer is exercised by <span class="mono">Hypothesis</span> with generated payloads. The fuzzer has surfaced edge cases the unit tests never hit: Unicode normalization differences, regex catastrophic backtracking on adversarial inputs, threshold instabilities at the boundary. Each finding becomes a unit test; the corpus grows.</p>
+        <p><strong>Static analysis.</strong> <span class="mono">Bandit</span> on every push catches Python-specific security patterns — unsafe deserialization, hard-coded secrets, weak cryptographic primitives. Not because the tool is critical (it is a research harness), but because shipping a security tool with sloppy security ergonomics undermines the message.</p>
+        <p><strong>Continuous integration.</strong> GitHub Actions runs the full pytest matrix, mypy, Bandit, and Hypothesis on every push and pull request. Nothing merges that doesn't pass. The CI badges aren't decoration — they are the contract.</p>
+        <p>A Streamlit dashboard sits on top for trace inspection, policy outcome comparison, and benchmark summaries — useful when iterating on a guard, but not load-bearing. The traces are the source of truth; the dashboard is a viewer. If the dashboard disagrees with <span class="mono">trace.jsonl</span>, the dashboard is wrong by construction.</p>
+      </div>
+    </div>
+  </article>
+
+  <!-- 07 What's next -->
+  <article class="chapter">
+    <div class="chapter-num mono">
+      <span>CHAPTER</span>
+      <span class="big">07</span>
+    </div>
+    <div>
+      <div class="kicker mono">WHAT'S NEXT</div>
+      <h2>Roadmap, in order of usefulness.</h2>
+      <div class="body">
+        <p><strong>Live-LLM integration behind the same provider-agnostic interface.</strong> The deterministic demo runner has earned trust on the engine logic. The next step is plugging real models in — Anthropic, OpenAI, open-weights — through a thin adapter, with the entire engine and trace format unchanged. The headline metric will gain a model-version axis. The methodology stays put.</p>
+        <p><strong>Payload corpus expansion.</strong> The current corpus covers the four attack classes well enough to produce stable benchmark numbers. It does not yet cover novel encoding schemes, multi-modal injection (images, audio with embedded text), or tool-chain compositions specific to particular agent frameworks. Each of those adds a scenario class and a finding under "what the 9% tells you."</p>
+        <p><strong>Continuous canary mode.</strong> Today AEGIS runs as a benchmark — a deliberate evaluation. Run it as a continuous mode against a pre-production agent and the same harness becomes a regression detector. A guard tweak that drops attack-success three points should cause an alert; a model upgrade that quietly raises it should fail the deploy.</p>
+        <p><strong>Trace-replay tooling.</strong> A trace.jsonl is a self-describing record of an evaluation. With a small replay tool, anyone can re-execute the trace against a different guard config and see the deltas. That turns reported numbers into an interactive artifact: read the chart, then re-run the chart on your own assumptions.</p>
+        <p>None of this requires a redesign. The architecture was chosen so that each of these is an additive PR, not a rewrite. That is the test of whether a design held up: does next year's roadmap fit inside the current shape, or does it require breaking it.</p>
       </div>
 
       <div class="repo-card mono">

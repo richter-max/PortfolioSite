@@ -9,8 +9,8 @@ import CaseStudyLayout from '@layouts/CaseStudyLayout.astro';
   role="Sole author"
   period="2026"
   status="Open source · MIT"
-  read="≈ 5 min"
-  description="A non-intrusive scanner for SaaS attack surface, TLS posture, and HTTP security headers — emphasis on visibility and explainability over exploitation."
+  read="≈ 7 min"
+  description="A non-intrusive scanner for SaaS attack surface, TLS posture, and HTTP security headers — emphasis on visibility and explainability over exploitation. One command, deterministic output, safe to run in production-like environments."
 >
 
   <!-- 01 Brief -->
@@ -24,8 +24,10 @@ import CaseStudyLayout from '@layouts/CaseStudyLayout.astro';
       <h2>What is publicly exposed — and how risky is it?</h2>
       <p class="lede">Most real-world SaaS incidents do not start with a clever exploit. They start with a forgotten subdomain, an expired certificate, a missing security header, or a CDN frontend nobody documented. The attack surface drifts and nobody notices.</p>
       <div class="body">
-        <p>The scanner answers one question, in one command: what is publicly visible about this domain right now, and where is the security posture weakest. Asset discovery, transport security, HTTP headers — combined into a single deterministic risk view that a security engineer can hand to an ops team on a Monday.</p>
-        <p>The scope is intentional. This is not a penetration test runner. There is no exploitation, no authentication, no port brute-forcing, no traffic that an enterprise NDR team would have to defend. Everything is passive enumeration plus standard HTTPS — the same kind of traffic any browser already produces.</p>
+        <p>Capital One's 2019 incident routed through an exposed metadata service nobody on the asset list. The MOVEit exploits in 2023 spread across hundreds of forgotten ingestion subdomains. Half the post-incident reviews in the past five years contain a sentence that begins with <em>"we didn't know we still had..."</em>. The attack surface of a modern SaaS doesn't fail because someone wrote bad code; it fails because the perimeter the security team thought they were defending hasn't matched the perimeter that was actually serving traffic for months.</p>
+        <p>The scanner answers one question, in one command: what is publicly visible about this domain right now, and where is the security posture weakest. Asset discovery, transport security, HTTP headers — combined into a single deterministic risk view that a security engineer can hand to an ops team on a Monday. The output isn't a verdict; it is a triage queue.</p>
+        <p>The scope is intentional. This is not a penetration test runner. There is no exploitation, no authentication, no port brute-forcing, no traffic that an enterprise NDR team would have to defend. Everything is passive enumeration plus standard HTTPS — the same kind of traffic any browser already produces. That constraint is the product, not a limitation. A scanner safe enough to wire into CI, to point at a partner's domain during procurement review, or to run against a production environment without writing an internal memo first, is more useful than a scanner with broader capabilities and tighter guardrails.</p>
+        <p>Audience is the security engineer who needs a concrete reading of an external posture in under a minute. Adjacent uses: drift detection between a baseline and current state, third-party risk during vendor onboarding, due-diligence in M&amp;A, blue-team exercises that need a reproducible "what does the attacker see first" view.</p>
       </div>
     </div>
   </article>
@@ -40,8 +42,10 @@ import CaseStudyLayout from '@layouts/CaseStudyLayout.astro';
       <div class="kicker mono">THE APPROACH</div>
       <h2>Passive intelligence, deterministic scoring, structured output.</h2>
       <div class="body">
-        <p>Discovery starts with Certificate Transparency logs — a public, append-only record of every certificate ever issued for a domain. CT-based enumeration is the closest thing to ground truth for "what subdomains exist", without ever sending a packet to the target. Brute-force wordlists are explicitly avoided; they are noisy, never complete, and produce false positives that erode trust in the report.</p>
-        <p>Discovered assets are resolved (A / AAAA), probed over HTTP and HTTPS with redirect awareness, and inspected for transport security and HTTP header configuration. Each finding ships with a severity, a one-paragraph technical explanation, and a concrete remediation hint. Risk is scored deterministically — explainable rules, no ML, no black box. The same domain produces the same risk view on every run.</p>
+        <p>Discovery starts with Certificate Transparency logs — a public, append-only record of every certificate ever issued for a domain. CT-based enumeration is the closest thing to ground truth for "what subdomains exist", without ever sending a packet to the target. The browsers that enforce CT have already done the hard work; the scanner just reads the logs. Brute-force wordlists are explicitly avoided; they are noisy, never complete, produce false positives that erode trust in the report, and generate the kind of traffic that gets the scanner blocked at the WAF before the second run.</p>
+        <p>Discovered assets are resolved (A / AAAA), probed over HTTP and HTTPS with redirect awareness, and inspected for transport security and HTTP header configuration. Each finding ships with a severity, a one-paragraph technical explanation, and a concrete remediation hint. Risk is scored deterministically — explainable rules, no ML, no black box. The same domain produces the same risk view on every run, which is the precondition for using the output as a baseline against drift.</p>
+        <p>Redirect-awareness sounds boring; it is the difference between a scanner that finds the real production endpoint and one that reports on the bare-domain marketing page. A request for <span class="mono">example.com</span> often lands on <span class="mono">www.example.com</span>, then on a CDN frontend, then on the actual app — three different TLS configurations, three different header sets, three different risks. The scanner walks the chain with a bounded redirect budget and reports each hop as its own asset, which is what an attacker would in fact see.</p>
+        <p>Output is two-track on purpose. A timestamped JSON artifact for machine consumers — diff against a previous baseline, feed into a SIEM, persist for audit. A rich CLI summary for fast triage — risk overview at the top, top contributing reasons named, environment warnings called out. The same scan produces both; neither is downstream of the other.</p>
       </div>
 
       <div class="diagram">
@@ -111,27 +115,32 @@ import CaseStudyLayout from '@layouts/CaseStudyLayout.astro';
         <div class="finding">
           <div class="idx mono">C.01 · ASSET DISCOVERY</div>
           <h3>Subdomains via Certificate Transparency.</h3>
-          <p>Passive enumeration over public CT logs. Deterministic — no wordlists, no brute force. Degrades gracefully when corporate proxies block the lookup.</p>
+          <p>Passive enumeration over public CT logs. Deterministic — no wordlists, no brute force. Degrades gracefully when corporate proxies block the lookup, with a structured warning rather than a silent miss. The output names every subdomain seen on a public certificate, with the issuing CA and earliest seen date — enough context to triage which assets are stale.</p>
         </div>
         <div class="finding">
           <div class="idx mono">C.02 · TRANSPORT SECURITY</div>
           <h3>TLS protocol versions and certificate expiry.</h3>
-          <p>Detects deprecated TLS 1.0 / 1.1 endpoints and certificates approaching expiry. Both are silent failures until the day they aren't.</p>
+          <p>Detects deprecated TLS 1.0 / 1.1 endpoints and certificates approaching expiry. Both are silent failures until the day they aren't — TLS 1.0 endpoints get blocked by clients without warning, certs expire on a Sunday and the on-call gets paged at 03:00. The scanner names the asset, the version, and the days-to-expiry, so the fix can be queued before the failure.</p>
         </div>
         <div class="finding">
           <div class="idx mono">C.03 · HTTP HEADERS</div>
           <h3>HSTS, CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy.</h3>
-          <p>The header set the OWASP Secure Headers Project treats as table stakes. Each missing or weak value produces an explicit finding with a fix.</p>
+          <p>The header set the OWASP Secure Headers Project treats as table stakes. Each missing or weak value produces an explicit finding with a fix — not "set CSP" but the specific directive missing for this endpoint. HSTS without preload is flagged differently from no HSTS at all. A weak Referrer-Policy is flagged differently from a missing one.</p>
         </div>
         <div class="finding">
           <div class="idx mono">C.04 · RISK SCORING</div>
           <h3>Asset-level risk, scan-level summary, top contributors.</h3>
-          <p>Rules-based, explainable, reproducible. The summary names the top reasons the score is what it is — no opaque number to argue with.</p>
+          <p>Rules-based, explainable, reproducible. Each finding contributes a fixed weight to the asset score. Asset scores roll up to a scan score. The summary names the top reasons the score is what it is — no opaque number to argue with, no "the model says so." A reviewer can disagree with a weight; that disagreement is itself a config file change, versioned, reviewable.</p>
         </div>
         <div class="finding">
           <div class="idx mono">C.05 · ENTERPRISE FALLBACK</div>
           <h3>Proxy-aware degradation.</h3>
-          <p>In restricted networks where CT lookups or HTTPS probes fail, the scanner emits structured warnings instead of crashing. The report says exactly what was skipped and why.</p>
+          <p>In restricted networks where CT lookups or HTTPS probes fail, the scanner emits structured warnings instead of crashing. The report says exactly what was skipped and why. A scan run from a locked-down corporate environment looks different from a scan run from a clean network — but both are honest about their gaps. Silent degradation is the worst possible failure mode for a security tool; this avoids it by design.</p>
+        </div>
+        <div class="finding">
+          <div class="idx mono">C.06 · DRIFT DETECTION</div>
+          <h3>Compare today's scan to yesterday's baseline.</h3>
+          <p>The JSON artifact is dated and stable enough to diff against a previous run. New subdomains, expired certs, regressed headers — all surface as deltas. Wired into CI on a daily cron, the scanner becomes a drift sensor for any production domain: an asset that stopped serving HSTS yesterday is a finding today, before the next pen-test cycle catches it three months out.</p>
         </div>
       </div>
     </div>
@@ -147,8 +156,12 @@ import CaseStudyLayout from '@layouts/CaseStudyLayout.astro';
       <div class="kicker mono">OUT OF SCOPE</div>
       <h2>What the tool intentionally does not do.</h2>
       <div class="body">
-        <p>No exploitation. No authenticated crawling. No port scanning beyond the standard HTTP/HTTPS probe. No vulnerability scanning. No brute forcing. No intrusive traffic generation. No credentials, secrets, or sensitive data are collected.</p>
-        <p>The boundary is the entire point. A scanner that stays inside this boundary is safe to run against production-like environments, safe to wire into CI for drift detection, and safe to point at a partner's domain during a procurement review without writing a memo first.</p>
+        <p>No exploitation. No authenticated crawling. No port scanning beyond the standard HTTP/HTTPS probe. No vulnerability scanning. No brute forcing. No intrusive traffic generation. No credentials, secrets, or sensitive data are collected. Each exclusion is principled, not capability-limited.</p>
+        <p><strong>No exploitation</strong> because the moment a tool tries to verify a finding by exploiting it, it becomes unsafe to run in shared environments. The scanner reports a posture; verifying that posture is the job of the human reviewer with the right authorisation.</p>
+        <p><strong>No authentication</strong> because credentials in a scanner widen the blast radius. A scanner with credentials can be coerced into doing anything those credentials authorise. Pure-public scanning is bounded; authenticated scanning is unbounded by definition.</p>
+        <p><strong>No port scanning beyond the standard probes</strong> because broad port scans look identical to reconnaissance from an attacker, get the source IP blocked at the edge, and produce data that is rarely actionable from outside the asset's own VPC. The scanner sticks to the ports a browser already touches.</p>
+        <p><strong>No vulnerability scanning</strong> because that's a different category of tool with different constraints (CVE feed currency, signature management, false-positive triage). Mixing it in would compromise the "safe to run in production" property that makes this scanner useful in the first place.</p>
+        <p>The boundary is the entire point. A scanner that stays inside this boundary is safe to run against production-like environments, safe to wire into CI for drift detection, and safe to point at a partner's domain during a procurement review without writing a memo first. Tools that try to do everything end up trusted nowhere; tools with a tight scope earn the right to be wired into automated pipelines.</p>
       </div>
 
       <div class="code-head mono">scanner · usage · simplified</div>
@@ -165,18 +178,62 @@ results/scan_&lt;timestamp&gt;.json   <span class="c"># structured artifact</spa
     </div>
   </article>
 
-  <!-- 05 Engineering -->
+  <!-- 05 Engineering decisions -->
   <article class="chapter">
     <div class="chapter-num mono">
       <span>CHAPTER</span>
       <span class="big">05</span>
     </div>
     <div>
-      <div class="kicker mono">ENGINEERING</div>
-      <h2>Boring on purpose.</h2>
+      <div class="kicker mono">ENGINEERING DECISIONS</div>
+      <h2>Boring on purpose. Boring is the feature.</h2>
       <div class="body">
-        <p>Clean <span class="mono">src/</span>-layout Python package. Pydantic models for typed data flow. Deterministic scoring logic with unit-test coverage. <span class="mono">ruff</span> for static analysis, <span class="mono">pytest</span> matrix across Python 3.10 / 3.11 / 3.12, GitHub Actions CI on every push. Nothing exotic — the kind of engineering hygiene a security tool earns its trust from.</p>
-        <p>Roadmap is incremental: baseline comparison and drift detection across runs, extended TLS analysis (cipher suites, curves), JSON schema versioning so downstream consumers stay stable, and a containerised read-only execution mode for cloud runners.</p>
+        <p><strong>Python <span class="mono">src/</span>-layout package.</strong> The boring layout. No clever single-file CLI, no monorepo experiments. <span class="mono">pyproject.toml</span>, importable cleanly, installable in editable mode for development. It is the layout that survives a maintainer change because the next maintainer doesn't have to learn a project-specific convention before they can ship.</p>
+        <p><strong>Pydantic models for typed data flow.</strong> Every value that crosses a module boundary is a typed model — scan request, asset, finding, severity, scan result. The validation runs at the edges; the inside of the program speaks in objects, not dicts. When the JSON output schema needs a new field, it's added in one place and the type-checker finds every consumer that needs to handle it.</p>
+        <p><strong>Deterministic scoring.</strong> Rule-based, weights in config, scoring logic unit-tested. Two reviewers can argue about whether a missing X-Content-Type-Options should weigh the same as a missing CSP — and that argument turns into a config-change PR with a diff. No ML, no fitted thresholds, no "the model says so." The point of a security tool is to be argued with; the scoring layer is built to support that.</p>
+        <p><strong>Python 3.10–3.12 matrix in CI.</strong> Three versions, every push, every PR. New Python releases break things in subtle ways (importlib metadata behaviour, exception group handling, type-evaluation timing). Catching it in CI before a production user does is the cheap part of the bargain.</p>
+        <p><strong>Ruff for linting and static analysis.</strong> Fast, opinionated, zero-config-shipped. Fewer lint debates, more shipped code. The configuration that ships in the repo is the configuration that runs in CI is the configuration that runs locally — no drift, no per-developer overrides.</p>
+        <p><strong>JSON artifact format pinned and versioned.</strong> Downstream consumers can depend on the schema. Breaking changes go through a major version bump. This is the contract that lets the scanner be wired into CI pipelines, SIEM ingestion, or daily-cron drift detection without rewriting the consumer every time the tool ships a feature.</p>
+      </div>
+    </div>
+  </article>
+
+  <!-- 06 Engineering hygiene -->
+  <article class="chapter">
+    <div class="chapter-num mono">
+      <span>CHAPTER</span>
+      <span class="big">06</span>
+    </div>
+    <div>
+      <div class="kicker mono">ENGINEERING HYGIENE</div>
+      <h2>Trust the output, trust the apparatus.</h2>
+      <div class="body">
+        <p>A security tool's output is trusted exactly as much as the tool itself. That makes engineering hygiene a security property, not a nice-to-have. The repository is built to make that trust auditable from outside.</p>
+        <p><strong>Unit tests for every scoring rule.</strong> Each finding-to-weight mapping is a test. Each severity tier transition is a test. The scoring is small enough that 100% branch coverage is achievable and the cost of changing a weight stays bounded.</p>
+        <p><strong>Integration tests against fixture domains.</strong> Synthetic assets with known TLS / header configurations exercise the full pipeline end-to-end. The fixtures double as documentation: a reader can see what a "well-configured asset" looks like next to what a "stale, weakly-protected asset" looks like, and what the scanner says about each.</p>
+        <p><strong>GitHub Actions CI on every push.</strong> Test matrix, lint, type-check, build. Nothing merges that doesn't pass. The CI badge is a contract: green means the version of the code on main is the version that produced the test results.</p>
+        <p><strong>No external state.</strong> The scanner does not maintain a database, a state file, or a cache between runs. The only persistent artifact is the JSON output — and the user owns that file. Tools that maintain hidden state are tools whose behaviour is hard to reason about; making the state explicit makes the apparatus explainable.</p>
+        <p><strong>MIT license, no telemetry.</strong> The tool does not phone home. It does not collect usage data. It does not require an account. The bar for running a security tool against your own infrastructure is low by design.</p>
+      </div>
+    </div>
+  </article>
+
+  <!-- 07 Roadmap & limitations -->
+  <article class="chapter">
+    <div class="chapter-num mono">
+      <span>CHAPTER</span>
+      <span class="big">07</span>
+    </div>
+    <div>
+      <div class="kicker mono">ROADMAP &amp; LIMITATIONS</div>
+      <h2>Honest about what's next, and what won't be.</h2>
+      <div class="body">
+        <p>The roadmap is incremental on purpose. Big additions risk the safe-to-run property; small additions compound.</p>
+        <p><strong>Baseline comparison and drift detection.</strong> First-class diff between two scan artifacts: new assets, regressed headers, certs that moved closer to expiry. Wired into a daily cron, this is the difference between knowing your posture today and knowing your posture is degrading week-over-week.</p>
+        <p><strong>Extended TLS analysis.</strong> Cipher suites, named curves, OCSP stapling status, signature algorithms. Today the scanner reports the negotiated version and the cert expiry. The cipher posture is the next layer of detail that ops teams ask for first.</p>
+        <p><strong>JSON schema versioning.</strong> Pin the output schema explicitly, ship migration tooling for breaking changes. Downstream consumers should be able to depend on the format without holding the tool back from improvements.</p>
+        <p><strong>Containerised read-only execution.</strong> Distroless image, no writable layers, suitable for cloud-runner execution from a serverless platform. The scanner's "no external state" property maps cleanly to a container with no persistent volume.</p>
+        <p><strong>Limitations stay limitations.</strong> The scanner relies on passive public data sources and standard HTTPS — both have known gaps. CT-only enumeration misses internal subdomains that never receive a public cert. HTTP-only header inspection misses anything that depends on a TLS handshake quirk. The tool says so explicitly in its output rather than pretending those gaps don't exist.</p>
       </div>
 
       <div class="repo-card mono">
