@@ -92,14 +92,18 @@ export default function ContactRunner() {
 
           const model = gltf.scene;
 
-          // sRGB für Color-Maps + Env-Beitrag forcieren — verhindert den
-          // "grey on desktop, fine on mobile"-Drift, wo manche GPUs die
-          // Env-Probe unter-gewichten.
+          // Tripo (AI-Generator) exportiert Materialien mit metallic=1 +
+          // roughness=1 — ein vollmetallisches Material reflektiert nur die
+          // Env-Probe und ignoriert seine baseColor-Textur, daher rendert
+          // das Modell grau. Der Mensch ist kein Metall: metalness auf 0
+          // zwingen, roughness leicht senken für sauberes Hautlicht.
           model.traverse((child) => {
             if (!child.isMesh || !child.material) return;
             const mats = Array.isArray(child.material) ? child.material : [child.material];
             for (const m of mats) {
-              if ('envMapIntensity' in m) m.envMapIntensity = 1.2;
+              if ('metalness' in m)  m.metalness = 0;
+              if ('roughness' in m)  m.roughness = 0.75;
+              if ('envMapIntensity' in m) m.envMapIntensity = 1.0;
               if (m.map)         m.map.colorSpace         = THREE.SRGBColorSpace;
               if (m.emissiveMap) m.emissiveMap.colorSpace = THREE.SRGBColorSpace;
               m.needsUpdate = true;
