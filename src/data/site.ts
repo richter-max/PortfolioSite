@@ -15,9 +15,9 @@ export const SITE = {
   // site to be reachable here. Fill in before going live.
   legal: {
     fullName: 'Maximilian Richter',
-    street: '[STRASSE + HAUSNUMMER]',
-    postalCode: '[PLZ]',
-    city: '[ORT]',
+    street: 'Ahornweg 1',
+    postalCode: '87549',
+    city: 'Rettenberg',
     country: 'Deutschland',
     phone: '', // optional — leave '' to hide
     vatId: '', // optional USt-IdNr. — leave '' to hide
