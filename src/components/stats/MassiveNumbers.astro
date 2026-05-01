@@ -1,158 +1,605 @@
 ---
-// MassiveNumbers.astro — full-screen stat reveal between sections
-// Live values for Strava streak / 2026 sessions / GitHub 30-day commits
-// come from src/data/live-stats.json, refreshed at build time by
-// scripts/fetch-live-stats.mjs.
+// MassiveNumbers.astro — "Parallel Tracks" stats spread.
+// Two narrative columns (Athletics / Engineering), wildly asymmetric
+// inside each column to break the boring uniform-grid look. Live
+// numbers from src/data/live-stats.json drive the hero figures plus
+// a 12-week sparkline and a "currently shipping" indicator.
 import live from '@data/live-stats.json';
 
-const streakWeeks      = live.strava?.streakWeeks      ?? 0;
-const sessionsThisYear = live.strava?.sessionsThisYear ?? 0;
-const commits30d       = live.github?.commits30d       ?? 0;
-const currentYear      = new Date().getFullYear();
+const streakWeeks       = live.strava?.streakWeeks       ?? 0;
+const sessionsThisYear  = live.strava?.sessionsThisYear  ?? 0;
+const weeklyKmLast12    = live.strava?.weeklyKmLast12    ?? [];
+const commits30d        = live.github?.commits30d        ?? 0;
+const latestRepo        = live.github?.latestRepo        ?? null;
+const updatedAt         = live.updatedAt                 ?? null;
+const currentYear       = new Date().getFullYear();
+
+// Days remaining until Kraichgau race start (31 May 2026 07:00 CEST).
+const raceTs = Date.UTC(2026, 4, 31, 5, 0, 0); // May = month index 4, 07:00 CEST = 05:00 UTC
+const daysToRace = Math.max(0, Math.ceil((raceTs - Date.now()) / 86400000));
+
+// Hours-ago helper for the live indicator + the latest-push timestamp.
+function hoursAgo(iso: string | null): string {
+  if (!iso) return '—';
+  const diffH = Math.max(0, (Date.now() - Date.parse(iso)) / 3600000);
+  if (diffH < 1)   return 'JUST NOW';
+  if (diffH < 24)  return `${Math.round(diffH)}H AGO`;
+  const d = Math.round(diffH / 24);
+  return `${d}D AGO`;
+}
+
+// Sparkline geometry — 12 weekly volumes, normalised to 0…1.
+const maxKm = Math.max(1, ...weeklyKmLast12);
+const bars  = weeklyKmLast12.map((km) => ({
+  km,
+  height: Math.max(0.04, km / maxKm), // floor so empty weeks still render a hairline
+}));
+
+const lastWeekKm = weeklyKmLast12.length
+  ? Math.round(weeklyKmLast12[weeklyKmLast12.length - 1] * 10) / 10
+  : 0;
 ---
 
-<section id="numbers" class="mn">
-  <div class="mn-inner">
-    <div class="eyebrow" data-reveal="fade-up">
-      <span class="em">02.5</span>
-      <span class="rule"></span>
-      <span class="em">BY THE NUMBERS</span>
+<section id="numbers" class="pt">
+  <div class="pt-inner">
+
+    <!-- ── Section header ─────────────────────────────────────────── -->
+    <header class="pt-head" data-reveal="fade-up">
+      <div class="pt-head__label">
+        <span class="pt-em">02.5</span>
+        <span class="pt-rule"></span>
+        <span class="pt-em">PARALLEL TRACKS</span>
+      </div>
+
+      <div class="pt-live" aria-label="Live data indicator">
+        <span class="pt-live__dot"></span>
+        <span class="pt-live__txt">LIVE</span>
+        <span class="pt-live__sep">·</span>
+        <span class="pt-live__age">UPDATED {hoursAgo(updatedAt)}</span>
+      </div>
+
+      <h2 class="pt-headline">
+        Two careers,<br />run in parallel.
+      </h2>
+    </header>
+
+    <!-- ── Two-column layout ──────────────────────────────────────── -->
+    <div class="pt-cols">
+
+      <!-- ATHLETICS ─────────────────────────────────────────────── -->
+      <div class="pt-col pt-col--athletics">
+        <div class="pt-col__label">
+          <span class="pt-col__num">A</span>
+          <span class="pt-col__name">ATHLETICS</span>
+        </div>
+
+        <!-- Hero: Strava streak + 12-week sparkline -->
+        <div class="pt-hero" data-reveal="fade-up">
+          <div class="pt-hero__num">
+            <span data-count={streakWeeks}>0</span><span class="pt-hero__unit">w</span>
+          </div>
+          <div class="pt-hero__caption">
+            <div class="pt-hero__label">STRAVA STREAK</div>
+            <div class="pt-hero__sub">Consecutive weeks logged · live</div>
+          </div>
+
+          <div class="pt-spark" aria-hidden="true">
+            <div class="pt-spark__bars">
+              {bars.map((b) => (
+                <span
+                  class="pt-spark__bar"
+                  style={`--h: ${b.height}`}
+                  data-km={b.km}
+                ></span>
+              ))}
+            </div>
+            <div class="pt-spark__axis">
+              <span>−12W</span>
+              <span>NOW</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Supporting figures -->
+        <div class="pt-row">
+          <div class="pt-stat" data-reveal="fade-up">
+            <div class="pt-stat__num"><span data-count={sessionsThisYear}>0</span></div>
+            <div class="pt-stat__label">SESSIONS / {currentYear}</div>
+            <div class="pt-stat__sub">Every swim, bike, run, lift</div>
+          </div>
+          <div class="pt-stat" data-reveal="fade-up">
+            <div class="pt-stat__num">
+              <span data-count="15" data-count-suffix="+">0</span><span class="pt-stat__unit">h</span>
+            </div>
+            <div class="pt-stat__label">TRAINING / WEEK</div>
+            <div class="pt-stat__sub">Stacked on full-time work</div>
+          </div>
+        </div>
+
+        <!-- Race countdown bar -->
+        <div class="pt-race" data-reveal="fade-up">
+          <div class="pt-race__head">
+            <span class="pt-race__num"><span data-count="113">0</span><span class="pt-race__unit">km</span></span>
+            <span class="pt-race__name">IRONMAN 70.3 · KRAICHGAU</span>
+          </div>
+          <div class="pt-race__bar">
+            <span class="pt-race__fill" style={`--pct: ${Math.max(0, Math.min(1, 1 - daysToRace / 365))}`}></span>
+          </div>
+          <div class="pt-race__foot">
+            <span>1.9 SWIM · 90 BIKE · 21.1 RUN</span>
+            <span>{daysToRace} D · 31 MAY 2026</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vertical divider -->
+      <div class="pt-divider" aria-hidden="true"></div>
+
+      <!-- ENGINEERING ───────────────────────────────────────────── -->
+      <div class="pt-col pt-col--engineering">
+        <div class="pt-col__label">
+          <span class="pt-col__num">E</span>
+          <span class="pt-col__name">ENGINEERING</span>
+        </div>
+
+        <!-- Hero: commits / 30 days -->
+        <div class="pt-hero" data-reveal="fade-up">
+          <div class="pt-hero__num">
+            <span data-count={commits30d}>0</span>
+          </div>
+          <div class="pt-hero__caption">
+            <div class="pt-hero__label">COMMITS / 30 DAYS</div>
+            <div class="pt-hero__sub">Public + private · live, GitHub</div>
+          </div>
+        </div>
+
+        <!-- Currently shipping callout -->
+        <div class="pt-shipping" data-reveal="fade-up">
+          <div class="pt-shipping__label">
+            <span class="pt-shipping__arrow">→</span>
+            CURRENTLY SHIPPING
+          </div>
+          {latestRepo ? (
+            <a class="pt-shipping__repo" href={latestRepo.url} target="_blank" rel="noreferrer" data-cursor-hover>
+              richter-max / <strong>{latestRepo.name}</strong>
+            </a>
+          ) : (
+            <div class="pt-shipping__repo">richter-max / <strong>aegis</strong></div>
+          )}
+          {latestRepo?.headline && (
+            <div class="pt-shipping__commit">
+              <span class="pt-shipping__commit-dot"></span>
+              <span class="pt-shipping__commit-msg">{latestRepo.headline}</span>
+            </div>
+          )}
+          <div class="pt-shipping__age">
+            LAST PUSH · {hoursAgo(latestRepo?.commitDate ?? latestRepo?.pushedAt ?? null)}
+          </div>
+        </div>
+
+        <!-- TT rating -->
+        <div class="pt-stat pt-stat--tt" data-reveal="fade-up">
+          <div class="pt-stat__num"><span data-count="1740">0</span></div>
+          <div class="pt-stat__label">TT RATING</div>
+          <div class="pt-stat__sub">Landesliga, Bayern · target 1,800</div>
+        </div>
+      </div>
     </div>
 
-    <div class="grid" data-stagger-children>
-      <div class="cell">
-        <div class="num"><span data-count="15" data-count-suffix="+">0</span><span class="unit">h</span></div>
-        <div class="label">TRAINING / WEEK</div>
-        <div class="sub">Swim · Bike · Run, stacked on full-time work</div>
-      </div>
-
-      <div class="cell">
-        <div class="num"><span data-count={streakWeeks}>0</span><span class="unit">w</span></div>
-        <div class="label">STRAVA STREAK</div>
-        <div class="sub">Consecutive weeks logged · live from Strava</div>
-      </div>
-
-      <div class="cell">
-        <div class="num"><span data-count={sessionsThisYear}>0</span></div>
-        <div class="label">SESSIONS / {currentYear}</div>
-        <div class="sub">Every swim, bike, run, lift this year</div>
-      </div>
-
-      <div class="cell">
-        <div class="num"><span data-count="113" data-count-suffix="">0</span><span class="unit">km</span></div>
-        <div class="label">IRONMAN 70.3</div>
-        <div class="sub">1.9 swim · 90 bike · 21.1 run · Kraichgau, May</div>
-      </div>
-
-      <div class="cell">
-        <div class="num"><span data-count="1740">0</span></div>
-        <div class="label">TT RATING</div>
-        <div class="sub">Landesliga, Bayern · target 1,800</div>
-      </div>
-
-      <div class="cell">
-        <div class="num"><span data-count={commits30d}>0</span></div>
-        <div class="label">COMMITS / 30 D</div>
-        <div class="sub">Public GitHub activity · live, refreshed daily</div>
-      </div>
+    <!-- ── Closing line ───────────────────────────────────────────── -->
+    <div class="pt-foot" data-reveal="fade-up">
+      <span class="pt-foot__rule"></span>
+      <p class="pt-foot__caption">Same person. Different obsessions.</p>
     </div>
 
-    <div class="caption" data-reveal="fade-up">
-      Engineering and athletics, run in parallel.
-    </div>
   </div>
 </section>
 
 <style>
-  .mn {
+  /* ── Section frame ───────────────────────────────────────────────── */
+  .pt {
+    position: relative;
     padding: 192px 40px 192px;
     border-top: 1px solid rgba(243, 241, 236, 0.08);
     background: var(--bg);
-    position: relative;
     overflow: hidden;
   }
-  .mn::before {
+  .pt::before {
     content: "";
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse at 20% 0%, rgba(46,107,255,0.05), transparent 60%);
+    background:
+      radial-gradient(ellipse at 12% 10%,  rgba(46,107,255,0.06), transparent 55%),
+      radial-gradient(ellipse at 90% 90%,  rgba(46,107,255,0.04), transparent 60%);
     pointer-events: none;
   }
-  .mn-inner { max-width: 1440px; margin: 0 auto; position: relative; }
-  .eyebrow {
+  .pt-inner {
+    max-width: 1440px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  /* ── Header ──────────────────────────────────────────────────────── */
+  .pt-head {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    gap: 12px 32px;
+    align-items: start;
+    margin-bottom: 96px;
+  }
+  .pt-head__label {
+    grid-column: 1 / 2;
     font-family: var(--font-mono);
     font-size: 11px;
     letter-spacing: 0.2em;
     color: var(--ink-low);
-    margin-bottom: 80px;
     display: flex;
     gap: 16px;
     align-items: center;
   }
-  .em { color: var(--ink); }
-  .rule { width: 32px; height: 1px; background: rgba(243,241,236,0.16); }
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0;
-    border-top: 1px solid rgba(243,241,236,0.08);
-  }
-  .cell {
-    padding: 64px 40px 64px 0;
-    border-bottom: 1px solid rgba(243,241,236,0.08);
-  }
-  .cell:nth-child(even) {
-    padding-left: 40px;
-    padding-right: 0;
-    border-left: 1px solid rgba(243,241,236,0.08);
-  }
-  .num {
+  .pt-em { color: var(--ink); }
+  .pt-rule { width: 32px; height: 1px; background: rgba(243,241,236,0.16); }
+  .pt-headline {
+    grid-column: 1 / -1;
+    margin: 24px 0 0;
     font-family: var(--font-display);
-    font-weight: 300;
-    font-size: clamp(96px, 14vw, 220px);
-    line-height: 0.9;
-    letter-spacing: -0.05em;
+    font-weight: 500;
+    font-size: clamp(48px, 7vw, 96px);
+    line-height: 0.98;
+    letter-spacing: -0.04em;
+    color: var(--ink);
+    max-width: 18ch;
+  }
+
+  /* Live indicator — pulsing green dot */
+  .pt-live {
+    grid-column: 2 / 3;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 12px;
+    border: 1px solid rgba(243,241,236,0.10);
+    border-radius: 100px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--ink-mid);
+  }
+  .pt-live__dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #22C55E;
+    box-shadow: 0 0 8px rgba(34,197,94,0.65);
+    animation: pt-pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pt-pulse {
+    0%, 100% { opacity: 1;   transform: scale(1);   }
+    50%      { opacity: 0.4; transform: scale(0.8); }
+  }
+  .pt-live__txt { color: var(--ink); }
+  .pt-live__sep { color: rgba(243,241,236,0.2); }
+  .pt-live__age { color: var(--ink-low); }
+
+  /* ── Two columns ─────────────────────────────────────────────────── */
+  .pt-cols {
+    display: grid;
+    grid-template-columns: 1.35fr 1px 1fr;
+    gap: 0 80px;
+    border-top: 1px solid rgba(243,241,236,0.08);
+    padding-top: 64px;
+  }
+  .pt-divider {
+    background: linear-gradient(
+      180deg,
+      transparent 0%,
+      rgba(243,241,236,0.16) 14%,
+      rgba(243,241,236,0.16) 86%,
+      transparent 100%
+    );
+  }
+
+  .pt-col__label {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 56px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    color: var(--ink-low);
+  }
+  .pt-col__num {
+    width: 22px; height: 22px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border: 1px solid rgba(243,241,236,0.16);
+    border-radius: 50%;
+    font-size: 9px;
+    color: var(--accent);
+  }
+  .pt-col__name { color: var(--ink); }
+
+  /* ── Hero stat block ─────────────────────────────────────────────── */
+  .pt-hero {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 24px 32px;
+    align-items: end;
+    margin-bottom: 64px;
+  }
+  .pt-hero__num {
+    font-family: var(--font-display);
+    font-weight: 200;
+    font-size: clamp(108px, 16vw, 240px);
+    line-height: 0.85;
+    letter-spacing: -0.06em;
     color: var(--ink);
     font-variant-numeric: tabular-nums;
     display: flex;
     align-items: baseline;
-    gap: 8px;
+    gap: 6px;
   }
-  .unit {
-    font-size: 0.35em;
-    font-weight: 400;
+  .pt-hero__unit {
+    font-size: 0.32em;
+    font-weight: 300;
     color: var(--ink-mid);
     letter-spacing: -0.02em;
   }
-  .label {
+  .pt-hero__caption { padding-bottom: 12px; }
+  .pt-hero__label {
     font-family: var(--font-mono);
     font-size: 11px;
     letter-spacing: 0.22em;
     color: var(--accent);
-    margin-top: 16px;
+    margin-bottom: 8px;
     text-transform: uppercase;
   }
-  .sub {
+  .pt-hero__sub {
     font-family: var(--font-display);
-    font-size: 15px;
+    font-size: 14px;
     line-height: 1.5;
     color: var(--ink-mid);
-    margin-top: 12px;
-    max-width: 36ch;
-    letter-spacing: -0.005em;
+    max-width: 30ch;
   }
-  .caption {
-    margin-top: 80px;
+
+  /* Sparkline — 12 mini bars, last one accent-coloured */
+  .pt-spark {
+    grid-column: 1 / -1;
+    margin-top: 12px;
+  }
+  .pt-spark__bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    height: 56px;
+    border-bottom: 1px solid rgba(243,241,236,0.08);
+    padding-bottom: 2px;
+  }
+  .pt-spark__bar {
+    flex: 1;
+    display: block;
+    height: calc(var(--h) * 100%);
+    background: rgba(243,241,236,0.18);
+    transition: background 0.4s ease;
+  }
+  .pt-spark__bar:last-child {
+    background: var(--accent);
+    box-shadow: 0 0 12px rgba(46,107,255,0.4);
+  }
+  .pt-spark__axis {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--ink-low);
+  }
+
+  /* ── Supporting stats row ────────────────────────────────────────── */
+  .pt-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    margin-bottom: 64px;
+    padding-top: 32px;
+    border-top: 1px solid rgba(243,241,236,0.08);
+  }
+  .pt-stat__num {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(48px, 5.5vw, 80px);
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+  }
+  .pt-stat__unit {
+    font-size: 0.4em;
+    color: var(--ink-mid);
+    font-weight: 400;
+  }
+  .pt-stat__label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    color: var(--accent);
+    margin-top: 12px;
+    text-transform: uppercase;
+  }
+  .pt-stat__sub {
+    font-family: var(--font-display);
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--ink-mid);
+    margin-top: 8px;
+    max-width: 28ch;
+  }
+  .pt-stat--tt { margin-top: 64px; }
+
+  /* ── Race countdown ──────────────────────────────────────────────── */
+  .pt-race {
+    padding: 28px 0 0;
+    border-top: 1px solid rgba(243,241,236,0.08);
+  }
+  .pt-race__head {
+    display: flex;
+    align-items: baseline;
+    gap: 20px;
+    margin-bottom: 18px;
+  }
+  .pt-race__num {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(40px, 4.4vw, 64px);
+    line-height: 1;
+    letter-spacing: -0.035em;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 4px;
+  }
+  .pt-race__unit {
+    font-size: 0.42em;
+    color: var(--ink-mid);
+  }
+  .pt-race__name {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    color: var(--accent);
+  }
+  .pt-race__bar {
+    position: relative;
+    height: 2px;
+    background: rgba(243,241,236,0.10);
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+  .pt-race__fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: calc(var(--pct, 0) * 100%);
+    background: var(--accent);
+    box-shadow: 0 0 12px rgba(46,107,255,0.5);
+  }
+  .pt-race__foot {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--ink-low);
+  }
+
+  /* ── Currently shipping callout ──────────────────────────────────── */
+  .pt-shipping {
+    margin: 40px 0 64px;
+    padding: 24px 0;
+    border-top: 1px solid rgba(243,241,236,0.08);
+    border-bottom: 1px solid rgba(243,241,236,0.08);
+  }
+  .pt-shipping__label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    color: var(--ink-low);
+    margin-bottom: 14px;
+  }
+  .pt-shipping__arrow { color: var(--accent); }
+  .pt-shipping__repo {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 18px;
+    letter-spacing: -0.005em;
+    color: var(--ink-mid);
+    text-decoration: none;
+    margin-bottom: 12px;
+    transition: color 0.2s ease;
+  }
+  .pt-shipping__repo strong {
+    color: var(--ink);
+    font-weight: 500;
+  }
+  a.pt-shipping__repo:hover { color: var(--accent); }
+  .pt-shipping__commit {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    font-family: var(--font-display);
+    font-size: 14px;
+    color: var(--ink-mid);
+    line-height: 1.4;
+  }
+  .pt-shipping__commit-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: rgba(243,241,236,0.4);
+    flex-shrink: 0;
+  }
+  .pt-shipping__commit-msg {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+  }
+  .pt-shipping__age {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    color: var(--ink-low);
+  }
+
+  /* ── Footer ──────────────────────────────────────────────────────── */
+  .pt-foot {
+    margin-top: 96px;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+  .pt-foot__rule {
+    flex: 0 0 80px;
+    height: 1px;
+    background: rgba(243,241,236,0.16);
+  }
+  .pt-foot__caption {
+    margin: 0;
     font-family: var(--font-display);
     font-weight: 400;
-    font-size: clamp(28px, 3.6vw, 48px);
-    line-height: 1.15;
-    letter-spacing: -0.03em;
+    font-size: clamp(20px, 2.4vw, 28px);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
     color: var(--ink);
-    max-width: 24ch;
+  }
+
+  /* ── Responsive ──────────────────────────────────────────────────── */
+  @media (max-width: 1100px) {
+    .pt-hero { grid-template-columns: 1fr; gap: 18px; }
+    .pt-hero__num { font-size: clamp(96px, 18vw, 180px); }
   }
   @media (max-width: 900px) {
-    .grid { grid-template-columns: 1fr; }
-    .cell, .cell:nth-child(even) { padding: 48px 0; border-left: none; }
+    .pt { padding: 128px 24px; }
+    .pt-cols {
+      grid-template-columns: 1fr;
+      gap: 64px;
+      border-top: none;
+      padding-top: 0;
+    }
+    .pt-divider { display: none; }
+    .pt-col + .pt-col {
+      padding-top: 64px;
+      border-top: 1px solid rgba(243,241,236,0.08);
+    }
+    .pt-row { grid-template-columns: 1fr; gap: 32px; }
+    .pt-head { grid-template-columns: 1fr; }
+    .pt-live { grid-column: 1 / 2; justify-self: start; }
+    .pt-foot { flex-direction: column; align-items: flex-start; gap: 16px; }
+    .pt-foot__rule { width: 80px; }
   }
 </style>

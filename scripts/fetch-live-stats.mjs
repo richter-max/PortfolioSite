@@ -97,6 +97,28 @@ function pickLastRun(activities) {
   };
 }
 
+// Returns an array of 12 numbers — total km per ISO week, oldest
+// first, ending in the current week. Used to draw a sparkline bar
+// chart in the STATS section so the "27 weeks streak" headline has
+// something to back it up visually.
+function weeklyKmLast12(activities) {
+  const buckets = new Map(); // "YYYY-Www" → km
+  for (const a of activities) {
+    if (!a.distance) continue;
+    const wk = isoYearWeek(new Date(a.start_date));
+    buckets.set(wk, (buckets.get(wk) || 0) + a.distance / 1000);
+  }
+  const cursor = new Date();
+  const out = [];
+  for (let i = 11; i >= 0; i--) {
+    const d = new Date(cursor);
+    d.setDate(d.getDate() - 7 * i);
+    const wk = isoYearWeek(d);
+    out.push(Math.round((buckets.get(wk) || 0) * 10) / 10);
+  }
+  return out;
+}
+
 async function fetchStrava() {
   if (!STRAVA_CLIENT_ID || !STRAVA_CLIENT_SECRET || !STRAVA_REFRESH_TOKEN) {
     throw new Error('Strava env vars missing — keeping previous snapshot.');
@@ -112,9 +134,66 @@ async function fetchStrava() {
   ).length;
 
   return {
-    streakWeeks: computeWeekStreak(acts),
+    streakWeeks:     computeWeekStreak(acts),
     sessionsThisYear,
-    lastRun: pickLastRun(acts),
+    lastRun:         pickLastRun(acts),
+    weeklyKmLast12:  weeklyKmLast12(acts),
+  };
+}
+
+async function fetchLatestPushedRepo() {
+  // Returns the public repo with the most recent push, plus the
+  // first line of its newest commit message. Powers the
+  // "currently shipping" indicator in the redesigned STATS section.
+  if (!GITHUB_TOKEN) return null;
+  const query = `
+    query($login: String!) {
+      user(login: $login) {
+        repositories(
+          first: 1,
+          ownerAffiliations: OWNER,
+          isFork: false,
+          privacy: PUBLIC,
+          orderBy: { field: PUSHED_AT, direction: DESC }
+        ) {
+          nodes {
+            name
+            pushedAt
+            url
+            defaultBranchRef {
+              target {
+                ... on Commit {
+                  history(first: 1) {
+                    nodes { messageHeadline committedDate }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  `;
+  const r = await fetch('https://api.github.com/graphql', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${GITHUB_TOKEN}`,
+      'User-Agent': 'richtermax-portfolio-build',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ query, variables: { login: GITHUB_USER } }),
+  });
+  if (!r.ok) return null;
+  const j = await r.json();
+  const node = j.data?.user?.repositories?.nodes?.[0];
+  if (!node) return null;
+  const commit = node.defaultBranchRef?.target?.history?.nodes?.[0];
+  return {
+    name:        node.name,
+    url:         node.url,
+    pushedAt:    node.pushedAt,
+    headline:    commit?.messageHeadline ?? null,
+    commitDate:  commit?.committedDate   ?? node.pushedAt,
   };
 }
 
@@ -197,8 +276,13 @@ async function main() {
   }
 
   try {
-    snapshot.github = { commits30d: await fetchGitHubCommits30d() };
-    console.log(`✓ GitHub: ${snapshot.github.commits30d} commits / 30d`);
+    const commits30d   = await fetchGitHubCommits30d();
+    const latestRepo   = await fetchLatestPushedRepo();
+    snapshot.github = {
+      commits30d,
+      latestRepo: latestRepo ?? snapshot.github?.latestRepo ?? null,
+    };
+    console.log(`✓ GitHub: ${commits30d} commits / 30d${latestRepo ? `, latest push → ${latestRepo.name}` : ''}`);
   } catch (e) {
     errors.push(`GitHub: ${e.message}`);
   }
