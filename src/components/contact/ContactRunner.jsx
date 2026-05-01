@@ -15,7 +15,6 @@ export default function ContactRunner() {
     async function init() {
       const THREE = await import('three');
       const { GLTFLoader } = await import('three/examples/jsm/loaders/GLTFLoader.js');
-      const { RoomEnvironment } = await import('three/examples/jsm/environments/RoomEnvironment.js');
 
       if (!mounted || !containerRef.current) return;
 
@@ -40,32 +39,25 @@ export default function ContactRunner() {
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       renderer.setSize(width, height);
       renderer.outputColorSpace = THREE.SRGBColorSpace;
-      renderer.toneMapping = THREE.NoToneMapping;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 0.9;
       container.appendChild(renderer.domElement);
 
-      // ── Environment (IBL) ────────────────────────────────────────────
-      // PBR materials (metallic-roughness) need an env map to reflect.
-      // fromScene() goes through the cubemap path — DO NOT precompile
-      // the equirect shader, that's the wrong path and causes desktop
-      // GPUs (Mac/Chrome ANGLE in particular) to render the probe gray.
-      const pmrem = new THREE.PMREMGenerator(renderer);
-      const envRT = pmrem.fromScene(new RoomEnvironment(), 0.04);
-      scene.environment = envRT.texture;
-      pmrem.dispose();
-
       // ── Lighting ─────────────────────────────────────────────────────
-      // Hemisphere acts as a colour-safe floor so materials never go
-      // fully grey if the env probe is weak on a given GPU path.
-      const hemi = new THREE.HemisphereLight(0xffffff, 0xb8b6b0, 0.6);
-      scene.add(hemi);
+      const ambient = new THREE.AmbientLight(0xffffff, 0.4);
+      scene.add(ambient);
 
-      const keyLight = new THREE.DirectionalLight(0xffffff, 1.2);
+      const keyLight = new THREE.DirectionalLight(0xffffff, 2.0);
       keyLight.position.set(3, 4, 3);
       scene.add(keyLight);
 
-      const fillLight = new THREE.DirectionalLight(0xffffff, 0.5);
-      fillLight.position.set(-2, 1, -2);
-      scene.add(fillLight);
+      const rimLight = new THREE.DirectionalLight(0x2E6BFF, 1.2);
+      rimLight.position.set(-3, 2, -3);
+      scene.add(rimLight);
+
+      const fill = new THREE.DirectionalLight(0xffffff, 0.4);
+      fill.position.set(-2, -1, 2);
+      scene.add(fill);
 
       // ── Load model ───────────────────────────────────────────────────
       let pivot = null;
@@ -79,27 +71,12 @@ export default function ContactRunner() {
 
           const model = gltf.scene;
 
-          // 0) Force env contribution + sRGB on every material.
-          //    Avoids the "looks grey on desktop, fine on mobile" trap
-          //    where some GPUs underweight the env probe.
-          model.traverse((child) => {
-            if (!child.isMesh || !child.material) return;
-            const mats = Array.isArray(child.material) ? child.material : [child.material];
-            for (const m of mats) {
-              if ('envMapIntensity' in m) m.envMapIntensity = 1.4;
-              if (m.map)         m.map.colorSpace         = THREE.SRGBColorSpace;
-              if (m.emissiveMap) m.emissiveMap.colorSpace = THREE.SRGBColorSpace;
-              m.needsUpdate = true;
-            }
-          });
-
           // 1) Measure original bounding box
           const box    = new THREE.Box3().setFromObject(model);
           const size   = box.getSize(new THREE.Vector3());
           const center = box.getCenter(new THREE.Vector3());
 
           // 2) Shift model so its CENTER is at origin (0,0,0)
-          //    This keeps rotation around the middle of the body.
           model.position.x -= center.x;
           model.position.y -= center.y;
           model.position.z -= center.z;
@@ -112,7 +89,7 @@ export default function ContactRunner() {
           // 4) Auto-fit camera distance based on model size
           const maxDim  = Math.max(size.x, size.y, size.z);
           const fovRad  = camera.fov * (Math.PI / 180);
-          const padding = 1.6; // 1.0 = model fills frame, higher = more space around
+          const padding = 1.6; // 1.0 = model fills frame, higher = more space
           const distance = (maxDim / 2) / Math.tan(fovRad / 2) * padding;
 
           camera.position.set(0, 0, distance);

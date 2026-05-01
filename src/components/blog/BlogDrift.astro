@@ -1,5 +1,85 @@
 ---
-import { posts, kindColor, kindLabel } from '@data/blog';
+// BlogDrift.astro
+// "The Drift" — Posts drift horizontally. Mouse hover pauses and focuses.
+// Click triggers navigation to the post page.
+//
+// USAGE in index.astro:
+//   import BlogDrift from '../components/BlogDrift.astro';
+//   <BlogDrift />  // between MassiveNumbers and ContactScene
+
+interface Post {
+  slug: string;
+  kind: 'SEC' | 'FLD' | 'NTE';
+  date: string;    // YYYY · MM
+  title: string;
+  excerpt: string;
+  href: string;
+}
+
+// Placeholder posts — replace with your actual content later.
+// Mix of all three tracks: Security, Field (endurance), Notes (lessons).
+const posts: Post[] = [
+  {
+    slug: 'two-weeks-in-shenzhen',
+    kind: 'NTE',
+    date: '2026 · 03',
+    title: 'Two weeks in Shenzhen',
+    excerpt: 'An exchange program, a drone license, and the realization that the technical training was the least interesting thing I brought home.',
+    href: '/blog/two-weeks-in-shenzhen',
+  },
+  {
+    slug: 'rag-injection',
+    kind: 'SEC',
+    date: '2026 · 10',
+    title: 'Prompt Injection in RAG',
+    excerpt: 'Why retrieval-augmented pipelines leak intent before they leak data.',
+    href: '#',
+  },
+  {
+    slug: 'athletes-engineers',
+    kind: 'NTE',
+    date: '2026 · 09',
+    title: 'Athletes as Engineers',
+    excerpt: 'Taper weeks taught me more about shipping than any sprint did.',
+    href: '#',
+  },
+  {
+    slug: 'berlin-report',
+    kind: 'FLD',
+    date: '2026 · 09',
+    title: 'Berlin Race Report',
+    excerpt: 'Three hours, flat. No pacer. No music. One pact with myself.',
+    href: '#',
+  },
+  {
+    slug: 'agent-threat-model',
+    kind: 'SEC',
+    date: '2026 · 08',
+    title: 'Threat Modeling AI Agents',
+    excerpt: 'A framework for evaluating agentic systems before they ship.',
+    href: '#',
+  },
+  {
+    slug: 'zone-two',
+    kind: 'FLD',
+    date: '2026 · 07',
+    title: 'The Zone Two Question',
+    excerpt: 'Cheap watts, expensive patience — why aerobic base still wins.',
+    href: '#',
+  },
+];
+
+const kindColor = {
+  SEC: '#2E6BFF',
+  FLD: '#E8A23C',
+  NTE: '#A8A6A0',
+};
+
+const kindLabel = {
+  SEC: 'SECURITY',
+  FLD: 'FIELD',
+  NTE: 'NOTE',
+};
 ---
 
 <section id="blog" class="drift-section">
@@ -13,7 +93,7 @@ import { posts, kindColor, kindLabel } from '@data/blog';
     </div>
     <h2 class="drift-heading">Currently thinking<br/>about —</h2>
     <p class="drift-sub">
-      Notes on security engineering, training, and everything else in life.<br/>
+      Long-form essays on security, endurance, and what one teaches the other.<br/>
       Hover to pause. Click to read.
     </p>
   </div>
@@ -25,13 +105,10 @@ import { posts, kindColor, kindLabel } from '@data/blog';
       {[...posts, ...posts].map((post, i) => {
         const color = kindColor[post.kind];
         const label = kindLabel[post.kind];
-        const Tag = post.draft ? 'div' : 'a';
-        const linkProps = post.draft
-          ? { class: 'drift-post is-draft', 'aria-disabled': 'true' }
-          : { href: post.href, class: 'drift-post' };
         return (
-          <Tag
-            {...linkProps}
+          <a
+            href={post.href}
+            class="drift-post"
             data-post-index={i}
             data-cursor-hover
             style={`--post-accent: ${color};`}
@@ -40,15 +117,14 @@ import { posts, kindColor, kindLabel } from '@data/blog';
               <span class="drift-post__kind">{label}</span>
               <span class="drift-post__sep">/</span>
               <span class="drift-post__date">{post.date}</span>
-              {post.draft && <span class="drift-post__pill">SOON</span>}
             </div>
             <h3 class="drift-post__title">{post.title}</h3>
             <p class="drift-post__excerpt">{post.excerpt}</p>
             <div class="drift-post__read">
-              <span>{post.draft ? 'IN DRAFT' : 'READ'}</span>
-              {!post.draft && <span class="drift-post__arrow">→</span>}
+              <span>READ</span>
+              <span class="drift-post__arrow">→</span>
             </div>
-          </Tag>
+          </a>
         );
       })}
     </div>
@@ -56,7 +132,7 @@ import { posts, kindColor, kindLabel } from '@data/blog';
 
   {/* ── Progress indicator ──────────────────────────────────────────── */}
   <div class="drift-indicator">
-    <span class="drift-indicator__hint">DRAG OR HOVER</span>
+    <span class="drift-indicator__hint">HOVER TO PAUSE</span>
     <div class="drift-indicator__bar">
       <div class="drift-indicator__fill" id="drift-progress"></div>
     </div>
@@ -127,13 +203,6 @@ import { posts, kindColor, kindLabel } from '@data/blog';
     position: relative;
     width: 100%;
     padding: 0;
-    cursor: grab;
-    -webkit-user-select: none;
-    user-select: none;
-  }
-
-  .drift-viewport.is-dragging {
-    cursor: grabbing;
   }
 
   /* Fade edges */
@@ -185,26 +254,6 @@ import { posts, kindColor, kindLabel } from '@data/blog';
 
   .drift-post.is-active {
     transform: translateY(-6px);
-  }
-
-  .drift-post.is-draft {
-    cursor: default;
-  }
-  .drift-post.is-draft .drift-post__title {
-    color: rgba(243, 241, 236, 0.6);
-  }
-  .drift-post.is-draft .drift-post__read {
-    color: rgba(243, 241, 236, 0.25);
-  }
-
-  .drift-post__pill {
-    margin-left: auto;
-    padding: 3px 8px;
-    border: 1px solid rgba(243, 241, 236, 0.18);
-    border-radius: 999px;
-    font-size: 9px;
-    letter-spacing: 0.22em;
-    color: rgba(243, 241, 236, 0.55);
   }
 
   .drift-post.is-active .drift-post__title {
@@ -330,46 +379,28 @@ import { posts, kindColor, kindLabel } from '@data/blog';
 
   // ── Constants ──────────────────────────────────────────────────────
   const DRIFT_SPEED = 0.4; // px per frame at 60fps — slow ambient drift
-  const POSTS_COUNT = posts.length;     // 12 (6 original × 2)
-  const LOOP_LENGTH = track.scrollWidth / 2; // we duplicated, so half = one loop
+  const LOOP_LENGTH = track.scrollWidth / 2; // duplicated, so half = one loop
 
   // ── State ──────────────────────────────────────────────────────────
-  let offset           = 0;  // current track X translation (negative = leftward)
-  let isPaused         = false;
-  let isDragging       = false;
-  let dragStartX       = 0;
-  let dragStartOffset  = 0;
-  let velocity         = 0;  // momentum after drag release
-  let activePost: HTMLElement | null = null;
+  let offset   = 0;
+  let isPaused = false;
 
   // ── Render loop ────────────────────────────────────────────────────
-  let rafId: number;
   function tick() {
-    rafId = requestAnimationFrame(tick);
+    requestAnimationFrame(tick);
 
-    if (!isDragging) {
-      if (isPaused) {
-        // Gentle deceleration while hover-paused
-        velocity *= 0.88;
-        offset += velocity;
-      } else {
-        // Natural drift leftward (posts scroll right → left visually)
-        offset -= DRIFT_SPEED;
-        // Apply any residual momentum from drag
-        offset += velocity;
-        velocity *= 0.92;
-      }
+    if (!isPaused) {
+      offset -= DRIFT_SPEED;
     }
 
-    // Loop seamlessly — when offset exceeds one loop length, wrap
+    // Loop seamlessly
     if (offset <= -LOOP_LENGTH) offset += LOOP_LENGTH;
     if (offset > 0)             offset -= LOOP_LENGTH;
 
     track.style.transform = `translateX(${offset}px)`;
 
-    // Progress bar position — always moves (visually reassures user
-    // that the section is alive)
-    const p = (-offset / LOOP_LENGTH) % 1; // 0 → 1
+    // Progress bar
+    const p = (-offset / LOOP_LENGTH) % 1;
     const barW = progress.parentElement!.offsetWidth;
     const fillW = progress.offsetWidth;
     progress.style.transform = `translateX(${p * (barW - fillW)}px)`;
@@ -379,71 +410,16 @@ import { posts, kindColor, kindLabel } from '@data/blog';
   // ── Hover: pause drift + focus one post ────────────────────────────
   posts.forEach((post) => {
     post.addEventListener('mouseenter', () => {
-      if (isDragging) return;
       isPaused = true;
-      activePost = post;
       track.classList.add('is-focused');
       posts.forEach(p => p.classList.toggle('is-active', p === post));
-    });
-
-    post.addEventListener('mouseleave', () => {
-      // Only clear if we're leaving the post without entering another
-      // (mouseenter on the new post will fire first, keeping isPaused true)
     });
   });
 
   // When cursor leaves the entire viewport, resume drift
   viewport.addEventListener('mouseleave', () => {
-    if (isDragging) return;
     isPaused = false;
-    activePost = null;
     track.classList.remove('is-focused');
     posts.forEach(p => p.classList.remove('is-active'));
-  });
-
-  // ── Drag to scroll ─────────────────────────────────────────────────
-  viewport.addEventListener('pointerdown', (e) => {
-    isDragging     = true;
-    dragStartX     = e.clientX;
-    dragStartOffset = offset;
-    velocity       = 0;
-    viewport.classList.add('is-dragging');
-    viewport.setPointerCapture(e.pointerId);
-    // Clear focus state while dragging
-    track.classList.remove('is-focused');
-    posts.forEach(p => p.classList.remove('is-active'));
-  });
-
-  viewport.addEventListener('pointermove', (e) => {
-    if (!isDragging) return;
-    const dx = e.clientX - dragStartX;
-    offset = dragStartOffset + dx;
-    velocity = dx * 0.05; // store recent velocity for momentum
-  });
-
-  viewport.addEventListener('pointerup', (e) => {
-    if (!isDragging) return;
-    isDragging = false;
-    viewport.classList.remove('is-dragging');
-    // Small momentum continues for a moment after release
-    // (applied in the tick loop)
-  });
-
-  // Prevent links from triggering navigation during drag
-  let dragDistance = 0;
-  let pointerDownX = 0;
-  viewport.addEventListener('pointerdown', (e) => {
-    pointerDownX = e.clientX;
-    dragDistance = 0;
-  });
-  viewport.addEventListener('pointermove', (e) => {
-    dragDistance = Math.abs(e.clientX - pointerDownX);
-  });
-  posts.forEach(post => {
-    post.addEventListener('click', (e) => {
-      if (dragDistance > 8) {
-        e.preventDefault(); // user was dragging, not clicking
-      }
-    });
   });
 </script>
