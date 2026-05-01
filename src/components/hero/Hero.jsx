@@ -15,7 +15,7 @@ function stageOpacity(p, ranges) {
   return 1 - (p - c) / (d - c);
 }
 
-export default function Hero() {
+export default function Hero({ lastRun = null }) {
   const [mounted, setMounted]       = useState(false);
   const [loaderGone, setLoaderGone] = useState(false);
   const [progress, setProgress]     = useState(0);
@@ -216,7 +216,7 @@ export default function Hero() {
 
               {/* Countdown only in stage 1 */}
               <div style={{ opacity: stage1Visible, transition: 'opacity 100ms linear' }}>
-                <KraichgauCountdown />
+                <KraichgauCountdown lastRun={lastRun} />
               </div>
             </div>
           </div>
@@ -271,7 +271,7 @@ function Divider({ color }) {
   );
 }
 
-function KraichgauCountdown() {
+function KraichgauCountdown({ lastRun = null }) {
   const target = new Date('2026-05-31T07:00:00+02:00').getTime();
   const [now, setNow] = useState(Date.now());
   useEffect(() => {
@@ -317,6 +317,25 @@ function KraichgauCountdown() {
         fontFamily: 'JetBrains Mono, monospace', fontSize: 10, letterSpacing: '0.18em',
         color: '#6B6965', marginTop: 12,
       }}>31 MAY 2026 · 07:00 CET</div>
+
+      {lastRun && (
+        <div style={{
+          fontFamily: 'JetBrains Mono, monospace', fontSize: 10, letterSpacing: '0.2em',
+          color: '#A8A6A0', marginTop: 18,
+          display: 'flex', alignItems: 'center', gap: 10, justifyContent: 'flex-end',
+        }}>
+          <span style={{
+            width: 6, height: 6, borderRadius: '50%',
+            background: '#22C55E', display: 'inline-block',
+            boxShadow: '0 0 8px rgba(34,197,94,0.7)',
+          }} />
+          <span style={{ color: '#A8A6A0' }}>LAST RUN</span>
+          <span style={{ color: 'rgba(243,241,236,0.2)' }}>·</span>
+          <span style={{ color: '#F3F1EC' }}>{lastRun.weekday.toUpperCase()}</span>
+          <span style={{ color: 'rgba(243,241,236,0.2)' }}>·</span>
+          <span style={{ color: '#F3F1EC' }}>{lastRun.km} KM</span>
+        </div>
+      )}
     </div>
   );
 }

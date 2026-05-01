@@ -10,13 +10,14 @@ import Hero from '@components/hero/Hero.jsx';
 import FieldTape from '@components/field/FieldTape.jsx';
 import ContactScene from '@components/contact/ContactScene.jsx';
 import { fieldEntries } from '@data/field';
+import liveStats from '@data/live-stats.json';
 ---
 
 <BaseLayout>
   <Nav />
   <Rail />
   <main id="main">
-    <Hero client:load />
+    <Hero lastRun={liveStats.strava?.lastRun ?? null} client:load />
     <WorkSection />
     <FieldTape entries={fieldEntries} client:visible />
     <MassiveNumbers />

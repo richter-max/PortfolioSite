@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
+    "fetch:live": "node scripts/fetch-live-stats.mjs",
+    "prebuild": "node scripts/fetch-live-stats.mjs",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",

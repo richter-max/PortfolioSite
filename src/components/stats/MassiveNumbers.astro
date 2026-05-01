@@ -1,5 +1,14 @@
 ---
 // MassiveNumbers.astro — full-screen stat reveal between sections
+// Live values for Strava streak / 2026 sessions / GitHub 30-day commits
+// come from src/data/live-stats.json, refreshed at build time by
+// scripts/fetch-live-stats.mjs.
+import live from '@data/live-stats.json';
+
+const streakWeeks      = live.strava?.streakWeeks      ?? 0;
+const sessionsThisYear = live.strava?.sessionsThisYear ?? 0;
+const commits30d       = live.github?.commits30d       ?? 0;
+const currentYear      = new Date().getFullYear();
 ---
 
 <section id="numbers" class="mn">
@@ -16,20 +25,35 @@
         <div class="label">TRAINING / WEEK</div>
         <div class="sub">Swim · Bike · Run, stacked on full-time work</div>
       </div>
+
+      <div class="cell">
+        <div class="num"><span data-count={streakWeeks}>0</span><span class="unit">w</span></div>
+        <div class="label">STRAVA STREAK</div>
+        <div class="sub">Consecutive weeks logged · live from Strava</div>
+      </div>
+
+      <div class="cell">
+        <div class="num"><span data-count={sessionsThisYear}>0</span></div>
+        <div class="label">SESSIONS / {currentYear}</div>
+        <div class="sub">Every swim, bike, run, lift this year</div>
+      </div>
+
       <div class="cell">
         <div class="num"><span data-count="113" data-count-suffix="">0</span><span class="unit">km</span></div>
         <div class="label">IRONMAN 70.3</div>
         <div class="sub">1.9 swim · 90 bike · 21.1 run · Kraichgau, May</div>
       </div>
-      <div class="cell">
-        <div class="num"><span data-count="340" data-count-suffix="+">0</span></div>
-        <div class="label">AEGIS PAYLOADS</div>
-        <div class="sub">Security tests across six attack classes</div>
-      </div>
+
       <div class="cell">
         <div class="num"><span data-count="1740">0</span></div>
         <div class="label">TT RATING</div>
         <div class="sub">Landesliga, Bayern · target 1,800</div>
+      </div>
+
+      <div class="cell">
+        <div class="num"><span data-count={commits30d}>0</span></div>
+        <div class="label">COMMITS / 30 D</div>
+        <div class="sub">Public GitHub activity · live, refreshed daily</div>
       </div>
     </div>
 

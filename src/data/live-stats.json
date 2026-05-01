@@ -1,0 +1,15 @@
+{
+  "updatedAt": "2026-05-01T19:33:23.734Z",
+  "strava": {
+    "streakWeeks": 27,
+    "sessionsThisYear": 178,
+    "lastRun": {
+      "weekday": "Thursday",
+      "km": 14,
+      "isoDate": "2026-04-30"
+    }
+  },
+  "github": {
+    "commits30d": 86
+  }
+}
