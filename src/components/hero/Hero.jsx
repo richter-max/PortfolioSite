@@ -1,14 +1,30 @@
-// Hero.jsx — Photo crossfade: laptophero → halbmarathon
-// - Laptop photo visible at top
-// - Scrolling fades in the race photo (blur + scale transition)
-// - Both images zoomed out with backgroundSize 70% for cinematic feel
-// - Name stays, role + countdown remain
+// Hero.jsx — Three-stage portrait morph
+// Stage 1 (0–30%):  portrait-1 — clean chest-up head + name + countdown
+// Stage 2 (40–65%): portrait-2 — laptop side-profile + "Building."
+// Stage 3 (75–100%): portrait-3 — runner silhouette on topo + "Running."
+// Background flips from dark → dark → cream for stage 3.
 import { useEffect, useRef, useState } from 'react';
+
+const STAGES = [
+  { src: '/img/hero/potrait-1.png', size: '85%',  position: 'center 35%' },
+  { src: '/img/hero/potrait-2.png', size: '90%',  position: 'center 50%' },
+  { src: '/img/hero/potrait-3.png', size: '78%',  position: 'center 50%' },
+];
+
+// Returns 0..1 opacity for a stage, given scroll progress.
+// in/peak/out are the cross-fade keyframes per stage.
+function stageOpacity(p, ranges) {
+  const [a, b, c, d] = ranges; // fade-in start, fade-in end, fade-out start, fade-out end
+  if (p <= a || p >= d) return 0;
+  if (p < b) return (p - a) / (b - a);
+  if (p < c) return 1;
+  return 1 - (p - c) / (d - c);
+}
 
 export default function Hero() {
   const [mounted, setMounted]       = useState(false);
   const [loaderGone, setLoaderGone] = useState(false);
-  const [raceOpacity, setRaceOpacity] = useState(0);
+  const [progress, setProgress]     = useState(0);
   const outerRef = useRef(null);
 
   // Loader timing
@@ -36,16 +52,7 @@ export default function Hero() {
       if (total <= 0) return;
 
       const scrolled = Math.min(Math.max(-rect.top, 0), total);
-      const progress = scrolled / total;
-
-      // Race fades in 0.2 → 0.75
-      const opacity = progress < 0.2
-        ? 0
-        : progress > 0.75
-          ? 1
-          : (progress - 0.2) / 0.55;
-
-      setRaceOpacity(opacity);
+      setProgress(scrolled / total);
     }
 
     function onScroll() {
@@ -68,7 +75,7 @@ export default function Hero() {
     };
   }, []);
 
-  // Name entrance
+  // Name char entrance
   useEffect(() => {
     if (!mounted) return;
     let cancelled = false;
@@ -103,6 +110,34 @@ export default function Hero() {
     return () => { cancelled = true; clearTimeout(t); };
   }, [mounted]);
 
+  // Stage opacity ranges  (fade-in start, in end, out start, out end)
+  const op1 = stageOpacity(progress, [0.00, 0.05, 0.30, 0.42]);
+  const op2 = stageOpacity(progress, [0.32, 0.44, 0.62, 0.74]);
+  const op3 = stageOpacity(progress, [0.66, 0.78, 1.00, 1.10]);
+
+  // Background fades from dark to cream for stage 3
+  const creamMix = stageOpacity(progress, [0.66, 0.80, 1.00, 1.10]);
+  const bgR = Math.round(5   + (243 - 5)   * creamMix);
+  const bgG = Math.round(5   + (241 - 5)   * creamMix);
+  const bgB = Math.round(6   + (236 - 6)   * creamMix);
+  const bgColor = `rgb(${bgR}, ${bgG}, ${bgB})`;
+
+  // Foreground text colors flip with bg
+  const textColor = creamMix > 0.5
+    ? `rgb(${Math.round(243 + (26  - 243) * creamMix)}, ${Math.round(241 + (26  - 241) * creamMix)}, ${Math.round(236 + (26  - 236) * creamMix)})`
+    : '#F3F1EC';
+  const subColor = creamMix > 0.5 ? 'rgba(26,26,26,0.6)' : '#A8A6A0';
+
+  // Eyebrow per stage (active = highest opacity)
+  const stage1Visible = op1;
+  const stage2Visible = op2;
+  const stage3Visible = op3;
+
+  // Subtle scrub-driven scale on each stage for parallax feel
+  const scale1 = 1 + op1 * 0.04 - (1 - op1) * 0.02;
+  const scale2 = 1.04 - op2 * 0.04;
+  const scale3 = 1.06 - op3 * 0.06;
+
   return (
     <>
       {!loaderGone && <HeroLoader mounted={mounted} />}
@@ -110,72 +145,47 @@ export default function Hero() {
       <div
         id="top"
         ref={outerRef}
-        style={{ position: 'relative', height: '200vh', width: '100%' }}
+        style={{ position: 'relative', height: '300vh', width: '100%' }}
       >
         <div style={{
           position: 'sticky',
           top: 0,
           height: '100vh',
           width: '100%',
-          background: '#050506',
+          background: bgColor,
           overflow: 'hidden',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'flex-end',
           padding: '0 40px 80px',
+          transition: 'background 200ms linear',
         }}>
 
-          {/* Laptop photo — blurs + scales down as race takes over */}
-          <div style={{
-            position: 'absolute',
-            top: 0, left: 0, right: 0, bottom: 0,
-            backgroundImage: 'url("/img/opt/laptophero-640.avif")',
-            backgroundSize: '70%',
-            backgroundPosition: 'center 40%',
-            backgroundRepeat: 'no-repeat',
-            filter: `saturate(0.5) brightness(0.65) contrast(1.05) blur(${raceOpacity * 12}px)`,
-            transform: `scale(${1 - raceOpacity * 0.06})`,
-            transformOrigin: 'center center',
-            willChange: 'filter, transform',
-            zIndex: 0,
-          }} />
+          {/* Stage 1 — clean head */}
+          <StageImage stage={STAGES[0]} opacity={op1} scale={scale1} z={0} />
 
-          {/* Race photo — starts blurred + zoomed, comes into focus as it fades in */}
-          <div style={{
-            position: 'absolute',
-            top: 0, left: 0, right: 0, bottom: 0,
-            backgroundImage: 'url("/img/opt/halbmarathon-640.avif")',
-            backgroundSize: '70%',
-            backgroundPosition: 'center 15%',
-            backgroundRepeat: 'no-repeat',
-            filter: `saturate(0.55) brightness(0.6) contrast(1.08) blur(${(1 - raceOpacity) * 16}px)`,
-            transform: `scale(${1.08 - raceOpacity * 0.08})`,
-            transformOrigin: 'center center',
-            opacity: raceOpacity,
-            willChange: 'filter, transform, opacity',
-            zIndex: 1,
-          }} />
+          {/* Stage 2 — laptop */}
+          <StageImage stage={STAGES[1]} opacity={op2} scale={scale2} z={1} />
 
-          {/* Gradient overlays */}
+          {/* Stage 3 — runner on topo */}
+          <StageImage stage={STAGES[2]} opacity={op3} scale={scale3} z={2} />
+
+          {/* Subtle vignette so text remains legible over any stage */}
           <div style={{
             position: 'absolute',
-            top: 0, left: 0, right: 0, bottom: 0,
+            inset: 0,
             pointerEvents: 'none',
-            background: 'linear-gradient(to top, #050506 0%, rgba(5,5,6,0.55) 45%, transparent 100%)',
-            zIndex: 2,
-          }} />
-          <div style={{
-            position: 'absolute',
-            top: 0, left: 0, right: 0, bottom: 0,
-            pointerEvents: 'none',
-            background: 'linear-gradient(to bottom, rgba(5,5,6,0.45) 0%, transparent 30%)',
-            zIndex: 2,
+            background: creamMix > 0.5
+              ? 'linear-gradient(to top, rgba(243,241,236,0.55) 0%, rgba(243,241,236,0) 45%)'
+              : 'linear-gradient(to top, rgba(5,5,6,0.65) 0%, rgba(5,5,6,0.25) 50%, transparent 100%)',
+            zIndex: 4,
+            transition: 'background 200ms linear',
           }} />
 
-          {/* Content */}
+          {/* Foreground */}
           <div style={{
             position: 'relative',
-            zIndex: 3,
+            zIndex: 5,
             maxWidth: 1440,
             width: '100%',
             margin: '0 auto',
@@ -190,8 +200,9 @@ export default function Hero() {
                 fontSize: 'clamp(52px, 9.5vw, 152px)',
                 lineHeight: 0.92,
                 letterSpacing: '-0.04em',
-                color: '#F3F1EC',
+                color: textColor,
                 margin: '0 0 36px',
+                transition: 'color 200ms linear',
               }}
             >
               Maximilian Richter
@@ -203,25 +214,38 @@ export default function Hero() {
               justifyContent: 'space-between',
               flexWrap: 'wrap',
               gap: 32,
+              minHeight: 100,
             }}>
+              {/* Eyebrow stack — three states layered, opacity-driven */}
               <div style={{
+                position: 'relative',
                 fontFamily: 'JetBrains Mono, monospace',
                 fontSize: 11,
                 letterSpacing: '0.22em',
-                color: '#A8A6A0',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 16,
+                minHeight: 16,
+                minWidth: 320,
               }}>
-                <span style={{ color: '#F3F1EC' }}>SECURITY ENGINEER</span>
-                <span style={{
-                  width: 24, height: 1,
-                  background: 'rgba(243,241,236,0.2)',
-                  display: 'inline-block',
-                }} />
-                <span>ENDURANCE ATHLETE</span>
+                <Eyebrow visible={stage1Visible} textColor={textColor} subColor={subColor}>
+                  <span style={{ color: textColor }}>SECURITY ENGINEER</span>
+                  <Divider color={subColor} />
+                  <span style={{ color: subColor }}>ENDURANCE ATHLETE</span>
+                </Eyebrow>
+                <Eyebrow visible={stage2Visible} textColor={textColor} subColor={subColor}>
+                  <span style={{ color: textColor }}>BUILDING.</span>
+                  <Divider color={subColor} />
+                  <span style={{ color: subColor }}>4 PROJECTS · 1 IN BETA</span>
+                </Eyebrow>
+                <Eyebrow visible={stage3Visible} textColor={textColor} subColor={subColor}>
+                  <span style={{ color: textColor }}>RUNNING.</span>
+                  <Divider color={subColor} />
+                  <span style={{ color: subColor }}>TRAINING FOR KRAICHGAU</span>
+                </Eyebrow>
               </div>
-              <KraichgauCountdown />
+
+              {/* Countdown only in stage 1 */}
+              <div style={{ opacity: stage1Visible, transition: 'opacity 100ms linear' }}>
+                <KraichgauCountdown />
+              </div>
             </div>
           </div>
 
@@ -229,12 +253,6 @@ export default function Hero() {
       </div>
 
       <style>{`
-        @keyframes heroScrollCue {
-          0%   { transform: scaleY(0); transform-origin: top; }
-          50%  { transform: scaleY(1); transform-origin: top; }
-          51%  { transform: scaleY(1); transform-origin: bottom; }
-          100% { transform: scaleY(0); transform-origin: bottom; }
-        }
         @keyframes loaderLineGrow {
           0%   { transform: scaleX(0); }
           100% { transform: scaleX(1); }
@@ -249,6 +267,53 @@ export default function Hero() {
         }
       `}</style>
     </>
+  );
+}
+
+function StageImage({ stage, opacity, scale, z }) {
+  return (
+    <div style={{
+      position: 'absolute',
+      inset: 0,
+      backgroundImage: `url("${stage.src}")`,
+      backgroundSize: stage.size,
+      backgroundPosition: stage.position,
+      backgroundRepeat: 'no-repeat',
+      opacity,
+      transform: `scale(${scale})`,
+      transformOrigin: 'center center',
+      willChange: 'opacity, transform',
+      zIndex: z,
+    }} />
+  );
+}
+
+function Eyebrow({ visible, children }) {
+  return (
+    <div style={{
+      position: 'absolute',
+      inset: 0,
+      display: 'flex',
+      alignItems: 'center',
+      gap: 16,
+      opacity: visible,
+      transform: `translateY(${(1 - visible) * 8}px)`,
+      transition: 'opacity 100ms linear, transform 100ms linear',
+      pointerEvents: visible > 0.5 ? 'auto' : 'none',
+    }}>
+      {children}
+    </div>
+  );
+}
+
+function Divider({ color }) {
+  return (
+    <span style={{
+      width: 24, height: 1,
+      background: color,
+      opacity: 0.4,
+      display: 'inline-block',
+    }} />
   );
 }
 

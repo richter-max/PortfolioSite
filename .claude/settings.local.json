@@ -22,7 +22,15 @@
       "Bash(grep -oE '\"[A-Za-z][^\"]{8,200}\"' /tmp/emergent-bundle.js)",
       "Bash(grep -oE '\"HERO_STAGES\":\\\\[[^]]{0,2000}\\\\]' /tmp/emergent-bundle.js)",
       "Bash(grep -oE 'HERO_STAGES\\\\s*=\\\\s*\\\\[[^]]{0,3000}\\\\]' /tmp/emergent-bundle.js)",
-      "Bash(python3 -c ' *)"
+      "Bash(python3 -c ' *)",
+      "Bash(ffprobe -v error -select_streams v:0 -show_entries stream=duration,width,height -of default=noprint_wrappers=1 \"/Users/maxxx/Desktop/Bildschirmaufnahme 2026-04-26 um 13.44.29.mov\")",
+      "Bash(mdls -name kMDItemDurationSeconds -name kMDItemPixelHeight -name kMDItemPixelWidth \"/Users/maxxx/Desktop/Bildschirmaufnahme 2026-04-26 um 13.44.29.mov\")",
+      "Bash(brew --prefix)",
+      "Read(//opt/homebrew/bin/**)",
+      "Read(//usr/local/bin/**)",
+      "Bash(python3 -c \"import av; print\\(av.__version__\\)\")",
+      "Bash(mkdir -p /tmp/morphframes)",
+      "Bash(swift /tmp/extract_frames.swift \"/Users/maxxx/Desktop/Bildschirmaufnahme 2026-04-26 um 13.44.29.mov\" /tmp/morphframes 16)"
     ]
   }
 }
