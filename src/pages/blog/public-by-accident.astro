@@ -1,0 +1,85 @@
+---
+import BlogPost from '../../layouts/BlogPost.astro';
+---
+
+<BlogPost
+  title="Public, by accident."
+  description="What strangers can pull from your social media. The gap between sharing one thing and revealing another — and what to actually do about it."
+  date="APRIL 2026"
+  readTime="7 min"
+  kind="SEC"
+  tags={['SECURITY', 'OSINT', 'PRIVACY', 'SOCIAL MEDIA']}
+  ogImage="/og/blog-public-by-accident.jpg"
+>
+
+  <p>Pick a photo on your phone. Doesn't matter which. Now pretend you're a stranger looking at it for the first time, one hour after it was posted publicly. What can the stranger learn about you, your family, your home, your job, your routines — from that one image? Don't list what's in the frame. List what's <em>derivable</em> from it.</p>
+
+  <p>Most people, doing this exercise honestly, find the gap between the two lists is much wider than they expected. That gap is the subject of this post.</p>
+
+  <p>I'm a security engineer, not a privacy activist. This isn't a please-don't-post-anything piece, and there's no fearmongering — I'm not interested in scaring you, only in making the trade-off legible. There's a real difference between sharing something <em>and the things you accidentally share with it</em>. Once you can see the difference, calibration is easy.</p>
+
+  <h2>Layer one: metadata</h2>
+
+  <p>Every photo a phone produces contains an <strong>EXIF</strong> block. The block is part of the file format and includes, by default, the camera model, the lens, exposure settings — and, depending on settings, GPS coordinates accurate to a few metres, plus the precise timestamp.</p>
+
+  <p>Major social platforms strip most of this on upload. Some do not, particularly when the file is shared as the original (Telegram with "send as file", AirDrop, email attachments, certain photo-sharing services). The most-cited example is from 2012, when journalists sharing a photo of John McAfee — at that point hiding from authorities in Belize — published the original file with intact GPS metadata, immediately revealing his location in Guatemala. He was arrested within days.</p>
+
+  <p>The lesson isn't <em>"always strip EXIF"</em>. The lesson is that there's a layer of information the photo carries that isn't visible to you when you're looking at it, and when that layer leaks it leaks completely. You can't redact GPS coordinates after the fact.</p>
+
+  <h2>Layer two: image content</h2>
+
+  <p>Forget metadata. Look at the visible pixels.</p>
+
+  <p>A casual selfie at a desk includes a calendar in the background with a colleague's name on it. A workout photo from a hotel gym includes the hotel's chain colour scheme and the floor through the window. A child's birthday photo at home includes the street name on a piece of post the camera caught on the table. A "look at my new bike" photo includes the bike serial number on the frame, and the room it's stored in. A WFH photo from your desk includes the wall behind it with a Post-it that says <em>"VPN OTP backup: …"</em></p>
+
+  <p>None of those is a leak in the sense that anyone meant to share them. Each of them is a fact about you that's now public. Aggregated against other photos, they're more than facts — they're a pattern.</p>
+
+  <p>The most-cited example here is the 2018 <a href="https://www.theguardian.com/world/2018/jan/28/fitness-tracking-app-gives-away-location-of-secret-us-army-bases" target="_blank" rel="noreferrer">Strava heatmap incident</a>. Strava published an aggregated visualisation of all user activity, intended as a marketing artefact. Anyone reading it carefully discovered that the most active running and cycling routes in the middle of remote deserts and conflict zones traced the perimeters of military bases that weren't supposed to exist on public maps. None of the individual users had leaked anything. The aggregate had.</p>
+
+  <h2>Layer three: pattern</h2>
+
+  <p>One photo gives a pinpoint. Many photos give a pattern.</p>
+
+  <p>The home-burglary literature has known this for years. People posting <em>"we're at the airport, off to Mallorca for two weeks!"</em> combined with a public profile that already shows their home neighbourhood — that's the entire input set a casual opportunist needs. Some insurance providers have explicit clauses about social-media holiday announcements voiding theft coverage. They're not making it up; the correlation is real.</p>
+
+  <p>The same pattern shows up subtler. A runner's regular Strava activities, viewed publicly, form a heatmap of when their house is empty during the week. A LinkedIn announcement about starting a new job at a specific company, plus a public photo of the front door of an office building, plus a cycling commute that always passes the same intersection at 8:30am, gives a stranger the route, the schedule, and the timing. None of those individual posts are private information. The combination is.</p>
+
+  <h2>The case of children's photos</h2>
+
+  <p>This deserves its own section because the time horizon is different.</p>
+
+  <p>An adult posting their own face accepts a known cost: facial recognition will get better, photo archives will persist, future employers will have access to artefacts that are seventeen years old. An adult can make that trade-off knowingly.</p>
+
+  <p>A child cannot. Photos of children — including the routine birthday-and-first-day-of-school sequence — accumulate a permanent record under a name and face the child didn't consent to publishing. Three things compound off that record over time:</p>
+
+  <ul>
+    <li><strong>Identity-related material for future fraud.</strong> Birthdates, school enrolments, family structure, hometown — most of which trickle out across normal posts — are exactly the inputs to identity-related attacks fifteen years later when the child applies for credit, housing, a passport. The attacker isn't going through trouble. They're typing a name into a search engine.</li>
+    <li><strong>Training material for synthesis.</strong> A robust photographic record of a face from age two to age sixteen is an excellent dataset for generating synthetic media that depicts that person as an adult. The technology to do this convincingly already exists; the cost is collapsing. The question is whether you want a stranger to have a high-quality dataset of someone who'll be twenty-five in 2040.</li>
+    <li><strong>Schooling, club, and routine disclosure.</strong> The first-day-of-school photo with the school sign in the background is, in aggregate with similar photos, a map of the child's daily routine. Stalking cases involving celebrity children's schools are not rare. The same pattern, lower stakes, applies to ordinary children.</li>
+  </ul>
+
+  <p>I'm not saying don't post photos of children. I'm saying the calibration for them is different from your own, because the cost is borne in a future they don't control.</p>
+
+  <h2>The aggregation problem</h2>
+
+  <p>The general rule, which is what makes this hard to reason about: <strong>none of the individual posts are dangerous, and the combination almost always is</strong>.</p>
+
+  <p>Each photo, viewed by itself, is "innocuous". A house photo. A vacation announcement. A workout. A LinkedIn job change. A child's birthday. A school sign in the background. A regular bike route. None of these would feel like a leak if a stranger looked at one of them.</p>
+
+  <p>The cost falls out when an interested party — a malicious one, a competitor, an insurance investigator, an aggressive recruiter, an ex-partner, a stranger with bad intentions about your child — runs your public footprint together. They have search tools you don't have. They have time you don't have. They have a question they want answered. Most footprints are not robust against five minutes of patient assembly.</p>
+
+  <h2>What to actually do</h2>
+
+  <p>Calibration, not paranoia. Three concrete shifts that recover most of the privacy budget without changing how you use social media.</p>
+
+  <p><strong>Disable location data on photos by default</strong>, on every device that has a camera. Strip it from anything you upload outside platforms that strip it for you (most major social networks do; messaging apps and direct file sharing often don't). It's a one-time setting change.</p>
+
+  <p><strong>Decouple personal identifiers from public posts.</strong> The vacation announcement and the home address don't need to be on the same network under the same name. The work commute and the home-neighbourhood photos don't need to be visible to the same audience. The LinkedIn presence and the family Instagram don't need to be cross-linked.</p>
+
+  <p><strong>For children specifically, default to closed groups.</strong> Family chat, private albums, friends-only stories. The relatives who actually want to see the birthday photos can see them. The strangers who don't need to see them, can't. This isn't fearmongering; it's the same principle as not announcing your child's full name and date of birth to a hundred-million-user platform when forty close people would have been the actual audience.</p>
+
+  <p>None of this requires going off the grid. None of it requires retroactive cleanup, even, though that's also possible. It requires noticing that the gap exists, and closing it where the cost is highest.</p>
+
+  <p>The default is what's leaking.</p>
+
+</BlogPost>

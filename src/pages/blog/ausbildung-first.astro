@@ -1,0 +1,75 @@
+---
+import BlogPost from '../../layouts/BlogPost.astro';
+---
+
+<BlogPost
+  title="Ausbildung first."
+  description="Why I did the German vocational route before going to university — and why I'm starting the university part now anyway. Practice first, theory second, the case for picking that order."
+  date="APRIL 2026"
+  readTime="6 min"
+  kind="NTE"
+  tags={['CAREER', 'EDUCATION', 'AUSBILDUNG', 'GERMANY', 'DUAL STUDIES']}
+  ogImage="/og/blog-ausbildung-first.jpg"
+>
+
+  <p>The German education system has two routes into a tech career, and they don't compete the way people outside Germany sometimes assume. One route is <strong>university</strong> — three to five years of mostly theoretical computer science, a degree, then a graduate job. The other is the <strong>Ausbildung</strong> — three years of vocational training inside a company, with one or two days a week of structured school content alongside, ending in a national qualification and, usually, an offer to stay at the company that trained you.</p>
+
+  <p>Most of my classmates from secondary school went to university. I did the Ausbildung. I'm now starting university anyway, in October 2026, four months after my Ironman 70.3.</p>
+
+  <p>This is the post about why both decisions made sense.</p>
+
+  <h2>The Ausbildung I picked</h2>
+
+  <p>I started <strong>Fachinformatiker, Anwendungsentwicklung</strong> — a software-development-focused vocational track — at <a href="https://www.bosch.com/" target="_blank" rel="noreferrer">Bosch in Immenstadt and Blaichach</a> in September 2023, with the school component at the <strong>Berufsschule Kempten</strong> two days a week. I qualified in February 2025: two and a half years instead of the standard three, shortened on academic merit.</p>
+
+  <p>The reasoning at the time was specific. I wanted to know whether software engineering as a profession was anything like software engineering as a hobby. The fastest way to test that hypothesis was to be paid for it, surrounded by people who had been doing it for fifteen years, embedded in a real production environment.</p>
+
+  <h2>What the Ausbildung was strong at</h2>
+
+  <p>Two things, both about depth of practice.</p>
+
+  <p><strong>The work in the company was real.</strong> From the first week the systems I was contributing to had paying users, deadlines, tickets, on-call rotations. That changes how you think about software in a way no amount of side-project building ever does. You learn that the right answer to most problems is rarely the elegant one; it's the one that ships, has an owner, and has a rollback plan. You learn how to read code that's older than you are. You learn what it costs to leave a comment that says <em>"TODO: clean this up later"</em> — and what happens when later is six months and a different person.</p>
+
+  <p><strong>The internal training at Bosch was excellent.</strong> Not the formal Ausbildungsplan training — that was checkbox material. The internal technical trainings on Bosch's actual stack, run by senior engineers who used the systems daily. You don't get those at a university. You don't get them at most companies, either; large engineering organisations are one of the few places that still do real technical training as a first-class function rather than a budget line item.</p>
+
+  <p>The combination of the two is why the Ausbildung was the right first move. I came out of it with a working professional-engineer skillset by twenty, two and a half years before most of my university-track peers had even started writing production code.</p>
+
+  <h2>What the Ausbildung was weak at</h2>
+
+  <p>One thing, and it's worth being honest about it.</p>
+
+  <p>The <strong>Berufsschule component was thin</strong>. Theory class was paced for the median student in the room — which, in a vocational school, is the median student preparing to pass the qualifying exam, not the student trying to engage with foundational computer science. There were good teachers. There were rooms where the conversation actually went somewhere. There were also a lot of weeks where I felt I'd already understood the day's topic from a textbook the night before, and was now sitting through it being explained for thirty minutes a question.</p>
+
+  <p>The school content was also designed for breadth — touch every requirement of the qualification, not depth on any one of them. That's a fine objective for a national exam. It isn't what you want when you're trying to build the layer of theoretical understanding that makes the practical work make sense.</p>
+
+  <p>This is a known trade-off in the Ausbildung system, and I'm not the first person to say it. Most engineers who came up the Ausbildung route and stayed in technical work either fill in the theory themselves over time, or do what I'm about to do: go back into a structured academic environment after the practical foundation is already there.</p>
+
+  <h2>The decision to start university now</h2>
+
+  <p>What changed isn't the value of the qualification I already have. What changed is my standards for myself.</p>
+
+  <p>The Ausbildung made me a competent practitioner in a relatively narrow band — Bosch's stack, the kinds of problems that come into the queue at a tier-one supplier. As I started doing my own work outside the day job — <a href="/case-studies/aegis">AEGIS</a>, <a href="/case-studies/scanner">the attack-surface scanner</a>, the kind of security research the case studies describe — I kept hitting moments where the right move would have been informed by graduate-level CS material I'd never sat through. Algorithms beyond the basic textbook ones. Type theory. Cryptographic foundations beyond the user-level. The mathematical underbelly of machine-learning systems.</p>
+
+  <p>I could read into all of those topics on my own. People do. The reason I'm choosing not to is that doing it solo, on top of a full-time job, with no curricular pressure to push past the parts you find hardest, takes something like five times longer than doing it inside a programme. I've already spent eighteen months filling gaps between project demands. The marginal hour of self-study was getting worse value per hour than the marginal hour of structured study would.</p>
+
+  <h2>The path I picked</h2>
+
+  <p>I'm starting at the <a href="https://www.dhbw-ravensburg.de/" target="_blank" rel="noreferrer">DHBW Ravensburg</a>, on the Friedrichshafen campus, in October 2026. The DHBW is a dual-studies university — three months of academic content, three months of company work, repeated across three years, ending in a Bachelor of Science. I'm staying with Bosch in Immenstadt as the partner company.</p>
+
+  <p>The dual model is the closest available structure to <em>"Ausbildung that delivers theoretical depth."</em> The trade-off versus a regular university is that the calendar is denser and there's no real "student life" — you're an employee for half the year and a student for the other half. The trade-off versus a regular Ausbildung-style continuation is that the academic content is at university level and is taught by people who treat it as such.</p>
+
+  <p>I'm aware of how DHBW programmes are sometimes positioned in Germany — as a less prestigious alternative to a "real" university degree. The version of that argument I find persuasive is the one about academic depth at the very top of a field, which I'm not pretending the DHBW will optimise for. The version of the argument I don't find persuasive is the social one about prestige. For the work I want to do, the prestige distinction is noise on top of the actual signal, which is whether you can do the work.</p>
+
+  <h2>Should you do the Ausbildung first?</h2>
+
+  <p>Probably yes, if you want to be a working software engineer and you live in a country with a real Ausbildung system. Caveats:</p>
+
+  <p><strong>Pick the company carefully.</strong> Most of the value of an Ausbildung comes from the company you train at, not the certificate at the end. A company that throws you on real systems with real seniors will teach you ten times what a company that hides Auszubildende in a separate "training department" will. The certificate is the same on paper.</p>
+
+  <p><strong>Don't expect the school component to do the heavy theoretical lifting.</strong> It won't. Plan for the gap explicitly — read on the side, accept that you'll need a follow-on round of formal study at some point, or be honest with yourself that you don't actually need it.</p>
+
+  <p>And <strong>don't treat the two routes as a forced choice</strong>. You can do both. I'm doing both. They feed different parts of an engineer's identity, and the order I picked — practice first, theory second — is at least defensible, possibly even the better order, if the theory will land deeper for someone who's already shipped real code.</p>
+
+  <p>I'll find out in about two and a half years.</p>
+
+</BlogPost>

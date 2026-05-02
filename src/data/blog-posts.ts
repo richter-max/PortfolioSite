@@ -25,6 +25,51 @@ export const posts: BlogPost[] = [
     readTime: '5 min',
   },
   {
+    slug: 'ausbildung-first',
+    title: 'Ausbildung first.',
+    description:
+      "Why I did the German vocational route before going to university — and why I'm starting the university part now anyway. Practice first, theory second.",
+    pubDate: '2026-04-30',
+    category: 'NOTE',
+    readTime: '6 min',
+  },
+  {
+    slug: 'building-aegis',
+    title: 'Six lessons from AEGIS.',
+    description:
+      'What a year of building a deterministic security evaluation harness for tool-using AI agents actually taught me — about decisions, scope, and the discipline of staying boring.',
+    pubDate: '2026-04-25',
+    category: 'SECURITY',
+    readTime: '8 min',
+  },
+  {
+    slug: 'public-by-accident',
+    title: 'Public, by accident.',
+    description:
+      'What strangers can pull from your social media. The gap between sharing one thing and revealing another — and what to actually do about it.',
+    pubDate: '2026-04-20',
+    category: 'SECURITY',
+    readTime: '7 min',
+  },
+  {
+    slug: 'why-not-notion',
+    title: "Why I didn't use Notion.",
+    description:
+      'What you give up when you let a hosted platform ship your portfolio for you. The case for owning the build, and the case for not.',
+    pubDate: '2026-04-15',
+    category: 'SECURITY',
+    readTime: '5 min',
+  },
+  {
+    slug: 'tt-season-2025-26',
+    title: 'Eighty-seven points.',
+    description:
+      "From 1670 to 1757. DJK Seifriedsberg's third Landesliga season — and the first one we finished mid-table. Notes on a year of giving up trying to be unorthodox.",
+    pubDate: '2026-04-08',
+    category: 'FIELD',
+    readTime: '5 min',
+  },
+  {
     slug: 'two-weeks-in-shenzhen',
     title: 'Two weeks in Shenzhen.',
     description:

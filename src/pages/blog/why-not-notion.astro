@@ -1,0 +1,67 @@
+---
+import BlogPost from '../../layouts/BlogPost.astro';
+---
+
+<BlogPost
+  title="Why I didn't use Notion."
+  description="What you give up when you let a hosted platform ship your portfolio for you. The case for owning the build, and the case for not."
+  date="APRIL 2026"
+  readTime="5 min"
+  kind="SEC"
+  tags={['ENGINEERING', 'WEB', 'BUILD', 'DECISIONS']}
+  ogImage="/og/blog-why-not-notion.jpg"
+>
+
+  <p>The honest version of this story is that <a href="https://www.notion.so/" target="_blank" rel="noreferrer">Notion</a> with <a href="https://super.so/" target="_blank" rel="noreferrer">Super.so</a> on top, or any of the half-dozen hosted-portfolio products, would have shipped this site in about thirty minutes for two to four dollars a month. The result would have been clean, fast enough, and indistinguishable to ninety-five percent of visitors from what I actually shipped.</p>
+
+  <p>I didn't take that path. This is the post about why — and, more honestly, who else should and shouldn't.</p>
+
+  <h2>The trade is real</h2>
+
+  <p>The hosted route gets you a working site this afternoon. It gets you continuous deployment, mobile responsiveness, sensible typography, structured data, basic SEO, and a CMS that you can edit on your phone. It costs less than a coffee a month. The product engineering on those tools is genuinely good. They are not the wrong choice.</p>
+
+  <p>What you give up is harder to articulate, because it's a long list of small things, each of which would be silly to defend on its own.</p>
+
+  <h2>The list of small things</h2>
+
+  <p><strong>Headers.</strong> A custom build hands you the response headers. That means a Content Security Policy that's actually tight against the surface area you're shipping, not the platform's average. It means HSTS preload, Referrer-Policy, COOP, COEP, and a Permissions-Policy that turns off every browser feature this site has no business asking for. Hosted platforms are getting better at this, but they ship the policy that works for everyone, not the policy that fits your specific site. The difference between <em>"A grade on securityheaders.com because we ticked the boxes"</em> and <em>"A+ grade because each directive matches the actual surface"</em> is not visible to most visitors. It is to anyone who looks.</p>
+
+  <p><strong>Performance budget.</strong> A hosted platform serves a generic application shell that works for any user-generated content. Mine doesn't have to. The hero rendering, the WebGL model on the contact section, the live-data sparklines in the stats section — those exist because I had a per-page byte budget I could spend on them. On a hosted CMS the same components would either be impossible (the platform doesn't run my JS) or expensive (the platform's framework lifts the floor by a hundred kilobytes before I've added anything). Owning the build means the performance budget is mine to spend.</p>
+
+  <p><strong>The image pipeline.</strong> AVIF in the right resolution per breakpoint, generated at build time, with WebP fallbacks for older clients, with metadata stripped, with explicit aspect-ratio attributes so the layout never shifts. None of that is exotic. All of it is one less thing I can outsource. On a hosted CMS the image pipeline is whatever the platform decided to ship; it will be fine for the median case and slightly suboptimal for every specific case.</p>
+
+  <p><strong>OG cards per page.</strong> Each route on this site renders a unique 1200×630 social-share card with the page's actual title, kicker, and descriptor — generated at build time from a typography template. Hosted platforms ship a single fallback image for the entire site, or, at best, a CMS field where you can upload a static one per post. The difference between <em>"every shared link previews specifically"</em> and <em>"every shared link looks like the homepage"</em> is small individually and significant in aggregate.</p>
+
+  <p><strong>RSS, with a real stylesheet.</strong> The feed at <a href="/rss.xml">/rss.xml</a> is what feed readers consume. The XSLT stylesheet on it is what humans see if they open the URL in a browser — a styled landing page in the same visual language as the rest of the site, instead of raw XML. Tiny detail. The kind that signals the site was made by someone, not assembled by a wizard.</p>
+
+  <p><strong>Interactions that are mine.</strong> The custom cursor, the reading-mode variant on long-form pages, the command palette, the live-data ticker in the stats section, the three-stage hero progression — those exist because I could build them. I'm not going to argue that any of them are individually critical. Together they're the difference between a site that <em>looks</em> like one of a thousand portfolios and one that reads as a place a specific person made.</p>
+
+  <p><strong>The build itself as a record.</strong> The repo is part of the artefact. Anyone who looks at the source can see what's in the build, what's not, what was decided, why. That's a different kind of trust signal from "<em>go to the live URL and judge</em>".</p>
+
+  <h2>The cost</h2>
+
+  <p>I don't want to underplay this. Building a custom site is dramatically more expensive than picking a hosted platform — measured in hours, not dollars. Every feature on this list took implementation time. The CSP took two iterations to get right (and broke once on a deploy because of something Three.js does with blob URLs that I hadn't anticipated). The OG generator needed its own typography template and a rasterisation step. The RSS XSLT is a mostly-forgotten technology that took an evening to get rendering correctly across browsers. The command palette is a hand-rolled fuzzy matcher because none of the existing libraries fit the rest of the site cleanly.</p>
+
+  <p>A hosted platform spares you all of that. It's a deal.</p>
+
+  <p>The ongoing maintenance is a smaller line item but a real one. A custom build doesn't update itself. Astro shipped a major version in the middle of this; the security advisory feed needs eyes on it; deploy-pipeline regressions need debugging. None of that is hard. All of it is the cost of ownership.</p>
+
+  <h2>Who should build their own</h2>
+
+  <p>Most people shouldn't. The hosted route is genuinely a good answer for most personal sites, and the engineering bar to build something <em>worse</em> than what Notion + Super gives you for free is non-trivial. If your goal is "<em>I have a portfolio link to send to recruiters by next week</em>", do not build a custom site. Use the hosted thing. Spend the time on whatever the portfolio is supposed to be pointing at.</p>
+
+  <p>The case for building your own gets stronger when:</p>
+
+  <ul>
+    <li>The site is the artefact, not just a pointer to an artefact. (For an engineer, the site itself is part of the demonstration.)</li>
+    <li>You have a specific aesthetic the platform won't reach.</li>
+    <li>You care about response headers, performance budget, or interaction details past what generic platforms ship.</li>
+    <li>You want the build pipeline to be visible source.</li>
+    <li>You're going to keep the site for years, and the maintenance overhead amortises.</li>
+  </ul>
+
+  <p>For me all five applied. For most people fewer than two will. That's not a problem with the hosted platforms — they exist precisely because most people are better served by them.</p>
+
+  <p>I built mine because the small things added up. None of them justify the time on their own. All of them, together, do.</p>
+
+</BlogPost>

@@ -1,0 +1,83 @@
+---
+import BlogPost from '../../layouts/BlogPost.astro';
+---
+
+<BlogPost
+  title="Six lessons from AEGIS."
+  description="What a year of building a deterministic security evaluation harness for tool-using AI agents actually taught me — about decisions, scope, and the discipline of staying boring."
+  date="APRIL 2026"
+  readTime="8 min"
+  kind="SEC"
+  tags={['SECURITY', 'AI AGENTS', 'AEGIS', 'ENGINEERING', 'EVALUATION']}
+  ogImage="/og/blog-building-aegis.jpg"
+>
+
+  <p>I shipped <a href="/case-studies/aegis">AEGIS</a> as an MIT-licensed deterministic evaluation harness for tool-using AI agents earlier this year. The case study describes <em>what it does</em>. This post is about the six things building it taught me — most of them about <em>deciding what to leave out</em>.</p>
+
+  <h2>1. The boring decisions are the load-bearing ones.</h2>
+
+  <p>Three early choices ended up doing all the work. Deterministic scoring instead of LLM-judged evaluation. N-gram cosine similarity instead of sentence embeddings. Mocked tool execution instead of real shells. Each of them sounded like a downgrade from a more sophisticated alternative. None of them were.</p>
+
+  <p>The deterministic-versus-LLM-judged call is the cleanest example. The temptation was to spin up a second model to evaluate the first — it sounds research-grade, it scales, and the literature is full of people doing it. The cost is that you've replaced experimental variance with someone else's experimental variance, plus a model dependency that drifts every six months when the judge model gets updated. AEGIS scoring is rule-based. The same trace produces the same number on someone else's machine, six months from now, with no shared infrastructure. That property turned out to be more valuable than any single quality of judgment.</p>
+
+  <p>The n-gram-versus-embeddings call was similar. Sentence embeddings catch a wider class of semantic similarity. They also ship as a model dependency, demand GPU pressure during evaluation, and produce decisions you can't explain to a reviewer who isn't already a specialist. Character n-grams plus a small attack corpus catch most of what's relevant in a security context where attacker payloads are constrained to particular shapes. When that approximation eventually breaks, the layer is small enough that swapping it costs hours, not weeks.</p>
+
+  <p>The mocked-tools call I won't relitigate; it should be obvious from a security-engineering standpoint that letting fuzz tests run real shell commands is how you turn a research harness into a vulnerability.</p>
+
+  <p>What I underestimated, going in, is how much velocity you get when each of your three core decisions is something you can defend in one sentence. The complicated alternatives all needed paragraphs.</p>
+
+  <h2>2. Trace before metrics, always.</h2>
+
+  <p>AEGIS writes a typed JSONL event log first and derives every aggregate metric from it in a separate, second pass. That structure cost about an extra week up front compared with writing summaries inline. It paid for itself by the third experiment.</p>
+
+  <p>The point isn't that traces are nice to have. The point is that <em>compressing before you understand</em> is the most expensive mistake in evaluation work. You don't yet know what slice you're going to want. You don't know which axis will turn out to matter. The first time someone asks you "<em>how does this break out by attack class versus by encoding style?</em>" — and they will — you want to be able to re-aggregate from the raw events, not re-run the whole experiment because you only kept the totals.</p>
+
+  <p>The general lesson, which I'd already learned in a different form working on observability: <strong>the lowest-cardinality thing you can ship that's still individually informative wins</strong>. For AEGIS that was per-decision events. For incident response it's structured log lines. For training data it's per-session records. Anything coarser is a trap.</p>
+
+  <h2>3. Don't trust the dashboard.</h2>
+
+  <p>I built a Streamlit app on top of the trace data for visual exploration — policy outcome comparison, benchmark summaries, trace inspection. It got used. It also nearly became a problem.</p>
+
+  <p>The temptation, once a dashboard exists, is to use it as the source of truth. Re-runs feel slower than reloading the dashboard. New questions get answered in the dashboard's UI shortcuts rather than in the trace data. After a while, the dashboard's view <em>becomes</em> the result, and the underlying trace is whatever the dashboard happens to be querying right now.</p>
+
+  <p>I caught this early because of one rule I committed to from the start: <strong>if a dashboard number ever disagrees with a manual aggregate of <span class="mono">trace.jsonl</span>, the dashboard is wrong by construction</strong>. That phrasing is deliberate. The dashboard isn't an unreliable narrator; it is, by construction, a viewer over the trace. The trace cannot be wrong relative to itself. Once you frame it that way, "trust the dashboard" becomes obviously the wrong instinct.</p>
+
+  <p>I'd have been better off if the dashboard had a watermark on every chart that read <em>"derived view, not source of truth."</em> I might still add it.</p>
+
+  <h2>4. The nine percent that survives is the most useful number.</h2>
+
+  <p>The headline AEGIS benchmark drops attack-success from 82 % under a permissive baseline to 9 % under the layered defense. The interesting work happens in that 9 %.</p>
+
+  <p>It would have been easy to spend the back half of the project tightening the threshold or expanding the keyword list to push 9 % down to 6 %. That would have been incremental work on the layers I already had. The trace told a different story. The 9 % wasn't a marginally-tougher version of the 23 %. It was a structurally different population — payloads constructed from benign-looking primitives, encoded to evade n-gram matching, and adversarial prompts that exploited the threshold itself by sitting just below it.</p>
+
+  <p>The lesson: <strong>the residual after a defense isn't a smaller version of the same threat. It's a different threat.</strong> Optimising the existing layers further only catches more of the things you were already catching. The next round of work has to be a different layer entirely. The 9 % is what tells you which layer.</p>
+
+  <p>This shows up in production security work too. The vulnerabilities your scanner finds are never the vulnerabilities your scanner is going to keep missing.</p>
+
+  <h2>5. Hold the LLM integration.</h2>
+
+  <p>Plugging a real LLM into AEGIS was the obvious next step from week one. I deliberately didn't.</p>
+
+  <p>The reason was epistemic hygiene. As soon as a real LLM is in the loop, every disagreement between two runs has two possible explanations: the guard layer changed, or the model did. With both moving simultaneously you can't isolate either. The deterministic demo runner sounds like a placeholder. It's actually a discipline — it forced me to validate that the engine logic, the corpus, the scoring pipeline, and the trace format were all stable on their own terms before I added the source of variance everyone in the field already accepts as unavoidable.</p>
+
+  <p>By the time the live-LLM adapter goes in (it will, soon), the metrics will gain a model-version axis on top of an apparatus that's already been argued with and trusted. That's a much better starting position than building both at once and trying to tell them apart afterwards.</p>
+
+  <p>General form of the lesson: <em>add a source of variance only after you've stabilised everything that didn't need to vary</em>.</p>
+
+  <h2>6. Property-based fuzzing surfaces what unit tests can't.</h2>
+
+  <p>Each guard layer in AEGIS is exercised by <a href="https://hypothesis.works/" target="_blank" rel="noreferrer">Hypothesis</a> with generated payloads. Hypothesis surfaced edge cases the unit tests would never have hit: Unicode normalisation differences between input and corpus, regex catastrophic backtracking on adversarial inputs, threshold instabilities at the boundary where a similarity score sits two epsilons away from the cutoff and small perturbations flip the decision.</p>
+
+  <p>None of those were in any test plan I wrote. They couldn't be — I didn't know they existed. The fuzzer found them by being more imaginative about input space than I was.</p>
+
+  <p>What I underestimated about property-based testing isn't that it finds bugs. The literature is full of that claim. What I underestimated is that <strong>each fuzzer finding becomes a permanent regression test</strong>. Hypothesis writes the failing input out as a deterministic seed, you commit it, and it runs forever. The fuzzer is a long-term net under the project, not a one-time scan.</p>
+
+  <p>If I were starting AEGIS today, the property tests would go in on day one, not at the point where I had something to test.</p>
+
+  <h2>What I'd do differently</h2>
+
+  <p>One thing, mainly: I'd document the design decisions in the repo as the project went, instead of writing them up at the end. By the time I was assembling the case study a lot of the reasoning had already faded into <em>"of course it's like that"</em>. The most useful artefact for a future maintainer — including a future me — is the chain of small choices that <em>weren't</em> obvious at the time. I lost most of that reasoning by deferring the writing.</p>
+
+  <p>Everything else I'd do the same way.</p>
+
+</BlogPost>
