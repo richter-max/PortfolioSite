@@ -36,6 +36,18 @@ const items = [
       </a>
     ))}
   </div>
+  <button
+    type="button"
+    class="nav-cmdk"
+    aria-label="Open command palette"
+    data-cmdk-trigger
+  >
+    <span class="nav-cmdk__keys">
+      <kbd>⌘</kbd><kbd>K</kbd>
+    </span>
+    <span class="nav-cmdk__label" aria-hidden="true">SEARCH</span>
+  </button>
+
   <div class="nav-status">
     <span class="nav-dot"></span>
     ALLGÄU · CET
@@ -109,6 +121,57 @@ const items = [
     display: inline-block;
   }
 
+  /* ⌘K trigger — discoverability hint for the command palette.
+     The whole row is clickable; on touch it's a search button, on
+     desktop it doubles as a kbd-shortcut affordance. */
+  .nav-cmdk {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 10px 5px 8px;
+    background: transparent;
+    border: 1px solid rgba(243, 241, 236, 0.10);
+    border-radius: 6px;
+    color: var(--ink-mid);
+    cursor: pointer;
+    transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+    margin-left: auto;
+    margin-right: 24px;
+  }
+  .nav-cmdk:hover {
+    border-color: rgba(243, 241, 236, 0.24);
+    color: var(--ink);
+    background: rgba(243, 241, 236, 0.03);
+  }
+  .nav-cmdk__keys {
+    display: inline-flex;
+    gap: 2px;
+  }
+  .nav-cmdk__keys kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 4px;
+    border: 1px solid rgba(243, 241, 236, 0.12);
+    border-radius: 3px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    line-height: 1;
+    color: var(--ink-mid);
+  }
+  .nav-cmdk:hover .nav-cmdk__keys kbd {
+    border-color: rgba(243, 241, 236, 0.28);
+    color: var(--ink);
+  }
+  .nav-cmdk__label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    color: inherit;
+  }
+
   /* Mobile: hide middle items, keep mark + status */
   @media (max-width: 720px) {
     .nav-items {
@@ -121,6 +184,8 @@ const items = [
     .nav-status {
       display: none;
     }
+    .nav-cmdk { margin-right: 0; padding: 5px 8px; }
+    .nav-cmdk__label { display: none; }
   }
   @media (max-width: 480px) {
     .site-nav { padding: 0 16px; }
@@ -138,6 +203,24 @@ const items = [
   };
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
+
+  // ⌘K trigger button → opens the React command-palette island via
+  // the global it registers on mount. window.__openCmdk is set up by
+  // CommandPalette.jsx; the trigger may render before the island has
+  // hydrated, so we fall back to dispatching the keyboard shortcut.
+  document.addEventListener('click', (e) => {
+    const t = (e.target as Element)?.closest('[data-cmdk-trigger]');
+    if (!t) return;
+    e.preventDefault();
+    if (typeof (window as any).__openCmdk === 'function') {
+      (window as any).__openCmdk();
+    } else {
+      // Island not hydrated yet — synthesize a Cmd+K key event.
+      document.dispatchEvent(new KeyboardEvent('keydown', {
+        key: 'k', metaKey: true, bubbles: true,
+      }));
+    }
+  });
 
   // Active-section tracking via IntersectionObserver.
   // Marks the link whose section is currently most visible.

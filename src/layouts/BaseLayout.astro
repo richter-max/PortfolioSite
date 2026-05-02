@@ -5,6 +5,8 @@ import '@styles/tokens.css';
 import '@styles/base.css';
 import { SITE } from '@data/site';
 import { ViewTransitions } from 'astro:transitions';
+import CommandPalette from '@components/cmdk/CommandPalette.jsx';
+import liveStats from '@data/live-stats.json';
 
 interface Props {
   title?: string;
@@ -135,6 +137,12 @@ const siteLd = {
     <div id="vignette" aria-hidden="true"></div>
 
     <slot />
+
+    <!-- ── Command palette ────────────────────────────────────────────────
+         Cmd+K / Ctrl+K opens an overlay search across pages, actions,
+         live data and socials. transition:persist so the React island
+         hydrates once and survives view transitions. -->
+    <CommandPalette live={liveStats} client:idle transition:persist />
 
     <!-- ── Custom cursor ──────────────────────────────────────────────────
          Dot + lagging ring with magnetic pull on links/buttons.

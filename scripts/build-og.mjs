@@ -77,6 +77,13 @@ const PAGES = [
   },
   // Blog
   {
+    slug: 'blog-greenloop',
+    kicker: 'BLOG · FIELD · MAY 2026',
+    title:  'The trade.',
+    dek:    'Crewing a backyard ultra one week before my own race. Loyalty in the form of a folding chair.',
+    meta:   '≈ 5 MIN · BLOG',
+  },
+  {
     slug: 'blog-shenzhen',
     kicker: 'BLOG · NOTE · APRIL 2026',
     title:  'Two Weeks in Shenzhen.',

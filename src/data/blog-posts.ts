@@ -16,6 +16,15 @@ export interface BlogPost {
 
 export const posts: BlogPost[] = [
   {
+    slug: 'crewing-greenloop',
+    title: 'The trade.',
+    description:
+      "He's crewing me at Kraichgau. I'm crewing him at Greenloop. One week between — a fair exchange between two people on parallel arcs. Notes before the start line.",
+    pubDate: '2026-05-15',
+    category: 'FIELD',
+    readTime: '5 min',
+  },
+  {
     slug: 'two-weeks-in-shenzhen',
     title: 'Two weeks in Shenzhen.',
     description:
