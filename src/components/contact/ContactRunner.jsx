@@ -1,7 +1,7 @@
-// ContactRunner.jsx — 3D runner
-// Lädt das Draco-komprimierte richter.opt.glb (~6 MB statt 55 MB),
-// rendert mit Three.js + RoomEnvironment IBL für korrekte PBR-Farben,
-// langsame Y-Rotation. Camera fitted automatisch ans Modell.
+// ContactRunner.jsx — slow-rotating 3D figure on the contact section.
+// Loads the Draco-compressed richter.opt.glb (~6 MB instead of 55 MB),
+// renders with Three.js + RoomEnvironment IBL for accurate PBR colour,
+// slow Y-rotation. Camera is auto-fit to the model's bounding box.
 import { useEffect, useRef } from 'react';
 
 const MODEL_URL  = '/models/richter.opt.glb';

@@ -1,8 +1,10 @@
-// Hero.jsx — Three-stage portrait morph
-// Stage 1 (0–30%):  portrait-1 — clean chest-up head + name + countdown
-// Stage 2 (40–65%): portrait-2 — laptop side-profile + "Building."
-// Stage 3 (75–100%): portrait-3 — runner silhouette on topo + "Running."
-// Background flips from dark → dark → cream for stage 3.
+// Hero.jsx — Three-stage scroll-driven hero.
+// Imagery is currently disabled (pending redesign). What still ships:
+//   - Stage progression drives the eyebrow text and the bg-color flip
+//     from dark → dark → cream across stages 1 → 2 → 3.
+//   - Stage 1 also surfaces the Kraichgau countdown + LAST RUN line.
+// When new hero imagery lands, plug it into the three Stage* slots
+// gated by stage1Visible / stage2Visible / stage3Visible.
 import { useEffect, useRef, useState } from 'react';
 
 // Returns 0..1 opacity for a stage, given scroll progress.

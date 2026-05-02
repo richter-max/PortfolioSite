@@ -55,7 +55,10 @@
       "Bash(curl -s https://api.github.com/repos/richter-max/attack-surface-scanner)",
       "Bash(curl -s \"https://raw.githubusercontent.com/richter-max/aegis/main/README.md\")",
       "Bash(curl -s \"https://raw.githubusercontent.com/richter-max/attack-surface-scanner/main/README.md\")",
-      "Bash(git pull *)"
+      "Bash(git pull *)",
+      "Bash(git rm *)",
+      "Bash(sed -i '' \"s|from '~/lib/contact'|from '@lib/contact'|g\" src/components/contact/ContactScene.jsx)",
+      "Bash(sed -i '' \"s|from '~/data/site'|from '@data/site'|g\" src/lib/contact.ts)"
     ]
   }
 }

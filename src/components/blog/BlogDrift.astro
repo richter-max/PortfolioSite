@@ -7,7 +7,7 @@
 // feed reads from). Adding a new post there makes it appear here
 // automatically — newest first, with a YYYY · MM date label derived
 // from the ISO pubDate.
-import { sortedPosts } from '@data/blog-posts';
+import { sortedPosts, kindColor, kindLabel } from '@data/blog-posts';
 
 const posts = sortedPosts().map((p) => {
   const d = new Date(p.pubDate);
@@ -20,18 +20,6 @@ const posts = sortedPosts().map((p) => {
     href:    `/blog/${p.slug}`,
   };
 });
-
-const kindColor = {
-  SEC: '#2E6BFF',
-  FLD: '#E8A23C',
-  NTE: '#A8A6A0',
-} as const;
-
-const kindLabel = {
-  SEC: 'SECURITY',
-  FLD: 'FIELD',
-  NTE: 'NOTE',
-} as const;
 
 // If we only have a handful of posts, duplicate twice instead of
 // once so the marquee still feels populated and loops smoothly. The

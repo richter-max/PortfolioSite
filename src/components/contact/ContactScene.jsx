@@ -1,7 +1,7 @@
 // ContactScene.jsx — Underline form + 3D runner + Web3Forms submission
 import { useEffect, useRef, useState } from 'react';
 import ContactRunner from './ContactRunner.jsx';
-import { submitContact, validate } from '~/lib/contact';
+import { submitContact, validate } from '@lib/contact';
 
 const MAX_CHARS = 600;
 

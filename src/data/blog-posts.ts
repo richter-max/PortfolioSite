@@ -1,6 +1,23 @@
-// blog-posts.ts — manifest of published blog posts.
-// The RSS feed and any future blog index read from here. Add a new
-// entry when you publish a new post under src/pages/blog/<slug>.astro.
+// blog-posts.ts — manifest of published blog posts + shared kind
+// metadata. The RSS feed, the home-page BlogDrift marquee, and the
+// per-post BlogPost layout all read from here. Add a new entry to
+// `posts` when you publish a new post under src/pages/blog/<slug>.astro.
+
+export type BlogKind = 'SEC' | 'FLD' | 'NTE';
+
+/** Accent colour for each track. Matches the kicker swatch on cards. */
+export const kindColor: Record<BlogKind, string> = {
+  SEC: '#2E6BFF',
+  FLD: '#E8A23C',
+  NTE: '#A8A6A0',
+};
+
+/** Display label for each track. */
+export const kindLabel: Record<BlogKind, string> = {
+  SEC: 'SECURITY',
+  FLD: 'FIELD',
+  NTE: 'NOTE',
+};
 
 export interface BlogPost {
   slug: string;          // matches src/pages/blog/<slug>.astro
@@ -13,7 +30,7 @@ export interface BlogPost {
   /** "≈ 4 min" — used in RSS extras. */
   readTime?: string;
   /** Track for visual styling on the homepage drift + post-meta. */
-  kind: 'SEC' | 'FLD' | 'NTE';
+  kind: BlogKind;
 }
 
 export const posts: BlogPost[] = [

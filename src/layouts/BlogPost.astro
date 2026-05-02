@@ -1,14 +1,15 @@
 ---
-// BlogPost.astro — shared layout for individual blog posts
-// Uses BaseLayout for nav + global styles, adds article-specific layout
-import BaseLayout from './BaseLayout.astro';
+// BlogPost.astro — shared layout for individual blog posts.
+// Uses BaseLayout for nav + global styles, adds article-specific layout.
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { kindColor as KIND_COLOR, kindLabel as KIND_LABEL, type BlogKind } from '@data/blog-posts';
 
 interface Props {
   title: string;
   description?: string;
   date: string;       // formatted: "MARCH 2026"
   readTime: string;   // "4 min"
-  kind: 'SEC' | 'FLD' | 'NTE';
+  kind: BlogKind;
   tags?: string[];
   heroImage?: string;
   ogImage?: string;   // "/og/blog-shenzhen.jpg" — falls back to default
@@ -16,8 +17,8 @@ interface Props {
 
 const { title, description, date, readTime, kind, tags = [], heroImage, ogImage } = Astro.props;
 
-const kindLabel = { SEC: 'SECURITY', FLD: 'FIELD', NTE: 'NOTE' }[kind];
-const kindColor = { SEC: '#2E6BFF', FLD: '#E8A23C', NTE: '#A8A6A0' }[kind];
+const kindLabel = KIND_LABEL[kind];
+const kindColor = KIND_COLOR[kind];
 ---
 
 <BaseLayout

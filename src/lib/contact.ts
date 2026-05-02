@@ -3,7 +3,7 @@
 // Set PUBLIC_WEB3FORMS_KEY in .env; sign up at web3forms.com/#start using
 // max.richter.dev@proton.me — every submission is forwarded to that address.
 
-import { SITE } from '~/data/site';
+import { SITE } from '@data/site';
 
 export interface ContactPayload {
   name: string;
