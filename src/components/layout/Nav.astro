@@ -43,7 +43,12 @@ const items = [
     data-cmdk-trigger
   >
     <span class="nav-cmdk__keys">
-      <kbd>⌘</kbd><kbd>K</kbd>
+      <span class="kbd-set kbd-set--mac">
+        <kbd>⌘</kbd><kbd>K</kbd>
+      </span>
+      <span class="kbd-set kbd-set--pc">
+        <kbd>Ctrl</kbd><kbd>K</kbd>
+      </span>
     </span>
     <span class="nav-cmdk__label" aria-hidden="true">SEARCH</span>
   </button>
@@ -62,9 +67,14 @@ const items = [
     right: 0;
     height: 72px;
     z-index: 100;
-    display: flex;
+    /* Explicit grid: mark | section-links | cmdk | status.
+       The 1fr column eats the space between the brand mark and the
+       right-hand cluster, which is what was clipping into "MR." with
+       the previous flex+space-between+margin-auto combo. */
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
     align-items: center;
-    justify-content: space-between;
+    column-gap: 32px;
     padding: 0 40px;
     background: transparent;
     border-bottom: 1px solid transparent;
@@ -90,6 +100,7 @@ const items = [
   .nav-items {
     display: flex;
     gap: 28px;
+    justify-content: center;
   }
   .nav-link {
     font-family: var(--font-mono);
@@ -135,8 +146,6 @@ const items = [
     color: var(--ink-mid);
     cursor: pointer;
     transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
-    margin-left: auto;
-    margin-right: 24px;
   }
   .nav-cmdk:hover {
     border-color: rgba(243, 241, 236, 0.24);
@@ -147,6 +156,19 @@ const items = [
     display: inline-flex;
     gap: 2px;
   }
+  /* Two key-sets render in the markup; .is-pc on <html> swaps them.
+     Default state shows the Mac glyphs because the inline detection
+     script only adds .is-pc when the platform is non-Apple, so on
+     iOS / macOS the default render is already correct without a
+     class flip flicker. */
+  .kbd-set {
+    display: inline-flex;
+    gap: 2px;
+  }
+  .kbd-set--pc { display: none; }
+  :global(html.is-pc) .kbd-set--mac { display: none; }
+  :global(html.is-pc) .kbd-set--pc  { display: inline-flex; }
+
   .nav-cmdk__keys kbd {
     display: inline-flex;
     align-items: center;

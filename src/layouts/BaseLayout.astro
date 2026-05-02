@@ -57,6 +57,17 @@ const siteLd = {
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <!-- Platform detection runs before the page paints so the Cmd+K
+         label in the nav renders with the right modifier glyph (⌘ on
+         Apple devices, "Ctrl" elsewhere) without a class-flip flash. -->
+    <script is:inline>
+      try {
+        var ua = navigator.userAgent || navigator.platform || '';
+        if (!/Mac|iPhone|iPad|iPod/i.test(ua)) {
+          document.documentElement.classList.add('is-pc');
+        }
+      } catch {}
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
 
