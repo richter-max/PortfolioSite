@@ -14,12 +14,14 @@
     "optimize:glb": "node scripts/optimize-glb.mjs",
     "optimize:assets": "npm run optimize:images && npm run optimize:glb",
     "build:og": "node scripts/build-og.mjs",
+    "build:favicons": "node scripts/build-favicons.mjs",
     "format": "prettier --write \"**/*.{astro,js,jsx,ts,tsx,css,md,json}\"",
     "format:check": "prettier --check \"**/*.{astro,js,jsx,ts,tsx,css,md,json}\"",
     "typecheck": "astro check"
   },
   "dependencies": {
     "@astrojs/react": "^3.6.2",
+    "@astrojs/rss": "^4.0.18",
     "@astrojs/sitemap": "^3.2.1",
     "@studio-freight/lenis": "^1.0.42",
     "@types/react": "^18.3.12",

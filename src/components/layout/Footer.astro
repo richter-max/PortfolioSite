@@ -1,9 +1,10 @@
 ---
 // Footer.astro
 const socials = [
-  { label: 'GITHUB', href: 'https://github.com/richter-max' },
+  { label: 'GITHUB',   href: 'https://github.com/richter-max' },
   { label: 'LINKEDIN', href: 'https://www.linkedin.com/in/maximilian-richter-40697a298' },
-  { label: 'STRAVA', href: 'https://strava.app.link/mIlXsvnJL1b' },
+  { label: 'STRAVA',   href: 'https://strava.app.link/mIlXsvnJL1b' },
+  { label: 'RSS',      href: '/rss.xml' },
 ];
 const legal = [
   { label: 'IMPRESSUM',   href: '/impressum' },
@@ -20,9 +21,12 @@ const legal = [
     <div class="row">
       <div class="mark">MR.</div>
       <div class="socials">
-        {socials.map((s) => (
-          <a href={s.href} target="_blank" rel="noreferrer">{s.label} →</a>
-        ))}
+        {socials.map((s) => {
+          const external = s.href.startsWith('http');
+          return external
+            ? <a href={s.href} target="_blank" rel="noreferrer">{s.label} →</a>
+            : <a href={s.href}>{s.label} →</a>;
+        })}
       </div>
       <div class="copy">
         © 2026 Maximilian Richter<br />
