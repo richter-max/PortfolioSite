@@ -337,7 +337,11 @@ const driftPosts = Array.from({ length: dupFactor }, () => posts).flat();
   if (!viewport || !track || !progress) throw new Error('BlogDrift: missing elements');
 
   // ── Constants ──────────────────────────────────────────────────────
-  const DRIFT_SPEED = 0.4; // px per frame at 60fps — slow ambient drift
+  // 1.6 px/frame ≈ 96 px/s at 60fps. With ~600px per card-plus-gap
+  // and seven posts, that's a full cycle in ~45 s — brisk enough that
+  // a visitor sees every title within a typical scroll-pause, slow
+  // enough that titles are still readable as they pass.
+  const DRIFT_SPEED = 1.6;
   // Track duplicates the post list `dupFactor` times so the marquee
   // wraps seamlessly. One loop length = total width / dupFactor.
   const dupFactor = parseInt(track.dataset.dupFactor || '2', 10);
