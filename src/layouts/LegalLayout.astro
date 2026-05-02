@@ -9,12 +9,18 @@ interface Props {
   title: string;
   description?: string;
   kicker: string;
+  ogImage?: string;
 }
 
-const { title, description, kicker } = Astro.props;
+const { title, description, kicker, ogImage } = Astro.props;
 ---
 
-<BaseLayout title={`${title} · richtermax.com`} description={description} noindex>
+<BaseLayout
+  title={`${title} · richtermax.com`}
+  description={description}
+  ogImage={ogImage}
+  noindex
+>
   <Nav />
   <main id="main" class="legal">
     <article class="prose">

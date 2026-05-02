@@ -11,15 +11,21 @@ interface Props {
   kind: 'SEC' | 'FLD' | 'NTE';
   tags?: string[];
   heroImage?: string;
+  ogImage?: string;   // "/og/blog-shenzhen.jpg" — falls back to default
 }
 
-const { title, description, date, readTime, kind, tags = [], heroImage } = Astro.props;
+const { title, description, date, readTime, kind, tags = [], heroImage, ogImage } = Astro.props;
 
 const kindLabel = { SEC: 'SECURITY', FLD: 'FIELD', NTE: 'NOTE' }[kind];
 const kindColor = { SEC: '#2E6BFF', FLD: '#E8A23C', NTE: '#A8A6A0' }[kind];
 ---
 
-<BaseLayout title={`${title} — Maximilian Richter`} description={description} bodyClass="is-reading">
+<BaseLayout
+  title={`${title} — Maximilian Richter`}
+  description={description}
+  ogImage={ogImage}
+  bodyClass="is-reading"
+>
 
   <article class="post">
 

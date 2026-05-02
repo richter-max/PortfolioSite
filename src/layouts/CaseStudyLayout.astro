@@ -14,12 +14,18 @@ interface Props {
   status: string;
   read: string;        // "≈ 5 min"
   description?: string;
+  ogImage?: string;    // "/og/aegis.jpg" — falls back to default
 }
 
-const { index, kicker, title, dek, role, period, status, read, description } = Astro.props;
+const { index, kicker, title, dek, role, period, status, read, description, ogImage } = Astro.props;
 ---
 
-<BaseLayout title={`${title} — Case Study · Maximilian Richter`} description={description ?? dek} bodyClass="is-reading">
+<BaseLayout
+  title={`${title} — Case Study · Maximilian Richter`}
+  description={description ?? dek}
+  ogImage={ogImage}
+  bodyClass="is-reading"
+>
 
   <div class="cs">
 
