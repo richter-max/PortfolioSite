@@ -12,6 +12,8 @@ export interface BlogPost {
   category?: string;
   /** "≈ 4 min" — used in RSS extras. */
   readTime?: string;
+  /** Track for visual styling on the homepage drift + post-meta. */
+  kind: 'SEC' | 'FLD' | 'NTE';
 }
 
 export const posts: BlogPost[] = [
@@ -23,6 +25,7 @@ export const posts: BlogPost[] = [
     pubDate: '2026-05-15',
     category: 'FIELD',
     readTime: '5 min',
+    kind: 'FLD',
   },
   {
     slug: 'ausbildung-first',
@@ -32,6 +35,7 @@ export const posts: BlogPost[] = [
     pubDate: '2026-04-30',
     category: 'NOTE',
     readTime: '6 min',
+    kind: 'NTE',
   },
   {
     slug: 'building-aegis',
@@ -41,6 +45,7 @@ export const posts: BlogPost[] = [
     pubDate: '2026-04-25',
     category: 'SECURITY',
     readTime: '8 min',
+    kind: 'SEC',
   },
   {
     slug: 'public-by-accident',
@@ -50,6 +55,7 @@ export const posts: BlogPost[] = [
     pubDate: '2026-04-20',
     category: 'SECURITY',
     readTime: '7 min',
+    kind: 'SEC',
   },
   {
     slug: 'why-not-notion',
@@ -59,6 +65,7 @@ export const posts: BlogPost[] = [
     pubDate: '2026-04-15',
     category: 'SECURITY',
     readTime: '5 min',
+    kind: 'SEC',
   },
   {
     slug: 'tt-season-2025-26',
@@ -68,6 +75,7 @@ export const posts: BlogPost[] = [
     pubDate: '2026-04-08',
     category: 'FIELD',
     readTime: '5 min',
+    kind: 'FLD',
   },
   {
     slug: 'two-weeks-in-shenzhen',
@@ -77,6 +85,7 @@ export const posts: BlogPost[] = [
     pubDate: '2026-03-15',
     category: 'NOTE',
     readTime: '4 min',
+    kind: 'NTE',
   },
 ];
 

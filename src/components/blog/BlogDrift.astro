@@ -1,85 +1,44 @@
 ---
 // BlogDrift.astro
-// "The Drift" — Posts drift horizontally. Mouse hover pauses and focuses.
-// Click triggers navigation to the post page.
+// "The Drift" — published posts drift horizontally. Hover pauses and
+// focuses one card; click navigates to the post.
 //
-// USAGE in index.astro:
-//   import BlogDrift from '../components/BlogDrift.astro';
-//   <BlogDrift />  // between MassiveNumbers and ContactScene
+// Posts come from src/data/blog-posts.ts (the same manifest the RSS
+// feed reads from). Adding a new post there makes it appear here
+// automatically — newest first, with a YYYY · MM date label derived
+// from the ISO pubDate.
+import { sortedPosts } from '@data/blog-posts';
 
-interface Post {
-  slug: string;
-  kind: 'SEC' | 'FLD' | 'NTE';
-  date: string;    // YYYY · MM
-  title: string;
-  excerpt: string;
-  href: string;
-}
-
-// Placeholder posts — replace with your actual content later.
-// Mix of all three tracks: Security, Field (endurance), Notes (lessons).
-const posts: Post[] = [
-  {
-    slug: 'two-weeks-in-shenzhen',
-    kind: 'NTE',
-    date: '2026 · 03',
-    title: 'Two weeks in Shenzhen',
-    excerpt: 'An exchange program, a drone license, and the realization that the technical training was the least interesting thing I brought home.',
-    href: '/blog/two-weeks-in-shenzhen',
-  },
-  {
-    slug: 'rag-injection',
-    kind: 'SEC',
-    date: '2026 · 10',
-    title: 'Prompt Injection in RAG',
-    excerpt: 'Why retrieval-augmented pipelines leak intent before they leak data.',
-    href: '#',
-  },
-  {
-    slug: 'athletes-engineers',
-    kind: 'NTE',
-    date: '2026 · 09',
-    title: 'Athletes as Engineers',
-    excerpt: 'Taper weeks taught me more about shipping than any sprint did.',
-    href: '#',
-  },
-  {
-    slug: 'berlin-report',
-    kind: 'FLD',
-    date: '2026 · 09',
-    title: 'Berlin Race Report',
-    excerpt: 'Three hours, flat. No pacer. No music. One pact with myself.',
-    href: '#',
-  },
-  {
-    slug: 'agent-threat-model',
-    kind: 'SEC',
-    date: '2026 · 08',
-    title: 'Threat Modeling AI Agents',
-    excerpt: 'A framework for evaluating agentic systems before they ship.',
-    href: '#',
-  },
-  {
-    slug: 'zone-two',
-    kind: 'FLD',
-    date: '2026 · 07',
-    title: 'The Zone Two Question',
-    excerpt: 'Cheap watts, expensive patience — why aerobic base still wins.',
-    href: '#',
-  },
-];
+const posts = sortedPosts().map((p) => {
+  const d = new Date(p.pubDate);
+  return {
+    slug:    p.slug,
+    kind:    p.kind,
+    date:    `${d.getUTCFullYear()} · ${String(d.getUTCMonth() + 1).padStart(2, '0')}`,
+    title:   p.title.replace(/\.$/, ''), // titles ship with trailing periods; strip for cards
+    excerpt: p.description,
+    href:    `/blog/${p.slug}`,
+  };
+});
 
 const kindColor = {
   SEC: '#2E6BFF',
   FLD: '#E8A23C',
   NTE: '#A8A6A0',
-};
+} as const;
 
 const kindLabel = {
   SEC: 'SECURITY',
   FLD: 'FIELD',
   NTE: 'NOTE',
-};
+} as const;
+
+// If we only have a handful of posts, duplicate twice instead of
+// once so the marquee still feels populated and loops smoothly. The
+// JS layer divides scrollWidth by the duplication factor to find
+// the loop length, so we hand it that factor too.
+const dupFactor = posts.length < 5 ? 3 : 2;
+const driftPosts = Array.from({ length: dupFactor }, () => posts).flat();
 ---
 
 <section id="blog" class="drift-section">
@@ -100,9 +59,9 @@ const kindLabel = {
 
   {/* ── Drift track ─────────────────────────────────────────────────── */}
   <div class="drift-viewport" id="drift-viewport">
-    <div class="drift-track" id="drift-track">
-      {/* Duplicate posts array so the loop wraps seamlessly */}
-      {[...posts, ...posts].map((post, i) => {
+    <div class="drift-track" id="drift-track" data-dup-factor={dupFactor}>
+      {/* Posts are duplicated by `dupFactor` so the loop wraps seamlessly. */}
+      {driftPosts.map((post, i) => {
         const color = kindColor[post.kind];
         const label = kindLabel[post.kind];
         return (
@@ -379,7 +338,10 @@ const kindLabel = {
 
   // ── Constants ──────────────────────────────────────────────────────
   const DRIFT_SPEED = 0.4; // px per frame at 60fps — slow ambient drift
-  const LOOP_LENGTH = track.scrollWidth / 2; // duplicated, so half = one loop
+  // Track duplicates the post list `dupFactor` times so the marquee
+  // wraps seamlessly. One loop length = total width / dupFactor.
+  const dupFactor = parseInt(track.dataset.dupFactor || '2', 10);
+  const LOOP_LENGTH = track.scrollWidth / dupFactor;
 
   // ── State ──────────────────────────────────────────────────────────
   let offset   = 0;
