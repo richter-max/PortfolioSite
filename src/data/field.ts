@@ -35,7 +35,7 @@ export const fieldEntries: FieldEntry[] = [
     location: 'BERLIN · DE',
     date: 'SEP 2026',
     conditions:
-      'Fastest course in the world. Target 4:16 per kilometer held across 42.195km. No music, no pacer, no fade.',
+      'Fastest course in the world. Target 4:16 per kilometer held across 42.195km — sub three hours, with a clean second half.',
     image: '/img/opt/berlin-marathon-1920.avif',
     imagePosition: 'center 40%',
     stats: [
@@ -49,11 +49,11 @@ export const fieldEntries: FieldEntry[] = [
     location: 'BAYERN · DE',
     date: '2025/26 SEASON',
     conditions:
-      'Ongoing league play. Current rating 1740, climbing toward 1800. Same discipline as the endurance block — reps, film, quiet volume.',
+      'Ongoing league play with DJK Seifriedsberg. Current rating 1757, climbing toward 1800. Side sport, kept honest with weekly drills.',
     image: '/img/opt/tischtennis-1280.avif',
     imagePosition: 'center 62%',
     stats: [
-      { value: '1,740', label: 'CURRENT' },
+      { value: '1,757', label: 'CURRENT' },
       { value: '1,800', label: 'TARGET' },
     ],
   },

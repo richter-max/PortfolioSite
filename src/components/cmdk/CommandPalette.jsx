@@ -104,7 +104,7 @@ function buildItems(live) {
     items.push({
       id: 'live-sessions',
       label: `Sessions / ${new Date().getFullYear()} — ${live.strava.sessionsThisYear}`,
-      hint: 'Every swim, bike, run, lift',
+      hint: 'Every logged session this year',
       section: 'LIVE',
       kind: 'info',
     });
