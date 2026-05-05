@@ -75,6 +75,14 @@ const PAGES = [
     dek:    'The portfolio site, audited by its own author. Assets, adversaries, mitigations.',
     meta:   '≈ 6 MIN · LIVE',
   },
+  // Blog index
+  {
+    slug: 'blog',
+    kicker: 'FIELD NOTES · ARCHIVE',
+    title:  'All posts.',
+    dek:    'Long-form on security, endurance, and the engineering decisions behind both.',
+    meta:   'RICHTERMAX.COM/BLOG',
+  },
   // Blog
   {
     slug: 'blog-greenloop',

@@ -33,16 +33,34 @@ const driftPosts = Array.from({ length: dupFactor }, () => posts).flat();
 
   {/* ── Section header ─────────────────────────────────────────────── */}
   <div class="drift-header">
-    <div class="drift-label">
-      <span class="drift-label__num">03</span>
-      <span class="drift-label__rule"></span>
-      <span class="drift-label__title">FIELD NOTES</span>
+    <div class="drift-header__left">
+      <div class="drift-label">
+        <span class="drift-label__num">03</span>
+        <span class="drift-label__rule"></span>
+        <span class="drift-label__title">FIELD NOTES</span>
+      </div>
+      <h2 class="drift-heading">Currently thinking<br/>about —</h2>
+      <p class="drift-sub">
+        Long-form essays on security, endurance, and what one teaches the other.<br/>
+        Hover to pause. Click to read.
+      </p>
     </div>
-    <h2 class="drift-heading">Currently thinking<br/>about —</h2>
-    <p class="drift-sub">
-      Long-form essays on security, endurance, and what one teaches the other.<br/>
-      Hover to pause. Click to read.
-    </p>
+
+    {/* Sticky / always-visible nav into the full archive. Sits in
+        the header on the right at desktop widths, drops to a row of
+        its own under the dek on mobile. */}
+    <a class="drift-anchor" href="/blog" data-cursor-hover>
+      <div class="drift-anchor__top">
+        <span class="drift-anchor__dot"></span>
+        <span class="drift-anchor__kicker">ARCHIVE</span>
+      </div>
+      <div class="drift-anchor__count">{posts.length}</div>
+      <div class="drift-anchor__label">posts in total</div>
+      <div class="drift-anchor__cta">
+        <span>VIEW ALL</span>
+        <span class="drift-anchor__arrow">→</span>
+      </div>
+    </a>
   </div>
 
   {/* ── Drift track ─────────────────────────────────────────────────── */}
@@ -95,11 +113,95 @@ const driftPosts = Array.from({ length: dupFactor }, () => posts).flat();
     overflow: hidden;
   }
 
-  /* ── Header (constrained width) ─────────────────────────────────── */
+  /* ── Header (constrained width, two-column on desktop) ──────────── */
   .drift-header {
     max-width: 1440px;
     margin: 0 auto 72px;
     padding: 0 40px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 64px;
+    align-items: end;
+  }
+  .drift-header__left {
+    min-width: 0;
+  }
+
+  /* Right-side anchor card — always visible, links to /blog */
+  .drift-anchor {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 24px 28px;
+    min-width: 220px;
+    background: rgba(243, 241, 236, 0.02);
+    border: 1px solid rgba(243, 241, 236, 0.10);
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--ink-mid);
+    transition:
+      border-color 0.3s ease,
+      background 0.3s ease,
+      transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .drift-anchor:hover {
+    border-color: var(--accent);
+    background: rgba(46, 107, 255, 0.06);
+    transform: translateY(-2px);
+  }
+  .drift-anchor:hover .drift-anchor__cta { color: var(--accent); }
+  .drift-anchor:hover .drift-anchor__arrow { transform: translateX(4px); }
+
+  .drift-anchor__top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 4px;
+  }
+  .drift-anchor__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px rgba(46, 107, 255, 0.5);
+  }
+  .drift-anchor__kicker {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    color: var(--ink);
+  }
+  .drift-anchor__count {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: 56px;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .drift-anchor__label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    color: var(--ink-low);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .drift-anchor__cta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(243, 241, 236, 0.08);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    color: var(--ink);
+    transition: color 0.3s ease;
+  }
+  .drift-anchor__arrow {
+    transition: transform 0.3s ease;
   }
 
   .drift-label {
@@ -309,7 +411,15 @@ const driftPosts = Array.from({ length: dupFactor }, () => posts).flat();
 
   @media (max-width: 900px) {
     .drift-section { padding: 80px 0 64px; }
-    .drift-header { padding: 0 16px; margin-bottom: 48px; }
+    .drift-header {
+      padding: 0 16px;
+      margin-bottom: 48px;
+      grid-template-columns: 1fr;
+      gap: 32px;
+      align-items: stretch;
+    }
+    .drift-anchor { min-width: 0; }
+    .drift-anchor__count { font-size: 44px; }
     .drift-post { padding: 24px 28px; width: min(420px, 85vw); }
     .drift-track { gap: 40px; padding: 20px 40px; }
     .drift-indicator { padding: 0 16px; margin-top: 40px; }
@@ -325,11 +435,12 @@ const driftPosts = Array.from({ length: dupFactor }, () => posts).flat();
   if (!viewport || !track || !progress) throw new Error('BlogDrift: missing elements');
 
   // ── Constants ──────────────────────────────────────────────────────
-  // 1.6 px/frame ≈ 96 px/s at 60fps. With ~600px per card-plus-gap
-  // and seven posts, that's a full cycle in ~45 s — brisk enough that
-  // a visitor sees every title within a typical scroll-pause, slow
-  // enough that titles are still readable as they pass.
-  const DRIFT_SPEED = 1.6;
+  // 1.0 px/frame ≈ 60 px/s at 60fps. The marquee is now a teaser, not
+  // a navigation surface — there's a sticky archive anchor in the
+  // header for users who want the full list. Slower drift makes the
+  // ambient "currently thinking about" reading more contemplative
+  // and gives titles longer screen-time before they slide off.
+  const DRIFT_SPEED = 1.0;
   // Track duplicates the post list `dupFactor` times so the marquee
   // wraps seamlessly. One loop length = total width / dupFactor.
   const dupFactor = parseInt(track.dataset.dupFactor || '2', 10);

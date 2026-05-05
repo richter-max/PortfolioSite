@@ -1,0 +1,380 @@
+---
+// /blog — full editorial archive of every published post.
+// Reads from src/data/blog-posts.ts (the same source the home-page
+// marquee, the RSS feed, and the Cmd+K palette use). New posts that
+// land in that manifest appear here automatically, newest-first.
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Nav from '@components/layout/Nav.astro';
+import Footer from '@components/layout/Footer.astro';
+import { sortedPosts, kindColor, kindLabel } from '@data/blog-posts';
+
+const posts = sortedPosts();
+
+function formatDate(iso: string): string {
+  const d = new Date(iso);
+  return d.toLocaleDateString('en-US', {
+    month: 'long',
+    year: 'numeric',
+  }).toUpperCase();
+}
+
+function shortDate(iso: string): string {
+  const d = new Date(iso);
+  return `${d.getUTCFullYear()} · ${String(d.getUTCMonth() + 1).padStart(2, '0')}`;
+}
+
+const counts = {
+  ALL: posts.length,
+  SEC: posts.filter((p) => p.kind === 'SEC').length,
+  FLD: posts.filter((p) => p.kind === 'FLD').length,
+  NTE: posts.filter((p) => p.kind === 'NTE').length,
+};
+---
+
+<BaseLayout
+  title="Field notes — Maximilian Richter"
+  description="Long-form essays on security, endurance, and engineering. The full archive — newest first."
+  ogImage="/og/blog.jpg"
+  bodyClass="is-reading"
+>
+  <Nav />
+
+  <main id="main" class="archive">
+
+    <header class="archive-header">
+      <div class="archive-header__inner">
+        <div class="archive-kicker">
+          <span class="archive-kicker__num">03</span>
+          <span class="archive-kicker__rule"></span>
+          <span class="archive-kicker__title">FIELD NOTES · ARCHIVE</span>
+        </div>
+        <h1 class="archive-title">All posts.</h1>
+        <p class="archive-dek">
+          Long-form on security, endurance, and the engineering decisions behind both. Hover for context, click to read.
+          Filter by track if you want one over the other.
+        </p>
+
+        <!-- Filter pills (client-side JS, no full reload) -->
+        <div class="archive-filters" role="tablist" aria-label="Filter posts by track">
+          <button class="archive-filter is-active" data-filter="ALL" role="tab" aria-selected="true">
+            <span class="archive-filter__label">ALL</span>
+            <span class="archive-filter__count">{counts.ALL}</span>
+          </button>
+          <button class="archive-filter" data-filter="SEC" role="tab" aria-selected="false" style="--filter-accent: #2E6BFF">
+            <span class="archive-filter__label">SECURITY</span>
+            <span class="archive-filter__count">{counts.SEC}</span>
+          </button>
+          <button class="archive-filter" data-filter="FLD" role="tab" aria-selected="false" style="--filter-accent: #E8A23C">
+            <span class="archive-filter__label">FIELD</span>
+            <span class="archive-filter__count">{counts.FLD}</span>
+          </button>
+          <button class="archive-filter" data-filter="NTE" role="tab" aria-selected="false" style="--filter-accent: #A8A6A0">
+            <span class="archive-filter__label">NOTE</span>
+            <span class="archive-filter__count">{counts.NTE}</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Grid of posts -->
+    <section class="archive-grid">
+      {posts.map((p) => (
+        <a
+          class="post-card"
+          href={`/blog/${p.slug}`}
+          data-kind={p.kind}
+          data-cursor-hover
+          style={`--card-accent: ${kindColor[p.kind]};`}
+        >
+          <div class="post-card__meta">
+            <span class="post-card__kind">{kindLabel[p.kind]}</span>
+            <span class="post-card__sep">·</span>
+            <span class="post-card__date">{shortDate(p.pubDate)}</span>
+            {p.readTime && <>
+              <span class="post-card__sep">·</span>
+              <span class="post-card__read">{p.readTime}</span>
+            </>}
+          </div>
+          <h2 class="post-card__title">{p.title.replace(/\.$/, '')}</h2>
+          <p class="post-card__excerpt">{p.description}</p>
+          <div class="post-card__read-cta">
+            <span>READ</span>
+            <span class="post-card__arrow">→</span>
+          </div>
+        </a>
+      ))}
+    </section>
+
+    <!-- RSS callout -->
+    <div class="archive-rss-row">
+      <div class="archive-rss-row__inner">
+        <div class="archive-rss-row__text">
+          <div class="archive-rss-row__kicker">SUBSCRIBE</div>
+          <div class="archive-rss-row__line">RSS feed at <a href="/rss.xml" data-cursor-hover>richtermax.com/rss.xml</a> — auto-discovered by every modern reader.</div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <Footer />
+</BaseLayout>
+
+<style>
+  .archive {
+    max-width: 100%;
+    padding: 96px 0 0;
+  }
+
+  /* ── Header ──────────────────────────────────────────────────────── */
+  .archive-header {
+    padding: 64px 40px 80px;
+    border-bottom: 1px solid rgba(243, 241, 236, 0.08);
+  }
+  .archive-header__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .archive-kicker {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 40px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    color: var(--ink-low);
+  }
+  .archive-kicker__num,
+  .archive-kicker__title {
+    color: var(--ink);
+  }
+  .archive-kicker__rule {
+    width: 32px;
+    height: 1px;
+    background: rgba(243, 241, 236, 0.16);
+  }
+  .archive-title {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(56px, 9vw, 120px);
+    line-height: 0.96;
+    letter-spacing: -0.045em;
+    color: var(--ink);
+    margin: 0 0 32px;
+  }
+  .archive-dek {
+    font-family: var(--font-display);
+    font-size: 18px;
+    line-height: 1.55;
+    color: var(--ink-mid);
+    margin: 0 0 56px;
+    letter-spacing: -0.005em;
+    max-width: 56ch;
+  }
+
+  /* ── Filter pills ───────────────────────────────────────────────── */
+  .archive-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .archive-filter {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 100px;
+    border: 1px solid rgba(243, 241, 236, 0.10);
+    background: transparent;
+    color: var(--ink-mid);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    cursor: pointer;
+    transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+  }
+  .archive-filter:hover {
+    border-color: rgba(243, 241, 236, 0.24);
+    color: var(--ink);
+  }
+  .archive-filter.is-active {
+    border-color: var(--filter-accent, var(--ink));
+    color: var(--filter-accent, var(--ink));
+    background: rgba(243, 241, 236, 0.04);
+  }
+  .archive-filter__count {
+    font-size: 9px;
+    color: var(--ink-low);
+    padding: 0 6px;
+    border: 1px solid rgba(243, 241, 236, 0.10);
+    border-radius: 100px;
+  }
+  .archive-filter.is-active .archive-filter__count {
+    color: var(--filter-accent, var(--ink));
+    border-color: currentColor;
+  }
+
+  /* ── Card grid ──────────────────────────────────────────────────── */
+  .archive-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 64px 40px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0;
+    border-bottom: 1px solid rgba(243, 241, 236, 0.08);
+  }
+  /* Hide cards filtered out via JS */
+  .archive-grid[data-active-filter]:not([data-active-filter="ALL"]) .post-card[data-kind]:not([data-kind=""]) {
+    /* placeholder — actual hide rules generated below by JS via class */
+  }
+  .archive-grid.filter-SEC .post-card:not([data-kind="SEC"]),
+  .archive-grid.filter-FLD .post-card:not([data-kind="FLD"]),
+  .archive-grid.filter-NTE .post-card:not([data-kind="NTE"]) {
+    display: none;
+  }
+
+  .post-card {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding: 40px 40px 40px 0;
+    border-top: 1px solid rgba(243, 241, 236, 0.08);
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    position: relative;
+  }
+  .post-card:nth-child(even) {
+    padding-left: 40px;
+    padding-right: 0;
+    border-left: 1px solid rgba(243, 241, 236, 0.08);
+  }
+  .post-card:hover {
+    transform: translateY(-4px);
+  }
+  .post-card:hover .post-card__title { color: var(--ink); }
+  .post-card:hover .post-card__read-cta { color: var(--card-accent); transform: translateX(4px); }
+
+  .post-card__meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    color: var(--ink-low);
+  }
+  .post-card__kind {
+    color: var(--card-accent);
+    font-weight: 500;
+  }
+  .post-card__sep { color: rgba(243, 241, 236, 0.2); }
+
+  .post-card__title {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(28px, 3vw, 38px);
+    line-height: 1.06;
+    letter-spacing: -0.03em;
+    color: rgba(243, 241, 236, 0.92);
+    margin: 0;
+    transition: color 0.3s ease;
+  }
+  .post-card__excerpt {
+    font-family: var(--font-display);
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--ink-mid);
+    margin: 0;
+    letter-spacing: -0.005em;
+    max-width: 50ch;
+  }
+  .post-card__read-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: auto;
+    padding-top: 8px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    color: var(--ink-low);
+    transition: color 0.3s ease, transform 0.3s ease;
+  }
+
+  /* ── RSS callout ────────────────────────────────────────────────── */
+  .archive-rss-row {
+    padding: 64px 40px 96px;
+  }
+  .archive-rss-row__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+  .archive-rss-row__text {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .archive-rss-row__kicker {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.24em;
+    color: var(--accent);
+  }
+  .archive-rss-row__line {
+    font-family: var(--font-display);
+    font-size: 18px;
+    line-height: 1.55;
+    color: var(--ink-mid);
+    max-width: 56ch;
+  }
+  .archive-rss-row__line a {
+    color: var(--ink);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(243, 241, 236, 0.24);
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+  .archive-rss-row__line a:hover {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  @media (max-width: 900px) {
+    .archive-header { padding: 48px 20px 56px; }
+    .archive-grid { padding: 32px 20px; grid-template-columns: 1fr; }
+    .post-card,
+    .post-card:nth-child(even) {
+      padding: 32px 0;
+      border-left: none;
+    }
+    .archive-rss-row { padding: 40px 20px 64px; }
+  }
+</style>
+
+<script>
+  // Filter pills toggle the .filter-XXX class on the grid; CSS hides
+  // any card whose data-kind doesn't match. ALL clears the filter.
+  const filters = document.querySelectorAll<HTMLButtonElement>('.archive-filter');
+  const grid = document.querySelector<HTMLElement>('.archive-grid');
+  if (filters.length && grid) {
+    filters.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const target = btn.dataset.filter || 'ALL';
+        // Update pill state
+        filters.forEach((b) => {
+          const active = b === btn;
+          b.classList.toggle('is-active', active);
+          b.setAttribute('aria-selected', active ? 'true' : 'false');
+        });
+        // Update grid class
+        grid.classList.remove('filter-SEC', 'filter-FLD', 'filter-NTE');
+        if (target !== 'ALL') grid.classList.add(`filter-${target}`);
+      });
+    });
+  }
+</script>
