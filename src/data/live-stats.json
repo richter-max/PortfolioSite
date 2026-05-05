@@ -1,8 +1,8 @@
 {
-  "updatedAt": "2026-05-04T06:33:29.202Z",
+  "updatedAt": "2026-05-05T06:09:52.357Z",
   "strava": {
-    "streakWeeks": 27,
-    "sessionsThisYear": 135,
+    "streakWeeks": 28,
+    "sessionsThisYear": 136,
     "lastRun": {
       "weekday": "Saturday",
       "km": 10.7,
@@ -24,13 +24,13 @@
     ]
   },
   "github": {
-    "commits30d": 92,
+    "commits30d": 96,
     "latestRepo": {
-      "name": "NewPortfolioSite",
-      "url": "https://github.com/richter-max/NewPortfolioSite",
-      "pushedAt": "2026-04-14T13:15:14Z",
-      "headline": "Auto-generated changes",
-      "commitDate": "2026-04-14T13:15:13Z"
+      "name": "PortfolioSite",
+      "url": "https://github.com/richter-max/PortfolioSite",
+      "pushedAt": "2026-05-04T15:13:22Z",
+      "headline": "fix three factual / framing slips in field + stats copy",
+      "commitDate": "2026-05-04T15:13:21Z"
     }
   }
 }
