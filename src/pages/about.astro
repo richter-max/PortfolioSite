@@ -1,12 +1,22 @@
 ---
-// /about — editorial portrait page.
-// Goal: convert visitors who landed on the home page from "this is
-// a portfolio" to "this is a person I'd like to work with" without
-// resorting to a generic LinkedIn-bio dump. Three blocks:
-//   1) hero: portrait + one-sentence positioning + status row
-//   2) story: 3 paragraphs on what made the security/endurance pairing
-//      stick, written in the same voice as the case studies
-//   3) principles: 5 short rules I work by, each phrased as an action
+// /about — type-driven editorial portrait page.
+//
+// Decisions:
+//   - The master portrait is only 458×554 px, so we treat it as a
+//     small detail element (max ~240 px wide) inside a bio card.
+//     Trying to use it as a hero photograph reads as a low-resolution
+//     upscale; the page now leans on type, layout and live data
+//     instead.
+//   - The page reads as five layered moments rather than a single
+//     scroll: intro (manifesto), now (live status), story, bio
+//     card, principles, closing. Each section breaks rhythm
+//     deliberately — alternating widths, alternating accent — so the
+//     scroll never feels uniform.
+//
+// Live data:
+//   - sessionsThisYear / streakWeeks / commits30d are read from the
+//     same live-stats.json the home page uses, so the about page
+//     ages with the rest of the site.
 import BaseLayout from '@layouts/BaseLayout.astro';
 import Nav from '@components/layout/Nav.astro';
 import Rail from '@components/layout/Rail.astro';
@@ -16,12 +26,23 @@ import liveStats from '@data/live-stats.json';
 const streakWeeks      = liveStats.strava?.streakWeeks      ?? 0;
 const sessionsThisYear = liveStats.strava?.sessionsThisYear ?? 0;
 const commits30d       = liveStats.github?.commits30d       ?? 0;
+const updatedAt        = liveStats.updatedAt                ?? null;
+const latestRepo       = liveStats.github?.latestRepo       ?? null;
+const lastRun          = liveStats.strava?.lastRun          ?? null;
+
+function hoursAgo(iso) {
+  if (!iso) return '—';
+  const diffH = Math.max(0, (Date.now() - Date.parse(iso)) / 3600000);
+  if (diffH < 1)   return 'JUST NOW';
+  if (diffH < 24)  return `${Math.round(diffH)}H AGO`;
+  return `${Math.round(diffH / 24)}D AGO`;
+}
 
 const principles = [
   {
     n: '01',
     title: 'Evidence over anecdote.',
-    body: 'A claim that defenses work needs a number that can be reproduced on a different machine, not a screenshot. Same applies to training: the volume is what the watch logs, not what it felt like.',
+    body: 'A claim that defenses work needs a number reproducible on a different machine. Same applies to training: the volume is what the watch logs, not what it felt like.',
   },
   {
     n: '02',
@@ -45,12 +66,15 @@ const principles = [
   },
 ];
 
-const facts = [
-  ['BASE',     'Allgäu · CET'],
-  ['FOCUS',   'AI agent security · Pen-test tooling'],
-  ['CADENCE', `${streakWeeks} w streak · ${sessionsThisYear} sessions YTD`],
-  ['CODE',    `${commits30d} contributions · last 30 d`],
-  ['REACH',   'max.richter.dev@proton.me · < 48h'],
+// Bio card key:value rows. Compact mono table, not a paragraph.
+const bio = [
+  ['BORN',     '1999 · Schwabach'],
+  ['BASED',    'Allgäu · CET (UTC+1)'],
+  ['EDUCATED', 'Ausbildung · Application Developer'],
+  ['FOCUS',    'AI agent security · Pen-test tooling'],
+  ['STACK',    'Python · TypeScript · Three.js · GSAP'],
+  ['TRAINING', 'Triathlon · Trail running · Table tennis'],
+  ['REACH',    'max.richter.dev@proton.me'],
 ];
 ---
 
@@ -64,113 +88,205 @@ const facts = [
 
   <main id="main" class="ab">
 
-    <!-- ── 01 · Portrait + positioning ───────────────────────────── -->
-    <section class="ab-hero">
-      <div class="ab-hero__inner">
+    <!-- ── 01 · Manifesto ─────────────────────────────────────────
+         Pure-type opener. No photograph. Two stacked moves: a small
+         "ABOUT" mark with rule + indexed numeral, then a four-line
+         declarative manifesto that does the introducing. Index "A.01"
+         in warm accent + thin rule on the right echoes the case-study
+         chapter pattern so the page reads as part of the same system.
+    -->
+    <section class="ab-mani">
+      <div class="ab-mani__inner">
+        <div class="ab-kicker mono">
+          <span class="ab-kicker__num">A.01</span>
+          <span class="ab-kicker__rule"></span>
+          <span class="ab-kicker__txt">ABOUT</span>
+          <span class="ab-kicker__year mono">— 2026</span>
+        </div>
 
-        <!-- Editorial portrait — uses the existing portrait-field
-             responsive set. picture/source order mirrors the optimised
-             pipeline (avif → webp → jpg). -->
-        <figure class="ab-portrait" data-reveal="clip">
-          <picture>
-            <source type="image/avif" srcset="/img/opt/portrait-field-458.avif" />
-            <source type="image/webp" srcset="/img/opt/portrait-field-458.webp" />
-            <img
-              src="/img/opt/portrait-field-458.jpg"
-              alt="Maximilian Richter, photographed in a field at dusk."
-              width="458"
-              height="640"
-              loading="eager"
-              decoding="async"
-            />
-          </picture>
-          <figcaption class="ab-portrait__cap mono">
-            <span>ALLGÄU · 2026</span>
-          </figcaption>
-        </figure>
+        <h1 class="ab-mani__h" data-reveal="lines">
+          I build security tools<br/>
+          that produce evidence,<br/>
+          and run long enough<br/>
+          to <span class="ab-mani__warm">earn the right to argue.</span>
+        </h1>
 
-        <div class="ab-hero__text">
-          <div class="ab-kicker mono">
-            <span class="ab-kicker__num">A.01</span>
-            <span class="ab-kicker__rule"></span>
-            <span class="ab-kicker__txt">ABOUT</span>
-          </div>
-
-          <h1 class="ab-h1" data-reveal="lines">
-            Two careers,<br/>
-            <span class="ab-h1__warm">run on the same engine.</span>
-          </h1>
-
-          <p class="ab-lede" data-reveal="fade-up">
-            I'm Maximilian — a security engineer working on AI-agent
-            harnesses and pen-test tooling, and an endurance athlete
-            training for IRONMAN 70.3 Kraichgau. The two share a
-            discipline I keep coming back to: small, reproducible
-            efforts beat one heroic push.
+        <div class="ab-mani__foot">
+          <p class="ab-mani__lede" data-reveal="fade-up">
+            Maximilian Richter — security engineer working on AI-agent
+            harnesses and pen-test tooling. Endurance athlete training
+            for IRONMAN 70.3 Kraichgau. Based in the Allgäu, working
+            mostly alone, by choice.
           </p>
-
-          <ul class="ab-facts">
-            {facts.map(([k, v]) => (
-              <li class="ab-fact">
-                <div class="ab-fact__k mono">{k}</div>
-                <div class="ab-fact__v">{v}</div>
-              </li>
-            ))}
-          </ul>
+          <a class="ab-mani__cta" href="#story" data-cursor-hover>
+            <span class="ab-mani__cta__lbl">READ THE LONG VERSION</span>
+            <span class="ab-mani__cta__arr">↓</span>
+          </a>
         </div>
       </div>
     </section>
 
-    <!-- ── 02 · Story ──────────────────────────────────────────── -->
-    <section class="ab-story">
+    <!-- ── 02 · Currently (Now block) ─────────────────────────────
+         Fixed-grid mono "telemetry" panel of four cells:
+         shipping (latest commit), training (streak + last run),
+         ranking (TT rating), reading (manual editorial). Lives behind
+         the manifesto so the page transitions from declarative copy
+         straight into observable signal.
+    -->
+    <section class="ab-now">
+      <div class="ab-now__inner">
+        <header class="ab-now__head">
+          <div class="ab-kicker mono">
+            <span class="ab-kicker__num">A.02</span>
+            <span class="ab-kicker__rule"></span>
+            <span class="ab-kicker__txt">NOW</span>
+          </div>
+          <div class="ab-now__live mono">
+            <span class="ab-now__live__dot"></span>
+            <span>LIVE — UPDATED {hoursAgo(updatedAt)}</span>
+          </div>
+        </header>
+
+        <div class="ab-now__grid">
+          <div class="ab-now__cell">
+            <div class="ab-now__k mono">SHIPPING</div>
+            <div class="ab-now__v">
+              {latestRepo ? (
+                <a href={latestRepo.url} class="ab-now__link" target="_blank" rel="noreferrer" data-cursor-hover>
+                  richter-max / <strong>{latestRepo.name}</strong>
+                </a>
+              ) : 'aegis · open-source'}
+            </div>
+            {latestRepo?.headline && (
+              <div class="ab-now__msg">
+                <span class="ab-now__msg__dot"></span>
+                <span>{latestRepo.headline}</span>
+              </div>
+            )}
+          </div>
+
+          <div class="ab-now__cell">
+            <div class="ab-now__k mono">TRAINING</div>
+            <div class="ab-now__v">{streakWeeks}-week streak · {sessionsThisYear} sessions YTD</div>
+            {lastRun && (
+              <div class="ab-now__msg">
+                <span class="ab-now__msg__dot ab-now__msg__dot--warm"></span>
+                <span>Last run · {lastRun.weekday} · {lastRun.km} km</span>
+              </div>
+            )}
+          </div>
+
+          <div class="ab-now__cell">
+            <div class="ab-now__k mono">CADENCE</div>
+            <div class="ab-now__v ab-now__v--num"><span data-count={commits30d}>0</span></div>
+            <div class="ab-now__msg"><span>contributions · last 30 days</span></div>
+          </div>
+
+          <div class="ab-now__cell">
+            <div class="ab-now__k mono">NEXT</div>
+            <div class="ab-now__v ab-now__v--warm">IRONMAN 70.3 · Kraichgau</div>
+            <div class="ab-now__msg"><span>31 May 2026 · 1.9 swim · 90 bike · 21.1 run</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 03 · Bio card ──────────────────────────────────────────
+         Editorial passport-style card: small portrait at left,
+         mono-table on the right with seven key/value rows. The
+         small portrait size (max 240 px) matches the master's native
+         resolution so the asset stays sharp.
+    -->
+    <section class="ab-bio">
+      <div class="ab-bio__inner">
+        <div class="ab-bio__index mono">
+          <span class="ab-bio__index__num">A.03 · BIO</span>
+          <span class="ab-bio__index__id mono">M.R · 1999</span>
+        </div>
+
+        <div class="ab-bio__card">
+          <figure class="ab-bio__portrait" data-reveal="clip">
+            <picture>
+              <source type="image/avif" srcset="/img/opt/portrait-field-458.avif" />
+              <source type="image/webp" srcset="/img/opt/portrait-field-458.webp" />
+              <img
+                src="/img/opt/portrait-field-458.jpg"
+                alt="Maximilian Richter, photographed in a field at dusk."
+                width="458"
+                height="554"
+                loading="lazy"
+                decoding="async"
+              />
+            </picture>
+            <figcaption class="ab-bio__cap mono">
+              <span class="ab-bio__cap__dot"></span>
+              <span>ALLGÄU · 2026</span>
+            </figcaption>
+          </figure>
+
+          <dl class="ab-bio__list">
+            {bio.map(([k, v]) => (
+              <div class="ab-bio__row">
+                <dt class="mono">{k}</dt>
+                <dd>{v}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 04 · Story ─────────────────────────────────────────────
+         Center-set editorial column. Headline at oversized scale,
+         drop-cap on the first paragraph, line-length capped to 64ch.
+    -->
+    <section class="ab-story" id="story">
       <div class="ab-story__inner">
         <div class="ab-kicker mono">
-          <span class="ab-kicker__num">A.02</span>
+          <span class="ab-kicker__num">A.04</span>
           <span class="ab-kicker__rule"></span>
           <span class="ab-kicker__txt">STORY</span>
         </div>
 
-        <h2 class="ab-h2" data-reveal="lines">How I ended up<br/>doing both.</h2>
+        <h2 class="ab-h2" data-reveal="lines">
+          How I ended up<br/>
+          doing both.
+        </h2>
 
         <div class="ab-prose">
-          <p data-reveal="fade-up">
-            I came into security through tooling, not bug-hunting. The
-            first thing I built that felt right was a small CLI that
-            ran ten reconnaissance steps in one command and dumped a
-            JSONL trace — same reflex I now apply to agent
-            evaluations. The output isn't a verdict, it's evidence the
-            next person can re-run, argue with, and disprove.
+          <p data-reveal="fade-up" class="ab-prose__lead">
+            <span class="ab-prose__cap">I</span> came into security through tooling, not bug-hunting. The first thing I built that felt right was a small CLI that ran ten reconnaissance steps in one command and dumped a JSONL trace — same reflex I now apply to agent evaluations. The output isn't a verdict, it's evidence the next person can re-run, argue with, and disprove.
           </p>
           <p data-reveal="fade-up">
-            The endurance habit started in parallel. Long sessions
-            taught me what the engineering work was already pushing
-            for: process beats outcome. A 90-minute run that's well
-            paced is more durable than a 60-minute hero run that
-            flames out. A guard layer that's auditable is more useful
-            than a black-box filter with a higher single-metric score.
-            The vocabulary is different; the discipline is the same.
+            The endurance habit started in parallel. Long sessions taught me what the engineering work was already pushing for: process beats outcome. A 90-minute run that's well paced is more durable than a 60-minute hero run that flames out. A guard layer that's auditable is more useful than a black-box filter with a higher single-metric score. The vocabulary is different; the discipline is the same.
           </p>
           <p data-reveal="fade-up">
-            I work alone on most of what's on this site, by choice. The
-            cadence I'm trying to keep is one shipped artifact a
-            quarter — case study, open-source release, or race —
-            stacked over years until the slow accumulation looks like
-            a body of work. That's the long game.
+            I work alone on most of what's on this site, by choice. The cadence I'm trying to keep is one shipped artifact a quarter — case study, open-source release, or race — stacked over years until the slow accumulation looks like a body of work. That's the long game.
           </p>
         </div>
       </div>
     </section>
 
-    <!-- ── 03 · Principles ─────────────────────────────────────── -->
+    <!-- ── 05 · Principles ────────────────────────────────────────
+         Numbered list, generous vertical rhythm, hairline rules.
+         Numerals carry the warm accent so the rule-set ties to the
+         endurance side of the brand.
+    -->
     <section class="ab-prn">
       <div class="ab-prn__inner">
-        <div class="ab-kicker mono">
-          <span class="ab-kicker__num">A.03</span>
-          <span class="ab-kicker__rule"></span>
-          <span class="ab-kicker__txt">PRINCIPLES</span>
-        </div>
+        <header class="ab-prn__head">
+          <div class="ab-kicker mono">
+            <span class="ab-kicker__num">A.05</span>
+            <span class="ab-kicker__rule"></span>
+            <span class="ab-kicker__txt">PRINCIPLES</span>
+          </div>
+          <div class="ab-prn__count mono">FIVE — / OF MANY</div>
+        </header>
 
-        <h2 class="ab-h2" data-reveal="lines">Five rules,<br/>worth repeating.</h2>
+        <h2 class="ab-h2 ab-prn__h" data-reveal="lines">
+          Worth repeating<br/>
+          out loud.
+        </h2>
 
         <ol class="ab-prn__list" data-stagger-children>
           {principles.map((p) => (
@@ -180,26 +296,43 @@ const facts = [
                 <h3 class="ab-prn__title">{p.title}</h3>
                 <p class="ab-prn__copy">{p.body}</p>
               </div>
+              <div class="ab-prn__arrow mono">→</div>
             </li>
           ))}
         </ol>
       </div>
     </section>
 
-    <!-- ── Closing CTA ────────────────────────────────────────── -->
-    <section class="ab-cta">
-      <div class="ab-cta__inner">
-        <p class="ab-cta__copy" data-reveal="lines">
-          If any of this matches the kind of work<br/>
-          you want done — write me.
+    <!-- ── 06 · Closing ───────────────────────────────────────────
+         Two-column closing block: oversized statement on the left,
+         CTAs + "elsewhere" social pointers on the right. Sits on the
+         warm dark surface so the section reads as an emotional close
+         instead of more page-body.
+    -->
+    <section class="ab-close">
+      <div class="ab-close__inner">
+        <p class="ab-close__copy" data-reveal="lines">
+          If any of this matches<br/>
+          the kind of work you<br/>
+          want done — <span class="ab-close__warm">write me.</span>
         </p>
-        <div class="ab-cta__row">
-          <a href="/#contact" class="ab-cta__btn" data-magnetic="0.4" data-cursor-hover>
-            <span data-magnetic-label>OPEN A CONVERSATION →</span>
-          </a>
-          <a href="/case-studies/aegis" class="ab-cta__sec" data-cursor-hover>
-            Read the AEGIS case study →
-          </a>
+
+        <div class="ab-close__side">
+          <div class="ab-close__row">
+            <a href="/#contact" class="ab-close__btn" data-magnetic="0.4" data-cursor-hover>
+              <span data-magnetic-label>OPEN A CONVERSATION →</span>
+            </a>
+          </div>
+          <div class="ab-close__sub mono">
+            <a href="/case-studies/aegis" data-cursor-hover>AEGIS CASE STUDY →</a>
+            <a href="/blog" data-cursor-hover>FIELD NOTES →</a>
+          </div>
+          <ul class="ab-close__else mono">
+            <li><span>GITHUB</span><a href="https://github.com/richter-max" target="_blank" rel="noreferrer">@richter-max ↗</a></li>
+            <li><span>LINKEDIN</span><a href="https://www.linkedin.com/in/maximilian-richter-40697a298" target="_blank" rel="noreferrer">in/maximilian-richter ↗</a></li>
+            <li><span>STRAVA</span><a href="https://strava.app.link/mIlXsvnJL1b" target="_blank" rel="noreferrer">richter-max ↗</a></li>
+            <li><span>EMAIL</span><a href="mailto:max.richter.dev@proton.me">max.richter.dev@proton.me</a></li>
+          </ul>
         </div>
       </div>
     </section>
@@ -209,6 +342,7 @@ const facts = [
 </BaseLayout>
 
 <style>
+  /* ── Page frame ───────────────────────────────────────────────── */
   .ab {
     background: var(--bg);
     color: var(--ink);
@@ -216,127 +350,320 @@ const facts = [
   }
   .ab section {
     padding: 0 40px;
+    position: relative;
   }
+  .ab .mono { font-family: var(--font-mono); }
+
   .ab-kicker {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 16px;
     font-family: var(--font-mono);
     font-size: 11px;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.22em;
     color: var(--ink-low);
-    margin-bottom: 32px;
   }
   .ab-kicker__num   { color: var(--accent-warm); font-weight: 600; }
-  .ab-kicker__rule  { width: 32px; height: 1px; background: rgba(243, 241, 236, 0.16); }
+  .ab-kicker__rule  { width: 32px; height: 1px; background: rgba(243, 241, 236, 0.18); }
   .ab-kicker__txt   { color: var(--ink); }
+  .ab-kicker__year  { color: var(--ink-low); margin-left: 8px; }
 
-  /* ── Hero ───────────────────────────────────────────────────────── */
-  .ab-hero {
-    padding-top: 160px;
-    padding-bottom: 128px;
-    position: relative;
+  /* ── 01 · Manifesto ───────────────────────────────────────────── */
+  .ab-mani {
+    padding-top: 168px;
+    padding-bottom: 144px;
+    isolation: isolate;
   }
-  .ab-hero::before {
+  .ab-mani::before {
     content: '';
     position: absolute;
     inset: 0;
     background:
-      radial-gradient(ellipse at 20% 0%, rgba(232, 181, 87, 0.06), transparent 55%),
-      radial-gradient(ellipse at 90% 100%, rgba(46, 107, 255, 0.04), transparent 60%);
+      radial-gradient(ellipse at 12% 20%, rgba(232, 181, 87, 0.08), transparent 55%),
+      radial-gradient(ellipse at 92% 96%, rgba(46, 107, 255, 0.06), transparent 55%);
     pointer-events: none;
+    z-index: -1;
   }
-  .ab-hero__inner {
+  .ab-mani__inner {
     max-width: 1440px;
     margin: 0 auto;
-    display: grid;
-    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-    gap: 96px;
-    align-items: end;
-    position: relative;
   }
-  .ab-portrait {
+  .ab-mani__h {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(48px, 8vw, 132px);
+    line-height: 0.94;
+    letter-spacing: -0.045em;
+    color: var(--ink);
+    margin: 48px 0 80px;
+    max-width: 18ch;
+  }
+  .ab-mani__warm { color: var(--accent-warm); }
+  .ab-mani__foot {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 64px;
+    align-items: end;
+    border-top: 1px solid var(--hairline);
+    padding-top: 32px;
+  }
+  .ab-mani__lede {
+    font-family: var(--font-display);
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--ink-mid);
+    letter-spacing: -0.005em;
+    max-width: 56ch;
+    margin: 0;
+  }
+  .ab-mani__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    color: var(--ink-mid);
+    text-decoration: none;
+    padding-bottom: 4px;
+    border-bottom: 1px solid rgba(243, 241, 236, 0.16);
+    transition: color 0.25s ease, border-color 0.25s ease;
+  }
+  .ab-mani__cta:hover { color: var(--ink); border-color: var(--ink); }
+  .ab-mani__cta__arr { transition: transform 0.25s var(--ease-out-expo); }
+  .ab-mani__cta:hover .ab-mani__cta__arr { transform: translateY(4px); }
+
+  /* ── 02 · Now grid ─────────────────────────────────────────────
+     Responsive 2×2 grid that stacks at 720px. Each cell has a soft
+     hairline border that tightens at hover via accent color so the
+     cells feel responsive even though they aren't links by default.
+  */
+  .ab-now {
+    padding-top: 96px;
+    padding-bottom: 96px;
+    border-top: 1px solid var(--hairline);
+    background: rgba(243, 241, 236, 0.015);
+  }
+  .ab-now__inner {
+    max-width: 1440px;
+    margin: 0 auto;
+  }
+  .ab-now__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 56px;
+  }
+  .ab-now__live {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 12px;
+    border: 1px solid rgba(243, 241, 236, 0.12);
+    border-radius: 100px;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--ink-mid);
+  }
+  .ab-now__live__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #22c55e;
+    box-shadow: 0 0 8px rgba(34,197,94,0.65);
+    animation: nowPulse 2.4s ease-in-out infinite;
+  }
+  @keyframes nowPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.4; transform: scale(0.7); }
+  }
+  .ab-now__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--hairline);
+    border: 1px solid var(--hairline);
+  }
+  .ab-now__cell {
+    background: var(--bg);
+    padding: 28px 28px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 168px;
+    transition: background 0.3s ease;
+  }
+  .ab-now__cell:hover { background: rgba(243, 241, 236, 0.03); }
+  .ab-now__k {
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    color: var(--ink-low);
+    margin-bottom: 4px;
+  }
+  .ab-now__v {
+    font-family: var(--font-display);
+    font-size: 22px;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+  }
+  .ab-now__v--num {
+    font-weight: 300;
+    font-size: 56px;
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+    font-variant-numeric: tabular-nums;
+  }
+  .ab-now__v--warm { color: var(--accent-warm); }
+  .ab-now__link {
+    color: var(--ink);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  .ab-now__link:hover { color: var(--accent); }
+  .ab-now__link strong { color: var(--accent); font-weight: 500; }
+  .ab-now__msg {
+    margin-top: auto;
+    padding-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: var(--ink-mid);
+  }
+  .ab-now__msg__dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: rgba(243, 241, 236, 0.4);
+    flex-shrink: 0;
+  }
+  .ab-now__msg__dot--warm {
+    background: var(--accent-warm);
+    box-shadow: 0 0 6px rgba(232, 181, 87, 0.5);
+  }
+
+  /* ── 03 · Bio card ─────────────────────────────────────────────
+     Two-column layout: small portrait (max 260 px) on the left,
+     mono-table on the right. The portrait sits in a frame with a
+     hairline border + caption at the bottom — feels like a passport
+     photo, not a hero. At its native ~458 px master and ~260 px
+     render width, the asset stays crisp on hi-DPI screens.
+  */
+  .ab-bio {
+    padding-top: 144px;
+    padding-bottom: 144px;
+    border-top: 1px solid var(--hairline);
+  }
+  .ab-bio__inner {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .ab-bio__index {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    color: var(--ink-low);
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--hairline);
+    margin-bottom: 56px;
+  }
+  .ab-bio__index__num { color: var(--accent-warm); }
+  .ab-bio__index__id  { color: var(--ink); }
+
+  .ab-bio__card {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 64px;
+    align-items: start;
+  }
+  .ab-bio__portrait {
     margin: 0;
     position: relative;
-    border-radius: 4px;
+    border-radius: 2px;
     overflow: hidden;
-    isolation: isolate;
-    aspect-ratio: 458 / 640;
+    aspect-ratio: 458 / 554;
     background: rgba(243, 241, 236, 0.04);
+    border: 1px solid rgba(243, 241, 236, 0.10);
+    isolation: isolate;
   }
-  .ab-portrait img {
+  .ab-bio__portrait img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     filter: saturate(0.78) contrast(1.05);
   }
-  .ab-portrait::after {
+  .ab-bio__portrait::after {
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, transparent 60%, rgba(5, 5, 6, 0.65) 100%);
+    background: linear-gradient(180deg, transparent 50%, rgba(5,5,6,0.7) 100%);
     pointer-events: none;
   }
-  .ab-portrait__cap {
+  .ab-bio__cap {
     position: absolute;
-    left: 24px;
-    bottom: 20px;
+    left: 14px;
+    bottom: 12px;
     z-index: 2;
-    font-size: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 9px;
     letter-spacing: 0.22em;
     color: var(--ink);
   }
-
-  .ab-hero__text { min-width: 0; }
-  .ab-h1 {
-    font-family: var(--font-display);
-    font-weight: 500;
-    font-size: clamp(56px, 8vw, 124px);
-    line-height: 0.94;
-    letter-spacing: -0.045em;
-    color: var(--ink);
-    margin: 0 0 36px;
-  }
-  .ab-h1__warm { color: var(--accent-warm); }
-
-  .ab-lede {
-    font-family: var(--font-display);
-    font-size: 21px;
-    line-height: 1.5;
-    color: var(--ink-mid);
-    max-width: 56ch;
-    letter-spacing: -0.005em;
-    margin: 0 0 56px;
+  .ab-bio__cap__dot {
+    width: 5px; height: 5px;
+    background: var(--accent-warm);
+    display: inline-block;
   }
 
-  .ab-facts {
-    list-style: none;
+  .ab-bio__list {
     margin: 0;
-    padding: 24px 0 0;
-    border-top: 1px solid rgba(243, 241, 236, 0.08);
+    padding: 0;
     display: grid;
-    gap: 14px;
+    gap: 16px;
   }
-  .ab-fact {
+  .ab-bio__row {
     display: grid;
     grid-template-columns: 110px 1fr;
     gap: 24px;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    color: var(--ink-mid);
+    padding: 14px 0;
+    border-bottom: 1px solid var(--hairline);
   }
-  .ab-fact__k { color: var(--ink-low); }
-  .ab-fact__v { color: var(--ink); }
+  .ab-bio__row:last-child { border-bottom: none; }
+  .ab-bio__row dt {
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    color: var(--ink-low);
+    margin: 0;
+  }
+  .ab-bio__row dd {
+    font-family: var(--font-display);
+    font-size: 16px;
+    line-height: 1.4;
+    letter-spacing: -0.005em;
+    color: var(--ink);
+    margin: 0;
+  }
 
-  /* ── Story ──────────────────────────────────────────────────────── */
+  /* ── 04 · Story ────────────────────────────────────────────────
+     Editorial center column with a drop-cap on the first paragraph.
+     The headline is intentionally smaller than the manifesto so the
+     manifesto remains the loudest moment.
+  */
   .ab-story {
-    padding-top: 128px;
+    padding-top: 144px;
     padding-bottom: 128px;
     border-top: 1px solid var(--hairline);
   }
   .ab-story__inner {
-    max-width: 1100px;
+    max-width: 980px;
     margin: 0 auto;
   }
   .ab-h2 {
@@ -346,7 +673,7 @@ const facts = [
     line-height: 0.98;
     letter-spacing: -0.04em;
     color: var(--ink);
-    margin: 0 0 56px;
+    margin: 32px 0 56px;
   }
   .ab-prose {
     display: grid;
@@ -355,40 +682,67 @@ const facts = [
   }
   .ab-prose p {
     font-family: var(--font-display);
-    font-size: 18px;
-    line-height: 1.7;
+    font-size: 19px;
+    line-height: 1.65;
     color: var(--ink-dim);
     letter-spacing: -0.005em;
     margin: 0;
   }
+  .ab-prose__lead { color: var(--ink); }
+  .ab-prose__cap {
+    float: left;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 88px;
+    line-height: 0.85;
+    letter-spacing: -0.06em;
+    color: var(--accent-warm);
+    margin: 8px 14px 0 0;
+  }
 
-  /* ── Principles ────────────────────────────────────────────────── */
+  /* ── 05 · Principles ───────────────────────────────────────────
+     Each principle is its own row, padded vertically. The arrow on
+     the right shifts outward on hover, so the list reads as a set
+     of "links" even though they aren't navigable.
+  */
   .ab-prn {
-    padding-top: 128px;
-    padding-bottom: 128px;
+    padding-top: 144px;
+    padding-bottom: 144px;
     border-top: 1px solid var(--hairline);
+    background: rgba(243, 241, 236, 0.015);
   }
   .ab-prn__inner {
     max-width: 1440px;
     margin: 0 auto;
   }
+  .ab-prn__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+  .ab-prn__count { color: var(--ink-low); font-size: 10px; letter-spacing: 0.22em; }
+  .ab-prn__h { margin-top: 16px; max-width: 16ch; }
   .ab-prn__list {
     list-style: none;
-    margin: 0;
+    margin: 56px 0 0;
     padding: 0;
     display: grid;
     gap: 0;
-    counter-reset: prn;
   }
   .ab-prn__item {
     display: grid;
-    grid-template-columns: 80px 1fr;
+    grid-template-columns: 80px 1fr 56px;
     gap: 56px;
-    padding: 40px 0;
+    padding: 36px 0;
     border-top: 1px solid var(--hairline);
     align-items: start;
+    transition: padding-left 0.5s var(--ease-out-expo);
   }
   .ab-prn__item:last-child { border-bottom: 1px solid var(--hairline); }
+  .ab-prn__item:hover { padding-left: 16px; background: linear-gradient(90deg, rgba(232,181,87,0.04), transparent 60%); }
   .ab-prn__num {
     font-size: 11px;
     letter-spacing: 0.22em;
@@ -413,35 +767,66 @@ const facts = [
     max-width: 64ch;
     margin: 0;
   }
+  .ab-prn__arrow {
+    font-size: 18px;
+    color: var(--ink-low);
+    text-align: right;
+    padding-top: 6px;
+    transition: color 0.3s ease, transform 0.5s var(--ease-out-expo);
+  }
+  .ab-prn__item:hover .ab-prn__arrow {
+    color: var(--accent-warm);
+    transform: translateX(8px);
+  }
 
-  /* ── Closing CTA ───────────────────────────────────────────────── */
-  .ab-cta {
-    padding-top: 128px;
+  /* ── 06 · Closing ──────────────────────────────────────────────
+     Two-column closing block on the warm dark surface. Statement on
+     the left, CTAs + elsewhere list on the right.
+  */
+  .ab-close {
+    padding-top: 144px;
     padding-bottom: 192px;
     border-top: 1px solid var(--hairline);
     background: var(--bg-warm);
+    isolation: isolate;
   }
-  .ab-cta__inner {
-    max-width: 1100px;
+  .ab-close::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 90% 0%, rgba(232, 181, 87, 0.08), transparent 60%),
+      radial-gradient(ellipse at 0% 100%, rgba(46, 107, 255, 0.05), transparent 55%);
+    pointer-events: none;
+    z-index: -1;
+  }
+  .ab-close__inner {
+    max-width: 1440px;
     margin: 0 auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: 96px;
+    align-items: end;
   }
-  .ab-cta__copy {
+  .ab-close__copy {
     font-family: var(--font-display);
     font-weight: 500;
-    font-size: clamp(36px, 5vw, 64px);
-    line-height: 1.1;
-    letter-spacing: -0.035em;
+    font-size: clamp(40px, 6vw, 96px);
+    line-height: 1.0;
+    letter-spacing: -0.04em;
     color: var(--ink);
-    margin: 0 0 56px;
-    max-width: 26ch;
+    margin: 0;
+    max-width: 14ch;
   }
-  .ab-cta__row {
+  .ab-close__warm { color: var(--accent-warm); }
+  .ab-close__row {
     display: flex;
-    align-items: center;
-    gap: 32px;
     flex-wrap: wrap;
+    gap: 24px;
+    align-items: center;
+    margin-bottom: 28px;
   }
-  .ab-cta__btn {
+  .ab-close__btn {
     display: inline-block;
     background: transparent;
     color: var(--accent);
@@ -454,31 +839,68 @@ const facts = [
     transition: background 0.25s ease, color 0.25s ease;
     will-change: transform;
   }
-  .ab-cta__btn:hover { background: var(--accent); color: var(--ink); }
-  .ab-cta__sec {
-    font-family: var(--font-display);
-    font-size: 16px;
+  .ab-close__btn:hover { background: var(--accent); color: var(--ink); }
+  .ab-close__sub {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    margin-bottom: 40px;
+    font-size: 10px;
+    letter-spacing: 0.22em;
+  }
+  .ab-close__sub a {
     color: var(--ink-mid);
+    text-decoration: none;
     transition: color 0.2s ease;
   }
-  .ab-cta__sec:hover { color: var(--ink); }
+  .ab-close__sub a:hover { color: var(--ink); }
 
-  /* ── Responsive ────────────────────────────────────────────────── */
-  @media (max-width: 1024px) {
-    .ab-hero__inner {
-      grid-template-columns: 1fr;
-      gap: 48px;
-      align-items: start;
-    }
-    .ab-portrait {
-      max-width: 380px;
-    }
+  .ab-close__else {
+    list-style: none;
+    margin: 0;
+    padding: 24px 0 0;
+    border-top: 1px solid var(--hairline);
+    display: grid;
+    gap: 12px;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+  }
+  .ab-close__else li {
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    gap: 16px;
+    align-items: baseline;
+  }
+  .ab-close__else span { color: var(--ink-low); }
+  .ab-close__else a {
+    color: var(--ink);
+    text-decoration: none;
+    letter-spacing: 0.04em;
+    transition: color 0.2s ease;
+  }
+  .ab-close__else a:hover { color: var(--accent-warm); }
+
+  /* ── Responsive ────────────────────────────────────────────────
+     Each section was designed at desktop and graced down to mobile
+     by collapsing column counts and reducing padding rhythm.
+  */
+  @media (max-width: 1100px) {
+    .ab-now__grid { grid-template-columns: repeat(2, 1fr); }
+    .ab-bio__card { grid-template-columns: 200px 1fr; gap: 48px; }
+    .ab-close__inner { grid-template-columns: 1fr; gap: 48px; align-items: start; }
   }
   @media (max-width: 720px) {
     .ab section { padding: 0 16px; }
-    .ab-hero    { padding-top: 120px; padding-bottom: 80px; }
-    .ab-story, .ab-prn, .ab-cta { padding-top: 80px; padding-bottom: 80px; }
-    .ab-prn__item { grid-template-columns: 1fr; gap: 16px; padding: 32px 0; }
-    .ab-fact { grid-template-columns: 96px 1fr; gap: 16px; }
+    .ab-mani    { padding-top: 120px; padding-bottom: 80px; }
+    .ab-mani__foot { grid-template-columns: 1fr; gap: 24px; align-items: start; }
+    .ab-now, .ab-bio, .ab-story, .ab-prn, .ab-close { padding-top: 80px; padding-bottom: 80px; }
+    .ab-now__grid { grid-template-columns: 1fr; }
+    .ab-bio__card { grid-template-columns: 1fr; gap: 32px; }
+    .ab-bio__portrait { max-width: 220px; }
+    .ab-prn__item { grid-template-columns: 56px 1fr; gap: 16px; padding: 28px 0; }
+    .ab-prn__arrow { display: none; }
+    .ab-prose__cap { font-size: 64px; }
+    .ab-bio__row { grid-template-columns: 96px 1fr; gap: 16px; }
+    .ab-close__else li { grid-template-columns: 80px 1fr; gap: 12px; }
   }
 </style>
