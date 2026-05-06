@@ -38,33 +38,35 @@ function hoursAgo(iso) {
   return `${Math.round(diffH / 24)}D AGO`;
 }
 
-// "Habits" — written as plain first-person observations rather than
-// bold declarations, to keep the section from reading as manifesto.
+// "Habits" — first-person, low-key. Avoid grind-talk: no "discipline",
+// "earned that trust", "the accumulation is the work", "matters more
+// than any single sprint". The voice should read as "this is just
+// what I happen to do" rather than "this is what I work hard at".
 const principles = [
   {
     n: '01',
     title: 'I write the trace first.',
-    body: 'Every benchmark dumps one JSONL line per event before any aggregate score gets computed. Lets me re-slice the data later when I find a better question.',
+    body: "Every benchmark drops one JSONL line per event before anything gets aggregated. Makes it easy to ask new questions later.",
   },
   {
     n: '02',
     title: 'I stack thin layers.',
-    body: 'Three cheap guards in series catch more than one expensive filter does on its own. The same idea shows up in training blocks — easy weeks plus hard weeks beat constant medium intensity.',
+    body: "Three cheap guards in series catch more than one expensive filter does on its own. Same idea works in training — easy weeks and hard weeks, not constant medium ones.",
   },
   {
     n: '03',
     title: 'I sandbox before I integrate.',
-    body: 'Mocked tools, deterministic runs, no real side effects — until the apparatus has earned that trust. Shipping a security tool that can compromise its host is its own contradiction.',
+    body: "Mocked tools, deterministic runs, no real side effects until everything's settled. A security tool that can break its own host isn't worth much.",
   },
   {
     n: '04',
     title: 'I keep arcs finishable.',
-    body: 'Half-distance before full, deterministic demo before live model, single-author scope before opening up to contributors. Each step has to stand on its own terms first.',
+    body: "Half before full. Demo before live model. Each step gets to be a thing on its own first.",
   },
   {
     n: '05',
     title: 'I aim for one shipped thing a quarter.',
-    body: 'Case study, open-source release, or race finish. Steady cadence over years matters more than any single sprint. The accumulation is the work.',
+    body: "Case study, open-source release, race finish — whatever's ready. Nothing dramatic, just keeps things moving.",
   },
 ];
 
@@ -109,16 +111,15 @@ const bio = [
         <h1 class="ab-mani__h" data-reveal="lines">
           I build security tools<br/>
           that produce evidence,<br/>
-          and run long enough<br/>
-          to <span class="ab-mani__warm">earn the right to argue.</span>
+          and I run because<br/>
+          <span class="ab-mani__warm">it makes the rest clearer.</span>
         </h1>
 
         <div class="ab-mani__foot">
           <p class="ab-mani__lede" data-reveal="fade-up">
-            Maximilian Richter — security engineer working on AI-agent
-            harnesses and pen-test tooling. Endurance athlete training
-            for IRONMAN 70.3 Kraichgau. Based in the Allgäu, working
-            mostly alone, by choice.
+            Maximilian Richter — security engineer, working on AI-agent
+            harnesses and pen-test tooling. Training for IRONMAN 70.3
+            Kraichgau on the side. Based in the Allgäu.
           </p>
           <a class="ab-mani__cta" href="#story" data-cursor-hover>
             <span class="ab-mani__cta__lbl">READ THE LONG VERSION</span>
@@ -260,10 +261,10 @@ const bio = [
             <span class="ab-prose__cap">I</span> came into security through tooling, not bug-hunting. The first thing I built that felt right was a small CLI that ran ten reconnaissance steps in one command and dumped a JSONL trace — same reflex I now apply to agent evaluations. The output isn't a verdict, it's evidence the next person can re-run, argue with, and disprove.
           </p>
           <p data-reveal="fade-up">
-            The endurance habit started in parallel. Long sessions taught me what the engineering work was already pushing for: process beats outcome. A 90-minute run that's well paced is more durable than a 60-minute hero run that flames out. A guard layer that's auditable is more useful than a black-box filter with a higher single-metric score. The vocabulary is different; the discipline is the same.
+            The endurance side started in parallel. Long sessions made the same point the engineering already wanted: a 90-minute run that's well paced gets you further than a 60-minute hero run that flames out. A guard layer that's auditable is more useful than a black-box filter with a higher single-metric score. Different vocabulary, same shape.
           </p>
           <p data-reveal="fade-up">
-            I work alone on most of what's on this site, by choice. The cadence I'm trying to keep is one shipped artifact a quarter — case study, open-source release, or race — stacked over years until the slow accumulation looks like a body of work. That's the long game.
+            Most of what's on this site I work on solo. One artifact a quarter — case study, open-source release, or a race — and over time it adds up. Nothing dramatic about it.
           </p>
         </div>
       </div>
