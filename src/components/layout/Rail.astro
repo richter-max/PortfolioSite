@@ -1,12 +1,38 @@
 ---
 // Rail.astro — persistent scroll progress on left edge
+// Adds section-aware markers (WORK · FIELD · STATS · BLOG · CONTACT)
+// that activate as their section enters the viewport. The marker
+// labels rotate in vertically so the rail stays narrow.
+//
+// Order/IDs mirror Nav.astro so the active state in both stays in
+// sync. If you add a section there, mirror it here.
+const sections = [
+  { id: 'work',    label: 'WORK' },
+  { id: 'field',   label: 'FIELD' },
+  { id: 'numbers', label: 'STATS' },
+  { id: 'blog',    label: 'BLOG' },
+  { id: 'contact', label: 'CONTACT' },
+];
 ---
 
 <div class="rail" aria-hidden="true">
-  <div class="track">
-    <div class="fill" id="rail-fill"></div>
+  <div class="rail-track">
+    <div class="rail-fill" id="rail-fill"></div>
+
+    {sections.map((s, i) => (
+      <a
+        href={`/#${s.id}`}
+        class="rail-marker"
+        data-rail-marker
+        data-target={s.id}
+        style={`--i: ${i}; --total: ${sections.length - 1};`}
+      >
+        <span class="rail-marker__dot"></span>
+        <span class="rail-marker__label">{s.label}</span>
+      </a>
+    ))}
   </div>
-  <div class="pct" id="rail-pct">00%</div>
+  <div class="rail-pct" id="rail-pct">00%</div>
 </div>
 
 <style>
@@ -15,21 +41,20 @@
     left: 24px;
     top: 120px;
     bottom: 80px;
-    width: 16px;
+    width: 24px;
     z-index: 50;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 12px;
-    pointer-events: none;
   }
-  .track {
+  .rail-track {
     flex: 1;
     width: 1px;
     background: rgba(243, 241, 236, 0.08);
     position: relative;
   }
-  .fill {
+  .rail-fill {
     position: absolute;
     left: -0.5px;
     top: 0;
@@ -38,28 +63,108 @@
     background: var(--accent);
     transition: height 300ms cubic-bezier(0.22, 1, 0.36, 1);
   }
-  .pct {
+
+  /* Section markers — distributed evenly along the track height.
+     `--i / --total` interpolates 0..1, used as `top: calc(var(--i) /
+     var(--total) * 100%)`. The label sits to the right of the dot in
+     a vertical writing mode so the rail can stay slim. */
+  .rail-marker {
+    position: absolute;
+    left: 50%;
+    top: calc(var(--i) / var(--total) * 100%);
+    transform: translate(-50%, -50%);
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: inherit;
+    cursor: none;
+  }
+  .rail-marker__dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: rgba(243, 241, 236, 0.18);
+    box-shadow: 0 0 0 0 rgba(46,107,255,0);
+    transition: background 0.3s ease, box-shadow 0.4s ease, transform 0.3s var(--ease-out-expo);
+  }
+  .rail-marker__label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    color: rgba(243, 241, 236, 0.4);
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    opacity: 0;
+    transition: opacity 0.4s var(--ease-out-expo), color 0.3s ease;
+    white-space: nowrap;
+  }
+  .rail-marker:hover .rail-marker__dot,
+  .rail-marker.is-active .rail-marker__dot {
+    background: var(--accent);
+    transform: scale(1.4);
+    box-shadow: 0 0 12px rgba(46,107,255,0.55);
+  }
+  .rail-marker:hover .rail-marker__label,
+  .rail-marker.is-active .rail-marker__label {
+    opacity: 1;
+    color: var(--ink);
+  }
+
+  .rail-pct {
     font-family: var(--font-mono);
     font-size: 9px;
     letter-spacing: 0.2em;
     color: var(--ink-low);
     writing-mode: vertical-rl;
     transform: rotate(180deg);
+    pointer-events: none;
   }
+
   @media (max-width: 900px) {
     .rail { display: none; }
   }
 </style>
 
 <script>
-  const fill = document.getElementById('rail-fill');
-  const pct = document.getElementById('rail-pct');
+  const fill    = document.getElementById('rail-fill');
+  const pct     = document.getElementById('rail-pct');
+  const markers = document.querySelectorAll<HTMLElement>('[data-rail-marker]');
+
   const onScroll = () => {
     const max = document.documentElement.scrollHeight - window.innerHeight;
     const p = max > 0 ? window.scrollY / max : 0;
     if (fill) fill.style.height = `${p * 100}%`;
-    if (pct) pct.textContent = `${String(Math.round(p * 100)).padStart(2, '0')}%`;
+    if (pct)  pct.textContent  = `${String(Math.round(p * 100)).padStart(2, '0')}%`;
   };
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
+
+  // Active-section tracking — mirrors the Nav IntersectionObserver but
+  // owned independently so the Rail keeps working on pages where the
+  // Nav observer hasn't initialised yet (e.g. /404 inside its own DOM).
+  const targets: HTMLElement[] = Array.from(markers)
+    .map(m => document.getElementById(m.dataset.target!))
+    .filter((el): el is HTMLElement => el !== null);
+
+  if (targets.length) {
+    const ratios = new Map<Element, number>();
+    targets.forEach(t => ratios.set(t, 0));
+
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(e => ratios.set(e.target, e.intersectionRatio));
+        let bestRatio = 0;
+        let best: Element | null = null;
+        ratios.forEach((r, el) => { if (r > bestRatio) { bestRatio = r; best = el; } });
+        markers.forEach(m => {
+          const isActive = best && (best as HTMLElement).id === m.dataset.target;
+          m.classList.toggle('is-active', !!isActive);
+        });
+      },
+      { rootMargin: '-40% 0px -40% 0px', threshold: [0, 0.1, 0.25, 0.5, 0.75, 1] }
+    );
+    targets.forEach(t => obs.observe(t));
+  }
 </script>
