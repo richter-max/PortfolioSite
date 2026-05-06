@@ -35,6 +35,22 @@ const bars  = weeklyKmLast12.map((km) => ({
   height: Math.max(0.04, km / maxKm), // floor so empty weeks still render a hairline
 }));
 
+// Build an SVG polyline path of the same series so we can scrub a
+// "ghost" trend line in over the bars — closer to a real telemetry
+// chart than discrete bars on their own. The path is normalised into
+// an SVG viewBox of 0..100 × 0..40 (chart-W × chart-H) so it scales
+// freely. The path always starts at (0, 40 - h*40) and steps right.
+const chartW = 100;
+const chartH = 40;
+const stepX  = bars.length > 1 ? chartW / (bars.length - 1) : chartW;
+const linePoints = bars
+  .map((b, i) => `${(i * stepX).toFixed(2)},${(chartH - b.height * chartH).toFixed(2)}`)
+  .join(' ');
+// Closed area under the line, used as a soft fill behind the polyline.
+const areaPath = bars.length
+  ? `M0,${chartH} L ${linePoints.split(' ').join(' L ')} L${chartW},${chartH} Z`
+  : '';
+
 const lastWeekKm = weeklyKmLast12.length
   ? Math.round(weeklyKmLast12[weeklyKmLast12.length - 1] * 10) / 10
   : 0;
@@ -83,12 +99,40 @@ const lastWeekKm = weeklyKmLast12.length
             <div class="pt-hero__sub">Consecutive weeks logged · live</div>
           </div>
 
-          <div class="pt-spark" aria-hidden="true">
+          <div class="pt-spark" aria-hidden="true" data-pt-spark>
+            <!-- SVG layer: gradient-filled area + polyline trend with
+                 stroke-scrub draw-in. The bars sit on top as discrete
+                 datapoints. Combined the chart reads like a real
+                 telemetry surface, not a Highcharts default. -->
+            <svg
+              class="pt-spark__svg"
+              viewBox={`0 0 ${chartW} ${chartH}`}
+              preserveAspectRatio="none"
+            >
+              <defs>
+                <linearGradient id="ptSparkArea" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0"   stop-color="#2E6BFF" stop-opacity="0.45" />
+                  <stop offset="1"   stop-color="#2E6BFF" stop-opacity="0" />
+                </linearGradient>
+              </defs>
+              <path class="pt-spark__area" d={areaPath} fill="url(#ptSparkArea)"></path>
+              <polyline
+                class="pt-spark__line"
+                points={linePoints}
+                fill="none"
+                stroke="#2E6BFF"
+                stroke-width="0.8"
+                vector-effect="non-scaling-stroke"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ></polyline>
+            </svg>
+
             <div class="pt-spark__bars">
-              {bars.map((b) => (
+              {bars.map((b, i) => (
                 <span
                   class="pt-spark__bar"
-                  style={`--h: ${b.height}`}
+                  style={`--h: ${b.height}; --i: ${i};`}
                   data-km={b.km}
                 ></span>
               ))}
@@ -361,11 +405,37 @@ const lastWeekKm = weeklyKmLast12.length
     max-width: 30ch;
   }
 
-  /* Sparkline — 12 mini bars, last one accent-coloured */
+  /* Sparkline — SVG trend line + gradient area + mini bars on top.
+     The SVG layer sits absolute behind the bars so the bars still
+     anchor to the baseline; the trend animates in via stroke-scrub. */
   .pt-spark {
     grid-column: 1 / -1;
     margin-top: 12px;
+    position: relative;
   }
+  .pt-spark__svg {
+    position: absolute;
+    inset: 0 0 18px 0; /* leave room for the axis text below */
+    width: 100%;
+    height: 56px;
+    pointer-events: none;
+    overflow: visible;
+  }
+  .pt-spark__area {
+    opacity: 0;
+    transition: opacity 0.7s var(--ease-out-expo) 0.5s;
+  }
+  .pt-spark__line {
+    /* pathLength normalised: stroke-dasharray uses real geometry, so we
+       compute via JS at mount and assign --len. */
+    stroke-dasharray: var(--len, 1000);
+    stroke-dashoffset: var(--len, 1000);
+    transition: stroke-dashoffset 1.4s var(--ease-out-expo) 0.1s;
+    filter: drop-shadow(0 0 6px rgba(46,107,255,0.45));
+  }
+  .pt-spark.is-playing .pt-spark__line { stroke-dashoffset: 0; }
+  .pt-spark.is-playing .pt-spark__area { opacity: 1; }
+
   .pt-spark__bars {
     display: flex;
     align-items: flex-end;
@@ -373,13 +443,21 @@ const lastWeekKm = weeklyKmLast12.length
     height: 56px;
     border-bottom: 1px solid rgba(243,241,236,0.08);
     padding-bottom: 2px;
+    position: relative;
+    z-index: 1;
   }
   .pt-spark__bar {
     flex: 1;
     display: block;
+    height: 0;
+    background: rgba(243,241,236,0.22);
+    transition:
+      height 0.7s var(--ease-out-expo),
+      background 0.4s ease;
+    transition-delay: calc(0.4s + var(--i) * 0.05s);
+  }
+  .pt-spark.is-playing .pt-spark__bar {
     height: calc(var(--h) * 100%);
-    background: rgba(243,241,236,0.18);
-    transition: background 0.4s ease;
   }
   .pt-spark__bar:last-child {
     background: var(--accent);
@@ -393,6 +471,14 @@ const lastWeekKm = weeklyKmLast12.length
     font-size: 9px;
     letter-spacing: 0.2em;
     color: var(--ink-low);
+    position: relative;
+    z-index: 2;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pt-spark__line, .pt-spark__area, .pt-spark__bar { transition: none; }
+    .pt-spark__line { stroke-dashoffset: 0; }
+    .pt-spark__area { opacity: 1; }
+    .pt-spark__bar { height: calc(var(--h) * 100%); }
   }
 
   /* ── Supporting stats row ────────────────────────────────────────── */
@@ -583,6 +669,7 @@ const lastWeekKm = weeklyKmLast12.length
     .pt-hero { grid-template-columns: 1fr; gap: 18px; }
     .pt-hero__num { font-size: clamp(96px, 18vw, 180px); }
   }
+
   @media (max-width: 900px) {
     .pt { padding: 128px 24px; }
     .pt-cols {
@@ -603,3 +690,28 @@ const lastWeekKm = weeklyKmLast12.length
     .pt-foot__rule { width: 80px; }
   }
 </style>
+
+<script>
+  // Sparkline reveal — measure the polyline's actual length so the
+  // stroke-dash math is exact, then trigger the play state once the
+  // chart enters the viewport.
+  const spark = document.querySelector<HTMLElement>('[data-pt-spark]');
+  if (spark) {
+    const line = spark.querySelector<SVGPolylineElement>('.pt-spark__line');
+    if (line) {
+      try {
+        const len = Math.ceil(line.getTotalLength());
+        line.style.setProperty('--len', String(len));
+      } catch {}
+    }
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          spark.classList.add('is-playing');
+          obs.disconnect();
+        }
+      });
+    }, { threshold: 0.4 });
+    obs.observe(spark);
+  }
+</script>
