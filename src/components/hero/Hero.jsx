@@ -1,77 +1,59 @@
-// Hero.jsx — Three-stage scroll-driven hero.
-// Imagery is currently disabled (pending redesign). What still ships:
-//   - Stage progression drives the eyebrow text and the bg-color flip
-//     from dark → dark → cream across stages 1 → 2 → 3.
-//   - Stage 1 also surfaces the Kraichgau countdown + LAST RUN line.
-// When new hero imagery lands, plug it into the three Stage* slots
-// gated by stage1Visible / stage2Visible / stage3Visible.
+// Hero.jsx — Editorial 100vh hero.
+// Full-bleed portrait/landscape photograph with an oversized name,
+// positioning eyebrow, Kraichgau race countdown, and a LAST RUN
+// indicator pulled from live Strava data. Replaces the previous
+// 3-stage 300vh sticky progression — the wide-empty-field aesthetic
+// reads stronger as a single viewport than as a scroll-driven
+// sequence with no imagery. The race countdown and last-run line
+// migrated as-is.
 import { useEffect, useRef, useState } from 'react';
 
-// Returns 0..1 opacity for a stage, given scroll progress.
-// in/peak/out are the cross-fade keyframes per stage.
-function stageOpacity(p, ranges) {
-  const [a, b, c, d] = ranges; // fade-in start, fade-in end, fade-out start, fade-out end
-  if (p <= a || p >= d) return 0;
-  if (p < b) return (p - a) / (b - a);
-  if (p < c) return 1;
-  return 1 - (p - c) / (d - c);
-}
+const LOADER_OUT_AT = 1600;
+const LOADER_DESTROY_AT = 2200;
 
 export default function Hero({ lastRun = null }) {
   const [mounted, setMounted]       = useState(false);
   const [loaderGone, setLoaderGone] = useState(false);
-  const [progress, setProgress]     = useState(0);
-  const outerRef = useRef(null);
+  const heroRef = useRef(null);
+  const bgRef   = useRef(null);
 
-  // Loader timing
+  // ── Loader timing ────────────────────────────────────────────────
   useEffect(() => {
     const t1 = setTimeout(() => setMounted(true), 60);
-    const t2 = setTimeout(() => setLoaderGone(true), 2200);
+    const t2 = setTimeout(() => setLoaderGone(true), LOADER_DESTROY_AT);
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, []);
 
-  // Scroll listener
+  // ── Subtle parallax on the background photo ─────────────────────
+  // Only ever shifts within the bottom half of the bg, so even at
+  // peak scroll the image fully covers. Disabled when the user
+  // requested reduced motion.
   useEffect(() => {
     if (typeof window === 'undefined') return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-    let rafId = null;
-
-    function compute() {
-      const outer = outerRef.current;
-      if (!outer) return;
-
-      const rect   = outer.getBoundingClientRect();
-      const height = outer.offsetHeight;
-      const vh     = window.innerHeight;
-      const total  = height - vh;
-
-      if (total <= 0) return;
-
-      const scrolled = Math.min(Math.max(-rect.top, 0), total);
-      setProgress(scrolled / total);
-    }
-
-    function onScroll() {
-      if (rafId) return;
-      rafId = requestAnimationFrame(() => {
-        compute();
-        rafId = null;
+    let raf = null;
+    const onScroll = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        if (heroRef.current && bgRef.current) {
+          const r = heroRef.current.getBoundingClientRect();
+          // 0 when hero top is at viewport top, ramps as user scrolls past.
+          const t = Math.max(0, Math.min(1, -r.top / window.innerHeight));
+          bgRef.current.style.transform = `translate3d(0, ${(t * 12).toFixed(2)}vh, 0) scale(1.06)`;
+        }
+        raf = null;
       });
-    }
-
-    compute();
-
+    };
+    onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', compute);
-
     return () => {
       window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', compute);
-      if (rafId) cancelAnimationFrame(rafId);
+      if (raf) cancelAnimationFrame(raf);
     };
   }, []);
 
-  // Name char entrance
+  // ── Name char entrance — staggered drop-in ──────────────────────
   useEffect(() => {
     if (!mounted) return;
     let cancelled = false;
@@ -85,20 +67,23 @@ export default function Hero({ lastRun = null }) {
       nameEl.dataset.split = 'true';
 
       const text = nameEl.textContent || '';
-      nameEl.innerHTML = text.split('').map(c =>
-        c === ' '
-          ? '<span style="display:inline-block;width:0.25em">&nbsp;</span>'
-          : '<span style="display:inline-block;will-change:transform,opacity">' + c + '</span>'
-      ).join('');
+      // Wrap each character in a span with overflow:hidden parent so
+      // the chars enter from below their own line-box, not from the
+      // element top — gives a more refined "type setting" reveal.
+      nameEl.innerHTML = text.split('').map((c) => {
+        if (c === ' ') return '<span class="hero-name__space">&nbsp;</span>';
+        return `<span class="hero-name__cell"><span class="hero-name__char">${c}</span></span>`;
+      }).join('');
 
-      const chars = nameEl.querySelectorAll('span');
-      gsap.set(chars, { y: -40, opacity: 0 });
+      const chars = nameEl.querySelectorAll('.hero-name__char');
+      gsap.set(chars, { yPercent: 110, opacity: 0 });
       gsap.to(chars, {
-        y: 0, opacity: 1,
-        duration: 0.9,
+        yPercent: 0,
+        opacity: 1,
+        duration: 1.0,
         ease: 'expo.out',
         stagger: { each: 0.022 },
-        delay: 1.7,
+        delay: LOADER_OUT_AT / 1000 + 0.2,
       });
     }
 
@@ -106,125 +91,72 @@ export default function Hero({ lastRun = null }) {
     return () => { cancelled = true; clearTimeout(t); };
   }, [mounted]);
 
-  // Stage opacity ranges  (fade-in start, in end, out start, out end)
-  const op1 = stageOpacity(progress, [0.00, 0.05, 0.30, 0.42]);
-  const op2 = stageOpacity(progress, [0.32, 0.44, 0.62, 0.74]);
-  const op3 = stageOpacity(progress, [0.66, 0.78, 1.00, 1.10]);
-
-  // Background fades from dark to cream for stage 3
-  const creamMix = stageOpacity(progress, [0.66, 0.80, 1.00, 1.10]);
-  const bgR = Math.round(5   + (243 - 5)   * creamMix);
-  const bgG = Math.round(5   + (241 - 5)   * creamMix);
-  const bgB = Math.round(6   + (236 - 6)   * creamMix);
-  const bgColor = `rgb(${bgR}, ${bgG}, ${bgB})`;
-
-  // Foreground text colors flip with bg
-  const textColor = creamMix > 0.5
-    ? `rgb(${Math.round(243 + (26  - 243) * creamMix)}, ${Math.round(241 + (26  - 241) * creamMix)}, ${Math.round(236 + (26  - 236) * creamMix)})`
-    : '#F3F1EC';
-  const subColor = creamMix > 0.5 ? 'rgba(26,26,26,0.6)' : '#A8A6A0';
-
-  // Eyebrow per stage (active = highest opacity)
-  const stage1Visible = op1;
-  const stage2Visible = op2;
-  const stage3Visible = op3;
-
   return (
     <>
-      {!loaderGone && <HeroLoader mounted={mounted} />}
+      {!loaderGone && <HeroLoader />}
 
-      <div
-        id="top"
-        ref={outerRef}
-        style={{ position: 'relative', height: '300vh', width: '100%' }}
-      >
-        <div style={{
-          position: 'sticky',
-          top: 0,
-          height: '100vh',
-          width: '100%',
-          background: bgColor,
-          overflow: 'hidden',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'flex-end',
-          padding: '0 40px 80px',
-          transition: 'background 200ms linear',
-        }}>
+      <section ref={heroRef} className="hero" id="top">
 
-          {/* Hero imagery temporarily removed — pending redesign. Stage
-              opacity logic + bg-color flip is preserved so the eyebrow
-              text + countdown still react to scroll progress. */}
-
-          {/* Foreground */}
-          <div style={{
-            position: 'relative',
-            zIndex: 5,
-            maxWidth: 1440,
-            width: '100%',
-            margin: '0 auto',
-            opacity: mounted ? 1 : 0,
-            transition: 'opacity 800ms ease 1500ms',
-          }}>
-            <h1
-              data-hero-name
-              style={{
-                fontFamily: 'Inter Tight, sans-serif',
-                fontWeight: 600,
-                fontSize: 'clamp(52px, 9.5vw, 152px)',
-                lineHeight: 0.92,
-                letterSpacing: '-0.04em',
-                color: textColor,
-                margin: '0 0 36px',
-                transition: 'color 200ms linear',
-              }}
-            >
-              Maximilian Richter
-            </h1>
-
-            <div style={{
-              display: 'flex',
-              alignItems: 'flex-end',
-              justifyContent: 'space-between',
-              flexWrap: 'wrap',
-              gap: 32,
-              minHeight: 100,
-            }}>
-              {/* Eyebrow stack — three states layered, opacity-driven */}
-              <div style={{
-                position: 'relative',
-                fontFamily: 'JetBrains Mono, monospace',
-                fontSize: 11,
-                letterSpacing: '0.22em',
-                minHeight: 16,
-                minWidth: 320,
-              }}>
-                <Eyebrow visible={stage1Visible} textColor={textColor} subColor={subColor}>
-                  <span style={{ color: textColor }}>SECURITY ENGINEER</span>
-                  <Divider color={subColor} />
-                  <span style={{ color: subColor }}>ENDURANCE ATHLETE</span>
-                </Eyebrow>
-                <Eyebrow visible={stage2Visible} textColor={textColor} subColor={subColor}>
-                  <span style={{ color: textColor }}>BUILDING.</span>
-                  <Divider color={subColor} />
-                  <span style={{ color: subColor }}>4 PROJECTS · 1 IN BETA</span>
-                </Eyebrow>
-                <Eyebrow visible={stage3Visible} textColor={textColor} subColor={subColor}>
-                  <span style={{ color: textColor }}>RUNNING.</span>
-                  <Divider color={subColor} />
-                  <span style={{ color: subColor }}>TRAINING FOR KRAICHGAU</span>
-                </Eyebrow>
-              </div>
-
-              {/* Countdown only in stage 1 */}
-              <div style={{ opacity: stage1Visible, transition: 'opacity 100ms linear' }}>
-                <KraichgauCountdown lastRun={lastRun} />
-              </div>
-            </div>
-          </div>
-
+        {/* ── Background photograph with parallax wrapper ────────── */}
+        <div className="hero__bg" ref={bgRef}>
+          <picture>
+            <source
+              type="image/avif"
+              srcSet="/img/opt/hero-path-640.avif 640w, /img/opt/hero-path-1280.avif 1280w, /img/opt/hero-path-1920.avif 1920w, /img/opt/hero-path-2560.avif 2560w"
+              sizes="100vw"
+            />
+            <source
+              type="image/webp"
+              srcSet="/img/opt/hero-path-640.webp 640w, /img/opt/hero-path-1280.webp 1280w, /img/opt/hero-path-1920.webp 1920w, /img/opt/hero-path-2560.webp 2560w"
+              sizes="100vw"
+            />
+            <img
+              src="/img/opt/hero-path-1920.jpg"
+              srcSet="/img/opt/hero-path-640.jpg 640w, /img/opt/hero-path-1280.jpg 1280w, /img/opt/hero-path-1920.jpg 1920w, /img/opt/hero-path-2560.jpg 2560w"
+              sizes="100vw"
+              alt=""
+              fetchpriority="high"
+              decoding="async"
+              loading="eager"
+            />
+          </picture>
+          <div className="hero__veil" aria-hidden="true"></div>
         </div>
-      </div>
+
+        {/* ── Top-edge meta row ─────────────────────────────────── */}
+        <div className="hero__top">
+          <div className="hero__crumb">
+            <span>2026 · ALLGÄU</span>
+            <span className="hero__crumb__sep">·</span>
+            <span>SOLO PRACTICE</span>
+          </div>
+          <div className="hero__avail">
+            <span className="hero__avail__dot"></span>
+            <span>OPEN — NEW PROJECTS</span>
+          </div>
+        </div>
+
+        {/* ── Foreground content ──────────────────────────────────── */}
+        <div className="hero__fg">
+          <h1 className="hero-name" data-hero-name>Maximilian Richter</h1>
+
+          <div className="hero__row">
+            <div className="hero__title">
+              <span className="hero__title__role">SECURITY&nbsp;ENGINEER</span>
+              <span className="hero__title__sep" aria-hidden="true"></span>
+              <span className="hero__title__role hero__title__role--warm">ENDURANCE&nbsp;ATHLETE</span>
+            </div>
+
+            <KraichgauCountdown lastRun={lastRun} />
+          </div>
+        </div>
+
+        {/* ── Scroll cue ────────────────────────────────────────── */}
+        <a className="hero__cue" href="#work" aria-label="Scroll to work">
+          <span className="hero__cue__txt">SCROLL</span>
+          <span className="hero__cue__line"></span>
+        </a>
+      </section>
 
       <style>{`
         @keyframes loaderLineGrow {
@@ -239,37 +171,289 @@ export default function Hero({ lastRun = null }) {
           0%   { opacity: 0; letter-spacing: 0.45em; }
           100% { opacity: 1; letter-spacing: 0.2em; }
         }
+        @keyframes heroAvailPulse {
+          0%, 100% { opacity: 1;   transform: scale(1); }
+          50%      { opacity: 0.4; transform: scale(0.7); }
+        }
+
+        /* ── Hero frame ──────────────────────────────────────────── */
+        .hero {
+          position: relative;
+          width: 100%;
+          height: 100vh;
+          min-height: 640px;
+          overflow: hidden;
+          background: #050506;
+          color: #f3f1ec;
+          isolation: isolate;
+        }
+        .hero__bg {
+          position: absolute;
+          inset: -3vh -3vw;
+          z-index: 0;
+          will-change: transform;
+        }
+        .hero__bg picture, .hero__bg img {
+          width: 100%;
+          height: 100%;
+          display: block;
+        }
+        .hero__bg img {
+          object-fit: cover;
+          object-position: center 40%;
+          filter: saturate(0.78) contrast(1.04);
+        }
+        .hero__veil {
+          position: absolute;
+          inset: 0;
+          background:
+            linear-gradient(180deg, rgba(5,5,6,0.32) 0%, rgba(5,5,6,0.08) 30%, rgba(5,5,6,0.45) 70%, rgba(5,5,6,0.92) 100%),
+            radial-gradient(ellipse at 80% 30%, rgba(232,181,87,0.12), transparent 55%);
+          mix-blend-mode: normal;
+        }
+
+        /* ── Top meta row ────────────────────────────────────────── */
+        .hero__top {
+          position: absolute;
+          top: 96px;
+          left: 0;
+          right: 0;
+          z-index: 3;
+          padding: 0 40px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          font-family: 'JetBrains Mono Variable', monospace;
+          font-size: 11px;
+          letter-spacing: 0.22em;
+          color: rgba(243, 241, 236, 0.85);
+        }
+        .hero__crumb {
+          display: inline-flex;
+          align-items: center;
+          gap: 12px;
+        }
+        .hero__crumb__sep { color: rgba(243, 241, 236, 0.35); }
+        .hero__avail {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+        }
+        .hero__avail__dot {
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          background: #22c55e;
+          box-shadow: 0 0 10px rgba(34, 197, 94, 0.7);
+          animation: heroAvailPulse 2.4s ease-in-out infinite;
+        }
+
+        /* ── Foreground content ─────────────────────────────────── */
+        .hero__fg {
+          position: absolute;
+          left: 0;
+          right: 0;
+          bottom: 96px;
+          z-index: 2;
+          padding: 0 40px;
+          max-width: 1440px;
+          margin: 0 auto;
+        }
+        .hero-name {
+          display: block;
+          font-family: 'Inter Tight Variable', 'Inter Tight', sans-serif;
+          font-weight: 600;
+          font-size: clamp(56px, 11vw, 184px);
+          line-height: 0.88;
+          letter-spacing: -0.045em;
+          color: #f3f1ec;
+          margin: 0 0 48px;
+          text-shadow: 0 1px 32px rgba(5, 5, 6, 0.5);
+        }
+        .hero-name__cell {
+          display: inline-block;
+          overflow: hidden;
+          line-height: inherit;
+          padding-bottom: 0.06em;
+          margin-bottom: -0.06em;
+        }
+        .hero-name__char {
+          display: inline-block;
+          will-change: transform, opacity;
+        }
+        .hero-name__space {
+          display: inline-block;
+          width: 0.18em;
+        }
+
+        .hero__row {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) auto;
+          gap: 64px;
+          align-items: end;
+          flex-wrap: wrap;
+        }
+
+        .hero__title {
+          display: inline-flex;
+          align-items: center;
+          gap: 14px;
+          font-family: 'JetBrains Mono Variable', monospace;
+          font-size: 12px;
+          letter-spacing: 0.24em;
+          flex-wrap: wrap;
+        }
+        .hero__title__role {
+          color: #f3f1ec;
+          text-shadow: 0 1px 18px rgba(5, 5, 6, 0.5);
+        }
+        .hero__title__role--warm { color: #e8b557; }
+        .hero__title__sep {
+          width: 28px;
+          height: 1px;
+          background: rgba(243, 241, 236, 0.35);
+          display: inline-block;
+        }
+
+        /* ── Countdown — preserved layout, refined typography ───── */
+        .kg {
+          text-align: right;
+          font-family: 'Inter Tight Variable', 'Inter Tight', sans-serif;
+          color: #f3f1ec;
+        }
+        .kg__head {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          justify-content: flex-end;
+          font-family: 'JetBrains Mono Variable', monospace;
+          font-size: 10px;
+          letter-spacing: 0.22em;
+          color: rgba(243, 241, 236, 0.85);
+          margin-bottom: 12px;
+        }
+        .kg__head__sq {
+          width: 6px;
+          height: 6px;
+          background: #2e6bff;
+          display: inline-block;
+        }
+        .kg__cells {
+          display: flex;
+          justify-content: flex-end;
+          gap: 24px;
+        }
+        .kg__cell {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-end;
+          gap: 4px;
+        }
+        .kg__num {
+          font-weight: 300;
+          font-size: clamp(28px, 3vw, 40px);
+          line-height: 1;
+          letter-spacing: -0.03em;
+          font-variant-numeric: tabular-nums;
+          text-shadow: 0 1px 18px rgba(5, 5, 6, 0.5);
+        }
+        .kg__lbl {
+          font-family: 'JetBrains Mono Variable', monospace;
+          font-size: 9px;
+          letter-spacing: 0.22em;
+          color: rgba(243, 241, 236, 0.55);
+          text-transform: uppercase;
+        }
+        .kg__date {
+          font-family: 'JetBrains Mono Variable', monospace;
+          font-size: 10px;
+          letter-spacing: 0.18em;
+          color: rgba(243, 241, 236, 0.55);
+          margin-top: 12px;
+        }
+        .kg__last {
+          margin-top: 18px;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          justify-content: flex-end;
+          font-family: 'JetBrains Mono Variable', monospace;
+          font-size: 10px;
+          letter-spacing: 0.2em;
+        }
+        .kg__last__dot {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background: #22c55e;
+          box-shadow: 0 0 8px rgba(34,197,94,0.7);
+        }
+        .kg__last__k { color: rgba(243, 241, 236, 0.65); }
+        .kg__last__sep { color: rgba(243, 241, 236, 0.2); }
+        .kg__last__v { color: #f3f1ec; }
+
+        /* ── Scroll cue ─────────────────────────────────────────── */
+        .hero__cue {
+          position: absolute;
+          left: 50%;
+          bottom: 24px;
+          transform: translateX(-50%);
+          z-index: 3;
+          display: inline-flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 12px;
+          font-family: 'JetBrains Mono Variable', monospace;
+          font-size: 9px;
+          letter-spacing: 0.3em;
+          color: rgba(243, 241, 236, 0.6);
+          text-decoration: none;
+          opacity: 0;
+          animation: loaderTextFade 800ms cubic-bezier(.22,1,.36,1) ${LOADER_OUT_AT + 600}ms forwards;
+        }
+        .hero__cue__line {
+          width: 1px;
+          height: 32px;
+          background: linear-gradient(to bottom, rgba(243, 241, 236, 0.6), transparent);
+          position: relative;
+          overflow: hidden;
+        }
+        .hero__cue__line::after {
+          content: '';
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: -100%;
+          height: 50%;
+          background: linear-gradient(to bottom, transparent, #f3f1ec);
+          animation: heroCueRun 2.6s cubic-bezier(.22,1,.36,1) infinite;
+        }
+        @keyframes heroCueRun {
+          0%   { top: -50%; opacity: 0; }
+          25%  { opacity: 1; }
+          100% { top: 100%; opacity: 0; }
+        }
+
+        /* ── Responsive ─────────────────────────────────────────── */
+        @media (max-width: 900px) {
+          .hero { min-height: 560px; }
+          .hero__top { top: 80px; padding: 0 16px; flex-wrap: wrap; gap: 12px; }
+          .hero__fg  { bottom: 64px; padding: 0 16px; }
+          .hero-name { margin-bottom: 32px; }
+          .hero__row { grid-template-columns: 1fr; gap: 24px; }
+          .kg { text-align: left; }
+          .kg__head, .kg__cells, .kg__last { justify-content: flex-start; }
+          .kg__cell { align-items: flex-start; }
+          .hero__cue { bottom: 16px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .hero__bg { transform: none !important; }
+          .hero__cue { opacity: 1; animation: none; }
+          .hero__cue__line::after { animation: none; }
+          .hero__avail__dot { animation: none; }
+        }
       `}</style>
     </>
-  );
-}
-
-function Eyebrow({ visible, children }) {
-  return (
-    <div style={{
-      position: 'absolute',
-      inset: 0,
-      display: 'flex',
-      alignItems: 'center',
-      gap: 16,
-      opacity: visible,
-      transform: `translateY(${(1 - visible) * 8}px)`,
-      transition: 'opacity 100ms linear, transform 100ms linear',
-      pointerEvents: visible > 0.5 ? 'auto' : 'none',
-    }}>
-      {children}
-    </div>
-  );
-}
-
-function Divider({ color }) {
-  return (
-    <span style={{
-      width: 24, height: 1,
-      background: color,
-      opacity: 0.4,
-      display: 'inline-block',
-    }} />
   );
 }
 
@@ -288,64 +472,38 @@ function KraichgauCountdown({ lastRun = null }) {
   const s = Math.floor((delta % 60000) / 1000);
   const pad = (n) => String(n).padStart(2, '0');
 
-  const cell = { display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 };
-  const num = {
-    fontFamily: 'Inter Tight, sans-serif', fontWeight: 300,
-    fontSize: 'clamp(28px, 3vw, 40px)', lineHeight: 1, letterSpacing: '-0.03em',
-    color: '#F3F1EC', fontVariantNumeric: 'tabular-nums',
-  };
-  const lbl = {
-    fontFamily: 'JetBrains Mono, monospace', fontSize: 9,
-    letterSpacing: '0.22em', textTransform: 'uppercase', color: '#6B6965',
-  };
-
   return (
-    <div style={{ textAlign: 'right' }}>
-      <div style={{
-        fontFamily: 'JetBrains Mono, monospace', fontSize: 10, letterSpacing: '0.22em',
-        color: '#A8A6A0', marginBottom: 14,
-        display: 'flex', alignItems: 'center', gap: 10, justifyContent: 'flex-end',
-      }}>
-        <span style={{ width: 6, height: 6, background: '#2E6BFF', display: 'inline-block' }} />
+    <div className="kg">
+      <div className="kg__head">
+        <span className="kg__head__sq" aria-hidden="true"></span>
         IRONMAN 70.3 · KRAICHGAU
       </div>
-      <div style={{ display: 'flex', gap: 28, justifyContent: 'flex-end' }}>
-        <div style={cell}><div style={num}>{d}</div><div style={lbl}>DAYS</div></div>
-        <div style={cell}><div style={num}>{pad(h)}</div><div style={lbl}>HRS</div></div>
-        <div style={cell}><div style={num}>{pad(m)}</div><div style={lbl}>MIN</div></div>
-        <div style={cell}><div style={num}>{pad(s)}</div><div style={lbl}>SEC</div></div>
+      <div className="kg__cells">
+        <div className="kg__cell"><div className="kg__num">{d}</div><div className="kg__lbl">DAYS</div></div>
+        <div className="kg__cell"><div className="kg__num">{pad(h)}</div><div className="kg__lbl">HRS</div></div>
+        <div className="kg__cell"><div className="kg__num">{pad(m)}</div><div className="kg__lbl">MIN</div></div>
+        <div className="kg__cell"><div className="kg__num">{pad(s)}</div><div className="kg__lbl">SEC</div></div>
       </div>
-      <div style={{
-        fontFamily: 'JetBrains Mono, monospace', fontSize: 10, letterSpacing: '0.18em',
-        color: '#6B6965', marginTop: 12,
-      }}>31 MAY 2026 · 07:00 CET</div>
+      <div className="kg__date">31 MAY 2026 · 07:00 CET</div>
 
       {lastRun && (
-        <div style={{
-          fontFamily: 'JetBrains Mono, monospace', fontSize: 10, letterSpacing: '0.2em',
-          color: '#A8A6A0', marginTop: 18,
-          display: 'flex', alignItems: 'center', gap: 10, justifyContent: 'flex-end',
-        }}>
-          <span style={{
-            width: 6, height: 6, borderRadius: '50%',
-            background: '#22C55E', display: 'inline-block',
-            boxShadow: '0 0 8px rgba(34,197,94,0.7)',
-          }} />
-          <span style={{ color: '#A8A6A0' }}>LAST RUN</span>
-          <span style={{ color: 'rgba(243,241,236,0.2)' }}>·</span>
-          <span style={{ color: '#F3F1EC' }}>{lastRun.weekday.toUpperCase()}</span>
-          <span style={{ color: 'rgba(243,241,236,0.2)' }}>·</span>
-          <span style={{ color: '#F3F1EC' }}>{lastRun.km} KM</span>
+        <div className="kg__last">
+          <span className="kg__last__dot" aria-hidden="true"></span>
+          <span className="kg__last__k">LAST RUN</span>
+          <span className="kg__last__sep">·</span>
+          <span className="kg__last__v">{lastRun.weekday.toUpperCase()}</span>
+          <span className="kg__last__sep">·</span>
+          <span className="kg__last__v">{lastRun.km} KM</span>
         </div>
       )}
     </div>
   );
 }
 
-function HeroLoader({ mounted }) {
+function HeroLoader() {
   const [exiting, setExiting] = useState(false);
   useEffect(() => {
-    const t = setTimeout(() => setExiting(true), 1600);
+    const t = setTimeout(() => setExiting(true), LOADER_OUT_AT);
     return () => clearTimeout(t);
   }, []);
 
@@ -367,12 +525,10 @@ function HeroLoader({ mounted }) {
             : 'loaderLineGrow 1000ms cubic-bezier(.22,1,.36,1) forwards',
         }} />
         <div style={{
-          fontFamily: 'JetBrains Mono, monospace',
+          fontFamily: 'JetBrains Mono Variable, monospace',
           fontSize: 10, letterSpacing: '0.2em', color: '#A8A6A0',
           opacity: 0,
-          animation: mounted
-            ? 'loaderTextFade 800ms cubic-bezier(.22,1,.36,1) 400ms forwards'
-            : 'none',
+          animation: 'loaderTextFade 800ms cubic-bezier(.22,1,.36,1) 400ms forwards',
         }}>
           MAXIMILIAN RICHTER
         </div>
