@@ -5,103 +5,376 @@ import Footer from '@components/layout/Footer.astro';
 ---
 
 <BaseLayout
-  title="404 — Off the trail · richtermax.com"
+  title="404 — Off route · richtermax.com"
   description="This URL doesn't exist on richtermax.com."
+  noindex
 >
   <Nav />
-  <main id="main" class="not-found">
-    <div class="kicker">
-      <span class="num">404</span>
-      <span class="bar"></span>
-      <span>OFF THE TRAIL</span>
+  <main id="main" class="nf">
+
+    <!-- ── Trail SVG: a Strava-like GPX line that runs into the
+         viewport, then breaks off into nothing. The dashed segment
+         after the break is the "off-route" portion. The whole figure
+         scrubs in on load via stroke-dashoffset. ───────────────────── -->
+    <div class="nf-trail" aria-hidden="true">
+      <svg viewBox="0 0 1200 480" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <linearGradient id="trailGrad" x1="0" x2="1" y1="0" y2="0">
+            <stop offset="0"   stop-color="#2E6BFF" stop-opacity="0" />
+            <stop offset="0.18" stop-color="#2E6BFF" stop-opacity="0.95" />
+            <stop offset="1"   stop-color="#2E6BFF" stop-opacity="0.95" />
+          </linearGradient>
+        </defs>
+
+        <!-- terrain hairlines (faux-topo) -->
+        <g stroke="rgba(243,241,236,0.05)" fill="none" stroke-width="1">
+          <path d="M0,420 C200,380 380,400 600,360 C820,320 980,360 1200,300" />
+          <path d="M0,360 C220,330 400,340 600,310 C800,280 980,300 1200,260" />
+          <path d="M0,300 C240,275 420,285 600,260 C780,235 980,250 1200,220" />
+          <path d="M0,240 C260,220 440,230 600,210 C760,190 980,200 1200,180" />
+          <path d="M0,180 C280,170 460,175 600,160 C740,145 980,155 1200,140" />
+        </g>
+
+        <!-- the trail itself, in two parts: solid (on-route) + dashed (off) -->
+        <path id="nf-route"
+          d="M0,360 C140,340 240,300 320,280 C400,260 460,270 540,250 C620,230 680,200 760,180"
+          stroke="url(#trailGrad)" stroke-width="2.5" fill="none"
+          stroke-linecap="round" />
+
+        <path id="nf-off"
+          d="M760,180 C820,170 880,200 940,180 C980,168 1020,150 1080,160"
+          stroke="rgba(243,241,236,0.35)" stroke-width="1.5" fill="none"
+          stroke-dasharray="4 8" stroke-linecap="round" />
+
+        <!-- waypoint markers -->
+        <g fill="#0d0d0e" stroke="#2E6BFF" stroke-width="1.5">
+          <circle cx="0"   cy="360" r="4" />
+          <circle cx="320" cy="280" r="4" />
+          <circle cx="540" cy="250" r="4" />
+          <circle cx="760" cy="180" r="5" />
+        </g>
+
+        <!-- "off-route" warning beacon -->
+        <g class="nf-beacon">
+          <circle cx="760" cy="180" r="14" fill="none" stroke="#E8A23C" stroke-width="1" />
+          <circle cx="760" cy="180" r="22" fill="none" stroke="#E8A23C" stroke-width="0.8" opacity="0.5" />
+        </g>
+
+        <!-- mono-style coordinate readout near the break -->
+        <g font-family="JetBrains Mono, monospace" font-size="9" fill="#6B6965" letter-spacing="1.2">
+          <text x="200" y="395">START · 47.5719° N</text>
+          <text x="200" y="408">       10.1265° E</text>
+
+          <text x="780" y="155">LAST KNOWN</text>
+          <text x="780" y="168">↳ NO SIGNAL</text>
+        </g>
+      </svg>
     </div>
-    <h1>You took<br />a wrong turn.</h1>
-    <p>
-      The page you were looking for isn't here. Either the URL is mistyped,
-      the page has moved, or it never existed in the first place.
-    </p>
-    <div class="actions">
-      <a href="/" class="primary" data-magnetic="0.4" data-cursor-hover>← BACK TO START</a>
-      <a href="/#contact" class="secondary" data-cursor-hover>Get in touch →</a>
+
+    <!-- ── Editorial column over the trail ─────────────────────────── -->
+    <div class="nf-card">
+      <div class="nf-kicker">
+        <span class="nf-kicker__num">404</span>
+        <span class="nf-kicker__rule"></span>
+        <span class="nf-kicker__txt">OFF ROUTE</span>
+      </div>
+
+      <h1 class="nf-h1">You wandered<br/>off the trail.</h1>
+
+      <p class="nf-lede">
+        This URL isn't on the map. Either it was mistyped, it's moved, or it
+        never existed. The route you were on used to lead somewhere — now it
+        just runs into open ground.
+      </p>
+
+      <div class="nf-tele" data-nf-tele aria-live="off">
+        <div class="nf-tele__row">
+          <span class="nf-tele__k">PATH</span>
+          <span class="nf-tele__v" id="nf-path">—</span>
+        </div>
+        <div class="nf-tele__row">
+          <span class="nf-tele__k">REFERRER</span>
+          <span class="nf-tele__v" id="nf-ref">—</span>
+        </div>
+        <div class="nf-tele__row">
+          <span class="nf-tele__k">DRIFT</span>
+          <span class="nf-tele__v"><span id="nf-drift">0</span> M FROM ROUTE</span>
+        </div>
+      </div>
+
+      <div class="nf-actions">
+        <a href="/" class="nf-primary" data-magnetic="0.4" data-cursor-hover>
+          <span>← BACK TO START</span>
+        </a>
+        <button type="button" class="nf-secondary" data-cmdk-trigger data-cursor-hover>
+          <span class="nf-secondary__keys">
+            <span class="kbd-set kbd-set--mac"><kbd>⌘</kbd><kbd>K</kbd></span>
+            <span class="kbd-set kbd-set--pc"><kbd>Ctrl</kbd><kbd>K</kbd></span>
+          </span>
+          <span>SEARCH THE SITE</span>
+        </button>
+      </div>
+
+      <div class="nf-meta">
+        <a href="/blog">FIELD NOTES →</a>
+        <a href="/case-studies/aegis">CASE STUDIES →</a>
+        <a href="/#contact">CONTACT →</a>
+      </div>
     </div>
   </main>
   <Footer />
 </BaseLayout>
 
 <style>
-  .not-found {
+  .nf {
+    position: relative;
     min-height: calc(100vh - 80px);
-    padding: 200px 40px 160px;
-    background: #050506;
+    padding: 160px 40px 160px;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  /* Trail SVG sits behind the editorial card, drifting just under
+     the headline. It shouldn't be touched by the cursor or clicked. */
+  .nf-trail {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
     display: flex;
-    flex-direction: column;
+    align-items: center;
     justify-content: center;
-    max-width: 1100px;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 1.2s var(--ease-out-expo), transform 1.2s var(--ease-out-expo);
+  }
+  .nf-trail svg {
+    width: min(1400px, 110%);
+    height: auto;
+    max-height: 70vh;
+  }
+  .nf.is-ready .nf-trail { opacity: 1; transform: translateY(0); }
+
+  /* Stroke-scrub on the route — animated by the inline script. */
+  #nf-route, #nf-off {
+    stroke-dasharray: var(--nf-len, 1200);
+    stroke-dashoffset: var(--nf-len, 1200);
+    transition: stroke-dashoffset 1.6s var(--ease-out-expo) 0.15s;
+  }
+  #nf-off {
+    transition-duration: 1.2s;
+    transition-delay: 1.4s;
+  }
+  .nf.is-ready #nf-route,
+  .nf.is-ready #nf-off { stroke-dashoffset: 0; }
+
+  .nf-beacon { transform-origin: 760px 180px; animation: nfPulse 2.4s ease-in-out infinite; }
+  @keyframes nfPulse {
+    0%, 100% { opacity: 0.85; transform: scale(1); }
+    50%      { opacity: 0.4;  transform: scale(1.18); }
+  }
+
+  /* ── Editorial card ─────────────────────────────────────────────── */
+  .nf-card {
+    position: relative;
+    z-index: 1;
+    max-width: 760px;
     margin: 0 auto;
   }
-  .kicker {
+
+  .nf-kicker {
     display: flex;
     align-items: center;
     gap: 16px;
-    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-family: var(--font-mono);
     font-size: 11px;
-    letter-spacing: 0.2em;
-    color: #6B6965;
+    letter-spacing: 0.22em;
+    color: var(--ink-low);
     margin-bottom: 32px;
   }
-  .kicker .num { color: #2E6BFF; font-weight: 600; }
-  .kicker .bar {
-    width: 32px; height: 1px;
-    background: rgba(243, 241, 236, 0.16);
-  }
-  .kicker > span:last-child { color: #F3F1EC; }
+  .nf-kicker__num   { color: var(--accent); font-weight: 600; }
+  .nf-kicker__rule  { width: 32px; height: 1px; background: rgba(243, 241, 236, 0.16); }
+  .nf-kicker__txt   { color: var(--ink); }
 
-  h1 {
-    font-family: var(--font-display, 'Inter Tight', sans-serif);
+  .nf-h1 {
+    font-family: var(--font-display);
     font-weight: 500;
-    font-size: clamp(64px, 10vw, 160px);
+    font-size: clamp(56px, 9vw, 132px);
     line-height: 0.92;
     letter-spacing: -0.045em;
-    color: #F3F1EC;
-    margin: 0 0 48px;
+    color: var(--ink);
+    margin: 0 0 36px;
   }
 
-  p {
-    font-family: var(--font-display, 'Inter Tight', sans-serif);
+  .nf-lede {
+    font-family: var(--font-display);
     font-size: 19px;
-    line-height: 1.5;
-    color: #A8A6A0;
+    line-height: 1.55;
+    color: var(--ink-mid);
     max-width: 52ch;
-    margin: 0 0 64px;
+    margin: 0 0 56px;
     letter-spacing: -0.005em;
   }
 
-  .actions {
-    display: flex;
+  /* Telemetry block — diagnostic-style monospace info row */
+  .nf-tele {
+    border-top: 1px solid rgba(243, 241, 236, 0.08);
+    border-bottom: 1px solid rgba(243, 241, 236, 0.08);
+    padding: 20px 0;
+    margin: 0 0 56px;
+    display: grid;
+    gap: 10px;
+    background: rgba(243, 241, 236, 0.015);
+  }
+  .nf-tele__row {
+    display: grid;
+    grid-template-columns: 110px 1fr;
     gap: 24px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--ink-mid);
+  }
+  .nf-tele__k { color: var(--ink-low); }
+  .nf-tele__v {
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Actions */
+  .nf-actions {
+    display: flex;
+    gap: 16px;
     flex-wrap: wrap;
     align-items: center;
+    margin-bottom: 64px;
   }
-  .primary {
+  .nf-primary {
+    display: inline-flex;
+    align-items: center;
     background: transparent;
-    color: #2E6BFF;
-    border: 0.5px solid #2E6BFF;
+    color: var(--accent);
+    border: 0.5px solid var(--accent);
     padding: 14px 28px;
-    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-family: var(--font-mono);
     font-size: 11px;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.22em;
     border-radius: 4px;
     transition: background 0.25s ease, color 0.25s ease;
   }
-  .primary:hover {
-    background: #2E6BFF;
-    color: #F3F1EC;
+  .nf-primary:hover {
+    background: var(--accent);
+    color: var(--ink);
   }
-  .secondary {
-    font-family: var(--font-display, 'Inter Tight', sans-serif);
-    font-size: 16px;
-    color: #A8A6A0;
+  .nf-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: transparent;
+    color: var(--ink-mid);
+    border: 1px solid rgba(243, 241, 236, 0.12);
+    padding: 12px 18px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: border-color 0.25s ease, color 0.25s ease;
+  }
+  .nf-secondary:hover {
+    color: var(--ink);
+    border-color: rgba(243, 241, 236, 0.32);
+  }
+  .nf-secondary__keys { display: inline-flex; gap: 2px; }
+  .nf-secondary__keys kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 4px;
+    border: 1px solid rgba(243, 241, 236, 0.16);
+    border-radius: 3px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    line-height: 1;
+    color: var(--ink-mid);
+  }
+
+  .nf-meta {
+    display: flex;
+    gap: 28px;
+    flex-wrap: wrap;
+    padding-top: 24px;
+    border-top: 1px solid rgba(243, 241, 236, 0.06);
+  }
+  .nf-meta a {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    color: var(--ink-low);
     transition: color 0.2s ease;
   }
-  .secondary:hover { color: #F3F1EC; }
+  .nf-meta a:hover { color: var(--ink); }
+
+  @media (max-width: 720px) {
+    .nf { padding: 120px 16px 120px; }
+    .nf-trail svg { max-height: 40vh; opacity: 0.6; }
+    .nf-tele__row { grid-template-columns: 96px 1fr; gap: 16px; font-size: 10px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .nf-trail, #nf-route, #nf-off { transition: none; }
+    .nf-beacon { animation: none; }
+  }
 </style>
+
+<script>
+  // Telemetry: fill in the actual path the user reached, the referrer
+  // (best-effort — empty when the user typed the URL directly), and a
+  // playful "drift from route" counter that ramps up. The counter is
+  // bounded and stops, so it doesn't spin forever.
+  const root = document.querySelector('.nf') as HTMLElement | null;
+  const path = document.getElementById('nf-path');
+  const ref  = document.getElementById('nf-ref');
+  const drift = document.getElementById('nf-drift');
+
+  if (path) path.textContent = location.pathname + location.search || '/';
+  if (ref) {
+    try {
+      const r = document.referrer;
+      ref.textContent = r ? new URL(r).host + new URL(r).pathname : 'DIRECT NAVIGATION';
+    } catch { ref.textContent = 'DIRECT NAVIGATION'; }
+  }
+
+  // Compute the route SVG path length so the stroke-scrub matches the
+  // actual geometry — otherwise the dashoffset placeholder (1200) gives
+  // an inconsistent reveal across viewport widths.
+  const route = document.getElementById('nf-route') as SVGPathElement | null;
+  const off   = document.getElementById('nf-off')   as SVGPathElement | null;
+  if (route) route.style.setProperty('--nf-len', `${Math.ceil(route.getTotalLength())}`);
+  if (off)   off.style.setProperty('--nf-len',   `${Math.ceil(off.getTotalLength())}`);
+
+  // Trigger reveal next frame so transitions get a starting style.
+  requestAnimationFrame(() => root?.classList.add('is-ready'));
+
+  // "Drift" ticker — eases up to a final number, then stops. The unit
+  // isn't real, it's a UI joke that fits the trail metaphor.
+  if (drift) {
+    const target = 412 + Math.floor(Math.random() * 88); // 412–499
+    let cur = 0;
+    const start = performance.now();
+    const dur   = 2400;
+    function tick(now: number) {
+      const t = Math.min(1, (now - start) / dur);
+      // ease-out-expo
+      const eased = 1 - Math.pow(2, -10 * t);
+      cur = Math.round(target * eased);
+      drift!.textContent = cur.toLocaleString('en-US');
+      if (t < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+</script>
