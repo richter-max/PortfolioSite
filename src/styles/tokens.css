@@ -4,6 +4,7 @@
   /* ── surfaces ──────────────────────────────────────────────────────── */
   --bg: #050506;
   --bg-2: #0b0b0d;
+  --bg-warm: #0d0b08; /* very subtle warm dark, used behind editorial copy */
 
   /* ── ink ──────────────────────────────────────────────────────────── */
   --ink: #f3f1ec;
@@ -11,9 +12,22 @@
   --ink-mid: #a8a6a0;
   --ink-low: #6b6965;
 
-  /* ── accent ───────────────────────────────────────────────────────── */
+  /* ── accent system ─────────────────────────────────────────────────
+     Two-color palette instead of a single utility blue:
+     - `--accent` stays the cool action color (links, CTAs, live indicator)
+     - `--accent-warm` is a warm citron used for editorial highlights
+       (numbers, oversized type accents, race countdown highlight)
+     Together they hold the tension between security/cold-blue and
+     endurance/warm-amber that the site's positioning wants. */
   --accent: #2e6bff;
   --accent-deep: #1f4fd6;
+  --accent-warm: #e8b557;        /* citron */
+  --accent-warm-deep: #c08a2b;   /* honey */
+
+  /* Status palette (used by 404, validation, errors) */
+  --signal-warn: #e8a23c;
+  --signal-ok: #22c55e;
+  --signal-error: #d8483b;
 
   /* ── strokes ──────────────────────────────────────────────────────── */
   --hairline: rgba(243, 241, 236, 0.08);
