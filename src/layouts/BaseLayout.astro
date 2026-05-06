@@ -133,7 +133,12 @@ const siteLd = {
     <script type="application/ld+json" set:html={JSON.stringify(personLd)} />
     <script type="application/ld+json" set:html={JSON.stringify(siteLd)} />
 
-    <!-- View Transitions — cross-page fade with shared elements -->
+    <!-- View Transitions — custom lift+blur cross-page choreography
+         (overrides defined in <style is:global> below). The default
+         Astro fade is too generic for a studio feel; we replace it with
+         a 520ms expo-out lift that subtly blurs while crossing. Shared
+         elements (case-study titles via transition:name) keep their
+         built-in morph behaviour. -->
     <ViewTransitions />
   </head>
   <body class={bodyClass}>
@@ -180,6 +185,49 @@ const siteLd = {
 </html>
 
 <style is:global>
+  /* ── View-transition choreography ──────────────────────────────────────
+     Customised root transition: a 520ms lift + soft blur in both
+     directions, so the page feels like film cuts instead of a fade. The
+     ::view-transition pseudo tree only exists during the swap, so this
+     CSS doesn't affect the steady state. We also speed up shared-element
+     transitions a touch and ease them on the same curve. */
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 520ms;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    animation-fill-mode: both;
+  }
+  ::view-transition-old(root) {
+    animation-name: rt-out;
+  }
+  ::view-transition-new(root) {
+    animation-name: rt-in;
+  }
+  @keyframes rt-out {
+    0%   { opacity: 1; transform: translateY(0)    scale(1);    filter: blur(0); }
+    100% { opacity: 0; transform: translateY(-2vh) scale(0.985); filter: blur(6px); }
+  }
+  @keyframes rt-in {
+    0%   { opacity: 0; transform: translateY(2vh)  scale(0.99);  filter: blur(6px); }
+    100% { opacity: 1; transform: translateY(0)    scale(1);     filter: blur(0); }
+  }
+
+  /* Shared elements (transition:name on <h1>, hero images, etc.):
+     swap the default browser cross-fade for a faster expo-out so morphs
+     feel snappy instead of dissolving. */
+  ::view-transition-group(*) {
+    animation-duration: 460ms;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      animation-duration: 1ms;
+      animation-name: none;
+    }
+  }
+
   /* ── Grain ──────────────────────────────────────────────────────────── */
   #grain {
     position: fixed;
