@@ -1,0 +1,484 @@
+---
+// /about — editorial portrait page.
+// Goal: convert visitors who landed on the home page from "this is
+// a portfolio" to "this is a person I'd like to work with" without
+// resorting to a generic LinkedIn-bio dump. Three blocks:
+//   1) hero: portrait + one-sentence positioning + status row
+//   2) story: 3 paragraphs on what made the security/endurance pairing
+//      stick, written in the same voice as the case studies
+//   3) principles: 5 short rules I work by, each phrased as an action
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Nav from '@components/layout/Nav.astro';
+import Rail from '@components/layout/Rail.astro';
+import Footer from '@components/layout/Footer.astro';
+import liveStats from '@data/live-stats.json';
+
+const streakWeeks      = liveStats.strava?.streakWeeks      ?? 0;
+const sessionsThisYear = liveStats.strava?.sessionsThisYear ?? 0;
+const commits30d       = liveStats.github?.commits30d       ?? 0;
+
+const principles = [
+  {
+    n: '01',
+    title: 'Evidence over anecdote.',
+    body: 'A claim that defenses work needs a number that can be reproduced on a different machine, not a screenshot. Same applies to training: the volume is what the watch logs, not what it felt like.',
+  },
+  {
+    n: '02',
+    title: 'Cheap layers, stacked.',
+    body: 'A single thick filter loses to obfuscation; three thin ones in a row catch most of what matters. Engineering and training share the principle — small disciplines, repeated, beat one heroic effort.',
+  },
+  {
+    n: '03',
+    title: 'Trace before metric.',
+    body: 'Aggregate scores hide more than they reveal. Write the event log first; derive the metric in a second pass. If the metric disagrees with the trace, the trace wins.',
+  },
+  {
+    n: '04',
+    title: 'Boring is the goal.',
+    body: 'Reproducible numbers are not exciting. Predictable systems are not impressive. They are what lets the interesting work — the next finding, the next race — actually happen.',
+  },
+  {
+    n: '05',
+    title: 'Stay finishable.',
+    body: 'Ship the deterministic demo before the live integration. Run the half before training for the full. Every long arc is a sequence of finishable artifacts.',
+  },
+];
+
+const facts = [
+  ['BASE',     'Allgäu · CET'],
+  ['FOCUS',   'AI agent security · Pen-test tooling'],
+  ['CADENCE', `${streakWeeks} w streak · ${sessionsThisYear} sessions YTD`],
+  ['CODE',    `${commits30d} contributions · last 30 d`],
+  ['REACH',   'max.richter.dev@proton.me · < 48h'],
+];
+---
+
+<BaseLayout
+  title="About — Maximilian Richter"
+  description="Security engineer working on AI-agent harness research. Endurance athlete training for IRONMAN 70.3 Kraichgau. Based in the Allgäu."
+  ogImage="/img/og-default.jpg"
+>
+  <Nav />
+  <Rail />
+
+  <main id="main" class="ab">
+
+    <!-- ── 01 · Portrait + positioning ───────────────────────────── -->
+    <section class="ab-hero">
+      <div class="ab-hero__inner">
+
+        <!-- Editorial portrait — uses the existing portrait-field
+             responsive set. picture/source order mirrors the optimised
+             pipeline (avif → webp → jpg). -->
+        <figure class="ab-portrait" data-reveal="clip">
+          <picture>
+            <source type="image/avif" srcset="/img/opt/portrait-field-458.avif" />
+            <source type="image/webp" srcset="/img/opt/portrait-field-458.webp" />
+            <img
+              src="/img/opt/portrait-field-458.jpg"
+              alt="Maximilian Richter, photographed in a field at dusk."
+              width="458"
+              height="640"
+              loading="eager"
+              decoding="async"
+            />
+          </picture>
+          <figcaption class="ab-portrait__cap mono">
+            <span>ALLGÄU · 2026</span>
+          </figcaption>
+        </figure>
+
+        <div class="ab-hero__text">
+          <div class="ab-kicker mono">
+            <span class="ab-kicker__num">A.01</span>
+            <span class="ab-kicker__rule"></span>
+            <span class="ab-kicker__txt">ABOUT</span>
+          </div>
+
+          <h1 class="ab-h1" data-reveal="lines">
+            Two careers,<br/>
+            <span class="ab-h1__warm">run on the same engine.</span>
+          </h1>
+
+          <p class="ab-lede" data-reveal="fade-up">
+            I'm Maximilian — a security engineer working on AI-agent
+            harnesses and pen-test tooling, and an endurance athlete
+            training for IRONMAN 70.3 Kraichgau. The two share a
+            discipline I keep coming back to: small, reproducible
+            efforts beat one heroic push.
+          </p>
+
+          <ul class="ab-facts">
+            {facts.map(([k, v]) => (
+              <li class="ab-fact">
+                <div class="ab-fact__k mono">{k}</div>
+                <div class="ab-fact__v">{v}</div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 02 · Story ──────────────────────────────────────────── -->
+    <section class="ab-story">
+      <div class="ab-story__inner">
+        <div class="ab-kicker mono">
+          <span class="ab-kicker__num">A.02</span>
+          <span class="ab-kicker__rule"></span>
+          <span class="ab-kicker__txt">STORY</span>
+        </div>
+
+        <h2 class="ab-h2" data-reveal="lines">How I ended up<br/>doing both.</h2>
+
+        <div class="ab-prose">
+          <p data-reveal="fade-up">
+            I came into security through tooling, not bug-hunting. The
+            first thing I built that felt right was a small CLI that
+            ran ten reconnaissance steps in one command and dumped a
+            JSONL trace — same reflex I now apply to agent
+            evaluations. The output isn't a verdict, it's evidence the
+            next person can re-run, argue with, and disprove.
+          </p>
+          <p data-reveal="fade-up">
+            The endurance habit started in parallel. Long sessions
+            taught me what the engineering work was already pushing
+            for: process beats outcome. A 90-minute run that's well
+            paced is more durable than a 60-minute hero run that
+            flames out. A guard layer that's auditable is more useful
+            than a black-box filter with a higher single-metric score.
+            The vocabulary is different; the discipline is the same.
+          </p>
+          <p data-reveal="fade-up">
+            I work alone on most of what's on this site, by choice. The
+            cadence I'm trying to keep is one shipped artifact a
+            quarter — case study, open-source release, or race —
+            stacked over years until the slow accumulation looks like
+            a body of work. That's the long game.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 03 · Principles ─────────────────────────────────────── -->
+    <section class="ab-prn">
+      <div class="ab-prn__inner">
+        <div class="ab-kicker mono">
+          <span class="ab-kicker__num">A.03</span>
+          <span class="ab-kicker__rule"></span>
+          <span class="ab-kicker__txt">PRINCIPLES</span>
+        </div>
+
+        <h2 class="ab-h2" data-reveal="lines">Five rules,<br/>worth repeating.</h2>
+
+        <ol class="ab-prn__list" data-stagger-children>
+          {principles.map((p) => (
+            <li class="ab-prn__item">
+              <div class="ab-prn__num mono">{p.n}</div>
+              <div class="ab-prn__body">
+                <h3 class="ab-prn__title">{p.title}</h3>
+                <p class="ab-prn__copy">{p.body}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+
+    <!-- ── Closing CTA ────────────────────────────────────────── -->
+    <section class="ab-cta">
+      <div class="ab-cta__inner">
+        <p class="ab-cta__copy" data-reveal="lines">
+          If any of this matches the kind of work<br/>
+          you want done — write me.
+        </p>
+        <div class="ab-cta__row">
+          <a href="/#contact" class="ab-cta__btn" data-magnetic="0.4" data-cursor-hover>
+            <span data-magnetic-label>OPEN A CONVERSATION →</span>
+          </a>
+          <a href="/case-studies/aegis" class="ab-cta__sec" data-cursor-hover>
+            Read the AEGIS case study →
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+  <Footer />
+</BaseLayout>
+
+<style>
+  .ab {
+    background: var(--bg);
+    color: var(--ink);
+    overflow: hidden;
+  }
+  .ab section {
+    padding: 0 40px;
+  }
+  .ab-kicker {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--ink-low);
+    margin-bottom: 32px;
+  }
+  .ab-kicker__num   { color: var(--accent-warm); font-weight: 600; }
+  .ab-kicker__rule  { width: 32px; height: 1px; background: rgba(243, 241, 236, 0.16); }
+  .ab-kicker__txt   { color: var(--ink); }
+
+  /* ── Hero ───────────────────────────────────────────────────────── */
+  .ab-hero {
+    padding-top: 160px;
+    padding-bottom: 128px;
+    position: relative;
+  }
+  .ab-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 0%, rgba(232, 181, 87, 0.06), transparent 55%),
+      radial-gradient(ellipse at 90% 100%, rgba(46, 107, 255, 0.04), transparent 60%);
+    pointer-events: none;
+  }
+  .ab-hero__inner {
+    max-width: 1440px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: 96px;
+    align-items: end;
+    position: relative;
+  }
+  .ab-portrait {
+    margin: 0;
+    position: relative;
+    border-radius: 4px;
+    overflow: hidden;
+    isolation: isolate;
+    aspect-ratio: 458 / 640;
+    background: rgba(243, 241, 236, 0.04);
+  }
+  .ab-portrait img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: saturate(0.78) contrast(1.05);
+  }
+  .ab-portrait::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 60%, rgba(5, 5, 6, 0.65) 100%);
+    pointer-events: none;
+  }
+  .ab-portrait__cap {
+    position: absolute;
+    left: 24px;
+    bottom: 20px;
+    z-index: 2;
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    color: var(--ink);
+  }
+
+  .ab-hero__text { min-width: 0; }
+  .ab-h1 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(56px, 8vw, 124px);
+    line-height: 0.94;
+    letter-spacing: -0.045em;
+    color: var(--ink);
+    margin: 0 0 36px;
+  }
+  .ab-h1__warm { color: var(--accent-warm); }
+
+  .ab-lede {
+    font-family: var(--font-display);
+    font-size: 21px;
+    line-height: 1.5;
+    color: var(--ink-mid);
+    max-width: 56ch;
+    letter-spacing: -0.005em;
+    margin: 0 0 56px;
+  }
+
+  .ab-facts {
+    list-style: none;
+    margin: 0;
+    padding: 24px 0 0;
+    border-top: 1px solid rgba(243, 241, 236, 0.08);
+    display: grid;
+    gap: 14px;
+  }
+  .ab-fact {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 24px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--ink-mid);
+  }
+  .ab-fact__k { color: var(--ink-low); }
+  .ab-fact__v { color: var(--ink); }
+
+  /* ── Story ──────────────────────────────────────────────────────── */
+  .ab-story {
+    padding-top: 128px;
+    padding-bottom: 128px;
+    border-top: 1px solid var(--hairline);
+  }
+  .ab-story__inner {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .ab-h2 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(40px, 5.6vw, 80px);
+    line-height: 0.98;
+    letter-spacing: -0.04em;
+    color: var(--ink);
+    margin: 0 0 56px;
+  }
+  .ab-prose {
+    display: grid;
+    gap: 24px;
+    max-width: 64ch;
+  }
+  .ab-prose p {
+    font-family: var(--font-display);
+    font-size: 18px;
+    line-height: 1.7;
+    color: var(--ink-dim);
+    letter-spacing: -0.005em;
+    margin: 0;
+  }
+
+  /* ── Principles ────────────────────────────────────────────────── */
+  .ab-prn {
+    padding-top: 128px;
+    padding-bottom: 128px;
+    border-top: 1px solid var(--hairline);
+  }
+  .ab-prn__inner {
+    max-width: 1440px;
+    margin: 0 auto;
+  }
+  .ab-prn__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0;
+    counter-reset: prn;
+  }
+  .ab-prn__item {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 56px;
+    padding: 40px 0;
+    border-top: 1px solid var(--hairline);
+    align-items: start;
+  }
+  .ab-prn__item:last-child { border-bottom: 1px solid var(--hairline); }
+  .ab-prn__num {
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    color: var(--accent-warm);
+    padding-top: 6px;
+  }
+  .ab-prn__title {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(24px, 2.4vw, 32px);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin: 0 0 12px;
+  }
+  .ab-prn__copy {
+    font-family: var(--font-display);
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--ink-mid);
+    letter-spacing: -0.005em;
+    max-width: 64ch;
+    margin: 0;
+  }
+
+  /* ── Closing CTA ───────────────────────────────────────────────── */
+  .ab-cta {
+    padding-top: 128px;
+    padding-bottom: 192px;
+    border-top: 1px solid var(--hairline);
+    background: var(--bg-warm);
+  }
+  .ab-cta__inner {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .ab-cta__copy {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(36px, 5vw, 64px);
+    line-height: 1.1;
+    letter-spacing: -0.035em;
+    color: var(--ink);
+    margin: 0 0 56px;
+    max-width: 26ch;
+  }
+  .ab-cta__row {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+  .ab-cta__btn {
+    display: inline-block;
+    background: transparent;
+    color: var(--accent);
+    border: 0.5px solid var(--accent);
+    padding: 16px 32px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    border-radius: 4px;
+    transition: background 0.25s ease, color 0.25s ease;
+    will-change: transform;
+  }
+  .ab-cta__btn:hover { background: var(--accent); color: var(--ink); }
+  .ab-cta__sec {
+    font-family: var(--font-display);
+    font-size: 16px;
+    color: var(--ink-mid);
+    transition: color 0.2s ease;
+  }
+  .ab-cta__sec:hover { color: var(--ink); }
+
+  /* ── Responsive ────────────────────────────────────────────────── */
+  @media (max-width: 1024px) {
+    .ab-hero__inner {
+      grid-template-columns: 1fr;
+      gap: 48px;
+      align-items: start;
+    }
+    .ab-portrait {
+      max-width: 380px;
+    }
+  }
+  @media (max-width: 720px) {
+    .ab section { padding: 0 16px; }
+    .ab-hero    { padding-top: 120px; padding-bottom: 80px; }
+    .ab-story, .ab-prn, .ab-cta { padding-top: 80px; padding-bottom: 80px; }
+    .ab-prn__item { grid-template-columns: 1fr; gap: 16px; padding: 32px 0; }
+    .ab-fact { grid-template-columns: 96px 1fr; gap: 16px; }
+  }
+</style>

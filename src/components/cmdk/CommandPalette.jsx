@@ -24,6 +24,7 @@ function buildItems(live) {
   // ── GO TO ──────────────────────────────────────────────────────────
   const pages = [
     { id: 'home',       label: 'Home',       hint: '/',                                href: '/' },
+    { id: 'about',      label: 'About',      hint: '/about · portrait + principles',   href: '/about' },
     { id: 'work',       label: 'Work',       hint: '/#work',                           href: '/#work' },
     { id: 'field',      label: 'Field',      hint: '/#field',                          href: '/#field' },
     { id: 'stats',      label: 'Stats',      hint: '/#numbers',                        href: '/#numbers' },

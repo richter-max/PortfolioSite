@@ -12,7 +12,12 @@
 interface Props {
   section?: string;
 }
-const { section = 'HOME' } = Astro.props;
+// Auto-derive ABOUT highlight from the URL so individual pages don't
+// have to remember to pass the prop. Other pages still pass section
+// when they want explicit control.
+const path = Astro.url.pathname;
+const inferredSection = path.startsWith('/about') ? 'ABOUT' : 'HOME';
+const { section = inferredSection } = Astro.props;
 
 const items = [
   { label: 'WORK',    id: 'work' },
@@ -21,6 +26,11 @@ const items = [
   { label: 'BLOG',    id: 'blog' },
   { label: 'CONTACT', id: 'contact' },
 ];
+
+// Cross-page link to /about — sits beside the section-anchor row but
+// uses a dedicated href, not `/#about`, so the IntersectionObserver
+// doesn't try to track a section that doesn't exist on the home page.
+const aboutHref = '/about';
 ---
 
 <nav class="site-nav" data-section={section}>
@@ -36,6 +46,14 @@ const items = [
         <span class="mask-link__t">{it.label}</span>
       </a>
     ))}
+    <span class="nav-sep" aria-hidden="true"></span>
+    <a
+      href={aboutHref}
+      class:list={['nav-link', 'mask-link', { active: section === 'ABOUT' }]}
+      data-link-text="ABOUT"
+    >
+      <span class="mask-link__t">ABOUT</span>
+    </a>
   </div>
   <button
     type="button"
@@ -102,6 +120,13 @@ const items = [
     display: flex;
     gap: 28px;
     justify-content: center;
+    align-items: center;
+  }
+  .nav-sep {
+    width: 1px;
+    height: 14px;
+    background: rgba(243, 241, 236, 0.16);
+    display: inline-block;
   }
   .nav-link {
     font-family: var(--font-mono);
