@@ -127,7 +127,7 @@ const siteLd = {
     />
 
     <!-- preload hero LCP image -->
-    <link rel="preload" as="image" href="/img/opt/laptophero-640.avif" type="image/avif" fetchpriority="high" />
+    <link rel="preload" as="image" href="/img/opt/hero-path-1280.avif" type="image/avif" fetchpriority="high" />
 
     <!-- Structured data -->
     <script type="application/ld+json" set:html={JSON.stringify(personLd)} />
@@ -316,20 +316,30 @@ const siteLd = {
     box-shadow: none;
   }
 
-  /* Hide native cursor sitewide */
-  html {
+  /* Hide native cursor only when the custom-cursor JS has activated.
+     Without this guard, a no-JS load (slow connection, content-blocker,
+     prefers-reduced-motion early-return) would leave the user with no
+     cursor at all. The class is added by the cursor IIFE in the inline
+     script below — so the activation is conditional on the same checks
+     (no coarse pointer, no reduced-motion). */
+  html.cursor-custom {
     cursor: none;
   }
 
-  /* Re-enable on touch devices */
+  /* Re-enable on touch devices (custom cursor is hidden anyway) */
   @media (hover: none), (pointer: coarse) {
-    html { cursor: auto; }
+    html, html.cursor-custom { cursor: auto; }
     #cursor-dot, #cursor-ring { display: none; }
     #grain { animation: none; }
   }
 
   @media (prefers-reduced-motion: reduce) {
     #grain { animation: none; }
+    /* Reduced-motion users keep the native cursor — the custom one
+       skips activation, and the html.cursor-custom guard prevents
+       cursor:none from sticking. */
+    html, html.cursor-custom { cursor: auto; }
+    #cursor-dot, #cursor-ring { display: none; }
   }
 
   /* Pause grain when tab hidden — saves GPU wakeups */
@@ -345,6 +355,12 @@ const siteLd = {
     const dot = document.getElementById('cursor-dot');
     const ring = document.getElementById('cursor-ring');
     if (!dot || !ring) throw new Error('Cursor elements not found');
+
+    // Activate custom-cursor mode — only now is `cursor: none` applied.
+    // Until this class is present, the native cursor stays visible, so
+    // a JS error or slow hydration never strands the user without a
+    // cursor.
+    document.documentElement.classList.add('cursor-custom');
 
     let mouseX = -100, mouseY = -100;
     let ringX  = -100, ringY  = -100;
