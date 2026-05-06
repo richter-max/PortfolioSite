@@ -29,10 +29,11 @@ const items = [
     {items.map((it) => (
       <a
         href={`/#${it.id}`}
-        class:list={['nav-link', { active: section === it.label }]}
+        class:list={['nav-link', 'mask-link', { active: section === it.label }]}
         data-nav-target={it.id}
+        data-link-text={it.label}
       >
-        {it.label}
+        <span class="mask-link__t">{it.label}</span>
       </a>
     ))}
   </div>
@@ -108,14 +109,13 @@ const items = [
     letter-spacing: 0.18em;
     color: var(--ink-mid);
     text-decoration: none;
-    transition: color 0.25s ease;
   }
-  .nav-link:hover {
-    color: var(--ink);
-  }
-  .nav-link.active {
-    color: var(--ink);
-  }
+  /* Active = mask-link suppression so the bright label doesn't flicker
+     when the IntersectionObserver re-affirms the current section every
+     few hundred ms. */
+  .nav-link.active { color: var(--ink); }
+  .nav-link.active .mask-link__t { color: var(--ink); }
+  .nav-link.active::before { display: none; }
   .nav-status {
     font-family: var(--font-mono);
     font-size: 10px;

@@ -96,6 +96,55 @@ select:focus-visible {
   outline-offset: 2px;
 }
 
+/* ── Mask-reveal link ───────────────────────────────────────────────────
+   Editorial hover effect: the link's text wipes up out of view while
+   a brighter clone wipes in from below — like a film slate flipping.
+   Markup contract:
+     <a class="mask-link" data-link-text="WORK">
+       <span class="mask-link__t">WORK</span>
+     </a>
+   The data attribute is duplicated as a ::before so both layers keep
+   the same metric box (no jitter, no kerning drift). */
+.mask-link {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  line-height: 1.1;
+  color: inherit;
+  isolation: isolate;
+}
+.mask-link__t {
+  display: inline-block;
+  transition: transform 0.55s var(--ease-out-expo);
+  will-change: transform;
+}
+.mask-link::before {
+  content: attr(data-link-text);
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: inline-block;
+  color: var(--ink, #f3f1ec);
+  transform: translateY(110%);
+  transition: transform 0.55s var(--ease-out-expo);
+  pointer-events: none;
+  will-change: transform;
+}
+.mask-link:hover .mask-link__t,
+.mask-link:focus-visible .mask-link__t { transform: translateY(-110%); }
+.mask-link:hover::before,
+.mask-link:focus-visible::before { transform: translateY(0); }
+
+/* When the link is already at full ink (active nav state, current
+   page), suppress the wipe so it doesn't double-flash. */
+.mask-link.is-current .mask-link__t { color: var(--ink, #f3f1ec); }
+.mask-link.is-current::before { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .mask-link__t,
+  .mask-link::before { transition: none; }
+}
+
 /* ── Reduced motion ─────────────────────────────────────────────────────
    Site-wide opt-out: disable transitions, animations, and smooth scroll. */
 @media (prefers-reduced-motion: reduce) {

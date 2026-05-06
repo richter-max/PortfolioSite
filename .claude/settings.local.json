@@ -58,7 +58,9 @@
       "Bash(git pull *)",
       "Bash(git rm *)",
       "Bash(sed -i '' \"s|from '~/lib/contact'|from '@lib/contact'|g\" src/components/contact/ContactScene.jsx)",
-      "Bash(sed -i '' \"s|from '~/data/site'|from '@data/site'|g\" src/lib/contact.ts)"
+      "Bash(sed -i '' \"s|from '~/data/site'|from '@data/site'|g\" src/lib/contact.ts)",
+      "Bash(npx tsx *)",
+      "Bash(git stash *)"
     ]
   }
 }
