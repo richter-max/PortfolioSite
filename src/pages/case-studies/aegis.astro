@@ -49,7 +49,7 @@ import CaseStudyLayout from '@layouts/CaseStudyLayout.astro';
         <p>Every decision the engine makes — policy hit, keyword match, similarity score, mock tool call, post-event metric — is written to <span class="mono">trace.jsonl</span> as a typed event. That file is the source of truth. The summary numbers in <span class="mono">bench_summary.md</span> are derived from it, not produced alongside it. If a metric disagrees with the trace, the trace wins. This is the discipline of a flight recorder, applied to a security experiment.</p>
       </div>
 
-      <div class="diagram">
+      <div class="diagram" id="diagram-pipeline">
         <div class="diagram-label mono">FIG. 01 · DEFENSE PIPELINE</div>
         <svg viewBox="0 0 900 320" xmlns="http://www.w3.org/2000/svg">
           <defs>
@@ -60,37 +60,45 @@ import CaseStudyLayout from '@layouts/CaseStudyLayout.astro';
               <path d="M0,0 L6,4 L0,8 z" fill="#2E6BFF"></path>
             </marker>
           </defs>
-          <g font-family="JetBrains Mono, monospace" font-size="10" fill="#A8A6A0" letter-spacing="1.5">
+
+          <!-- Source label — fades in first -->
+          <g class="d-fade" data-step="0" font-family="JetBrains Mono, monospace" font-size="10" fill="#A8A6A0" letter-spacing="1.5">
             <text x="40" y="170">SCENARIO</text>
             <text x="40" y="190">+ AGENT</text>
           </g>
-          <line x1="160" y1="180" x2="240" y2="180" stroke="#6B6965" stroke-width="1" marker-end="url(#arrow)"></line>
 
-          <rect x="240" y="140" width="130" height="80" fill="none" stroke="#F3F1EC" stroke-width="1"></rect>
-          <text x="305" y="170" text-anchor="middle" font-family="Inter Tight, sans-serif" font-size="13" fill="#F3F1EC" letter-spacing="-0.02em">POLICY</text>
-          <text x="305" y="190" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#6B6965" letter-spacing="1.2">ALLOWLIST</text>
+          <!-- Connector flows: each line is path-scrubbed in sequence -->
+          <line class="d-line" data-step="1" x1="160" y1="180" x2="240" y2="180" stroke="#6B6965" stroke-width="1" marker-end="url(#arrow)" pathLength="100"></line>
 
-          <line x1="370" y1="180" x2="430" y2="180" stroke="#6B6965" stroke-width="1" marker-end="url(#arrow)"></line>
+          <!-- Box: POLICY (drawn-in stroke + label fade) -->
+          <rect class="d-box"  data-step="2" x="240" y="140" width="130" height="80" fill="none" stroke="#F3F1EC" stroke-width="1" pathLength="100"></rect>
+          <text class="d-fade" data-step="3" x="305" y="170" text-anchor="middle" font-family="Inter Tight, sans-serif" font-size="13" fill="#F3F1EC" letter-spacing="-0.02em">POLICY</text>
+          <text class="d-fade" data-step="3" x="305" y="190" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#6B6965" letter-spacing="1.2">ALLOWLIST</text>
 
-          <rect x="430" y="140" width="130" height="80" fill="none" stroke="#F3F1EC" stroke-width="1"></rect>
-          <text x="495" y="170" text-anchor="middle" font-family="Inter Tight, sans-serif" font-size="13" fill="#F3F1EC" letter-spacing="-0.02em">KEYWORD</text>
-          <text x="495" y="190" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#6B6965" letter-spacing="1.2">PATTERN GUARD</text>
+          <line class="d-line" data-step="4" x1="370" y1="180" x2="430" y2="180" stroke="#6B6965" stroke-width="1" marker-end="url(#arrow)" pathLength="100"></line>
 
-          <line x1="560" y1="180" x2="620" y2="180" stroke="#6B6965" stroke-width="1" marker-end="url(#arrow)"></line>
+          <!-- Box: KEYWORD -->
+          <rect class="d-box"  data-step="5" x="430" y="140" width="130" height="80" fill="none" stroke="#F3F1EC" stroke-width="1" pathLength="100"></rect>
+          <text class="d-fade" data-step="6" x="495" y="170" text-anchor="middle" font-family="Inter Tight, sans-serif" font-size="13" fill="#F3F1EC" letter-spacing="-0.02em">KEYWORD</text>
+          <text class="d-fade" data-step="6" x="495" y="190" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#6B6965" letter-spacing="1.2">PATTERN GUARD</text>
 
-          <rect x="620" y="140" width="130" height="80" fill="none" stroke="#F3F1EC" stroke-width="1"></rect>
-          <text x="685" y="170" text-anchor="middle" font-family="Inter Tight, sans-serif" font-size="13" fill="#F3F1EC" letter-spacing="-0.02em">SEMANTIC</text>
-          <text x="685" y="190" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#6B6965" letter-spacing="1.2">N-GRAM COSINE</text>
+          <line class="d-line" data-step="7" x1="560" y1="180" x2="620" y2="180" stroke="#6B6965" stroke-width="1" marker-end="url(#arrow)" pathLength="100"></line>
 
-          <line x1="750" y1="180" x2="810" y2="180" stroke="#2E6BFF" stroke-width="1" marker-end="url(#arrowblue)"></line>
-          <text x="855" y="178" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#2E6BFF" letter-spacing="1.5">TOOL</text>
-          <text x="855" y="194" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#6B6965" letter-spacing="1.2">(MOCKED)</text>
+          <!-- Box: SEMANTIC -->
+          <rect class="d-box"  data-step="8" x="620" y="140" width="130" height="80" fill="none" stroke="#F3F1EC" stroke-width="1" pathLength="100"></rect>
+          <text class="d-fade" data-step="9" x="685" y="170" text-anchor="middle" font-family="Inter Tight, sans-serif" font-size="13" fill="#F3F1EC" letter-spacing="-0.02em">SEMANTIC</text>
+          <text class="d-fade" data-step="9" x="685" y="190" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#6B6965" letter-spacing="1.2">N-GRAM COSINE</text>
 
-          <path d="M305,220 Q305,275 685,275" fill="none" stroke="#6B6965" stroke-width="1" stroke-dasharray="3 4"></path>
-          <path d="M495,220 L495,275" fill="none" stroke="#6B6965" stroke-width="1" stroke-dasharray="3 4"></path>
-          <path d="M685,220 L685,275" fill="none" stroke="#6B6965" stroke-width="1" stroke-dasharray="3 4"></path>
-          <line x1="685" y1="275" x2="685" y2="295" stroke="#6B6965" stroke-width="1" marker-end="url(#arrow)"></line>
-          <text x="685" y="312" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#6B6965" letter-spacing="1.5">BLOCK EVENT → TRACE.JSONL</text>
+          <line class="d-line" data-step="10" x1="750" y1="180" x2="810" y2="180" stroke="#2E6BFF" stroke-width="1" marker-end="url(#arrowblue)" pathLength="100"></line>
+          <text class="d-fade" data-step="11" x="855" y="178" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#2E6BFF" letter-spacing="1.5">TOOL</text>
+          <text class="d-fade" data-step="11" x="855" y="194" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#6B6965" letter-spacing="1.2">(MOCKED)</text>
+
+          <!-- Block-event tributaries — drawn after the main flow -->
+          <path class="d-line" data-step="12" d="M305,220 Q305,275 685,275" fill="none" stroke="#6B6965" stroke-width="1" stroke-dasharray="3 4" pathLength="100"></path>
+          <path class="d-line" data-step="12" d="M495,220 L495,275"             fill="none" stroke="#6B6965" stroke-width="1" stroke-dasharray="3 4" pathLength="100"></path>
+          <path class="d-line" data-step="12" d="M685,220 L685,275"             fill="none" stroke="#6B6965" stroke-width="1" stroke-dasharray="3 4" pathLength="100"></path>
+          <line class="d-line" data-step="13" x1="685" y1="275" x2="685" y2="295" stroke="#6B6965" stroke-width="1" marker-end="url(#arrow)" pathLength="100"></line>
+          <text class="d-fade" data-step="14" x="685" y="312" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#6B6965" letter-spacing="1.5">BLOCK EVENT → TRACE.JSONL</text>
         </svg>
       </div>
 
@@ -128,6 +136,54 @@ import CaseStudyLayout from '@layouts/CaseStudyLayout.astro';
       <div class="kicker mono">THE NUMBERS</div>
       <h2>Layered guards measurably reduce attack success.</h2>
       <p class="lede">The benchmark suite runs the same adversarial scenarios against four configurations. The numbers are reproducible from the committed configs under <span class="mono">configs/experiments/</span> — anyone can re-run them and get identical traces.</p>
+
+      <!-- Fig. 02 · Comparative bar chart of attack-success rates.
+           Bars scrub in from 0 → final width with the percentage
+           counter ticking up alongside, on scroll into view. -->
+      <figure class="diagram diagram-bars" id="diagram-bench" aria-label="Attack success rate per defense configuration">
+        <figcaption class="diagram-label mono">FIG. 02 · ATTACK SUCCESS RATE</figcaption>
+        <div class="bench-bars">
+          <div class="bench-row" data-bench-row data-final="82" style="--target: 0.82;">
+            <div class="bench-row__label">
+              <span class="mono">B.01</span><span>BASELINE</span>
+            </div>
+            <div class="bench-row__track">
+              <div class="bench-row__fill bench-row__fill--danger"></div>
+            </div>
+            <div class="bench-row__pct mono"><span data-bench-num>0</span>%</div>
+          </div>
+          <div class="bench-row" data-bench-row data-final="47" style="--target: 0.47;">
+            <div class="bench-row__label">
+              <span class="mono">B.02</span><span>POLICY ONLY</span>
+            </div>
+            <div class="bench-row__track">
+              <div class="bench-row__fill bench-row__fill--warn"></div>
+            </div>
+            <div class="bench-row__pct mono"><span data-bench-num>0</span>%</div>
+          </div>
+          <div class="bench-row" data-bench-row data-final="23" style="--target: 0.23;">
+            <div class="bench-row__label">
+              <span class="mono">B.03</span><span>POLICY + KEYWORDS</span>
+            </div>
+            <div class="bench-row__track">
+              <div class="bench-row__fill bench-row__fill--mid"></div>
+            </div>
+            <div class="bench-row__pct mono"><span data-bench-num>0</span>%</div>
+          </div>
+          <div class="bench-row" data-bench-row data-final="9" style="--target: 0.09;">
+            <div class="bench-row__label">
+              <span class="mono">B.04</span><span>LAYERED</span>
+            </div>
+            <div class="bench-row__track">
+              <div class="bench-row__fill bench-row__fill--ok"></div>
+            </div>
+            <div class="bench-row__pct mono"><span data-bench-num>0</span>%</div>
+          </div>
+        </div>
+        <div class="bench-axis mono">
+          <span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span>
+        </div>
+      </figure>
 
       <div class="findings">
         <div class="finding">
@@ -260,3 +316,166 @@ reports/bench/bench_summary.md     <span class="c"># human-readable summary</spa
   </article>
 
 </CaseStudyLayout>
+
+<style>
+  /* ── Defense pipeline diagram (FIG. 01) ─────────────────────────────
+     Stroke-scrub draw-in: every box and connector has a normalised
+     pathLength so a single CSS transition handles the reveal. The
+     `is-playing` class on the wrapper is added by the IntersectionObserver
+     once the figure scrolls into view. */
+  .cs .diagram .d-line,
+  .cs .diagram .d-box {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    transition: stroke-dashoffset 0.7s var(--ease-out-expo, cubic-bezier(0.22, 1, 0.36, 1));
+  }
+  .cs .diagram .d-fade {
+    opacity: 0;
+    transition: opacity 0.45s var(--ease-out-expo, cubic-bezier(0.22, 1, 0.36, 1));
+  }
+  .cs .diagram.is-playing .d-line,
+  .cs .diagram.is-playing .d-box { stroke-dashoffset: 0; }
+  .cs .diagram.is-playing .d-fade { opacity: 1; }
+  /* Per-step delays — staggers the reveal along the pipeline left→right. */
+  .cs .diagram.is-playing [data-step="0"]  { transition-delay: 0.05s; }
+  .cs .diagram.is-playing [data-step="1"]  { transition-delay: 0.15s; }
+  .cs .diagram.is-playing [data-step="2"]  { transition-delay: 0.30s; }
+  .cs .diagram.is-playing [data-step="3"]  { transition-delay: 0.55s; }
+  .cs .diagram.is-playing [data-step="4"]  { transition-delay: 0.65s; }
+  .cs .diagram.is-playing [data-step="5"]  { transition-delay: 0.80s; }
+  .cs .diagram.is-playing [data-step="6"]  { transition-delay: 1.05s; }
+  .cs .diagram.is-playing [data-step="7"]  { transition-delay: 1.15s; }
+  .cs .diagram.is-playing [data-step="8"]  { transition-delay: 1.30s; }
+  .cs .diagram.is-playing [data-step="9"]  { transition-delay: 1.55s; }
+  .cs .diagram.is-playing [data-step="10"] { transition-delay: 1.65s; }
+  .cs .diagram.is-playing [data-step="11"] { transition-delay: 1.85s; }
+  .cs .diagram.is-playing [data-step="12"] { transition-delay: 2.05s; }
+  .cs .diagram.is-playing [data-step="13"] { transition-delay: 2.30s; }
+  .cs .diagram.is-playing [data-step="14"] { transition-delay: 2.45s; }
+
+  /* ── Bench bars (FIG. 02) ─────────────────────────────────────────── */
+  .cs .diagram-bars { margin: 56px 0; }
+  .cs .bench-bars {
+    display: grid;
+    gap: 18px;
+    margin-top: 28px;
+    padding: 28px 28px 24px;
+    border: 1px solid rgba(10,10,11,0.10);
+    background: #ffffff;
+    border-radius: 4px;
+  }
+  .cs .bench-row {
+    display: grid;
+    grid-template-columns: 220px 1fr 56px;
+    align-items: center;
+    gap: 24px;
+  }
+  .cs .bench-row__label {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: #4a4a4d;
+  }
+  .cs .bench-row__label .mono { color: #2E6BFF; }
+  .cs .bench-row__track {
+    height: 14px;
+    background: rgba(10,10,11,0.06);
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+  }
+  .cs .bench-row__fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 0%;
+    transition: width 1.4s var(--ease-out-expo, cubic-bezier(0.22, 1, 0.36, 1));
+    border-radius: inherit;
+  }
+  .cs .diagram-bars.is-playing .bench-row__fill {
+    width: calc(var(--target) * 100%);
+  }
+  .cs .bench-row__fill--danger { background: linear-gradient(90deg, #d8483b, #b83a2e); }
+  .cs .bench-row__fill--warn   { background: linear-gradient(90deg, #d8923b, #b87a2e); }
+  .cs .bench-row__fill--mid    { background: linear-gradient(90deg, #c9b13e, #a8932f); }
+  .cs .bench-row__fill--ok     { background: linear-gradient(90deg, #2E6BFF, #1f4fd6); }
+  .cs .bench-row__pct {
+    text-align: right;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    color: #0a0a0b;
+    font-variant-numeric: tabular-nums;
+  }
+  .cs .bench-axis {
+    display: grid;
+    grid-template-columns: 220px repeat(4, 1fr) 56px;
+    margin-top: 12px;
+    padding: 0 28px;
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    color: #6B6965;
+  }
+  .cs .bench-axis span:nth-child(1) { display: none; }
+  .cs .bench-axis span { text-align: left; }
+  .cs .bench-axis span:last-child  { text-align: right; }
+
+  @media (max-width: 720px) {
+    .cs .bench-row { grid-template-columns: 1fr; gap: 6px; }
+    .cs .bench-row__label { grid-row: 1; }
+    .cs .bench-row__track { grid-row: 2; }
+    .cs .bench-row__pct   { grid-row: 1; justify-self: end; }
+    .cs .bench-axis { display: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cs .diagram .d-line,
+    .cs .diagram .d-box,
+    .cs .diagram .d-fade,
+    .cs .bench-row__fill { transition: none; }
+    .cs .diagram .d-line, .cs .diagram .d-box { stroke-dashoffset: 0; }
+    .cs .diagram .d-fade { opacity: 1; }
+    .cs .diagram-bars .bench-row__fill { width: calc(var(--target) * 100%); }
+  }
+</style>
+
+<script>
+  // Reveal both diagrams once they enter the viewport. Use a single
+  // observer with a high threshold so the pipeline scrub starts when
+  // the figure is comfortably on screen, not the moment the first pixel
+  // crosses the bottom edge.
+  const figs = document.querySelectorAll<HTMLElement>('.diagram, .diagram-bars');
+  if (figs.length) {
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-playing');
+
+          // Bench bars: animate the percentage counters in lockstep with
+          // the bar growth. We use a 1.4s ease-out-expo to match the
+          // CSS transition so the number matches the filled width.
+          if (entry.target.classList.contains('diagram-bars')) {
+            const rows = entry.target.querySelectorAll<HTMLElement>('[data-bench-row]');
+            rows.forEach((row) => {
+              const target = parseFloat(row.dataset.final || '0');
+              const num = row.querySelector<HTMLElement>('[data-bench-num]');
+              if (!num) return;
+              const start = performance.now();
+              const dur = 1400;
+              function tick(now: number) {
+                const t = Math.min(1, (now - start) / dur);
+                const eased = 1 - Math.pow(2, -10 * t);
+                num!.textContent = String(Math.round(target * eased));
+                if (t < 1) requestAnimationFrame(tick);
+              }
+              requestAnimationFrame(tick);
+            });
+          }
+
+          obs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.25 });
+    figs.forEach((f) => obs.observe(f));
+  }
+</script>
