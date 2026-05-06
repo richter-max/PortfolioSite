@@ -230,22 +230,42 @@ export function initMotion() {
   });
 
   // ── MAGNETIC BUTTONS ─────────────────────────────────────────────────────
-  document.querySelectorAll('[data-magnetic]').forEach((el) => {
-    const strength = parseFloat(el.dataset.magnetic) || 0.3;
-    let rx = 0, ry = 0;
+  // Skip on coarse-pointer devices — touch users get nothing useful from
+  // a transform that only resolves on a hover state that can't exist.
+  const supportsHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  if (supportsHover) {
+    document.querySelectorAll('[data-magnetic]').forEach((el) => {
+      const strength = parseFloat(el.dataset.magnetic) || 0.3;
 
-    el.addEventListener('mousemove', (e) => {
-      const r = el.getBoundingClientRect();
-      const cx = r.left + r.width / 2;
-      const cy = r.top + r.height / 2;
-      rx = (e.clientX - cx) * strength;
-      ry = (e.clientY - cy) * strength;
-      gsap.to(el, { x: rx, y: ry, duration: 0.6, ease: 'expo.out' });
+      // Counter-translate the inner label at half-strength so it
+      // appears to stay anchored visually while the wrapper "leans"
+      // toward the cursor — a more refined effect than the wrapper
+      // dragging the label along 1:1. The label is whichever element
+      // carries data-magnetic-label, falling back to the first child.
+      const label = el.querySelector('[data-magnetic-label]') || el.firstElementChild;
+
+      const onMove = (e) => {
+        const r = el.getBoundingClientRect();
+        const cx = r.left + r.width / 2;
+        const cy = r.top + r.height / 2;
+        // Normalised distance from center, clamped to roughly 1 unit.
+        const dx = (e.clientX - cx) * strength;
+        const dy = (e.clientY - cy) * strength;
+        gsap.to(el, { x: dx, y: dy, duration: 0.5, ease: 'expo.out' });
+        if (label) {
+          gsap.to(label, { x: dx * 0.4, y: dy * 0.4, duration: 0.6, ease: 'expo.out' });
+        }
+      };
+      const onLeave = () => {
+        gsap.to(el, { x: 0, y: 0, duration: 0.9, ease: 'elastic.out(1, 0.5)' });
+        if (label) {
+          gsap.to(label, { x: 0, y: 0, duration: 0.9, ease: 'elastic.out(1, 0.5)' });
+        }
+      };
+      el.addEventListener('mousemove', onMove);
+      el.addEventListener('mouseleave', onLeave);
     });
-    el.addEventListener('mouseleave', () => {
-      gsap.to(el, { x: 0, y: 0, duration: 0.9, ease: 'elastic.out(1, 0.5)' });
-    });
-  });
+  }
 
   // After images load, re-measure
   window.addEventListener('load', () => ScrollTrigger.refresh());
@@ -277,6 +297,14 @@ if (typeof window !== 'undefined') {
     if (typeof ScrollTrigger !== 'undefined') {
       ScrollTrigger.getAll().forEach((t) => t.kill());
     }
+    // Reset any stuck magnetic transforms — if the user clicks a magnetic
+    // CTA, mouseleave never fires before navigation and the inline gsap
+    // transform sticks on whatever element persists across the swap.
+    document.querySelectorAll('[data-magnetic]').forEach((el) => {
+      gsap.set(el, { x: 0, y: 0 });
+      const label = el.querySelector('[data-magnetic-label]') || el.firstElementChild;
+      if (label) gsap.set(label, { x: 0, y: 0 });
+    });
   });
 
   // After the new DOM is in place but before page-load fires: hard-snap to

@@ -49,16 +49,18 @@ const driftPosts = Array.from({ length: dupFactor }, () => posts).flat();
     {/* Sticky / always-visible nav into the full archive. Sits in
         the header on the right at desktop widths, drops to a row of
         its own under the dek on mobile. */}
-    <a class="drift-anchor" href="/blog" data-cursor-hover>
-      <div class="drift-anchor__top">
-        <span class="drift-anchor__dot"></span>
-        <span class="drift-anchor__kicker">ARCHIVE</span>
-      </div>
-      <div class="drift-anchor__count">{posts.length}</div>
-      <div class="drift-anchor__label">posts in total</div>
-      <div class="drift-anchor__cta">
-        <span>VIEW ALL</span>
-        <span class="drift-anchor__arrow">→</span>
+    <a class="drift-anchor" href="/blog" data-cursor-hover data-magnetic="0.18">
+      <div data-magnetic-label class="drift-anchor__inner">
+        <div class="drift-anchor__top">
+          <span class="drift-anchor__dot"></span>
+          <span class="drift-anchor__kicker">ARCHIVE</span>
+        </div>
+        <div class="drift-anchor__count">{posts.length}</div>
+        <div class="drift-anchor__label">posts in total</div>
+        <div class="drift-anchor__cta">
+          <span>VIEW ALL</span>
+          <span class="drift-anchor__arrow">→</span>
+        </div>
       </div>
     </a>
   </div>
@@ -129,9 +131,7 @@ const driftPosts = Array.from({ length: dupFactor }, () => posts).flat();
 
   /* Right-side anchor card — always visible, links to /blog */
   .drift-anchor {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+    display: block;
     padding: 24px 28px;
     min-width: 220px;
     background: rgba(243, 241, 236, 0.02);
@@ -141,13 +141,18 @@ const driftPosts = Array.from({ length: dupFactor }, () => posts).flat();
     color: var(--ink-mid);
     transition:
       border-color 0.3s ease,
-      background 0.3s ease,
-      transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+      background 0.3s ease;
+    /* No transform here — magnetic JS owns the transform space. */
   }
   .drift-anchor:hover {
     border-color: var(--accent);
     background: rgba(46, 107, 255, 0.06);
-    transform: translateY(-2px);
+  }
+  .drift-anchor__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    will-change: transform;
   }
   .drift-anchor:hover .drift-anchor__cta { color: var(--accent); }
   .drift-anchor:hover .drift-anchor__arrow { transform: translateX(4px); }
