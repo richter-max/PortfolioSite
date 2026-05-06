@@ -38,42 +38,44 @@ function hoursAgo(iso) {
   return `${Math.round(diffH / 24)}D AGO`;
 }
 
+// "Habits" — written as plain first-person observations rather than
+// bold declarations, to keep the section from reading as manifesto.
 const principles = [
   {
     n: '01',
-    title: 'Evidence over anecdote.',
-    body: 'A claim that defenses work needs a number reproducible on a different machine. Same applies to training: the volume is what the watch logs, not what it felt like.',
+    title: 'I write the trace first.',
+    body: 'Every benchmark dumps one JSONL line per event before any aggregate score gets computed. Lets me re-slice the data later when I find a better question.',
   },
   {
     n: '02',
-    title: 'Cheap layers, stacked.',
-    body: 'A single thick filter loses to obfuscation; three thin ones in a row catch most of what matters. Engineering and training share the principle — small disciplines, repeated, beat one heroic effort.',
+    title: 'I stack thin layers.',
+    body: 'Three cheap guards in series catch more than one expensive filter does on its own. The same idea shows up in training blocks — easy weeks plus hard weeks beat constant medium intensity.',
   },
   {
     n: '03',
-    title: 'Trace before metric.',
-    body: 'Aggregate scores hide more than they reveal. Write the event log first; derive the metric in a second pass. If the metric disagrees with the trace, the trace wins.',
+    title: 'I sandbox before I integrate.',
+    body: 'Mocked tools, deterministic runs, no real side effects — until the apparatus has earned that trust. Shipping a security tool that can compromise its host is its own contradiction.',
   },
   {
     n: '04',
-    title: 'Boring is the goal.',
-    body: 'Reproducible numbers are not exciting. Predictable systems are not impressive. They are what lets the interesting work — the next finding, the next race — actually happen.',
+    title: 'I keep arcs finishable.',
+    body: 'Half-distance before full, deterministic demo before live model, single-author scope before opening up to contributors. Each step has to stand on its own terms first.',
   },
   {
     n: '05',
-    title: 'Stay finishable.',
-    body: 'Ship the deterministic demo before the live integration. Run the half before training for the full. Every long arc is a sequence of finishable artifacts.',
+    title: 'I aim for one shipped thing a quarter.',
+    body: 'Case study, open-source release, or race finish. Steady cadence over years matters more than any single sprint. The accumulation is the work.',
   },
 ];
 
 // Bio card key:value rows. Compact mono table, not a paragraph.
 const bio = [
-  ['BORN',     '1999 · Schwabach'],
+  ['BORN',     '2004 · Sonthofen'],
   ['BASED',    'Allgäu · CET (UTC+1)'],
   ['EDUCATED', 'Ausbildung · Application Developer'],
   ['FOCUS',    'AI agent security · Pen-test tooling'],
   ['STACK',    'Python · TypeScript · Three.js · GSAP'],
-  ['TRAINING', 'Triathlon · Trail running · Table tennis'],
+  ['TRAINING', 'Running · Triathlon · Table tennis'],
   ['REACH',    'max.richter.dev@proton.me'],
 ];
 ---
@@ -278,14 +280,14 @@ const bio = [
           <div class="ab-kicker mono">
             <span class="ab-kicker__num">A.05</span>
             <span class="ab-kicker__rule"></span>
-            <span class="ab-kicker__txt">PRINCIPLES</span>
+            <span class="ab-kicker__txt">PRACTICE</span>
           </div>
-          <div class="ab-prn__count mono">FIVE — / OF MANY</div>
+          <div class="ab-prn__count mono">FIVE HABITS</div>
         </header>
 
         <h2 class="ab-h2 ab-prn__h" data-reveal="lines">
-          Worth repeating<br/>
-          out loud.
+          How the work<br/>
+          actually runs.
         </h2>
 
         <ol class="ab-prn__list" data-stagger-children>
