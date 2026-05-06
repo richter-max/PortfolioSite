@@ -2,6 +2,7 @@
 // BlogPost.astro — shared layout for individual blog posts.
 // Uses BaseLayout for nav + global styles, adds article-specific layout.
 import BaseLayout from '@layouts/BaseLayout.astro';
+import ReadingTools from '@components/article/ReadingTools.astro';
 import { kindColor as KIND_COLOR, kindLabel as KIND_LABEL, type BlogKind } from '@data/blog-posts';
 
 interface Props {
@@ -19,6 +20,11 @@ const { title, description, date, readTime, kind, tags = [], heroImage, ogImage 
 
 const kindLabel = KIND_LABEL[kind];
 const kindColor = KIND_COLOR[kind];
+
+// Slug derived from URL — used to give the post title a stable
+// transition:name so cards on the home marquee / archive can morph
+// into this header on navigation.
+const slug = Astro.url.pathname.split('/').filter(Boolean).pop() ?? '';
 ---
 
 <BaseLayout
@@ -45,7 +51,7 @@ const kindColor = KIND_COLOR[kind];
           <span class="post-readtime">{readTime} READ</span>
         </div>
 
-        <h1 class="post-title">{title}</h1>
+        <h1 class="post-title" transition:name={`post-title-${slug}`}>{title}</h1>
 
         {description && <p class="post-description">{description}</p>}
       </div>
@@ -57,6 +63,10 @@ const kindColor = KIND_COLOR[kind];
         <img src={heroImage} alt="" />
       </div>
     )}
+
+    {/* Long-form aids: top progress bar + floating ToC + min-left badge.
+        Self-mounting; rebinds itself on Astro view transitions. */}
+    <ReadingTools selector="article.post" wpm={220} />
 
     {/* ── Body ──────────────────────────────────────────────────────── */}
     <div class="post-body">

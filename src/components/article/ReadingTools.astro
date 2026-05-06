@@ -1,0 +1,320 @@
+---
+// ReadingTools.astro — long-form reading aids.
+// Drop into a layout that wraps a long article. Renders three things:
+//
+//   1. A 2px progress bar pinned to the top of the viewport that
+//      fills as the reader scrolls through the target element.
+//   2. A floating table of contents pinned to the right side,
+//      auto-built from <h2> headings inside the target. The current
+//      section is highlighted via IntersectionObserver.
+//   3. A "min left" badge in the bottom-left that estimates remaining
+//      reading time from words remaining ÷ wpm. Hidden until the
+//      reader is past the first 1% of the article.
+//
+// All three hide gracefully on narrow viewports / phones.
+//
+// Usage:
+//   <ReadingTools selector="article" wpm={220} />
+
+interface Props {
+  /** CSS selector for the article element to track. */
+  selector?: string;
+  /** Words per minute for time-remaining estimates. */
+  wpm?: number;
+}
+
+const { selector = 'article', wpm = 220 } = Astro.props;
+---
+
+<aside
+  class="rt-root"
+  data-rt-selector={selector}
+  data-rt-wpm={wpm}
+  aria-hidden="true"
+>
+  <div class="rt-progress">
+    <div class="rt-progress__fill" id="rt-progress-fill"></div>
+  </div>
+
+  <nav class="rt-toc" id="rt-toc" aria-label="Article sections">
+    <div class="rt-toc__head">CONTENTS</div>
+    <ol class="rt-toc__list" id="rt-toc-list"></ol>
+  </nav>
+
+  <div class="rt-time" id="rt-time">
+    <span class="rt-time__num" id="rt-time-num">—</span>
+    <span class="rt-time__label">MIN LEFT</span>
+  </div>
+</aside>
+
+<style is:global>
+  /* Progress bar — uses mix-blend-mode so the same colour reads on
+     dark posts and cream case-study bodies without a class flip. */
+  .rt-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: rgba(243, 241, 236, 0.06);
+    z-index: 95;
+    pointer-events: none;
+  }
+  .rt-progress__fill {
+    height: 100%;
+    background: var(--accent, #2E6BFF);
+    transform-origin: 0 50%;
+    transform: scaleX(0);
+    transition: transform 60ms linear;
+    box-shadow: 0 0 8px rgba(46, 107, 255, 0.45);
+  }
+
+  /* ToC — pinned right, vertically centred, only renders if at least
+     two h2 headings are found inside the target. */
+  .rt-toc {
+    position: fixed;
+    top: 50%;
+    right: 28px;
+    transform: translateY(-50%);
+    width: 200px;
+    max-height: 70vh;
+    overflow-y: auto;
+    z-index: 50;
+    padding: 4px 0;
+    pointer-events: auto;
+    opacity: 0;
+    transition: opacity 0.4s ease 0.2s;
+  }
+  .rt-toc.is-ready { opacity: 1; }
+  .rt-toc__head {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    color: var(--ink-low);
+    margin-bottom: 14px;
+    text-transform: uppercase;
+  }
+  .rt-toc__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+  .rt-toc__list li {
+    position: relative;
+    padding-left: 14px;
+  }
+  .rt-toc__list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 8px;
+    width: 4px;
+    height: 1px;
+    background: rgba(243, 241, 236, 0.18);
+    transition: background 0.2s ease, width 0.2s ease;
+  }
+  .rt-toc__list li.is-active::before {
+    background: var(--accent, #2E6BFF);
+    width: 10px;
+  }
+  .rt-toc__list a {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    line-height: 1.4;
+    letter-spacing: 0.04em;
+    color: var(--ink-low);
+    text-decoration: none;
+    transition: color 0.2s ease;
+    padding-right: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .rt-toc__list a:hover { color: var(--ink); }
+  .rt-toc__list li.is-active a { color: var(--ink); }
+
+  /* Time-remaining badge — dark glass pill, bottom-left */
+  .rt-time {
+    position: fixed;
+    bottom: 28px;
+    left: 28px;
+    z-index: 50;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 9px 14px;
+    background: rgba(13, 13, 14, 0.72);
+    backdrop-filter: blur(12px) saturate(1.4);
+    -webkit-backdrop-filter: blur(12px) saturate(1.4);
+    border: 1px solid rgba(243, 241, 236, 0.10);
+    border-radius: 100px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    color: var(--ink-mid);
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    pointer-events: none;
+  }
+  .rt-time.is-ready {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .rt-time__num {
+    font-size: 14px;
+    color: var(--ink, #F3F1EC);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+
+  /* Cream theme override — case-study body sets a cream background.
+     Selector matches whether the cs root is on the page. */
+  body:has(.cs) .rt-progress {
+    background: rgba(10, 10, 11, 0.10);
+  }
+  body:has(.cs) .rt-toc__head { color: #6B6965; }
+  body:has(.cs) .rt-toc__list a { color: #6B6965; }
+  body:has(.cs) .rt-toc__list li.is-active a { color: #0a0a0b; }
+  body:has(.cs) .rt-toc__list li::before { background: rgba(10, 10, 11, 0.18); }
+  body:has(.cs) .rt-time {
+    background: rgba(243, 241, 236, 0.85);
+    border-color: rgba(10, 10, 11, 0.10);
+    color: #6B6965;
+  }
+  body:has(.cs) .rt-time__num { color: #0a0a0b; }
+
+  /* Hide on narrow viewports — these only work with side margin */
+  @media (max-width: 1100px) {
+    .rt-toc { display: none; }
+    .rt-time {
+      bottom: 16px;
+      left: 16px;
+      font-size: 8px;
+      padding: 7px 12px;
+    }
+    .rt-time__num { font-size: 12px; }
+  }
+  @media (max-width: 600px) {
+    .rt-time { display: none; }
+  }
+
+  /* prefers-reduced-motion: drop the progress fill animation, no
+     impact on functionality. */
+  @media (prefers-reduced-motion: reduce) {
+    .rt-progress__fill { transition: none; }
+    .rt-time { transition: opacity 0.2s ease; }
+  }
+</style>
+
+<script>
+  // Init runs both on first DOM-ready and after every Astro view
+  // transition. Re-runs are safe because we (a) wipe the previous
+  // ToC list, (b) re-read .rt-root data attributes, (c) attach a
+  // fresh IntersectionObserver per init.
+  function rtInit() {
+    const root = document.querySelector<HTMLElement>('.rt-root');
+    if (!root) return;
+
+    const selector = root.dataset.rtSelector || 'article';
+    const wpm = Math.max(80, parseInt(root.dataset.rtWpm || '220', 10));
+
+    const article = document.querySelector<HTMLElement>(selector);
+    if (!article) return;
+
+    const fill      = document.getElementById('rt-progress-fill');
+    const tocList   = document.getElementById('rt-toc-list');
+    const tocBlock  = document.getElementById('rt-toc');
+    const timeNum   = document.getElementById('rt-time-num');
+    const timeBlock = document.getElementById('rt-time');
+
+    // Word count + total minutes — computed once per init.
+    const text   = (article.textContent || '').trim();
+    const words  = text ? text.split(/\s+/).length : 0;
+    const totalMin = Math.max(1, Math.round(words / wpm));
+
+    // Build ToC from h2s in the article. Two or more required —
+    // a single section makes the toc redundant.
+    if (tocList) tocList.innerHTML = '';
+    const headings = Array.from(article.querySelectorAll<HTMLHeadingElement>('h2'));
+    const lookup = new Map<string, HTMLElement>();
+
+    if (headings.length >= 2 && tocList && tocBlock) {
+      headings.forEach((h, i) => {
+        if (!h.id) h.id = `section-${i + 1}`;
+        const li = document.createElement('li');
+        li.dataset.target = h.id;
+        const a = document.createElement('a');
+        a.href = `#${h.id}`;
+        a.textContent = h.textContent || `Section ${i + 1}`;
+        li.appendChild(a);
+        tocList.appendChild(li);
+        lookup.set(h.id, li);
+      });
+      tocBlock.classList.add('is-ready');
+
+      // Active section: pick the topmost intersecting heading.
+      let lastActive: HTMLElement | null = null;
+      const obs = new IntersectionObserver(
+        (entries) => {
+          const visible = entries
+            .filter((e) => e.isIntersecting)
+            .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+          if (!visible.length) return;
+          const id = (visible[0].target as HTMLElement).id;
+          const li = lookup.get(id);
+          if (li && li !== lastActive) {
+            lookup.forEach((l) => l.classList.remove('is-active'));
+            li.classList.add('is-active');
+            lastActive = li;
+          }
+        },
+        { rootMargin: '-20% 0px -60% 0px' },
+      );
+      headings.forEach((h) => obs.observe(h));
+    } else if (tocBlock) {
+      tocBlock.classList.remove('is-ready');
+    }
+
+    // Scroll handler: progress fill + time-remaining number.
+    function onScroll() {
+      const rect    = article!.getBoundingClientRect();
+      const total   = Math.max(1, rect.height - window.innerHeight);
+      const scrolled = Math.max(0, -rect.top);
+      const pct     = Math.max(0, Math.min(1, scrolled / total));
+
+      if (fill) fill.style.transform = `scaleX(${pct})`;
+
+      if (timeNum && timeBlock) {
+        const remaining = Math.max(0, Math.ceil((1 - pct) * totalMin));
+        timeNum.textContent = String(remaining);
+        if (pct > 0.01 && pct < 0.99) timeBlock.classList.add('is-ready');
+        else timeBlock.classList.remove('is-ready');
+      }
+    }
+
+    onScroll();
+
+    // Re-attach listeners every init — Astro view transitions don't
+    // remove document listeners, so we tag them so duplicate init
+    // calls don't stack.
+    if (!(window as any).__rtBound) {
+      window.addEventListener('scroll', () => {
+        const r = document.querySelector('.rt-root');
+        if (r) onScroll();
+      }, { passive: true });
+      window.addEventListener('resize', () => {
+        const r = document.querySelector('.rt-root');
+        if (r) onScroll();
+      });
+      (window as any).__rtBound = true;
+    }
+  }
+
+  rtInit();
+  document.addEventListener('astro:page-load', rtInit);
+</script>

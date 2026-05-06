@@ -95,7 +95,7 @@ const counts = {
               <span class="post-card__read">{p.readTime}</span>
             </>}
           </div>
-          <h2 class="post-card__title">{p.title.replace(/\.$/, '')}</h2>
+          <h2 class="post-card__title" transition:name={`post-title-${p.slug}`}>{p.title.replace(/\.$/, '')}</h2>
           <p class="post-card__excerpt">{p.description}</p>
           <div class="post-card__read-cta">
             <span>READ</span>

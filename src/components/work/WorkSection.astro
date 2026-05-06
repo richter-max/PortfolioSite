@@ -26,6 +26,10 @@ import { projects } from '@data/projects';
       const innerProps = linkable
         ? { href: p.href, 'data-cursor-hover': true }
         : { 'aria-disabled': 'true' };
+      // Slug for the case-study target — used as the transition:name
+      // anchor so this card title morphs into the case-study cover
+      // title on navigation.
+      const csSlug = linkable ? (p.href.split('/').filter(Boolean).pop() ?? '') : '';
       return (
       <div
         class={`work-card ${linkable ? '' : 'work-card--unlinked'}`}
@@ -41,7 +45,10 @@ import { projects } from '@data/projects';
               <span class="work-card__year">{p.year}</span>
             </div>
             <div class="work-card__body">
-              <h3 class="work-card__client">
+              <h3
+                class="work-card__client"
+                transition:name={csSlug ? `cs-title-${csSlug}` : undefined}
+              >
                 {p.client}
                 {linkable && <span class="work-card__arrow">→</span>}
               </h3>

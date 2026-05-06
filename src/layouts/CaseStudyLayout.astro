@@ -3,6 +3,7 @@
 // Editorial layout: dark cover → cream article body
 // with chaptered structure, pullquotes, code blocks, and back nav.
 import BaseLayout from '@layouts/BaseLayout.astro';
+import ReadingTools from '@components/article/ReadingTools.astro';
 
 interface Props {
   index: string;       // "02 / 04"
@@ -18,6 +19,11 @@ interface Props {
 }
 
 const { index, kicker, title, dek, role, period, status, read, description, ogImage } = Astro.props;
+
+// Slug derived from URL — used to give the cover title a stable
+// transition:name so work cards on the home page can morph into it
+// during the view transition.
+const slug = Astro.url.pathname.split('/').filter(Boolean).pop() ?? '';
 ---
 
 <BaseLayout
@@ -41,7 +47,7 @@ const { index, kicker, title, dek, role, period, status, read, description, ogIm
           <span class="dot"></span>
           {kicker}
         </div>
-        <h1 class="display cover-title">{title}</h1>
+        <h1 class="display cover-title" transition:name={`cs-title-${slug}`}>{title}</h1>
         <div class="cover-dek">{dek}</div>
       </div>
 
@@ -58,6 +64,13 @@ const { index, kicker, title, dek, role, period, status, read, description, ogIm
       <slot />
       <div class="endmark mono">— END OF REPORT —</div>
     </main>
+
+    {/* Long-form aids: top progress bar + floating ToC + min-left
+        badge. Self-mounting; rebinds itself on view transitions.
+        Targets `.cs main` so the cover doesn't count toward the
+        scroll budget — the bar fills as you read the body, not
+        the moment the cover comes into view. */}
+    <ReadingTools selector=".cs main" wpm={220} />
 
     <nav class="backnav mono">
       <a href="/">← BACK · MR.</a>
