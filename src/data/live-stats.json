@@ -1,8 +1,8 @@
 {
-  "updatedAt": "2026-05-06T06:24:14.706Z",
+  "updatedAt": "2026-05-07T06:29:24.004Z",
   "strava": {
     "streakWeeks": 28,
-    "sessionsThisYear": 138,
+    "sessionsThisYear": 139,
     "lastRun": {
       "weekday": "Tuesday",
       "km": 7.1,
@@ -20,17 +20,17 @@
       27.6,
       73.5,
       73.2,
-      7.5
+      8
     ]
   },
   "github": {
-    "commits30d": 97,
+    "commits30d": 114,
     "latestRepo": {
       "name": "PortfolioSite",
       "url": "https://github.com/richter-max/PortfolioSite",
-      "pushedAt": "2026-05-05T15:13:52Z",
-      "headline": "broaden footer copy from \"work\" to \"opportunity\"",
-      "commitDate": "2026-05-05T15:13:51Z"
+      "pushedAt": "2026-05-07T05:21:20Z",
+      "headline": "content(about): real portrait + EXIF-orientation fix in image pipeline",
+      "commitDate": "2026-05-07T05:21:16Z"
     }
   }
 }
