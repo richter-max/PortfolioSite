@@ -1,0 +1,238 @@
+---
+/**
+ * ProgressVisual — SMB Tool roadmap with milestone status.
+ *
+ * Honest "in development" view: a horizontal track with four milestones,
+ * each marked done · active · todo. The active milestone has a subtle
+ * pulse to communicate "this is where we are right now".
+ */
+import type { ProgressVisual as ProgressData } from '@data/projects';
+
+interface Props {
+  data: ProgressData;
+}
+
+const { data } = Astro.props;
+
+const total = data.milestones.length;
+const doneCount = data.milestones.filter(m => m.status === 'done').length;
+const activeCount = data.milestones.filter(m => m.status === 'active').length;
+// Bar fill = full done segments + half of active
+const fillPct = ((doneCount + activeCount * 0.5) / total) * 100;
+---
+
+<div class="progress" data-progress>
+  <div class="progress__head">
+    <span class="progress__label">ROADMAP · 2026</span>
+    <span class="progress__count">
+      <span class="progress__count-done">{doneCount}</span>
+      <span class="progress__count-sep">/</span>
+      <span class="progress__count-total">{total}</span>
+    </span>
+  </div>
+
+  <div class="progress__track">
+    <div class="progress__fill" style={`width: ${fillPct}%`} />
+    {data.milestones.map((m, i) => {
+      const pos = (i / (total - 1)) * 100;
+      return (
+        <div
+          class={`progress__node progress__node--${m.status}`}
+          style={`left: ${pos}%`}
+        >
+          <span class="progress__dot" />
+        </div>
+      );
+    })}
+  </div>
+
+  <div class="progress__milestones">
+    {data.milestones.map((m, i) => {
+      const pos = (i / (total - 1)) * 100;
+      return (
+        <div
+          class={`progress__milestone progress__milestone--${m.status}`}
+          style={`left: ${pos}%; --align: ${i === 0 ? 'flex-start' : i === total - 1 ? 'flex-end' : 'center'}`}
+        >
+          <span class="progress__m-status">
+            {m.status === 'done'   && '✓'}
+            {m.status === 'active' && '●'}
+            {m.status === 'todo'   && '○'}
+          </span>
+          <span class="progress__m-label">{m.label}</span>
+        </div>
+      );
+    })}
+  </div>
+
+  <div class="progress__caption">
+    <span class="progress__caption-label">SHIPPING</span>
+    <span class="progress__caption-eta">EST. Q3 2026</span>
+  </div>
+</div>
+
+<style>
+  .progress {
+    width: 100%;
+    height: 100%;
+    min-height: 220px;
+    padding: 20px 22px;
+    background: var(--bg-2);
+    border: 1px solid var(--hairline);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    font-family: var(--font-mono);
+    overflow: hidden;
+  }
+
+  /* ── Head ────────────────────────────────────────────────────────── */
+  .progress__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-low);
+  }
+
+  .progress__count {
+    font-family: var(--font-display);
+    font-size: 14px;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .progress__count-done  { color: var(--ink); font-weight: 500; }
+  .progress__count-sep   { color: var(--ink-low); margin: 0 2px; }
+  .progress__count-total { color: var(--ink-mid); }
+
+  /* ── Track + nodes ──────────────────────────────────────────────── */
+  .progress__track {
+    position: relative;
+    height: 2px;
+    background: var(--hairline);
+    border-radius: 2px;
+    margin: 18px 8px;
+  }
+
+  .progress__fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background: linear-gradient(to right, var(--accent-warm-deep), var(--accent-warm));
+    border-radius: 2px;
+    transition: width 800ms var(--ease-out-expo);
+  }
+
+  .progress__node {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 14px;
+    height: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .progress__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 1px solid var(--ink-low);
+    transition: all 320ms var(--ease-out-expo);
+  }
+
+  .progress__node--done .progress__dot {
+    background: var(--accent-warm);
+    border-color: var(--accent-warm);
+  }
+
+  .progress__node--active .progress__dot {
+    background: var(--accent-warm);
+    border-color: var(--accent-warm);
+    box-shadow: 0 0 0 0 var(--accent-warm);
+    animation: pulse 2.4s var(--ease-in-out) infinite;
+  }
+
+  .progress__node--todo .progress__dot {
+    background: var(--bg-2);
+    border-color: var(--ink-low);
+    border-style: dashed;
+  }
+
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(232, 181, 87, 0.4); }
+    50%      { box-shadow: 0 0 0 6px rgba(232, 181, 87, 0); }
+  }
+
+  /* ── Milestone labels ───────────────────────────────────────────── */
+  .progress__milestones {
+    position: relative;
+    height: 60px;
+    margin: 0 8px;
+  }
+
+  .progress__milestone {
+    position: absolute;
+    top: 0;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    font-size: 9px;
+    letter-spacing: 0.05em;
+    text-align: center;
+    width: 80px;
+  }
+
+  /* Edge milestones nudge inward to avoid clipping */
+  .progress__milestone:first-child { transform: translateX(-15%); align-items: flex-start; }
+  .progress__milestone:last-child  { transform: translateX(-85%); align-items: flex-end; }
+
+  .progress__m-status {
+    font-size: 10px;
+    line-height: 1;
+  }
+
+  .progress__milestone--done .progress__m-status   { color: var(--accent-warm); }
+  .progress__milestone--active .progress__m-status { color: var(--accent-warm); }
+  .progress__milestone--todo .progress__m-status   { color: var(--ink-low); }
+
+  .progress__m-label {
+    font-family: var(--font-display);
+    font-size: 10px;
+    color: var(--ink-mid);
+    letter-spacing: -0.005em;
+    line-height: 1.3;
+  }
+
+  .progress__milestone--active .progress__m-label { color: var(--ink); }
+
+  /* ── Caption ─────────────────────────────────────────────────────── */
+  .progress__caption {
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    padding-top: 10px;
+    border-top: 1px dashed var(--hairline);
+    font-size: 8px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .progress__caption-label { color: var(--ink-low); }
+  .progress__caption-eta   { color: var(--ink); font-weight: 500; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .progress__fill { transition: none; }
+    .progress__node--active .progress__dot { animation: none; }
+  }
+</style>

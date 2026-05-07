@@ -1,0 +1,53 @@
+---
+/**
+ * WorkCardVisual — switcher between project-specific visualizations.
+ *
+ * If the project has no `visual` payload, falls back to the legacy image
+ * background. Keeps the WorkSection card markup clean by hiding the
+ * dispatch logic here.
+ */
+import type { Project } from '@data/projects';
+import MatrixVisual   from './visuals/MatrixVisual.astro';
+import TerminalVisual from './visuals/TerminalVisual.astro';
+import DiffVisual     from './visuals/DiffVisual.astro';
+import ProgressVisual from './visuals/ProgressVisual.astro';
+
+interface Props {
+  project: Project;
+}
+
+const { project } = Astro.props;
+const v = project.visual;
+---
+
+{v?.kind === 'matrix'   && <MatrixVisual   data={v} />}
+{v?.kind === 'terminal' && <TerminalVisual data={v} />}
+{v?.kind === 'diff'     && <DiffVisual     data={v} />}
+{v?.kind === 'progress' && <ProgressVisual data={v} />}
+
+{!v && project.image && (
+  <div
+    class="work-card__image-fallback"
+    style={`background-image: url("${project.image}")`}
+  />
+)}
+
+<style>
+  .work-card__image-fallback {
+    width: 100%;
+    height: 100%;
+    min-height: 220px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 8px;
+    filter: saturate(0.5) brightness(0.75) contrast(1.05);
+    transition:
+      transform 700ms var(--ease-out-expo),
+      filter 700ms var(--ease-out-expo);
+  }
+
+  :global(.work-card__inner:hover) .work-card__image-fallback {
+    transform: scale(1.04);
+    filter: saturate(0.75) brightness(0.9) contrast(1.05);
+  }
+</style>

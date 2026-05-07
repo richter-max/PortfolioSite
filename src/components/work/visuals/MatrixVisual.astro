@@ -1,0 +1,239 @@
+---
+/**
+ * MatrixVisual — AEGIS-style defense layer cascade.
+ *
+ * Three vertical bars, one per guard layer. Each bar's fill height represents
+ * remaining attack success after that layer. A faded baseline marker shows
+ * the no-defense rate. Idle: subtle scan line drifts. Hover: bars re-animate
+ * from baseline downward, value counters tick.
+ *
+ * Numbers are real benchmark figures from AEGIS Chapter 03.
+ */
+import type { MatrixVisual as MatrixData } from '@data/projects';
+
+interface Props {
+  data: MatrixData;
+}
+
+const { data } = Astro.props;
+const { baselinePct, stages } = data;
+---
+
+<div class="matrix" data-matrix>
+  <div class="matrix__head">
+    <span class="matrix__label">ATTACK SUCCESS</span>
+    <span class="matrix__baseline">
+      <span class="matrix__dot" />
+      BASELINE {baselinePct}%
+    </span>
+  </div>
+
+  <div class="matrix__bars">
+    {stages.map((stage, i) => (
+      <div class="bar" style={`--delay: ${i * 90}ms`}>
+        <div class="bar__track">
+          <div
+            class="bar__fill"
+            data-target={stage.successPct}
+            data-baseline={baselinePct}
+            style={`--target: ${stage.successPct}; --baseline: ${baselinePct}`}
+          />
+          <div class="bar__baseline-mark" />
+        </div>
+        <div class="bar__meta">
+          <span class="bar__value" data-counter data-target={stage.successPct}>
+            {stage.successPct}<span class="bar__unit">%</span>
+          </span>
+          <span class="bar__label">{stage.label}</span>
+          <span class="bar__sublabel">{stage.sublabel}</span>
+        </div>
+      </div>
+    ))}
+  </div>
+
+  <div class="matrix__scanline" aria-hidden="true" />
+</div>
+
+<style>
+  .matrix {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 220px;
+    padding: 20px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    background: var(--bg-2);
+    border-radius: 8px;
+    overflow: hidden;
+    font-family: var(--font-mono);
+  }
+
+  .matrix__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    color: var(--ink-low);
+    text-transform: uppercase;
+  }
+
+  .matrix__label { color: var(--ink-mid); }
+
+  .matrix__baseline {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--ink-low);
+  }
+
+  .matrix__dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--signal-error);
+    opacity: 0.6;
+  }
+
+  /* ── Bars ─────────────────────────────────────────────────────────── */
+  .matrix__bars {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    align-items: end;
+  }
+
+  .bar {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    height: 100%;
+  }
+
+  .bar__track {
+    position: relative;
+    flex: 1;
+    min-height: 90px;
+    background: rgba(243, 241, 236, 0.04);
+    border: 1px solid var(--hairline);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .bar__fill {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    /* Idle state: bar shows the post-defense value (target%) */
+    height: calc(var(--target) * 1%);
+    background: linear-gradient(
+      to top,
+      var(--accent-warm) 0%,
+      var(--accent-warm-deep) 100%
+    );
+    transition: height 720ms var(--ease-out-expo);
+    transition-delay: var(--delay);
+  }
+
+  .bar__fill::after {
+    /* glowing top edge */
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: var(--accent-warm);
+    opacity: 0.8;
+    box-shadow: 0 0 8px var(--accent-warm);
+  }
+
+  .bar__baseline-mark {
+    /* Horizontal line marking the 82% baseline */
+    position: absolute;
+    left: -2px;
+    right: -2px;
+    bottom: calc(var(--bl, 82) * 1%);
+    height: 1px;
+    background: var(--signal-error);
+    opacity: 0.35;
+  }
+  .bar:nth-child(1) .bar__baseline-mark { --bl: var(--baseline-1, 82); }
+
+  .bar__meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .bar__value {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .bar__unit {
+    font-size: 11px;
+    color: var(--ink-low);
+    margin-left: 1px;
+    letter-spacing: 0;
+  }
+
+  .bar__label {
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    color: var(--ink);
+    text-transform: uppercase;
+  }
+
+  .bar__sublabel {
+    font-size: 8px;
+    letter-spacing: 0.14em;
+    color: var(--ink-low);
+    text-transform: uppercase;
+  }
+
+  /* ── Idle scan line ──────────────────────────────────────────────── */
+  .matrix__scanline {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(232, 181, 87, 0.06) 50%,
+      transparent 100%
+    );
+    height: 40%;
+    animation: scan 6s linear infinite;
+    pointer-events: none;
+    opacity: 0.5;
+  }
+
+  @keyframes scan {
+    0%   { transform: translateY(-100%); }
+    100% { transform: translateY(250%); }
+  }
+
+  /* ── Hover: re-animate from baseline ────────────────────────────── */
+  :global(.work-card__inner:hover) .bar__fill {
+    animation: drop 1.2s var(--ease-out-expo) forwards;
+    animation-delay: var(--delay);
+  }
+
+  @keyframes drop {
+    0%   { height: calc(var(--baseline) * 1%); }
+    100% { height: calc(var(--target) * 1%); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .matrix__scanline { animation: none; }
+    .bar__fill { transition: none; }
+    :global(.work-card__inner:hover) .bar__fill { animation: none; }
+  }
+</style>

@@ -1,0 +1,200 @@
+---
+/**
+ * DiffVisual — VendorQ-style question/answer diff with time compression.
+ *
+ * A vendor questionnaire prompt above; auto-generated answer below as a
+ * subtle "added lines" diff with source attribution. A small badge in the
+ * corner shows the time compression (2 weeks → 2 hours) which is the
+ * actual product value proposition.
+ */
+import type { DiffVisual as DiffData } from '@data/projects';
+
+interface Props {
+  data: DiffData;
+}
+
+const { data } = Astro.props;
+---
+
+<div class="diff" data-diff>
+  <div class="diff__head">
+    <span class="diff__label">QUESTIONNAIRE · CAIQ</span>
+    <span class="diff__compress">
+      <span class="diff__before">{data.before}</span>
+      <span class="diff__arrow">→</span>
+      <span class="diff__after">{data.after}</span>
+    </span>
+  </div>
+
+  <div class="diff__question">
+    <span class="diff__q-marker">Q</span>
+    <p>{data.question}</p>
+  </div>
+
+  <div class="diff__answer">
+    {data.answerLines.map((line, i) => (
+      <div
+        class="diff__line"
+        style={`--line-delay: ${i * 80}ms`}
+      >
+        <span class="diff__plus">+</span>
+        <span class="diff__text">{line}</span>
+      </div>
+    ))}
+    <div class="diff__source">
+      <span class="diff__source-label">DERIVED FROM</span>
+      <span class="diff__source-val">{data.source}</span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .diff {
+    width: 100%;
+    height: 100%;
+    min-height: 220px;
+    background: var(--bg-2);
+    border: 1px solid var(--hairline);
+    border-radius: 8px;
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    font-family: var(--font-mono);
+    overflow: hidden;
+  }
+
+  /* ── Head ────────────────────────────────────────────────────────── */
+  .diff__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .diff__label { color: var(--ink-low); }
+
+  .diff__compress {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+  }
+
+  .diff__before {
+    color: var(--ink-low);
+    text-decoration: line-through;
+    text-decoration-color: var(--ink-low);
+  }
+
+  .diff__arrow {
+    color: var(--ink-mid);
+    font-size: 11px;
+  }
+
+  .diff__after {
+    color: var(--accent-warm);
+    font-weight: 600;
+  }
+
+  /* ── Question block ──────────────────────────────────────────────── */
+  .diff__question {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 10px 12px;
+    background: rgba(243, 241, 236, 0.02);
+    border-left: 2px solid var(--ink-low);
+    border-radius: 0 4px 4px 0;
+  }
+
+  .diff__q-marker {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--ink-low);
+    letter-spacing: 0;
+    margin-top: 2px;
+  }
+
+  .diff__question p {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 12px;
+    line-height: 1.45;
+    color: var(--ink-dim);
+    letter-spacing: -0.005em;
+  }
+
+  /* ── Answer block ────────────────────────────────────────────────── */
+  .diff__answer {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    border-left: 2px solid var(--signal-ok);
+    padding-left: 10px;
+  }
+
+  .diff__line {
+    display: flex;
+    gap: 8px;
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--ink);
+    transition:
+      transform 360ms var(--ease-out-expo),
+      opacity 360ms var(--ease-out-expo);
+    transform: translateX(-3px);
+    opacity: 0.7;
+  }
+
+  .diff__plus {
+    color: var(--signal-ok);
+    font-weight: 700;
+    flex-shrink: 0;
+    width: 10px;
+  }
+
+  .diff__text {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .diff__source {
+    margin-top: auto;
+    padding-top: 8px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 8px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    border-top: 1px dashed var(--hairline);
+  }
+
+  .diff__source-label { color: var(--ink-low); }
+  .diff__source-val   { color: var(--ink-mid); font-weight: 500; }
+
+  /* ── Hover: cascade in answer lines ─────────────────────────────── */
+  :global(.work-card__inner:hover) .diff__line {
+    transform: translateX(0);
+    opacity: 1;
+    transition-delay: var(--line-delay);
+  }
+
+  :global(.work-card__inner:not(:hover)) .diff__line {
+    transition-delay: 0ms;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .diff__line {
+      transform: none;
+      opacity: 1;
+      transition: none;
+    }
+  }
+</style>
