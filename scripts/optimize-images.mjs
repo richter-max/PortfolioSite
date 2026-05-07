@@ -28,8 +28,12 @@ async function listSources() {
 async function processOne(file) {
   const input = path.join(ROOT, file);
   const base = file.replace(/\.(jpe?g|png)$/i, '');
-  const src = sharp(input, { failOn: 'none' });
-  const meta = await src.metadata();
+
+  // Read meta with rotation already applied so width/height reflect
+  // what we'll actually output. iPhone portraits arrive with an EXIF
+  // orientation flag and would otherwise report the storage dims —
+  // misleading for the WIDTHS filter below.
+  const meta = await sharp(input, { failOn: 'none' }).rotate().metadata();
   const maxW = meta.width ?? 1920;
 
   const widths = WIDTHS.filter((w) => w <= maxW);
@@ -37,7 +41,11 @@ async function processOne(file) {
 
   const tasks = [];
   for (const w of widths) {
-    const pipeline = () => sharp(input, { failOn: 'none' }).resize({ width: w, withoutEnlargement: true });
+    // .rotate() with no args bakes EXIF orientation into the output
+    // pixels. Browsers vary on how they honour the EXIF tag for
+    // <img>; baking it removes the ambiguity and keeps the same
+    // pixel data on every device.
+    const pipeline = () => sharp(input, { failOn: 'none' }).rotate().resize({ width: w, withoutEnlargement: true });
     tasks.push(
       pipeline().avif({ quality: AVIF_QUALITY, effort: 6 }).toFile(path.join(OUT, `${base}-${w}.avif`)),
       pipeline().webp({ quality: WEBP_QUALITY, effort: 5 }).toFile(path.join(OUT, `${base}-${w}.webp`)),

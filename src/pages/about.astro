@@ -210,20 +210,30 @@ const bio = [
         <div class="ab-bio__card">
           <figure class="ab-bio__portrait" data-reveal="clip">
             <picture>
-              <source type="image/avif" srcset="/img/opt/portrait-field-458.avif" />
-              <source type="image/webp" srcset="/img/opt/portrait-field-458.webp" />
+              <source
+                type="image/avif"
+                srcset="/img/opt/portrait-field-640.avif 640w, /img/opt/portrait-field-1280.avif 1280w"
+                sizes="(max-width: 720px) 220px, (max-width: 1100px) 300px, 360px"
+              />
+              <source
+                type="image/webp"
+                srcset="/img/opt/portrait-field-640.webp 640w, /img/opt/portrait-field-1280.webp 1280w"
+                sizes="(max-width: 720px) 220px, (max-width: 1100px) 300px, 360px"
+              />
               <img
-                src="/img/opt/portrait-field-458.jpg"
-                alt="Maximilian Richter, photographed in a field at dusk."
-                width="458"
-                height="554"
+                src="/img/opt/portrait-field-640.jpg"
+                srcset="/img/opt/portrait-field-640.jpg 640w, /img/opt/portrait-field-1280.jpg 1280w"
+                sizes="(max-width: 720px) 220px, (max-width: 1100px) 300px, 360px"
+                alt="Maximilian Richter at a railing in Shenzhen, skyline behind."
+                width="1080"
+                height="1440"
                 loading="lazy"
                 decoding="async"
               />
             </picture>
             <figcaption class="ab-bio__cap mono">
               <span class="ab-bio__cap__dot"></span>
-              <span>ALLGÄU · 2026</span>
+              <span>SHENZHEN · 2025</span>
             </figcaption>
           </figure>
 
@@ -581,8 +591,8 @@ const bio = [
 
   .ab-bio__card {
     display: grid;
-    grid-template-columns: 240px 1fr;
-    gap: 64px;
+    grid-template-columns: 360px 1fr;
+    gap: 72px;
     align-items: start;
   }
   .ab-bio__portrait {
@@ -590,7 +600,9 @@ const bio = [
     position: relative;
     border-radius: 2px;
     overflow: hidden;
-    aspect-ratio: 458 / 554;
+    /* New master is 4284×5712 (3:4 portrait, post-rotation). The old
+       4:5-ish ratio was a relic of the placeholder asset. */
+    aspect-ratio: 3 / 4;
     background: rgba(243, 241, 236, 0.04);
     border: 1px solid rgba(243, 241, 236, 0.10);
     isolation: isolate;
@@ -889,7 +901,7 @@ const bio = [
   */
   @media (max-width: 1100px) {
     .ab-now__grid { grid-template-columns: repeat(2, 1fr); }
-    .ab-bio__card { grid-template-columns: 200px 1fr; gap: 48px; }
+    .ab-bio__card { grid-template-columns: 300px 1fr; gap: 56px; }
     .ab-close__inner { grid-template-columns: 1fr; gap: 48px; align-items: start; }
   }
   @media (max-width: 720px) {
@@ -899,7 +911,7 @@ const bio = [
     .ab-now, .ab-bio, .ab-story, .ab-prn, .ab-close { padding-top: 80px; padding-bottom: 80px; }
     .ab-now__grid { grid-template-columns: 1fr; }
     .ab-bio__card { grid-template-columns: 1fr; gap: 32px; }
-    .ab-bio__portrait { max-width: 220px; }
+    .ab-bio__portrait { max-width: 240px; }
     .ab-prn__item { grid-template-columns: 56px 1fr; gap: 16px; padding: 28px 0; }
     .ab-prn__arrow { display: none; }
     .ab-prose__cap { font-size: 64px; }
