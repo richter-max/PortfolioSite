@@ -1,8 +1,8 @@
 {
-  "updatedAt": "2026-05-07T06:29:24.004Z",
+  "updatedAt": "2026-05-08T05:51:22.475Z",
   "strava": {
     "streakWeeks": 28,
-    "sessionsThisYear": 139,
+    "sessionsThisYear": 140,
     "lastRun": {
       "weekday": "Tuesday",
       "km": 7.1,
@@ -24,13 +24,13 @@
     ]
   },
   "github": {
-    "commits30d": 114,
+    "commits30d": 115,
     "latestRepo": {
       "name": "PortfolioSite",
       "url": "https://github.com/richter-max/PortfolioSite",
-      "pushedAt": "2026-05-07T05:21:20Z",
-      "headline": "content(about): real portrait + EXIF-orientation fix in image pipeline",
-      "commitDate": "2026-05-07T05:21:16Z"
+      "pushedAt": "2026-05-07T08:51:51Z",
+      "headline": "Project Section Cards new design",
+      "commitDate": "2026-05-07T08:51:46Z"
     }
   }
 }
