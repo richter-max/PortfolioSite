@@ -1,8 +1,8 @@
 {
-  "updatedAt": "2026-05-08T05:51:22.475Z",
+  "updatedAt": "2026-05-09T06:09:39.768Z",
   "strava": {
     "streakWeeks": 28,
-    "sessionsThisYear": 140,
+    "sessionsThisYear": 141,
     "lastRun": {
       "weekday": "Tuesday",
       "km": 7.1,
@@ -24,13 +24,13 @@
     ]
   },
   "github": {
-    "commits30d": 115,
+    "commits30d": 110,
     "latestRepo": {
       "name": "PortfolioSite",
       "url": "https://github.com/richter-max/PortfolioSite",
-      "pushedAt": "2026-05-07T08:51:51Z",
-      "headline": "Project Section Cards new design",
-      "commitDate": "2026-05-07T08:51:46Z"
+      "pushedAt": "2026-05-08T05:51:23Z",
+      "headline": "chore: refresh live stats (2026-05-08)",
+      "commitDate": "2026-05-08T05:51:22Z"
     }
   }
 }
