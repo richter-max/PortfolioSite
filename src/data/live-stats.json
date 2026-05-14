@@ -1,8 +1,8 @@
 {
-  "updatedAt": "2026-05-13T06:42:16.895Z",
+  "updatedAt": "2026-05-14T06:40:54.812Z",
   "strava": {
     "streakWeeks": 29,
-    "sessionsThisYear": 148,
+    "sessionsThisYear": 149,
     "lastRun": {
       "weekday": "Tuesday",
       "km": 9.3,
@@ -24,13 +24,13 @@
     ]
   },
   "github": {
-    "commits30d": 109,
+    "commits30d": 107,
     "latestRepo": {
       "name": "PortfolioSite",
       "url": "https://github.com/richter-max/PortfolioSite",
-      "pushedAt": "2026-05-12T06:31:58Z",
-      "headline": "chore: refresh live stats (2026-05-12)",
-      "commitDate": "2026-05-12T06:31:57Z"
+      "pushedAt": "2026-05-13T06:42:17Z",
+      "headline": "chore: refresh live stats (2026-05-13)",
+      "commitDate": "2026-05-13T06:42:17Z"
     }
   }
 }
