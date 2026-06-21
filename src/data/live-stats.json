@@ -1,12 +1,12 @@
 {
-  "updatedAt": "2026-06-20T07:42:56.995Z",
+  "updatedAt": "2026-06-21T08:21:17.270Z",
   "strava": {
     "streakWeeks": 34,
-    "sessionsThisYear": 191,
+    "sessionsThisYear": 192,
     "lastRun": {
-      "weekday": "Friday",
-      "km": 3.1,
-      "isoDate": "2026-06-19"
+      "weekday": "Saturday",
+      "km": 21.3,
+      "isoDate": "2026-06-20"
     },
     "weeklyKmLast12": [
       114.4,
@@ -20,7 +20,7 @@
       179,
       59.1,
       67.8,
-      34
+      55.2
     ]
   },
   "github": {
