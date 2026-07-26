@@ -1,8 +1,8 @@
 {
-  "updatedAt": "2026-07-25T06:09:10.140Z",
+  "updatedAt": "2026-07-26T06:28:52.307Z",
   "strava": {
     "streakWeeks": 39,
-    "sessionsThisYear": 226,
+    "sessionsThisYear": 227,
     "lastRun": {
       "weekday": "Wednesday",
       "km": 20.3,
@@ -20,7 +20,7 @@
       37.2,
       79.9,
       44.8,
-      54.7
+      69.9
     ]
   },
   "github": {
