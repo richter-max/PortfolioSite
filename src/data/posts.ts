@@ -1,6 +1,6 @@
-// posts.ts — manifest of published posts. Three strong ones instead of
-// seven mixed ones. The homepage Writing section, /blog, and the RSS
-// feed all read from here.
+// posts.ts — manifest of published posts. A short list of strong ones
+// instead of a long mixed one. The homepage Writing section, /blog, and
+// the RSS feed all read from here.
 
 export interface Post {
   slug: string;
@@ -13,6 +13,16 @@ export interface Post {
 }
 
 export const posts: Post[] = [
+  {
+    slug: 'ironman-kraichgau',
+    title: 'Ironman 70.3 Kraichgau.',
+    description:
+      '6:52:07 against a 5:30 plan. Both legs cramped 400 m into the ' +
+      'swim and never released. Four times I nearly stopped \u2014 and ' +
+      'none of the four were about the pain.',
+    pubDate: '2026-06-18',
+    readTime: '7 min',
+  },
   {
     slug: 'building-aegis',
     title: 'Six lessons from AEGIS.',
