@@ -44,7 +44,12 @@ const { title = SITE.title, description = SITE.description } = Astro.props;
       crossorigin
     />
 
-    <meta name="theme-color" content="#f7f5f0" />
+    <!-- Address-bar colour. Two tags cover the no-JS case via media;
+         the script below overwrites both with the resolved colour when
+         the reader has pinned a theme, so a pinned choice is not
+         contradicted by the browser chrome. -->
+    <meta name="theme-color" content="#f7f5f0" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#14130e" media="(prefers-color-scheme: dark)" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
@@ -56,6 +61,34 @@ const { title = SITE.title, description = SITE.description } = Astro.props;
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={new URL('/img/og.jpg', SITE.url).href} />
+
+    <!-- Theme resolution, synchronous and before first paint. This is
+         the only script on the critical path and it stays that way:
+         read the pin, set the attribute, correct the address bar. The
+         toggle itself lives in Nav.astro and is deferred like
+         everything else. A blocked or empty localStorage (private
+         mode, storage disabled) falls through to the system setting
+         rather than throwing. -->
+    <script is:inline>
+      (function () {
+        var pinned = null;
+        try {
+          var stored = localStorage.getItem('theme');
+          if (stored === 'dark' || stored === 'light') pinned = stored;
+        } catch (e) {
+          /* storage unavailable — follow the system */
+        }
+        if (pinned) document.documentElement.dataset.theme = pinned;
+
+        var dark =
+          pinned === 'dark' ||
+          (!pinned &&
+            window.matchMedia('(prefers-color-scheme: dark)').matches);
+        var color = dark ? '#14130e' : '#f7f5f0';
+        var tags = document.querySelectorAll('meta[name="theme-color"]');
+        for (var i = 0; i < tags.length; i++) tags[i].content = color;
+      })();
+    </script>
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>

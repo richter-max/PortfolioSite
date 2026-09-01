@@ -12,6 +12,9 @@
 //   - prefers-reduced-motion → renders one static frame, no rotation
 //   - rendering pauses when offscreen or the tab is hidden
 //   - if WebGL/model fail, the stage collapses and the caption remains
+//   - the light budget is re-tuned when the theme changes: the canvas
+//     is alpha, so the scan sits directly on the page ground, and a
+//     model lit for paper reads as pasted-on over near-black
 // new commit
 ---
 
@@ -23,6 +26,25 @@
 <script>
   // Seconds per full revolution. Mirrored in the caption above.
   const REV_SECONDS = 12;
+
+  // Light budget per ground. The light values are v1's, kept 1:1. The
+  // dark ones pull the key down and the room reflection further, so the
+  // scan reads as an object lit in a dark room rather than a cutout
+  // dropped onto one. The sum stays under 1.0 either way — that is what
+  // keeps the photo textures from clipping under NoToneMapping.
+  const LIGHTING = {
+    light: { key: 0.5, fill: 0.15, env: 0.4 },
+    dark: { key: 0.36, fill: 0.1, env: 0.26 },
+  };
+
+  /** The ground currently under the canvas. */
+  function currentTheme() {
+    const pinned = document.documentElement.dataset.theme;
+    if (pinned === 'dark' || pinned === 'light') return pinned;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches
+      ? 'dark'
+      : 'light';
+  }
 
   const stage = document.querySelector('[data-figure]');
 
@@ -60,10 +82,12 @@
     scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
     pmrem.dispose();
 
-    const key = new THREE.DirectionalLight(0xffffff, 0.5);
+    let budget = LIGHTING[currentTheme()];
+
+    const key = new THREE.DirectionalLight(0xffffff, budget.key);
     key.position.set(3, 4, 3);
     scene.add(key);
-    const fill = new THREE.DirectionalLight(0xffffff, 0.15);
+    const fill = new THREE.DirectionalLight(0xffffff, budget.fill);
     fill.position.set(-2, 1, -2);
     scene.add(fill);
 
@@ -74,7 +98,31 @@
     loader.setDRACOLoader(draco);
 
     let pivot = null;
+    const materials = [];
     const clock = new THREE.Clock();
+
+    // Loop state, declared here because applyTheme() below reads rafId
+    // to decide whether it must repaint or whether the next frame will.
+    let rafId = null;
+    let visible = false;
+    let everSeen = false;
+
+    /** Re-tune for a ground. Repaints only when the loop is parked. */
+    function applyTheme(theme) {
+      budget = LIGHTING[theme] ?? LIGHTING.light;
+      key.intensity = budget.key;
+      fill.intensity = budget.fill;
+      for (const m of materials) {
+        if ('envMapIntensity' in m) m.envMapIntensity = budget.env;
+        m.needsUpdate = true;
+      }
+      // While rotating, the next frame picks this up on its own.
+      if (rafId === null && pivot) renderer.render(scene, camera);
+    }
+
+    document.addEventListener('themechange', (e) => {
+      applyTheme(e.detail?.theme ?? currentTheme());
+    });
 
     loader.load(
       '/models/richter.opt.glb',
@@ -86,9 +134,10 @@
           for (const m of mats) {
             if ('metalness' in m) m.metalness = 0;
             if ('roughness' in m) m.roughness = 0.6;
-            if ('envMapIntensity' in m) m.envMapIntensity = 0.4;
+            if ('envMapIntensity' in m) m.envMapIntensity = budget.env;
             if (m.map) m.map.colorSpace = THREE.SRGBColorSpace;
             m.needsUpdate = true;
+            materials.push(m);
           }
         });
 
@@ -132,10 +181,6 @@
     );
 
     // ── Loop: only while visible, tab shown, and motion allowed ────
-    let rafId = null;
-    let visible = false;
-    let everSeen = false;
-
     function frame() {
       rafId = null;
       if (!visible || document.hidden) return;

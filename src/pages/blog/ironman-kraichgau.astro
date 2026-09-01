@@ -248,11 +248,11 @@ import ProseLayout from '../../layouts/ProseLayout.astro';
     width: 100%;
     height: auto;
     border: 1px solid var(--hairline);
-    filter: grayscale(1) contrast(1.04);
+    filter: var(--photo-filter);
     transition: filter 320ms ease;
   }
   .photo:hover img {
-    filter: grayscale(0) contrast(1);
+    filter: var(--photo-filter-hover);
   }
   @media (prefers-reduced-motion: reduce) {
     .photo img {

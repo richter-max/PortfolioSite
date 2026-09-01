@@ -5,9 +5,24 @@
  * (findings, deltas, failures). Two faces from one family — IBM Plex
  * Sans for text and display, IBM Plex Mono strictly for data: numbers,
  * tables, timestamps, code. If a value is measured, it is set in mono.
+ *
+ * Two grounds, one document. The dark palette is not an inversion — it
+ * is the same report read off exposed film: warm near-black, warm
+ * off-white ink (never #fff, which glares), the same rust lifted until
+ * it carries on a dark ground. Every contrast ratio below meets or
+ * beats its light-mode counterpart.
+ *
+ * Resolution order:
+ *   no [data-theme]        → follow the operating system
+ *   [data-theme="light"]   → pinned light
+ *   [data-theme="dark"]    → pinned dark
+ * The attribute is written by the inline script in BaseLayout before
+ * first paint, so a pinned theme never flashes the other one on reload.
  */
 
 :root {
+  color-scheme: light;
+
   /* ── ground ─────────────────────────────────────────────────────── */
   --paper: #f7f5f0;        /* warm paper, not clinical white */
   --paper-2: #efede6;      /* raised panels, table headers */
@@ -41,4 +56,63 @@
   /* ── layout ─────────────────────────────────────────────────────── */
   --max-content: 1120px;       /* a report column, not a billboard */
   --gutter: clamp(20px, 4vw, 48px);
+
+  /* ── photography ────────────────────────────────────────────────── */
+  /* Figures sit desaturated and come up to full colour on hover. A
+   * token because the dark ground needs the resting state pulled down —
+   * a bright photo on near-black glares in a way it never does on
+   * paper. */
+  --photo-filter: grayscale(1) contrast(1.04);
+  --photo-filter-hover: grayscale(0) contrast(1);
+}
+
+/* ── dark ground ────────────────────────────────────────────────────
+ * The block below appears twice, identically: once for readers whose
+ * system asks for dark and who have not pinned a theme, once for
+ * readers who pinned dark explicitly. CSS cannot express "either of
+ * these" across a media-query boundary, and a preprocessor is not
+ * worth adding for eight declarations. They are kept adjacent so a
+ * change to one is visibly a change to both.
+ * ------------------------------------------------------------------ */
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+
+    --paper: #14130e;
+    --paper-2: #1e1d16;
+
+    --ink: #eae7dd;
+    --ink-mid: #aba79a;
+    --ink-low: #7c786b;
+
+    --accent: #e0785a;
+    --accent-ink: #ee8f70;
+
+    --hairline: rgba(234, 231, 221, 0.18);
+    --hairline-strong: rgba(234, 231, 221, 0.42);
+
+    --photo-filter: grayscale(1) contrast(1.02) brightness(0.82);
+    --photo-filter-hover: grayscale(0) contrast(1) brightness(0.94);
+  }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --paper: #14130e;
+  --paper-2: #1e1d16;
+
+  --ink: #eae7dd;
+  --ink-mid: #aba79a;
+  --ink-low: #7c786b;
+
+  --accent: #e0785a;
+  --accent-ink: #ee8f70;
+
+  --hairline: rgba(234, 231, 221, 0.18);
+  --hairline-strong: rgba(234, 231, 221, 0.42);
+
+  --photo-filter: grayscale(1) contrast(1.02) brightness(0.82);
+  --photo-filter-hover: grayscale(0) contrast(1) brightness(0.94);
 }

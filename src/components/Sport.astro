@@ -199,11 +199,11 @@ const last = coords.length ? coords[coords.length - 1] : null;
     height: 340px;
     object-fit: cover;
     border: 1px solid var(--hairline);
-    filter: grayscale(1) contrast(1.04);
+    filter: var(--photo-filter);
     transition: filter 320ms ease;
   }
   .fig:hover img {
-    filter: grayscale(0) contrast(1);
+    filter: var(--photo-filter-hover);
   }
   @media (prefers-reduced-motion: reduce) {
     .fig img {
