@@ -10,7 +10,7 @@ function fmt(iso: string) {
 const posts = sortedPosts();
 ---
 
-<ProseLayout title="Writing." kicker="WRITING" metaLine={`${posts.length} POSTS · RSS AT /RSS.XML`}>
+<ProseLayout title="Writing." kicker="WRITING" metaLine={`${posts.length} POSTS`}>
   <ul class="bloglist">
     {posts.map((p) => (
       <li>

@@ -1,59 +1,24 @@
 ---
-import ProseLayout from '../../layouts/ProseLayout.astro';
-import { sortedPosts } from '../../data/posts';
-
-const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-function fmt(iso: string) {
-  const [y, m] = iso.split('-').map(Number);
-  return `${MONTHS[m - 1]} ${y}`;
-}
-const posts = sortedPosts();
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import Hero from '../components/Hero.astro';
+import Work from '../components/Work.astro';
+import Foundations from '../components/Foundations.astro';
+import Writing from '../components/Writing.astro';
+import Sport from '../components/Sport.astro';
+import Figure from '../components/Figure.astro';
+import Contact from '../components/Contact.astro';
 ---
 
-<ProseLayout title="Writing." kicker="WRITING" metaLine={`${posts.length} POSTS`}>
-  <ul class="bloglist">
-    {posts.map((p) => (
-      <li>
-        <a href={`/blog/${p.slug}`} class="bloglist__link">
-          <span class="meta">{fmt(p.pubDate)}{p.revised ? ` · REV ${fmt(p.revised)}` : ''} · {p.readTime}</span>
-          <strong>{p.title}</strong>
-          <span class="bloglist__desc">{p.description}</span>
-        </a>
-      </li>
-    ))}
-  </ul>
-</ProseLayout>
-
-<style>
-  .bloglist {
-    list-style: none;
-    padding: 0;
-  }
-  .bloglist li {
-    border-bottom: 1px solid var(--hairline);
-    margin: 0;
-  }
-  .bloglist li:first-child {
-    border-top: 1px solid var(--hairline);
-  }
-  .bloglist__link {
-    display: grid;
-    gap: 6px;
-    padding-block: 22px;
-    text-decoration: none;
-  }
-  .bloglist__link strong {
-    font-size: 1.25rem;
-    font-weight: 560;
-    letter-spacing: -0.015em;
-  }
-  .bloglist__link:hover strong {
-    text-decoration: underline;
-    text-underline-offset: 4px;
-  }
-  .bloglist__desc {
-    color: var(--ink-mid);
-    font-size: 0.9375rem;
-    max-width: 62ch;
-  }
-</style>
+<BaseLayout>
+  <Nav />
+  <main id="main">
+    <Hero />
+    <Work />
+    <Foundations />
+    <Writing />
+    <Sport />
+    <Figure />
+    <Contact />
+  </main>
+</BaseLayout>
