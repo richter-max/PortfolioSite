@@ -1,49 +1,44 @@
-/* tokens.css — design tokens (color + type) */
+/* tokens.css — design tokens for richtermax.com v2
+ *
+ * Direction: technical report on paper. Light ground, near-black ink,
+ * hairline rules, one accent that is only allowed to mean something
+ * (findings, deltas, failures). Two faces from one family — IBM Plex
+ * Sans for text and display, IBM Plex Mono strictly for data: numbers,
+ * tables, timestamps, code. If a value is measured, it is set in mono.
+ */
 
 :root {
-  /* ── surfaces ──────────────────────────────────────────────────────── */
-  --bg: #050506;
-  --bg-2: #0b0b0d;
-  --bg-warm: #0d0b08; /* very subtle warm dark, used behind editorial copy */
+  /* ── ground ─────────────────────────────────────────────────────── */
+  --paper: #f7f5f0;        /* warm paper, not clinical white */
+  --paper-2: #efede6;      /* raised panels, table headers */
 
-  /* ── ink ──────────────────────────────────────────────────────────── */
-  --ink: #f3f1ec;
-  --ink-dim: #d9d7d2;
-  --ink-mid: #a8a6a0;
-  --ink-low: #6b6965;
+  /* ── ink ────────────────────────────────────────────────────────── */
+  --ink: #191813;          /* body + display */
+  --ink-mid: #57544c;      /* secondary text */
+  --ink-low: #8b877c;      /* annotations, footnotes, axis labels */
 
-  /* ── accent system ─────────────────────────────────────────────────
-     Two-color palette instead of a single utility blue:
-     - `--accent` stays the cool action color (links, CTAs, live indicator)
-     - `--accent-warm` is a warm citron used for editorial highlights
-       (numbers, oversized type accents, race countdown highlight)
-     Together they hold the tension between security/cold-blue and
-     endurance/warm-amber that the site's positioning wants. */
-  --accent: #2e6bff;
-  --accent-deep: #1f4fd6;
-  --accent-warm: #e8b557;        /* citron */
-  --accent-warm-deep: #c08a2b;   /* honey */
+  /* ── accent ─────────────────────────────────────────────────────── */
+  /* Rust — the color of a finding in a printed report. Used for:
+   * attack-success deltas, false-positive counts, caveats, the live
+   * dot. Never for decoration, never for links at rest. */
+  --accent: #a63a22;
+  --accent-ink: #7e2c19;   /* accent on paper-2, slightly darker for AA */
 
-  /* Status palette (used by 404, validation, errors) */
-  --signal-warn: #e8a23c;
-  --signal-ok: #22c55e;
-  --signal-error: #d8483b;
+  /* ── rules ──────────────────────────────────────────────────────── */
+  --hairline: rgba(25, 24, 19, 0.16);
+  --hairline-strong: rgba(25, 24, 19, 0.4);
 
-  /* ── strokes ──────────────────────────────────────────────────────── */
-  --hairline: rgba(243, 241, 236, 0.08);
-  --hairline-strong: rgba(243, 241, 236, 0.16);
+  /* ── type ───────────────────────────────────────────────────────── */
+  --font-sans: 'IBM Plex Sans Var', 'IBM Plex Sans', -apple-system,
+    BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Consolas,
+    monospace;
 
-  /* ── type stacks ──────────────────────────────────────────────────── */
-  --font-display: 'Inter Tight Variable', 'Inter Tight', -apple-system, BlinkMacSystemFont,
-    'Helvetica Neue', sans-serif;
-  --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo,
-    Consolas, monospace;
+  /* mono meta line — the small annotation voice used everywhere */
+  --meta-size: 0.6875rem;      /* 11px */
+  --meta-tracking: 0.08em;
 
-  /* ── motion ───────────────────────────────────────────────────────── */
-  --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
-  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
-
-  /* ── layout ───────────────────────────────────────────────────────── */
-  --max-content: 1440px;
-  --gutter: 40px;
+  /* ── layout ─────────────────────────────────────────────────────── */
+  --max-content: 1120px;       /* a report column, not a billboard */
+  --gutter: clamp(20px, 4vw, 48px);
 }

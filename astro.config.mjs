@@ -1,52 +1,17 @@
 import { defineConfig } from 'astro/config';
-import { fileURLToPath } from 'node:url';
-import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 
-const r = (p) => fileURLToPath(new URL(p, import.meta.url));
-
-// https://astro.build/config
+// richtermax.com v2 — static output. The only client runtime is
+// Three.js for the figure, loaded lazily when the section approaches.
 export default defineConfig({
   site: 'https://richtermax.com',
-  integrations: [
-    react(),
-    sitemap({
-      // Legal pages aren't useful in search results — also marked noindex.
-      filter: (page) =>
-        !page.includes('/impressum') &&
-        !page.includes('/datenschutz') &&
-        !page.includes('/404'),
-      changefreq: 'monthly',
-      priority: 0.7,
-    }),
-  ],
-  compressHTML: true,
-  prefetch: {
-    prefetchAll: false,
-    defaultStrategy: 'viewport',
-  },
-  build: {
-    inlineStylesheets: 'auto',
-  },
-  image: {
-    service: { entrypoint: 'astro/assets/services/sharp' },
-  },
+  output: 'static',
+  integrations: [sitemap()],
   vite: {
-    resolve: {
-      alias: {
-        '~': r('./src'),
-        '@components': r('./src/components'),
-        '@data': r('./src/data'),
-        '@layouts': r('./src/layouts'),
-        '@lib': r('./src/lib'),
-        '@styles': r('./src/styles'),
-      },
-    },
-    ssr: {
-      noExternal: ['gsap', '@studio-freight/lenis', 'split-type'],
-    },
     build: {
-      cssMinify: 'lightningcss',
+      // keep every script external so the deployed CSP can stay
+      // script-src 'self' with no unsafe-inline and no hashes
+      assetsInlineLimit: 0,
     },
   },
 });

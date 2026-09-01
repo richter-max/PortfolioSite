@@ -1,19 +1,16 @@
 ---
-import LegalLayout from '@layouts/LegalLayout.astro';
-import { SITE } from '@data/site';
+import ProseLayout from '../layouts/ProseLayout.astro';
+import { SITE } from '../data/site';
 
 const L = SITE.legal;
 const today = new Date().toLocaleDateString('de-DE', {
-  year: 'numeric', month: 'long', day: 'numeric',
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
 });
 ---
 
-<LegalLayout
-  title="Datenschutzerklärung"
-  description={`Datenschutzerklärung nach DSGVO für ${SITE.name}.`}
-  kicker="LEGAL · DATENSCHUTZ"
-  ogImage="/og/datenschutz.jpg"
->
+<ProseLayout title="Datenschutzerklärung" kicker="LEGAL · DATENSCHUTZ">
   <h2>1. Verantwortlicher</h2>
   <p>
     Verantwortlich für die Datenverarbeitung auf dieser Website im Sinne der
@@ -30,10 +27,11 @@ const today = new Date().toLocaleDateString('de-DE', {
   <h2>2. Allgemeines zur Datenverarbeitung</h2>
   <p>
     Diese Website verfolgt einen datensparsamen Ansatz. Es werden keine
-    Cookies gesetzt, kein Tracking durchgeführt und keine
-    Drittanbieter-Analyse-Tools eingebunden. Personenbezogene Daten werden
-    ausschließlich verarbeitet, wenn Sie das Kontaktformular nutzen oder mich
-    direkt per E-Mail kontaktieren.
+    Cookies gesetzt, kein Tracking durchgeführt, keine Analyse-Tools und kein
+    Kontaktformular eingebunden. Schriftarten und alle weiteren Ressourcen
+    werden vom eigenen Server ausgeliefert; es findet keine Einbindung von
+    Drittanbieter-CDNs statt. Personenbezogene Daten werden ausschließlich
+    verarbeitet, wenn Sie mich direkt per E-Mail kontaktieren.
   </p>
 
   <h2>3. Hosting (Vercel)</h2>
@@ -49,68 +47,24 @@ const today = new Date().toLocaleDateString('de-DE', {
   <p>
     Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an
     einer technisch fehlerfreien Bereitstellung). Vercel verarbeitet Daten
-    auch in den USA; die Übertragung erfolgt auf Grundlage der EU-Standard­vertragsklauseln
-    sowie der Vercel-Datenschutzbestimmungen:
+    auch in den USA; die Übertragung erfolgt auf Grundlage der
+    EU-Standardvertragsklauseln sowie der Vercel-Datenschutzbestimmungen:
     <a href="https://vercel.com/legal/privacy-policy" target="_blank" rel="noreferrer">
       vercel.com/legal/privacy-policy
     </a>.
   </p>
 
-  <h2>4. Kontaktformular (Web3Forms)</h2>
+  <h2>4. Kontakt per E-Mail</h2>
   <p>
-    Wenn Sie das Kontaktformular nutzen, werden die von Ihnen eingegebenen
-    Daten (Name, E-Mail-Adresse, optional Firma, Nachricht) über den Dienst
-    Web3Forms an meine E-Mail-Adresse weitergeleitet. Anbieter ist Web3Forms,
-    betrieben von Codexpedia LLC, 30 N Gould St, Suite R, Sheridan, WY 82801,
-    USA.
-  </p>
-  <p>
-    Die Verarbeitung erfolgt zur Bearbeitung Ihrer Anfrage auf Grundlage Ihrer
-    Einwilligung (Art. 6 Abs. 1 lit. a DSGVO), die Sie durch das aktive
-    Anhaken der Einwilligungs-Checkbox vor dem Absenden erteilen. Sie können
-    diese Einwilligung jederzeit mit Wirkung für die Zukunft per E-Mail an
-    <a href={`mailto:${SITE.author.email}`}>{SITE.author.email}</a> widerrufen.
-  </p>
-  <p>
-    Web3Forms-Datenschutzerklärung:
-    <a href="https://web3forms.com/privacy-policy" target="_blank" rel="noreferrer">
-      web3forms.com/privacy-policy
-    </a>. Die Übertragung in die USA erfolgt auf Grundlage der
-    EU-Standard­vertrags­klauseln. Eingegangene Anfragen verbleiben in meinem
-    E-Mail-Postfach (Proton Mail, Schweiz), bis sie zur Bearbeitung nicht mehr
-    erforderlich sind, längstens 24 Monate.
-  </p>
-  <p>
-    Zum Schutz vor automatisierten Spam-Anfragen werden ein Honeypot-Feld
-    sowie eine Mindestbearbeitungszeit ausgewertet. Es werden dabei keine
-    personenbezogenen Daten gespeichert.
+    Wenn Sie mich per E-Mail kontaktieren, werden Ihre Angaben (E-Mail-Adresse,
+    Inhalt der Nachricht) zum Zweck der Bearbeitung der Anfrage verarbeitet
+    und gespeichert. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO
+    (berechtigtes Interesse an der Beantwortung von Anfragen) bzw. Art. 6
+    Abs. 1 lit. b DSGVO, sofern die Anfrage auf den Abschluss eines Vertrags
+    gerichtet ist. Diese Daten gebe ich nicht ohne Ihre Einwilligung weiter.
   </p>
 
-  <h2>5. Reichweitenmessung (Vercel Web Analytics & Speed Insights)</h2>
-  <p>
-    Zur Messung der Reichweite und der Performance dieser Website werden
-    Vercel Web Analytics und Vercel Speed Insights eingesetzt. Anbieter ist
-    Vercel Inc., 340 S Lemon Ave #4133, Walnut, CA 91789, USA. Die Tools
-    arbeiten <strong>cookie-frei</strong>, setzen keine geräteübergreifenden
-    Identifier und speichern keine IP-Adressen oder personenbezogenen Daten.
-    Erfasst werden ausschließlich aggregierte Seitenaufrufe sowie Core Web
-    Vitals (Ladezeit, Layout-Stabilität, Interaktivität).
-  </p>
-  <p>
-    Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an
-    einer technisch optimierten und nutzerfreundlichen Website). Da keine
-    personenbezogenen Daten verarbeitet werden, ist eine Einwilligung nach
-    § 25 TTDSG nicht erforderlich. Weitere Informationen:
-    <a href="https://vercel.com/docs/analytics/privacy-policy" target="_blank" rel="noreferrer">
-      vercel.com/docs/analytics/privacy-policy
-    </a>.
-  </p>
-  <p>
-    Es werden keine Cookies gesetzt, keine Werbenetzwerke eingebunden und
-    kein Cross-Site-Tracking durchgeführt.
-  </p>
-
-  <h2>6. Ihre Rechte</h2>
+  <h2>5. Ihre Rechte</h2>
   <p>Sie haben gemäß DSGVO jederzeit das Recht auf:</p>
   <ul>
     <li>Auskunft über die Sie betreffenden personenbezogenen Daten (Art. 15)</li>
@@ -126,7 +80,7 @@ const today = new Date().toLocaleDateString('de-DE', {
     <a href={`mailto:${SITE.author.email}`}>{SITE.author.email}</a>.
   </p>
 
-  <h2>7. Beschwerderecht bei der Aufsichtsbehörde</h2>
+  <h2>6. Beschwerderecht bei der Aufsichtsbehörde</h2>
   <p>
     Sie haben das Recht, sich bei einer Datenschutz-Aufsichtsbehörde über die
     Verarbeitung Ihrer personenbezogenen Daten zu beschweren (Art. 77 DSGVO).
@@ -136,7 +90,7 @@ const today = new Date().toLocaleDateString('de-DE', {
     </a>.
   </p>
 
-  <h2>8. SSL-/TLS-Verschlüsselung</h2>
+  <h2>7. SSL-/TLS-Verschlüsselung</h2>
   <p>
     Diese Website nutzt aus Sicherheitsgründen und zum Schutz der Übertragung
     vertraulicher Inhalte eine SSL-/TLS-Verschlüsselung. Eine verschlüsselte
@@ -144,4 +98,4 @@ const today = new Date().toLocaleDateString('de-DE', {
   </p>
 
   <p class="muted">Stand: {today}</p>
-</LegalLayout>
+</ProseLayout>

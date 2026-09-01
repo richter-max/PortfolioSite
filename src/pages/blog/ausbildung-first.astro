@@ -1,18 +1,14 @@
 ---
-import BlogPost from '@layouts/BlogPost.astro';
+import ProseLayout from '../../layouts/ProseLayout.astro';
 ---
 
-<BlogPost
+<ProseLayout
   title="Ausbildung first."
-  description="Why I did the German vocational route before going to university — and why I'm starting the university part now anyway. Practice first, theory second, the case for picking that order."
-  date="APRIL 2026"
-  readTime="6 min"
-  kind="NTE"
-  tags={['CAREER', 'EDUCATION', 'AUSBILDUNG', 'GERMANY', 'DUAL STUDIES']}
-  ogImage="/og/blog-ausbildung-first.jpg"
+  description="Why I did the German vocational route before going to university — and why I'm starting the university part now anyway. Practice first, theory second."
+  kicker="WRITING · NOTE"
+  metaLine="APR 2026 · 6 MIN"
 >
-
-  <p>The German education system has two routes into a tech career, and they don't compete the way people outside Germany sometimes assume. One route is <strong>university</strong> — three to five years of mostly theoretical computer science, a degree, then a graduate job. The other is the <strong>Ausbildung</strong> — three years of vocational training inside a company, with one or two days a week of structured school content alongside, ending in a national qualification and, usually, an offer to stay at the company that trained you.</p>
+<p>The German education system has two routes into a tech career, and they don't compete the way people outside Germany sometimes assume. One route is <strong>university</strong> — three to five years of mostly theoretical computer science, a degree, then a graduate job. The other is the <strong>Ausbildung</strong> — three years of vocational training inside a company, with one or two days a week of structured school content alongside, ending in a national qualification and, usually, an offer to stay at the company that trained you.</p>
 
   <p>Most of my classmates from secondary school went to university. I did the Ausbildung. I'm now starting university anyway, in October 2026, four months after my Ironman 70.3.</p>
 
@@ -20,7 +16,7 @@ import BlogPost from '@layouts/BlogPost.astro';
 
   <h2>The Ausbildung I picked</h2>
 
-  <p>I started <strong>Fachinformatiker, Anwendungsentwicklung</strong> — a software-development-focused vocational track — at <a href="https://www.bosch.com/" target="_blank" rel="noreferrer">Bosch in Immenstadt and Blaichach</a> in September 2023, with the school component at the <strong>Berufsschule Kempten</strong> two days a week. I qualified in February 2025: two and a half years instead of the standard three, shortened on academic merit.</p>
+  <p>I started <strong>Fachinformatiker, Anwendungsentwicklung</strong> — a software-development-focused vocational track — at <a href="https://www.bosch.com/" target="_blank" rel="noreferrer">Bosch in Immenstadt and Blaichach</a> in September 2023, with the school component at the <strong>Berufsschule Kempten</strong> two days a week. I qualified in January 2026: two and a half years instead of the standard three, shortened on academic merit.</p>
 
   <p>The reasoning at the time was specific. I wanted to know whether software engineering as a profession was anything like software engineering as a hobby. The fastest way to test that hypothesis was to be paid for it, surrounded by people who had been doing it for fifteen years, embedded in a real production environment.</p>
 
@@ -48,7 +44,7 @@ import BlogPost from '@layouts/BlogPost.astro';
 
   <p>What changed isn't the value of the qualification I already have. What changed is my standards for myself.</p>
 
-  <p>The Ausbildung made me a competent practitioner in a relatively narrow band — Bosch's stack, the kinds of problems that come into the queue at a tier-one supplier. As I started doing my own work outside the day job — <a href="/case-studies/aegis">AEGIS</a>, <a href="/case-studies/scanner">the attack-surface scanner</a>, the kind of security research the case studies describe — I kept hitting moments where the right move would have been informed by graduate-level CS material I'd never sat through. Algorithms beyond the basic textbook ones. Type theory. Cryptographic foundations beyond the user-level. The mathematical underbelly of machine-learning systems.</p>
+  <p>The Ausbildung made me a competent practitioner in a relatively narrow band — Bosch's stack, the kinds of problems that come into the queue at a tier-one supplier. As I started doing my own work outside the day job — <a href="/#work">AEGIS</a>, <a href="/#work">the attack-surface scanner</a>, the kind of security research the case studies describe — I kept hitting moments where the right move would have been informed by graduate-level CS material I'd never sat through. Algorithms beyond the basic textbook ones. Type theory. Cryptographic foundations beyond the user-level. The mathematical underbelly of machine-learning systems.</p>
 
   <p>I could read into all of those topics on my own. People do. The reason I'm choosing not to is that doing it solo, on top of a full-time job, with no curricular pressure to push past the parts you find hardest, takes something like five times longer than doing it inside a programme. I've already spent eighteen months filling gaps between project demands. The marginal hour of self-study was getting worse value per hour than the marginal hour of structured study would.</p>
 
@@ -72,4 +68,5 @@ import BlogPost from '@layouts/BlogPost.astro';
 
   <p>I'll find out in about two and a half years.</p>
 
-</BlogPost>
+
+</ProseLayout>

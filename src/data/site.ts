@@ -1,29 +1,31 @@
+// site.ts — site-wide metadata.
+// Framing rule for every string in this file: state actual status,
+// no consultant language, no adjectives doing the work of facts.
+
 export const SITE = {
   url: 'https://richtermax.com',
   name: 'Maximilian Richter',
-  title: 'Maximilian Richter — Security Engineer · Endurance Athlete',
+  title: 'Maximilian Richter — AI agent security',
   description:
-    'Security engineer working on AI agent security and tooling. Endurance athlete. Based in the Allgäu.',
-  ogImage: '/img/og-default.jpg',
+    'Maximilian Richter works on AI agent security — prompt injection, tool ' +
+    'misuse, and how you measure whether a defense works. Software developer ' +
+    '(Ausbildung, 2026); dual B.Sc. Computer Science at Bosch from October ' +
+    '2026. Endurance athlete. Based in the Allgäu.',
   author: {
     name: 'Maximilian Richter',
-    handle: '@richtermax',
     email: 'max.richter.dev@proton.me',
+    github: 'https://github.com/richter-max',
+    linkedin: 'https://www.linkedin.com/in/maximilian-richter-40697a298',
   },
-  // Legal — used by /impressum and /datenschutz. §5 TMG requires the
-  // physical postal address of the natural person responsible for the
-  // site to be reachable here. Fill in before going live.
+  // Legal — carried over from v1, used by /impressum and /datenschutz.
   legal: {
     fullName: 'Maximilian Richter',
     street: 'Ahornweg 1',
     postalCode: '87549',
     city: 'Rettenberg',
     country: 'Deutschland',
-    phone: '', // optional — leave '' to hide
-    vatId: '', // optional USt-IdNr. — leave '' to hide
-    // Person responsible per §18 Abs. 2 MStV (only if site has journalistic content)
+    phone: '',
+    vatId: '',
     responsibleName: 'Maximilian Richter',
   },
 } as const;
-
-export type Site = typeof SITE;

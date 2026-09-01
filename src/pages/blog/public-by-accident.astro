@@ -1,18 +1,14 @@
 ---
-import BlogPost from '@layouts/BlogPost.astro';
+import ProseLayout from '../../layouts/ProseLayout.astro';
 ---
 
-<BlogPost
+<ProseLayout
   title="Public, by accident."
   description="What strangers can pull from your social media. The gap between sharing one thing and revealing another — and what to actually do about it."
-  date="APRIL 2026"
-  readTime="7 min"
-  kind="SEC"
-  tags={['SECURITY', 'OSINT', 'PRIVACY', 'SOCIAL MEDIA']}
-  ogImage="/og/blog-public-by-accident.jpg"
+  kicker="WRITING · SECURITY"
+  metaLine="APR 2026 · 7 MIN"
 >
-
-  <p>Pick a photo on your phone. Doesn't matter which. Now pretend you're a stranger looking at it for the first time, one hour after it was posted publicly. What can the stranger learn about you, your family, your home, your job, your routines — from that one image? Don't list what's in the frame. List what's <em>derivable</em> from it.</p>
+<p>Pick a photo on your phone. Doesn't matter which. Now pretend you're a stranger looking at it for the first time, one hour after it was posted publicly. What can the stranger learn about you, your family, your home, your job, your routines — from that one image? Don't list what's in the frame. List what's <em>derivable</em> from it.</p>
 
   <p>Most people, doing this exercise honestly, find the gap between the two lists is much wider than they expected. That gap is the subject of this post.</p>
 
@@ -82,4 +78,5 @@ import BlogPost from '@layouts/BlogPost.astro';
 
   <p>The default is what's leaking.</p>
 
-</BlogPost>
+
+</ProseLayout>

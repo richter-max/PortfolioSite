@@ -1,0 +1,246 @@
+---
+// Sport.astro — races as benchmark rows, in the same tabular voice as
+// the attack table. The training log renders real values from
+// live-stats.json into the HTML at build time — no count-up animation,
+// no "LIVE" theater, an honest "updated <date> · daily" label instead.
+// The GitHub Action refreshes the JSON and commits; the commit
+// triggers the redeploy.
+import SectionHead from './SectionHead.astro';
+import { results, upcoming } from '../data/races';
+import live from '../data/live-stats.json';
+
+const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+function fmtDate(iso: string): string {
+  const [y, m, d] = iso.split('-').map(Number);
+  return `${d} ${MONTHS[m - 1]} ${y}`;
+}
+
+const streakWeeks = live.strava?.streakWeeks ?? null;
+const sessionsThisYear = live.strava?.sessionsThisYear ?? null;
+const weekly = live.strava?.weeklyKmLast12 ?? [];
+const lastRun = live.strava?.lastRun ?? null;
+const updated = live.updatedAt ? fmtDate(live.updatedAt.slice(0, 10)) : null;
+const year = new Date().getFullYear();
+
+// Sparkline: 12 weekly km values → SVG polyline, normalized 0..1.
+const maxKm = Math.max(1, ...weekly);
+const W = 240;
+const H = 48;
+const step = weekly.length > 1 ? W / (weekly.length - 1) : W;
+const points = weekly
+  .map((km, i) => `${(i * step).toFixed(1)},${(H - (km / maxKm) * (H - 4) - 2).toFixed(1)}`)
+  .join(' ');
+---
+
+<section id="sport" class="sport wrap">
+  <SectionHead num="04" label="SPORT" headline="Measured the same way as everything else." />
+
+  <div class="sport__grid">
+    <!-- Results + starts -->
+    <div class="races">
+      <figure class="rtable">
+        <figcaption class="meta rtable__caption">RESULTS</figcaption>
+        <table>
+          <tbody>
+            {results.map((r) => (
+              <tr>
+                <th scope="row">
+                  {r.name}
+                  <span class="meta rtable__sub">{fmtDate(r.date)} · {r.format}</span>
+                </th>
+                <td>
+                  <span class="data rtable__val">{r.result}</span>
+                  {r.note && <span class="rtable__note">{r.note}</span>}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </figure>
+
+      <figure class="rtable">
+        <figcaption class="meta rtable__caption">NEXT STARTS</figcaption>
+        <table>
+          <tbody>
+            {upcoming.map((r) => (
+              <tr>
+                <th scope="row">
+                  {r.name}
+                  <span class="meta rtable__sub">{fmtDate(r.date)} · {r.format}</span>
+                </th>
+                <td>
+                  <span class="data rtable__val">{r.target ? r.target : '—'}</span>
+                  {r.target && <span class="rtable__note">target</span>}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </figure>
+
+      <figure class="rtable">
+        <figcaption class="meta rtable__caption">TABLE TENNIS</figcaption>
+        <table>
+          <tbody>
+            <tr>
+              <th scope="row">
+                Landesliga, DJK Seifriedsberg
+                <span class="meta rtable__sub">SEASON 2025/26</span>
+              </th>
+              <td>
+                <span class="data rtable__val">1670 → 1757</span>
+                <span class="rtable__note">rating over the season</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </figure>
+    </div>
+
+    <!-- Training log (live) -->
+    {streakWeeks !== null && (
+      <aside class="log" aria-label="Training log">
+        <p class="meta log__caption">
+          TRAINING LOG · STRAVA{updated ? ` · UPDATED ${updated}` : ''} · DAILY
+        </p>
+        <div class="log__stats">
+          <div class="log__stat">
+            <span class="data log__num">{streakWeeks}</span>
+            <span class="meta">CONSECUTIVE WEEKS TRAINED</span>
+          </div>
+          <div class="log__stat">
+            <span class="data log__num">{sessionsThisYear}</span>
+            <span class="meta">SESSIONS / {year}</span>
+          </div>
+        </div>
+        {weekly.length > 0 && (
+          <div class="log__spark">
+            <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" role="img" aria-label={`Weekly training volume, last 12 weeks, peak ${Math.round(maxKm)} km`}>
+              <polyline
+                points={points}
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                vector-effect="non-scaling-stroke"
+              />
+            </svg>
+            <div class="log__axis meta">
+              <span>−12 W</span>
+              <span>KM / WEEK · PEAK {Math.round(maxKm)}</span>
+              <span>NOW</span>
+            </div>
+          </div>
+        )}
+        {lastRun && (
+          <p class="meta log__last">
+            LAST RUN · {lastRun.weekday?.toUpperCase()} · <span class="data">{lastRun.km} KM</span>
+          </p>
+        )}
+      </aside>
+    )}
+  </div>
+</section>
+
+<style>
+  .sport {
+    border-top: 1px solid var(--hairline);
+    padding-bottom: clamp(48px, 8vh, 96px);
+  }
+  .sport__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 320px);
+    gap: 56px;
+    align-items: start;
+  }
+  @media (max-width: 820px) {
+    .sport__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .races {
+    display: grid;
+    gap: 36px;
+  }
+  .rtable__caption {
+    margin-bottom: 10px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    border-top: 1px solid var(--hairline-strong);
+  }
+  th,
+  td {
+    text-align: left;
+    padding: 12px 16px 12px 0;
+    border-bottom: 1px solid var(--hairline);
+    vertical-align: baseline;
+  }
+  tbody th {
+    font-weight: 500;
+    font-size: 1rem;
+    letter-spacing: -0.008em;
+  }
+  .rtable__sub {
+    display: block;
+    margin-top: 3px;
+    font-weight: 400;
+  }
+  td {
+    width: 40%;
+  }
+  .rtable__val {
+    font-size: 1.0625rem;
+  }
+  .rtable__note {
+    display: block;
+    margin-top: 3px;
+    font-size: 0.8125rem;
+    color: var(--ink-mid);
+    max-width: 34ch;
+  }
+
+  /* ── training log ─────────────────────────────────────────────── */
+  .log {
+    border: 1px solid var(--hairline);
+    padding: 20px 22px;
+    display: grid;
+    gap: 22px;
+  }
+  .log__stats {
+    display: grid;
+    gap: 16px;
+  }
+  .log__stat {
+    display: grid;
+    gap: 4px;
+  }
+  .log__num {
+    font-size: 2rem;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .log__spark {
+    color: var(--ink);
+  }
+  .log__spark svg {
+    width: 100%;
+    height: 48px;
+  }
+  .log__axis {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+  }
+  .log__last {
+    border-top: 1px solid var(--hairline);
+    padding-top: 14px;
+  }
+  .log__last .data {
+    color: var(--ink);
+    text-transform: none;
+  }
+</style>

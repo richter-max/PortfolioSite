@@ -1,159 +1,97 @@
-/* base.css — resets and global element defaults */
+/* base.css — resets + the shared voice of the document */
 
 *,
 *::before,
 *::after {
   box-sizing: border-box;
+  margin: 0;
 }
 
-html,
+html {
+  scroll-behavior: smooth;
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 body {
-  margin: 0;
-  padding: 0;
-  background: var(--bg);
+  background: var(--paper);
   color: var(--ink);
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
+  font-size: 1.0625rem; /* 17px */
+  line-height: 1.55;
+  font-weight: 400;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
 }
 
-body {
-  overflow-x: hidden;
+::selection {
+  background: var(--ink);
+  color: var(--paper);
 }
 
 a {
   color: inherit;
-  text-decoration: none;
+  text-decoration: underline;
+  text-decoration-color: var(--hairline-strong);
+  text-underline-offset: 3px;
+}
+a:hover {
+  text-decoration-color: var(--ink);
 }
 
-button {
-  font-family: inherit;
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
 }
 
 img,
-video {
-  max-width: 100%;
+svg {
   display: block;
+  max-width: 100%;
 }
 
-::selection {
-  background: var(--accent);
-  color: var(--ink);
-}
+/* ── shared utility voices ─────────────────────────────────────────── */
 
-/* Dark, unobtrusive scrollbars */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-::-webkit-scrollbar-track {
-  background: var(--bg);
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(243, 241, 236, 0.12);
-}
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(243, 241, 236, 0.24);
-}
-
-/* ── Focus rings (keyboard-only) ─────────────────────────────────────── */
-:focus { outline: none; }
-:focus-visible {
-  outline: 2px solid var(--accent, #2E6BFF);
-  outline-offset: 3px;
-  border-radius: 2px;
-  transition: outline-offset 0.15s ease;
-}
-input:focus-visible,
-textarea:focus-visible,
-select:focus-visible {
-  outline-offset: 4px;
-}
-
-/* ── Skip link ──────────────────────────────────────────────────────────
-   Visually hidden until focused via Tab. First stop in tab order. */
-.skip-link {
-  position: fixed;
-  top: 12px;
-  left: 12px;
-  z-index: 10000;
-  padding: 12px 18px;
-  background: var(--ink, #F3F1EC);
-  color: var(--bg, #050506);
-  font-family: var(--font-mono, 'JetBrains Mono', monospace);
-  font-size: 11px;
-  letter-spacing: 0.2em;
+/* .meta — the small mono annotation voice. Section numbers, axis
+ * labels, timestamps. Anywhere the document talks about itself. */
+.meta {
+  font-family: var(--font-mono);
+  font-size: var(--meta-size);
+  font-weight: 400;
+  letter-spacing: var(--meta-tracking);
   text-transform: uppercase;
-  border-radius: 4px;
-  transform: translateY(-150%);
-  transition: transform 0.2s ease;
-}
-.skip-link:focus,
-.skip-link:focus-visible {
-  transform: translateY(0);
-  outline: 2px solid var(--accent, #2E6BFF);
-  outline-offset: 2px;
+  color: var(--ink-low);
 }
 
-/* ── Mask-reveal link ───────────────────────────────────────────────────
-   Editorial hover effect: the link's text wipes up out of view while
-   a brighter clone wipes in from below — like a film slate flipping.
-   Markup contract:
-     <a class="mask-link" data-link-text="WORK">
-       <span class="mask-link__t">WORK</span>
-     </a>
-   The data attribute is duplicated as a ::before so both layers keep
-   the same metric box (no jitter, no kerning drift). */
-.mask-link {
-  position: relative;
-  display: inline-block;
-  overflow: hidden;
-  line-height: 1.1;
-  color: inherit;
-  isolation: isolate;
+/* .data — measured values. Mono, ink, medium weight. */
+.data {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
 }
-.mask-link__t {
-  display: inline-block;
-  transition: transform 0.55s var(--ease-out-expo);
-  will-change: transform;
+
+.wrap {
+  max-width: var(--max-content);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
 }
-.mask-link::before {
-  content: attr(data-link-text);
+
+/* skip link */
+.skip {
   position: absolute;
-  left: 0;
+  left: -9999px;
   top: 0;
-  display: inline-block;
-  color: var(--ink, #f3f1ec);
-  transform: translateY(110%);
-  transition: transform 0.55s var(--ease-out-expo);
-  pointer-events: none;
-  will-change: transform;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 8px 14px;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  z-index: 100;
 }
-.mask-link:hover .mask-link__t,
-.mask-link:focus-visible .mask-link__t { transform: translateY(-110%); }
-.mask-link:hover::before,
-.mask-link:focus-visible::before { transform: translateY(0); }
-
-/* When the link is already at full ink (active nav state, current
-   page), suppress the wipe so it doesn't double-flash. */
-.mask-link.is-current .mask-link__t { color: var(--ink, #f3f1ec); }
-.mask-link.is-current::before { display: none; }
-
-@media (prefers-reduced-motion: reduce) {
-  .mask-link__t,
-  .mask-link::before { transition: none; }
-}
-
-/* ── Reduced motion ─────────────────────────────────────────────────────
-   Site-wide opt-out: disable transitions, animations, and smooth scroll. */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
-    scroll-behavior: auto !important;
-  }
+.skip:focus {
+  left: 12px;
+  top: 12px;
 }

@@ -1,28 +1,24 @@
 ---
-import BaseLayout from '@layouts/BaseLayout.astro';
-import Nav from '@components/layout/Nav.astro';
-import Rail from '@components/layout/Rail.astro';
-import Footer from '@components/layout/Footer.astro';
-import WorkSection from '@components/work/WorkSection.astro';
-import MassiveNumbers from '@components/stats/MassiveNumbers.astro';
-import BlogDrift from '@components/blog/BlogDrift.astro';
-import Hero from '@components/hero/Hero.jsx';
-import FieldTape from '@components/field/FieldTape.jsx';
-import ContactScene from '@components/contact/ContactScene.jsx';
-import { fieldEntries } from '@data/field';
-import liveStats from '@data/live-stats.json';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import Hero from '../components/Hero.astro';
+import Work from '../components/Work.astro';
+import Foundations from '../components/Foundations.astro';
+import Writing from '../components/Writing.astro';
+import Sport from '../components/Sport.astro';
+import Figure from '../components/Figure.astro';
+import Contact from '../components/Contact.astro';
 ---
 
-<BaseLayout ogImage="/og/home.jpg">
+<BaseLayout>
   <Nav />
-  <Rail />
   <main id="main">
-    <Hero lastRun={liveStats.strava?.lastRun ?? null} client:load />
-    <WorkSection />
-    <FieldTape entries={fieldEntries} client:visible />
-    <MassiveNumbers />
-    <BlogDrift />
-    <ContactScene client:visible />
-    <Footer />
+    <Hero />
+    <Work />
+    <Foundations />
+    <Writing />
+    <Sport />
+    <Figure />
+    <Contact />
   </main>
 </BaseLayout>

@@ -1,0 +1,184 @@
+---
+// Figure.astro — the page's one moving thing.
+// Ports the v1 ContactRunner: Draco-compressed self-scan, RoomEnvironment
+// IBL, NoToneMapping with a light budget that stays under 1.0 so the
+// photo textures don't clip (the tuning that worked in v1 is kept 1:1).
+// Rewritten without React, plus what was missing:
+//   - Three.js only loads when the section approaches the viewport
+//   - prefers-reduced-motion → renders one static frame, no rotation
+//   - rendering pauses when offscreen or the tab is hidden
+//   - if WebGL/model fail, the stage collapses and the caption remains
+---
+
+<section class="figure wrap" aria-hidden="true">
+  <div class="figure__stage" id="figure-stage" data-figure></div>
+  <p class="meta figure__caption">FIG. A · THE AUTHOR · 1 REV / 16 S</p>
+</section>
+
+<script>
+  const stage = document.querySelector('[data-figure]');
+
+  async function init() {
+    const [THREE, { GLTFLoader }, { DRACOLoader }, { RoomEnvironment }] =
+      await Promise.all([
+        import('three'),
+        import('three/examples/jsm/loaders/GLTFLoader.js'),
+        import('three/examples/jsm/loaders/DRACOLoader.js'),
+        import('three/examples/jsm/environments/RoomEnvironment.js'),
+      ]);
+
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const width = stage.clientWidth;
+    const height = stage.clientHeight;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(35, width / height, 0.1, 1000);
+    camera.position.set(0, 0, 5);
+
+    let renderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    } catch {
+      stage.remove();
+      return;
+    }
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(width, height);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.NoToneMapping;
+    stage.appendChild(renderer.domElement);
+
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+    pmrem.dispose();
+
+    const key = new THREE.DirectionalLight(0xffffff, 0.5);
+    key.position.set(3, 4, 3);
+    scene.add(key);
+    const fill = new THREE.DirectionalLight(0xffffff, 0.15);
+    fill.position.set(-2, 1, -2);
+    scene.add(fill);
+
+    const draco = new DRACOLoader();
+    draco.setDecoderPath('/draco/');
+    draco.setDecoderConfig({ type: 'js' });
+    const loader = new GLTFLoader();
+    loader.setDRACOLoader(draco);
+
+    let pivot = null;
+    const clock = new THREE.Clock();
+
+    loader.load(
+      '/models/richter.opt.glb',
+      (gltf) => {
+        const model = gltf.scene;
+        model.traverse((child) => {
+          if (!child.isMesh || !child.material) return;
+          const mats = Array.isArray(child.material) ? child.material : [child.material];
+          for (const m of mats) {
+            if ('metalness' in m) m.metalness = 0;
+            if ('roughness' in m) m.roughness = 0.6;
+            if ('envMapIntensity' in m) m.envMapIntensity = 0.4;
+            if (m.map) m.map.colorSpace = THREE.SRGBColorSpace;
+            m.needsUpdate = true;
+          }
+        });
+
+        const box = new THREE.Box3().setFromObject(model);
+        const size = box.getSize(new THREE.Vector3());
+        const center = box.getCenter(new THREE.Vector3());
+        model.position.sub(center);
+
+        pivot = new THREE.Group();
+        // A quarter turn off dead-front reads better as a static frame.
+        if (reduced) pivot.rotation.y = Math.PI / 5;
+        pivot.add(model);
+        scene.add(pivot);
+
+        const maxDim = Math.max(size.x, size.y, size.z);
+        const fov = camera.fov * (Math.PI / 180);
+        const distance = ((maxDim / 2) / Math.tan(fov / 2)) * 1.6;
+        camera.position.set(0, 0, distance);
+        camera.lookAt(0, 0, 0);
+        camera.near = distance / 100;
+        camera.far = distance * 100;
+        camera.updateProjectionMatrix();
+
+        if (reduced) renderer.render(scene, camera); // one frame, done
+      },
+      undefined,
+      () => stage.remove(),
+    );
+
+    // ── Loop: only while visible, tab shown, and motion allowed ────
+    let rafId = null;
+    let visible = true;
+
+    function frame() {
+      rafId = null;
+      if (!visible || document.hidden) return;
+      const delta = clock.getDelta();
+      if (pivot) pivot.rotation.y += (delta * Math.PI * 2) / 16;
+      renderer.render(scene, camera);
+      rafId = requestAnimationFrame(frame);
+    }
+    function start() {
+      if (!reduced && rafId === null) {
+        clock.getDelta(); // swallow paused time so it doesn't jump
+        rafId = requestAnimationFrame(frame);
+      }
+    }
+
+    new IntersectionObserver(
+      (entries) => {
+        visible = entries[0].isIntersecting;
+        if (visible) start();
+      },
+      { rootMargin: '80px' },
+    ).observe(stage);
+
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) start();
+    });
+
+    window.addEventListener('resize', () => {
+      const w = stage.clientWidth;
+      const h = stage.clientHeight;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+      if (reduced) renderer.render(scene, camera);
+    });
+
+    start();
+  }
+
+  // Defer everything — Three.js and the 6 MB model only download when
+  // the section is approaching.
+  if (stage) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          io.disconnect();
+          init();
+        }
+      },
+      { rootMargin: '600px' },
+    );
+    io.observe(stage);
+  }
+</script>
+
+<style>
+  .figure {
+    border-top: 1px solid var(--hairline);
+    padding-block: clamp(40px, 6vh, 72px) clamp(32px, 5vh, 56px);
+  }
+  .figure__stage {
+    height: min(520px, 70vh);
+  }
+  .figure__caption {
+    margin-top: 12px;
+    text-align: center;
+  }
+</style>

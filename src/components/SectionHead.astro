@@ -1,0 +1,49 @@
+---
+// SectionHead.astro — "01 ── WORK" + headline. The document's chapter voice.
+interface Props {
+  num: string;
+  label: string;
+  headline?: string;
+  id?: string;
+}
+const { num, label, headline, id } = Astro.props;
+---
+
+<div class="shead" id={id}>
+  <p class="meta shead__label">
+    <span class="shead__num">{num}</span>
+    <span class="shead__rule" aria-hidden="true"></span>
+    <span>{label}</span>
+  </p>
+  {headline && <h2 class="shead__headline">{headline}</h2>}
+</div>
+
+<style>
+  .shead {
+    padding-top: clamp(56px, 9vh, 104px);
+    margin-bottom: clamp(32px, 5vh, 56px);
+  }
+  .shead__label {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    color: var(--ink-mid);
+    margin-bottom: 20px;
+  }
+  .shead__num {
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .shead__rule {
+    width: 40px;
+    height: 1px;
+    background: var(--hairline-strong);
+  }
+  .shead__headline {
+    font-size: clamp(1.75rem, 3.6vw, 2.625rem);
+    font-weight: 560;
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+    max-width: 24ch;
+  }
+</style>

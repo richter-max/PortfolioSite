@@ -1,182 +1,64 @@
 # richtermax.com
 
-Personal site of Maximilian Richter — security engineer, endurance athlete.
+Personal site of Maximilian Richter — AI agent security, endurance sport.
 
-Static-first Astro build with a handful of React islands, self-hosted variable
-fonts, compressed 3D geometry, and responsive AVIF imagery. Ships under ~2 MB
-of critical payload on first paint.
-
----
+Static Astro build, no client framework. IBM Plex Sans + Mono self-hosted.
+The only JavaScript on the page is a small countdown script and the lazily
+loaded Three.js figure. No cookies, no analytics, no forms, no third-party
+requests.
 
 ## Stack
 
-| Concern        | Choice                                                 |
-| -------------- | ------------------------------------------------------ |
-| Framework      | [Astro 4](https://astro.build) (static output)         |
-| Islands        | React 18 — hero, field tape, contact scene             |
-| 3D             | Three.js + Draco-compressed glTF                       |
-| Motion         | GSAP + ScrollTrigger, Lenis smooth scroll              |
-| Typography     | Inter Tight Variable + JetBrains Mono Variable (local) |
-| CSS            | Design tokens + scoped Astro styles, no framework      |
-| Image pipeline | sharp → responsive AVIF / WebP / JPG                   |
-| Linting        | Prettier + `astro check`                               |
-
----
+| Concern    | Choice                                             |
+| ---------- | -------------------------------------------------- |
+| Framework  | Astro (static output)                              |
+| 3D         | Three.js + Draco-compressed glTF, lazy-loaded      |
+| Typography | IBM Plex Sans Variable + IBM Plex Mono (local)     |
+| CSS        | Design tokens + scoped Astro styles, no framework  |
+| Headers    | HSTS, strict CSP, COOP/CORP etc. via `vercel.json` |
 
 ## Getting started
 
 ```bash
 npm install
-cp .env.example .env     # fill in PUBLIC_WEB3FORMS_KEY
-npm run dev              # http://localhost:4321
+npm run dev        # http://localhost:4321
+npm run build      # static build → dist/
 ```
 
-### Contact form setup
+## Live training data
 
-The contact form posts directly from the browser to
-[Web3Forms](https://web3forms.com) (free up to 1,000 submissions/month) and
-every message is forwarded to `max.richter.dev@proton.me`. To activate:
+`src/data/live-stats.json` is refreshed daily by
+`.github/workflows/refresh-live-stats.yml`, which runs
+`scripts/fetch-live-stats.mjs` and commits the snapshot; the commit triggers
+the redeploy. Values render server-side into the HTML — no client fetches,
+no tokens in the browser, no count-up animation that can strand the page at
+zero.
 
-1. Go to <https://web3forms.com/#start>
-2. Enter `max.richter.dev@proton.me`; Web3Forms emails you an access key
-3. Put it in `.env` as `PUBLIC_WEB3FORMS_KEY=…`
-4. In production, set the same variable in your host's dashboard
-   (Cloudflare Pages → Settings → Environment variables,
-   Vercel → Project → Settings → Environment Variables, etc.)
+Required repo secrets (unchanged from v1): `STRAVA_CLIENT_ID`,
+`STRAVA_CLIENT_SECRET`, `STRAVA_REFRESH_TOKEN`. The Web3Forms key from v1 is
+no longer needed — the contact section links email directly.
 
-Spam protection is handled in three layers: a honeypot field, a minimum
-render-time check (bots submit too fast), and Web3Forms' own filtering.
+## Content lives in
 
-### Scripts
+| File                 | What                                             |
+| -------------------- | ------------------------------------------------ |
+| `src/data/site.ts`   | Metadata, contact, legal (Impressum) details     |
+| `src/data/races.ts`  | Race results + upcoming starts. The hero's       |
+|                      | next-start block picks the first future date and |
+|                      | advances/hides itself — it cannot expire.        |
+| `src/data/posts.ts`  | Blog manifest (pages in `src/pages/blog/`)       |
 
-| Command                    | What it does                              |
-| -------------------------- | ----------------------------------------- |
-| `npm run dev`              | Dev server with HMR                       |
-| `npm run build`            | Static build → `dist/`                    |
-| `npm run preview`          | Preview built site locally                |
-| `npm run typecheck`        | `astro check` across the project          |
-| `npm run format`           | Prettier write                            |
-| `npm run format:check`     | Prettier check (CI-friendly)              |
-| `npm run optimize:images`  | Rebuild `public/img/opt/` from masters    |
-| `npm run optimize:glb`     | Rebuild `public/models/richter.opt.glb`   |
-| `npm run optimize:assets`  | Both of the above                         |
+After a race: move the entry from `upcoming` to `results` in `races.ts` and
+add the finish time. That is the only manual data edit the site needs.
 
----
+## Standing rule
 
-## Project structure
-
-```
-.
-├── assets-src/              # masters — NOT served, processed at build
-│   ├── img/                 #   *.{jpg,png}  → public/img/opt/
-│   └── models/              #   richter.glb  → public/models/richter.opt.glb
-├── public/
-│   ├── favicon.svg
-│   ├── fonts/               # self-hosted woff2 (preloaded)
-│   ├── draco/               # self-hosted Draco decoder (CSP-friendly)
-│   ├── img/
-│   │   ├── og-default.jpg   # OG image, served as-is
-│   │   └── opt/             # responsive AVIF / WebP / JPG (served)
-│   └── models/
-│       └── richter.opt.glb  # Draco-compressed geometry
-├── scripts/                 # build-time node scripts
-│   ├── optimize-images.mjs
-│   └── optimize-glb.mjs
-├── src/
-│   ├── components/
-│   │   ├── blog/            # BlogDrift
-│   │   ├── contact/         # ContactScene + ContactRunner (Three.js)
-│   │   ├── field/           # FieldTape (pinned horizontal scroll)
-│   │   ├── hero/            # Hero
-│   │   ├── layout/          # Nav, Rail, Footer
-│   │   ├── stats/           # MassiveNumbers
-│   │   └── work/            # WorkSection
-│   ├── data/                # typed content (projects, field, blog, site)
-│   ├── layouts/
-│   │   └── BaseLayout.astro
-│   ├── lib/                 # helpers (image url builders)
-│   ├── pages/
-│   │   ├── index.astro
-│   │   └── case-studies/
-│   │       └── aegis.astro
-│   ├── scripts/             # client-side runtime (motion.js)
-│   └── styles/
-│       ├── fonts.css
-│       ├── tokens.css
-│       └── base.css
-├── astro.config.mjs
-├── tsconfig.json
-└── package.json
-```
-
-### Path aliases
-
-Configured in `tsconfig.json` and `astro.config.mjs`:
-
-```ts
-import BaseLayout from '@layouts/BaseLayout.astro';
-import { projects } from '@data/projects';
-import Nav from '@components/layout/Nav.astro';
-import { optImage } from '@lib/images';
-```
-
-### Content
-
-All user-facing content lives in `src/data/`:
-
-| File              | What lives here                          |
-| ----------------- | ---------------------------------------- |
-| `site.ts`         | Site-wide metadata (title, OG, author)   |
-| `projects.ts`     | Work section entries                     |
-| `field.ts`        | Endurance / field tape entries           |
-| `blog.ts`         | Blog posts shown in the drift carousel   |
-
-Edit → commit → deploy. No CMS.
-
----
-
-## Performance notes
-
-- **Fonts** — self-hosted variable `woff2` (latin + latin-ext subsets),
-  preloaded in the document head. No external round-trip.
-- **Images** — masters in `public/img/` are never served. The build script
-  emits responsive AVIF/WebP/JPG to `public/img/opt/`. References use the
-  optimized paths. `berlin-marathon.jpg` went from 6.3 MB → ~140 KB AVIF.
-- **3D model** — `richter.glb` (55 MB) compressed to `richter.opt.glb`
-  (~4.7 MB) via Draco geometry compression + WebP textures. Decoder loaded
-  from Google's CDN.
-- **Hydration** — only the hero is `client:load`. `FieldTape` and
-  `ContactScene` are `client:visible`, so Three.js + the GLB only download
-  when the contact section enters the viewport.
-- **Animations** — the grain overlay and custom cursor pause on hidden tabs
-  and are disabled on coarse-pointer devices and under
-  `prefers-reduced-motion`.
-- **Prefetch** — Astro's viewport prefetch strategy warms the next page
-  before the user clicks.
-
----
+No number appears on this site that isn't reproducible or pipeline-fed.
+Before adding a stat, ask where it updates from; if the answer is "by hand",
+don't add it.
 
 ## Deployment
 
-The build is fully static. Any host works. Recommended targets:
-
-### Cloudflare Pages
-
-1. Connect repo
-2. Build command: `npm run build`
-3. Output: `dist`
-4. `NODE_VERSION=20`
-
-### Vercel / Netlify
-
-Framework preset auto-detected as Astro. Output directory `dist`.
-
-> **Tip:** set `Cache-Control: public, max-age=31536000, immutable` on
-> `/fonts/*`, `/img/opt/*`, and `/models/*` — all are content-hashed or
-> stable and can be cached aggressively.
-
----
-
-## License
-
-All rights reserved. Content and branding belong to Maximilian Richter.
+Fully static. Vercel: build command `npm run build`, output `dist`,
+`NODE_VERSION=20+`. `vercel.json` carries the security headers — the
+`/security` page's claims depend on them, so keep the two in sync.

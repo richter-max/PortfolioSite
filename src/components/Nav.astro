@@ -1,0 +1,58 @@
+---
+// Nav.astro — one hairline row. No hamburger, no palette, no JS.
+// The links are the section list; on narrow screens they wrap.
+const links = [
+  { label: 'WORK', href: '#work' },
+  { label: 'FOUNDATIONS', href: '#foundations' },
+  { label: 'WRITING', href: '#writing' },
+  { label: 'SPORT', href: '#sport' },
+  { label: 'CONTACT', href: '#contact' },
+];
+---
+
+<header class="nav">
+  <div class="wrap nav__row">
+    <a class="nav__mark meta" href="/">M. RICHTER</a>
+    <nav aria-label="Sections">
+      <ul class="nav__links">
+        {links.map((l) => (
+          <li><a class="meta nav__link" href={l.href}>{l.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .nav {
+    border-bottom: 1px solid var(--hairline);
+  }
+  .nav__row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    padding-block: 14px;
+  }
+  .nav__mark {
+    color: var(--ink);
+    text-decoration: none;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .nav__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 22px;
+    list-style: none;
+    padding: 0;
+    justify-content: flex-end;
+  }
+  .nav__link {
+    text-decoration: none;
+    color: var(--ink-mid);
+  }
+  .nav__link:hover {
+    color: var(--ink);
+  }
+</style>

@@ -1,18 +1,21 @@
 ---
-import BlogPost from '@layouts/BlogPost.astro';
+import ProseLayout from '../../layouts/ProseLayout.astro';
 ---
 
-<BlogPost
+<ProseLayout
   title="Six lessons from AEGIS."
-  description="What a year of building a deterministic security evaluation harness for tool-using AI agents actually taught me — about decisions, scope, and the discipline of staying boring."
-  date="APRIL 2026"
-  readTime="8 min"
-  kind="SEC"
-  tags={['SECURITY', 'AI AGENTS', 'AEGIS', 'ENGINEERING', 'EVALUATION']}
-  ogImage="/og/blog-building-aegis.jpg"
+  description="What building a deterministic security evaluation harness for tool-using AI agents actually taught me — about decisions, scope, and the discipline of staying boring."
+  kicker="WRITING · SECURITY"
+  metaLine="APR 2026 · REVISED SEP 2026 · 8 MIN"
 >
+  <p class="note">
+    Revised September 2026. The benchmark figures in the original version of
+    this post came from an earlier build of AEGIS and were not reproducible.
+    The harness has since been rebuilt; this version argues from the current
+    numbers, which are. Lesson 4 changed the most — and got better for it.
+  </p>
 
-  <p>I shipped <a href="/case-studies/aegis">AEGIS</a> as an MIT-licensed deterministic evaluation harness for tool-using AI agents earlier this year. The case study describes <em>what it does</em>. This post is about the six things building it taught me — most of them about <em>deciding what to leave out</em>.</p>
+  <p>I shipped <a href="/#work">AEGIS</a> as an MIT-licensed deterministic evaluation harness for tool-using AI agents earlier this year. The project page describes <em>what it does</em>. This post is about the six things building it taught me — most of them about <em>deciding what to leave out</em>.</p>
 
   <h2>1. The boring decisions are the load-bearing ones.</h2>
 
@@ -44,23 +47,23 @@ import BlogPost from '@layouts/BlogPost.astro';
 
   <p>I'd have been better off if the dashboard had a watermark on every chart that read <em>"derived view, not source of truth."</em> I might still add it.</p>
 
-  <h2>4. The nine percent that survives is the most useful number.</h2>
+  <h2>4. The number that refuses to improve is the most useful number.</h2>
 
-  <p>The headline AEGIS benchmark drops attack-success from 82 % under a permissive baseline to 9 % under the layered defense. The interesting work happens in that 9 %.</p>
+  <p>The current benchmark, with a permissive policy so the guards are the only thing acting: no guards, 20 of 20 attacks succeed. Keyword guard, 14 of 20. Semantic guard, 14 of 20. Both layered — still 14 of 20, now with two of ten benign controls falsely blocked.</p>
 
-  <p>It would have been easy to spend the back half of the project tightening the threshold or expanding the keyword list to push 9 % down to 6 %. That would have been incremental work on the layers I already had. The trace told a different story. The 9 % wasn't a marginally-tougher version of the 23 %. It was a structurally different population — payloads constructed from benign-looking primitives, encoded to evade n-gram matching, and adversarial prompts that exploited the threshold itself by sitting just below it.</p>
+  <p>An earlier build of this harness produced a much more flattering curve, the kind where each added layer visibly buys you something. I could not reproduce it, and the honest response to a number you can't reproduce is to stop publishing it and find out what the harness actually measures. The rebuilt harness produces a worse-looking number that holds — and the trace behind it says something more interesting than the old curve ever did.</p>
 
-  <p>The lesson: <strong>the residual after a defense isn't a smaller version of the same threat. It's a different threat.</strong> Optimising the existing layers further only catches more of the things you were already catching. The next round of work has to be a different layer entirely. The 9 % is what tells you which layer.</p>
+  <p>The 14 surviving attacks are not a marginally tougher version of the 6 that get caught. Every guard stops 100% of the attacks that contain literal tokens like <span class="mono">exfil</span>, and 0% of the attacks that avoid that vocabulary. The 70% attack success is not partial defense. It is total defense against one evasion tier and no defense at all against the other two. And the layered stack detects exactly what the semantic guard alone detects, while inheriting the keyword guard's false positives — layering wasn't neutral, it was strictly worse.</p>
 
-  <p>This shows up in production security work too. The vulnerabilities your scanner finds are never the vulnerabilities your scanner is going to keep missing.</p>
+  <p>The lesson survived the rewrite intact, and sharpened: <strong>the residual after a defense isn't a smaller version of the same threat — it's a different threat</strong>, and a defense that plateaus is telling you the next unit of work belongs in a different layer entirely, not in tightening the ones you have. Optimising the existing guards further only catches more of what they already catch, which, past the first tier, is nothing.</p>
 
   <h2>5. Hold the LLM integration.</h2>
 
   <p>Plugging a real LLM into AEGIS was the obvious next step from week one. I deliberately didn't.</p>
 
-  <p>The reason was epistemic hygiene. As soon as a real LLM is in the loop, every disagreement between two runs has two possible explanations: the guard layer changed, or the model did. With both moving simultaneously you can't isolate either. The deterministic demo runner sounds like a placeholder. It's actually a discipline — it forced me to validate that the engine logic, the corpus, the scoring pipeline, and the trace format were all stable on their own terms before I added the source of variance everyone in the field already accepts as unavoidable.</p>
+  <p>The reason was epistemic hygiene. As soon as a real LLM is in the loop, every disagreement between two runs has two possible explanations: the guard layer changed, or the model did. With both moving simultaneously you can't isolate either. The deterministic mock runner sounds like a placeholder. It's actually a discipline — it forced me to validate that the engine logic, the corpus, the scoring pipeline, and the trace format were all stable on their own terms before adding the source of variance everyone in the field already accepts as unavoidable. The reproducibility failure that forced the rebuild made the same point from the other direction: an apparatus you can't hold still can't measure anything.</p>
 
-  <p>By the time the live-LLM adapter goes in (it will, soon), the metrics will gain a model-version axis on top of an apparatus that's already been argued with and trusted. That's a much better starting position than building both at once and trying to tell them apart afterwards.</p>
+  <p>It's also why the caveat on the project page isn't small print. The figures characterize the guard stack, not any real model, and presenting them as an attack success rate for GPT‑4 or Claude would be exactly the kind of claim this project exists to check.</p>
 
   <p>General form of the lesson: <em>add a source of variance only after you've stabilised everything that didn't need to vary</em>.</p>
 
@@ -76,8 +79,7 @@ import BlogPost from '@layouts/BlogPost.astro';
 
   <h2>What I'd do differently</h2>
 
-  <p>One thing, mainly: I'd document the design decisions in the repo as the project went, instead of writing them up at the end. By the time I was assembling the case study a lot of the reasoning had already faded into <em>"of course it's like that"</em>. The most useful artefact for a future maintainer — including a future me — is the chain of small choices that <em>weren't</em> obvious at the time. I lost most of that reasoning by deferring the writing.</p>
+  <p>One thing, mainly: I'd document the design decisions in the repo as the project went, instead of writing them up at the end. By the time I was assembling the write-up a lot of the reasoning had already faded into <em>"of course it's like that"</em>. The most useful artefact for a future maintainer — including a future me — is the chain of small choices that <em>weren't</em> obvious at the time. I lost most of that reasoning by deferring the writing.</p>
 
-  <p>Everything else I'd do the same way.</p>
-
-</BlogPost>
+  <p>Everything else — including publishing the correction you read at the top of this post — I'd do the same way.</p>
+</ProseLayout>

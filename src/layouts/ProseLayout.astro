@@ -1,0 +1,127 @@
+---
+// ProseLayout.astro — shared article shell for blog posts and legal
+// pages. One measured column, the same report voice as the homepage.
+import BaseLayout from './BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import { SITE } from '../data/site';
+
+interface Props {
+  title: string;
+  description?: string;
+  kicker?: string;
+  metaLine?: string;
+}
+const { title, description, kicker, metaLine } = Astro.props;
+const year = new Date().getFullYear();
+---
+
+<BaseLayout title={`${title} — ${SITE.name}`} description={description}>
+  <Nav />
+  <main id="main" class="prosewrap wrap">
+    <header class="prose__head">
+      {kicker && <p class="meta prose__kicker">{kicker}</p>}
+      <h1 class="prose__title">{title}</h1>
+      {metaLine && <p class="meta prose__meta">{metaLine}</p>}
+    </header>
+    <article class="prose">
+      <slot />
+    </article>
+  </main>
+  <footer class="pfooter">
+    <div class="wrap pfooter__row">
+      <p class="meta">© {year} MAXIMILIAN RICHTER</p>
+      <p class="meta"><a href="/">← INDEX</a></p>
+    </div>
+  </footer>
+</BaseLayout>
+
+<style>
+  .prosewrap {
+    max-width: 760px;
+    padding-block: clamp(48px, 8vh, 96px);
+  }
+  .prose__head {
+    margin-bottom: clamp(36px, 6vh, 56px);
+  }
+  .prose__kicker {
+    margin-bottom: 20px;
+  }
+  .prose__title {
+    font-size: clamp(2rem, 5vw, 3.25rem);
+    font-weight: 585;
+    letter-spacing: -0.028em;
+    line-height: 1.05;
+    margin-bottom: 16px;
+  }
+  .prose__meta {
+    color: var(--ink-low);
+  }
+
+  .prose :global(h2) {
+    font-size: 1.375rem;
+    font-weight: 560;
+    letter-spacing: -0.015em;
+    margin: 2.2em 0 0.6em;
+  }
+  .prose :global(h3) {
+    font-size: 1.0625rem;
+    font-weight: 560;
+    margin: 1.8em 0 0.4em;
+  }
+  .prose :global(p) {
+    margin-block: 0.9em;
+    max-width: 66ch;
+  }
+  .prose :global(ul),
+  .prose :global(ol) {
+    padding-left: 1.2em;
+    max-width: 62ch;
+  }
+  .prose :global(li) {
+    margin-block: 0.5em;
+  }
+  .prose :global(address) {
+    font-style: normal;
+    margin-block: 0.9em;
+    line-height: 1.6;
+  }
+  .prose :global(code),
+  .prose :global(.mono) {
+    font-family: var(--font-mono);
+    font-size: 0.875em;
+    background: var(--paper-2);
+    padding: 1px 5px;
+  }
+  .prose :global(hr) {
+    border: none;
+    border-top: 1px solid var(--hairline);
+    margin-block: 2.5em;
+  }
+  .prose :global(.note) {
+    border-left: 2px solid var(--accent);
+    padding-left: 16px;
+    color: var(--ink-mid);
+    font-size: 0.9375rem;
+  }
+  .prose :global(.muted) {
+    color: var(--ink-low);
+    font-size: 0.875rem;
+  }
+
+  .pfooter {
+    border-top: 1px solid var(--hairline);
+  }
+  .pfooter__row {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding-block: 18px;
+  }
+  .pfooter a {
+    color: var(--ink-low);
+    text-decoration: none;
+  }
+  .pfooter a:hover {
+    color: var(--ink);
+  }
+</style>
