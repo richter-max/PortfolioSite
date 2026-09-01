@@ -27,6 +27,8 @@ export interface RaceResult {
   result: string;
   /** One plain line of context. No excuses, no drama. Optional. */
   note?: string;
+  /** Race report, if one was written. Links the row to the post. */
+  href?: string;
 }
 
 export const upcoming: UpcomingRace[] = [
@@ -51,5 +53,6 @@ export const results: RaceResult[] = [
     format: '1.9 / 90 / 21.1',
     result: '6:52:07',
     note: 'Both legs cramped 400 m into the swim. Finished.',
+    href: '/blog/ironman-kraichgau',
   },
 ];
