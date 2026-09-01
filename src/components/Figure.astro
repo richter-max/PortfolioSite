@@ -104,7 +104,11 @@
         camera.far = distance * 100;
         camera.updateProjectionMatrix();
 
-        if (reduced) renderer.render(scene, camera); // one frame, done
+        // Static first frame either way: reduced-motion keeps it,
+        // everyone else sees the figure standing front-on until the
+        // section actually enters the viewport — rotation starts there.
+        renderer.render(scene, camera);
+        if (visible) start();
       },
       undefined,
       () => stage.remove(),
@@ -112,7 +116,8 @@
 
     // ── Loop: only while visible, tab shown, and motion allowed ────
     let rafId = null;
-    let visible = true;
+    let visible = false;
+    let everSeen = false;
 
     function frame() {
       rafId = null;
@@ -132,9 +137,15 @@
     new IntersectionObserver(
       (entries) => {
         visible = entries[0].isIntersecting;
-        if (visible) start();
+        if (visible) {
+          if (!everSeen && pivot) {
+            everSeen = true;
+            pivot.rotation.y = 0; // first reveal starts front-on
+          }
+          start();
+        }
       },
-      { rootMargin: '80px' },
+      { rootMargin: '0px' },
     ).observe(stage);
 
     document.addEventListener('visibilitychange', () => {
@@ -150,7 +161,6 @@
       if (reduced) renderer.render(scene, camera);
     });
 
-    start();
   }
 
   // Defer everything — Three.js and the 6 MB model only download when
