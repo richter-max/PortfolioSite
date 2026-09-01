@@ -46,8 +46,8 @@ export const posts: Post[] = [
   },
 ];
 
+/** Sort by the date the post last changed — a revision counts. */
 export function sortedPosts(): Post[] {
-  return [...posts].sort(
-    (a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime(),
-  );
+  const eff = (p: Post) => new Date(p.revised ?? p.pubDate).getTime();
+  return [...posts].sort((a, b) => eff(b) - eff(a));
 }

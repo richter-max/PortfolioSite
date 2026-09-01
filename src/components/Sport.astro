@@ -27,13 +27,60 @@ const maxKm = Math.max(1, ...weekly);
 const W = 240;
 const H = 48;
 const step = weekly.length > 1 ? W / (weekly.length - 1) : W;
-const points = weekly
-  .map((km, i) => `${(i * step).toFixed(1)},${(H - (km / maxKm) * (H - 4) - 2).toFixed(1)}`)
-  .join(' ');
+const coords = weekly.map((km, i) => [
+  i * step,
+  H - (km / maxKm) * (H - 4) - 2,
+]);
+const points = coords.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' ');
+const last = coords.length ? coords[coords.length - 1] : null;
 ---
 
 <section id="sport" class="sport wrap">
-  <SectionHead num="04" label="SPORT" headline="Measured the same way as everything else." />
+  <SectionHead num="04" label="SPORT" />
+
+  <div class="figs">
+    <figure class="fig">
+      <picture>
+        <source
+          type="image/webp"
+          srcset="/img/halbmarathon-640.webp 640w, /img/halbmarathon-1066.webp 1066w"
+          sizes="(max-width: 720px) 100vw, 50vw"
+        />
+        <img
+          src="/img/halbmarathon-640.jpg"
+          srcset="/img/halbmarathon-640.jpg 640w, /img/halbmarathon-1066.jpg 1066w"
+          sizes="(max-width: 720px) 100vw, 50vw"
+          alt="Maximilian Richter running a half marathon"
+          loading="lazy"
+          decoding="async"
+          width="1066"
+          height="1600"
+        />
+      </picture>
+      <figcaption class="meta">FIG. B · HALBMARATHON</figcaption>
+    </figure>
+    <figure class="fig">
+      <picture>
+        <source
+          type="image/webp"
+          srcset="/img/tischtennis-640.webp 640w, /img/tischtennis-1280.webp 1280w"
+          sizes="(max-width: 720px) 100vw, 50vw"
+        />
+        <img
+          src="/img/tischtennis-640.jpg"
+          srcset="/img/tischtennis-640.jpg 640w, /img/tischtennis-1280.jpg 1280w"
+          sizes="(max-width: 720px) 100vw, 50vw"
+          alt="Table tennis"
+          loading="lazy"
+          decoding="async"
+          width="1920"
+          height="1280"
+        />
+      </picture>
+      <figcaption class="meta">FIG. C · TISCHTENNIS</figcaption>
+    </figure>
+  </div>
+
 
   <div class="sport__grid">
     <!-- Results + starts -->
@@ -125,6 +172,9 @@ const points = weekly
                 stroke-linejoin="round"
                 vector-effect="non-scaling-stroke"
               />
+              {last && (
+                <circle cx={last[0].toFixed(1)} cy={last[1].toFixed(1)} r="2.5" fill="currentColor" />
+              )}
             </svg>
             <div class="log__axis meta">
               <span>−12 W</span>
@@ -148,6 +198,42 @@ const points = weekly
     border-top: 1px solid var(--hairline);
     padding-bottom: clamp(48px, 8vh, 96px);
   }
+
+  /* ── figures ──────────────────────────────────────────────────── */
+  .figs {
+    display: grid;
+    grid-template-columns: 2fr 3fr; /* portrait beside landscape, equal height feel */
+    gap: 24px;
+    margin-bottom: clamp(36px, 6vh, 56px);
+  }
+  @media (max-width: 720px) {
+    .figs {
+      grid-template-columns: 1fr;
+    }
+  }
+  .fig {
+    margin: 0;
+  }
+  .fig img {
+    width: 100%;
+    height: 340px;
+    object-fit: cover;
+    border: 1px solid var(--hairline);
+    filter: grayscale(1) contrast(1.04);
+    transition: filter 320ms ease;
+  }
+  .fig:hover img {
+    filter: grayscale(0) contrast(1);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .fig img {
+      transition: none;
+    }
+  }
+  .fig figcaption {
+    margin-top: 8px;
+  }
+
   .sport__grid {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(260px, 320px);

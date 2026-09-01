@@ -57,6 +57,12 @@ No number appears on this site that isn't reproducible or pipeline-fed.
 Before adding a stat, ask where it updates from; if the answer is "by hand",
 don't add it.
 
+## Domain
+
+Canonical host is the apex `richtermax.com` — canonical tags, sitemap, OG
+URLs and security.txt all use it. In Vercel → Domains, set
+`richtermax.com` as the primary domain so `www` 308-redirects to it.
+
 ## Deployment
 
 Fully static. Vercel: build command `npm run build`, output `dist`,

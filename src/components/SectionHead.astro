@@ -30,6 +30,13 @@ const { num, label, headline, id } = Astro.props;
     color: var(--ink-mid);
     margin-bottom: 20px;
   }
+  /* On wide viewports the chapter label hangs into the left margin,
+     like a bound report's running head. */
+  @media (min-width: 1420px) {
+    .shead__label {
+      transform: translateX(-140px);
+    }
+  }
   .shead__num {
     color: var(--ink);
     font-weight: 500;

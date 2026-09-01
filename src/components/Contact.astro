@@ -26,14 +26,17 @@ const year = new Date().getFullYear();
 </section>
 
 <footer class="footer">
-  <div class="wrap footer__row">
-    <p class="meta">© {year} MAXIMILIAN RICHTER</p>
-    <ul class="footer__links">
-      <li><a class="meta" href="/impressum">IMPRESSUM</a></li>
-      <li><a class="meta" href="/datenschutz">DATENSCHUTZ</a></li>
-      <li><a class="meta" href="/security">SECURITY</a></li>
-      <li><a class="meta" href="/rss.xml">RSS</a></li>
-    </ul>
+  <div class="wrap">
+    <p class="colophon" aria-label="Colophon">{'{'}"event":"site.built","actor":"human","stack":["astro","ibm-plex","vercel"],"tracking":false,"trace":"one line per event, aggregate later"{'}'}</p>
+    <div class="footer__row">
+      <p class="meta">© {year} MAXIMILIAN RICHTER</p>
+      <ul class="footer__links">
+        <li><a class="meta" href="/impressum">IMPRESSUM</a></li>
+        <li><a class="meta" href="/datenschutz">DATENSCHUTZ</a></li>
+        <li><a class="meta" href="/security">SECURITY</a></li>
+        <li><a class="meta" href="/rss.xml">RSS</a></li>
+      </ul>
+    </div>
   </div>
 </footer>
 
@@ -72,6 +75,13 @@ const year = new Date().getFullYear();
 
   .footer {
     border-top: 1px solid var(--hairline);
+  }
+  .colophon {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    color: var(--ink-low);
+    padding-top: 18px;
+    overflow-wrap: anywhere;
   }
   .footer__row {
     display: flex;

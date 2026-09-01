@@ -16,7 +16,7 @@ const aegisRows = [
 ---
 
 <section id="work" class="work wrap">
-  <SectionHead num="01" label="WORK" headline="Two projects, both public, both reproducible." />
+  <SectionHead num="01" label="WORK" />
 
   <!-- ── AEGIS ─────────────────────────────────────────────────────── -->
   <article class="project">
@@ -73,19 +73,20 @@ const aegisRows = [
         <p class="meta finding__idx">FINDING 1</p>
         <h4>Content inspection only catches attacks that name themselves.</h4>
         <p>
-          Every guard stops 100% of attacks containing literal tokens like
-          <code>exfil</code> — and 0% of the 14 that avoid that vocabulary.
-          The 70% is not partial defense. It is total defense against one
-          evasion tier and none against the other two.
+          Every guard stops 100% of the attacks that carry literal tokens
+          like <code>exfil</code>, and 0% of the 14 that avoid the
+          vocabulary. Read the 70% as one evasion tier fully stopped and two
+          fully missed. There is no gradient in the data.
         </p>
       </div>
       <div class="finding">
         <p class="meta finding__idx">FINDING 2</p>
         <h4>Layering made it strictly worse.</h4>
         <p>
-          The layered stack detects exactly what the semantic guard alone
-          detects, while inheriting the keyword guard's false positives. More
-          guards bought nothing and cost 20% of benign traffic.
+          The layered stack detects exactly what the semantic guard detects
+          on its own, and inherits the keyword guard's false positives on
+          top. Two extra layers bought nothing. They cost 20% of benign
+          traffic.
         </p>
       </div>
     </div>
@@ -112,7 +113,7 @@ const aegisRows = [
     </p>
 
     <div class="detail">
-      <p class="meta detail__idx">THE DETAIL WORTH READING</p>
+      <p class="meta detail__idx">CT DISCOVERY → SCOPE CHECK → PROBE</p>
       <h4>Scope containment.</h4>
       <p>
         Certificate Transparency data is attacker-influenceable — anyone can

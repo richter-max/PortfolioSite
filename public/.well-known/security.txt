@@ -6,8 +6,8 @@
 # Disclosure policy and threat model: /security
 
 Contact: mailto:max.richter.dev@proton.me
-Encryption: https://www.richtermax.com/pgp/maxrichter.asc
+Encryption: https://richtermax.com/pgp/maxrichter.asc
 Expires: 2027-05-01T00:00:00.000Z
 Preferred-Languages: en, de
-Canonical: https://www.richtermax.com/.well-known/security.txt
-Policy: https://www.richtermax.com/security
+Canonical: https://richtermax.com/.well-known/security.txt
+Policy: https://richtermax.com/security
