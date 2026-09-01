@@ -4,7 +4,11 @@
 // IBL, NoToneMapping with a light budget that stays under 1.0 so the
 // photo textures don't clip (the tuning that worked in v1 is kept 1:1).
 // Rewritten without React, plus what was missing:
-//   - Three.js only loads when the section approaches the viewport
+//   - Three.js and the model load on page load, not on scroll, so the
+//     figure is already standing there when the section is reached.
+//     Kicked off after `window.load` so the 6 MB download doesn't
+//     compete with fonts and first paint.
+//   - rotation only starts once the section is actually in view
 //   - prefers-reduced-motion → renders one static frame, no rotation
 //   - rendering pauses when offscreen or the tab is hidden
 //   - if WebGL/model fail, the stage collapses and the caption remains
@@ -13,10 +17,13 @@
 
 <section class="figure wrap" aria-hidden="true">
   <div class="figure__stage" id="figure-stage" data-figure></div>
-  <p class="meta figure__caption">FIG. A · THE AUTHOR · 1 REV / 16 S</p>
+  <p class="meta figure__caption">FIG. A · THE AUTHOR · 1 REV / 12 S</p>
 </section>
 
 <script>
+  // Seconds per full revolution. Mirrored in the caption above.
+  const REV_SECONDS = 12;
+
   const stage = document.querySelector('[data-figure]');
 
   async function init() {
@@ -105,11 +112,20 @@
         camera.far = distance * 100;
         camera.updateProjectionMatrix();
 
-        // Static first frame either way: reduced-motion keeps it,
-        // everyone else sees the figure standing front-on until the
-        // section actually enters the viewport — rotation starts there.
+        // The model is ready well before anyone scrolls here. Render
+        // the static frame now; rotation is a separate question,
+        // answered by the observer below.
         renderer.render(scene, camera);
-        if (visible) start();
+
+        // If the section was already in view while the model was still
+        // downloading, the observer has nothing left to fire.
+        if (visible) {
+          if (!everSeen && !reduced) {
+            everSeen = true;
+            pivot.rotation.y = 0;
+          }
+          start();
+        }
       },
       undefined,
       () => stage.remove(),
@@ -124,7 +140,7 @@
       rafId = null;
       if (!visible || document.hidden) return;
       const delta = clock.getDelta();
-      if (pivot) pivot.rotation.y += (delta * Math.PI * 2) / 16;
+      if (pivot) pivot.rotation.y += (delta * Math.PI * 2) / REV_SECONDS;
       renderer.render(scene, camera);
       rafId = requestAnimationFrame(frame);
     }
@@ -139,9 +155,13 @@
       (entries) => {
         visible = entries[0].isIntersecting;
         if (visible) {
-          if (!everSeen && pivot) {
+          // First time the section is genuinely seen, square the
+          // figure up before it starts turning. Reduced-motion keeps
+          // its off-axis static frame instead.
+          if (!everSeen && pivot && !reduced) {
             everSeen = true;
-            pivot.rotation.y = 0; // first reveal starts front-on
+            pivot.rotation.y = 0;
+            renderer.render(scene, camera);
           }
           start();
         }
@@ -164,19 +184,15 @@
 
   }
 
-  // Defer everything — Three.js and the 6 MB model only download when
-  // the section is approaching.
+  // Load on page load rather than on scroll, but after the critical
+  // resources are done — the 6 MB model shouldn't fight the fonts for
+  // bandwidth. Rotation still waits for the section to be in view.
   if (stage) {
-    const io = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          io.disconnect();
-          init();
-        }
-      },
-      { rootMargin: '600px' },
-    );
-    io.observe(stage);
+    if (document.readyState === 'complete') {
+      init();
+    } else {
+      window.addEventListener('load', init, { once: true });
+    }
   }
 </script>
 
