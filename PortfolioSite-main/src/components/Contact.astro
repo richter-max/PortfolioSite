@@ -1,0 +1,106 @@
+---
+// Contact.astro — email, GitHub, LinkedIn. No form, no
+// "engagements", no reply-time promises. The footer rides along.
+import SectionHead from './SectionHead.astro';
+import { SITE } from '../data/site';
+
+const year = new Date().getFullYear();
+---
+
+<section id="contact" class="contact wrap">
+  <SectionHead num="05" label="CONTACT" />
+  <ul class="contact__list">
+    <li>
+      <span class="meta">EMAIL</span>
+      <a class="contact__link" href={`mailto:${SITE.author.email}`}>{SITE.author.email}</a>
+    </li>
+    <li>
+      <span class="meta">GITHUB</span>
+      <a class="contact__link" href={SITE.author.github}>github.com/richter-max</a>
+    </li>
+    <li>
+      <span class="meta">LINKEDIN</span>
+      <a class="contact__link" href={SITE.author.linkedin}>maximilian-richter</a>
+    </li>
+  </ul>
+</section>
+
+<footer class="footer">
+  <div class="wrap">
+    <p class="colophon" aria-label="Colophon">{'{'}"event":"site.built","actor":"human","stack":["astro","ibm-plex","vercel"],"tracking":false,"trace":"one line per event, aggregate later"{'}'}</p>
+    <div class="footer__row">
+      <p class="meta">© {year} MAXIMILIAN RICHTER</p>
+      <ul class="footer__links">
+        <li><a class="meta" href="/impressum">IMPRESSUM</a></li>
+        <li><a class="meta" href="/datenschutz">DATENSCHUTZ</a></li>
+        <li><a class="meta" href="/security">SECURITY</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .contact {
+    border-top: 1px solid var(--hairline);
+    padding-bottom: clamp(56px, 9vh, 112px);
+  }
+  .contact__list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 18px;
+    border-top: 1px solid var(--hairline);
+    padding-top: 8px;
+  }
+  .contact__list li {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 16px;
+    align-items: baseline;
+    padding-block: 10px;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .contact__link {
+    font-size: clamp(1.125rem, 2.4vw, 1.5rem);
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+  }
+  .contact__link:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .footer {
+    border-top: 1px solid var(--hairline);
+  }
+  .colophon {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    color: var(--ink-low);
+    padding-top: 18px;
+    overflow-wrap: anywhere;
+  }
+  .footer__row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 24px;
+    justify-content: space-between;
+    padding-block: 18px;
+  }
+  .footer__links {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  .footer__links a {
+    text-decoration: none;
+    color: var(--ink-low);
+  }
+  .footer__links a:hover {
+    color: var(--ink);
+  }
+</style>

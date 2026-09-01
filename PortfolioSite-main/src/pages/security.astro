@@ -1,0 +1,57 @@
+---
+import ProseLayout from '../layouts/ProseLayout.astro';
+import { SITE } from '../data/site';
+---
+
+<ProseLayout
+  title="Security."
+  description="Disclosure policy and security posture for richtermax.com."
+  kicker="SECURITY · DISCLOSURE"
+>
+  <p>
+    A personal website is a small attack surface, but if I work on security
+    the least I can do is state how this one is run and where to report a
+    problem with it.
+  </p>
+
+  <h2>Reporting</h2>
+  <p>
+    If you find a vulnerability in this site or anything it serves, email
+    <a href={`mailto:${SITE.author.email}`}>{SITE.author.email}</a> — PGP key
+    at <a href="/pgp/maxrichter.asc" class="mono">/pgp/maxrichter.asc</a>. I
+    read reports personally and usually respond within 72 hours. The
+    machine-readable version of this section lives at
+    <a href="/.well-known/security.txt" class="mono">/.well-known/security.txt</a>
+    (RFC 9116).
+  </p>
+  <p>
+    Please don't test with traffic beyond what a browser produces — the site
+    is static, so there is genuinely nothing behind it to find, and the
+    hosting is shared infrastructure that isn't mine to authorize testing
+    against.
+  </p>
+
+  <h2>What this site is</h2>
+  <p>
+    A fully static build. No server-side code, no database, no user accounts,
+    no cookies, no forms, no third-party scripts, no analytics. Fonts, the 3D
+    model, and every other asset are served from the site's own origin.
+    Transport security and browser hardening are set as HTTP response headers
+    (HSTS, a strict allowlist CSP, frame-deny, COOP/CORP, restrictive
+    Permissions-Policy) — verifiable from the outside with a plain
+    <span class="mono">curl -sI https://richtermax.com</span>.
+  </p>
+
+  <h2>What this site stores about you</h2>
+  <p>
+    Nothing. The hoster (Vercel) writes standard server logs; details and
+    your rights are in the <a href="/datenschutz">Datenschutzerklärung</a>.
+  </p>
+
+  <h2>Verify, don't trust</h2>
+  <p>
+    The source of this site is public at
+    <a href={SITE.author.github}>github.com/richter-max</a>. What the repo
+    builds is what the server ships.
+  </p>
+</ProseLayout>

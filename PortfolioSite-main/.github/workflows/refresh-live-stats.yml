@@ -1,0 +1,52 @@
+name: Refresh live stats
+
+# Runs the build-time fetch script on a schedule, commits the new
+# snapshot if anything changed, and lets Vercel pick up the commit
+# to redeploy automatically. No deploy-hook needed — the commit IS
+# the trigger.
+
+on:
+  schedule:
+    # 04:00 UTC every day (06:00 CEST / 05:00 CET)
+    - cron: '0 4 * * *'
+  # Manual run button in the Actions tab — useful for "refresh right now"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run fetch-live-stats
+        env:
+          STRAVA_CLIENT_ID:     ${{ secrets.STRAVA_CLIENT_ID }}
+          STRAVA_CLIENT_SECRET: ${{ secrets.STRAVA_CLIENT_SECRET }}
+          STRAVA_REFRESH_TOKEN: ${{ secrets.STRAVA_REFRESH_TOKEN }}
+          # The auto-provided GITHUB_TOKEN works fine for the public
+          # commit-search call. A separate PAT (LIVE_STATS_GH_PAT) can
+          # override it if rate limiting becomes an issue.
+          GITHUB_TOKEN: ${{ secrets.LIVE_STATS_GH_PAT || secrets.GITHUB_TOKEN }}
+          GITHUB_USER:  richter-max
+        run: node scripts/fetch-live-stats.mjs
+
+      - name: Commit if changed
+        run: |
+          if [[ -z "$(git status --porcelain src/data/live-stats.json)" ]]; then
+            echo "No changes to live-stats.json — skipping commit."
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/data/live-stats.json
+          git commit -m "chore: refresh live stats ($(date -u +%Y-%m-%d))"
+          git push

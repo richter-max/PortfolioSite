@@ -1,0 +1,90 @@
+---
+// Foundations.astro — the layer underneath the agent work.
+// Framed as why each area matters for agent security, not as a skills
+// list. No certificates, no percentages, no invented completions.
+import SectionHead from './SectionHead.astro';
+
+const areas = [
+  {
+    title: 'Systems & memory',
+    via: 'pwn.college',
+    body:
+      'Assembly, reverse engineering, memory corruption — working through ' +
+      'the pwn.college curriculum. Agent security keeps borrowing its ' +
+      'vocabulary from exploitation (injection, sandbox escape, privilege ' +
+      'boundaries), and the borrowed words only mean something if you have ' +
+      'debugged the originals. Knowing what a real sandbox escape costs is ' +
+      'what keeps you honest about what a prompt-level one does and ' +
+      'doesn\u2019t prove.',
+  },
+  {
+    title: 'Cloud & detection',
+    via: '',
+    body:
+      'Where agents actually run: identities, tool credentials, and audit ' +
+      'trails live in cloud infrastructure, and a tool-misuse incident is ' +
+      'ultimately a detection problem — which event, in which log, would ' +
+      'have told you. AEGIS writing a typed trace before any aggregate ' +
+      'metric is this instinct applied to evaluation.',
+  },
+  {
+    title: 'Network analysis',
+    via: '',
+    body:
+      'What traffic a system emits is the ground truth of what it did. The ' +
+      'scanner is built on that premise \u2014 DNS lookups, TLS handshakes, plain ' +
+      'GET requests, and nothing that a browser wouldn\u2019t already send. ' +
+      'Judging when traffic is intrusive requires knowing what the packets ' +
+      'actually are.',
+  },
+];
+---
+
+<section id="foundations" class="foundations wrap">
+  <SectionHead num="02" label="FOUNDATIONS" headline="The layer underneath." />
+  <p class="foundations__intro">
+    Agent security is an application layer over older disciplines. These are
+    the ones I keep returning to, and why they carry the work above.
+  </p>
+  <div class="foundations__grid">
+    {areas.map((a) => (
+      <div class="area">
+        {a.via && <p class="meta area__idx">{a.via.toUpperCase()}</p>}
+        <h3 class="area__title">{a.title}</h3>
+        <p class="area__body">{a.body}</p>
+      </div>
+    ))}
+  </div>
+</section>
+
+<style>
+  .foundations {
+    border-top: 1px solid var(--hairline);
+    padding-bottom: clamp(48px, 8vh, 96px);
+  }
+  .foundations__intro {
+    max-width: 56ch;
+    color: var(--ink-mid);
+    margin-top: -20px;
+    margin-bottom: clamp(32px, 5vh, 48px);
+  }
+  .foundations__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 40px;
+  }
+  .area__idx {
+    margin-bottom: 12px;
+  }
+  .area__title {
+    font-size: 1.125rem;
+    font-weight: 560;
+    letter-spacing: -0.012em;
+    margin-bottom: 10px;
+  }
+  .area__body {
+    font-size: 0.9375rem;
+    color: var(--ink-mid);
+    max-width: 46ch;
+  }
+</style>

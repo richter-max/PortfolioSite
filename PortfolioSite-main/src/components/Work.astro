@@ -1,0 +1,281 @@
+---
+// Work.astro — AEGIS + Attack Surface Scanner.
+// Every number here comes from the reproducible harness runs. The
+// mock-agent caveat is printed in the same breath as the table — it is
+// part of the result, not a footnote. This is the only section where
+// the accent color appears, and only on measured failure: attack
+// success and false positives.
+import SectionHead from './SectionHead.astro';
+
+const aegisRows = [
+  { guards: 'none', attack: '100%', attackN: '20/20', fp: '0%', fpN: '0/10' },
+  { guards: 'keyword', attack: '70%', attackN: '14/20', fp: '20%', fpN: '2/10' },
+  { guards: 'semantic', attack: '70%', attackN: '14/20', fp: '0%', fpN: '0/10' },
+  { guards: 'layered', attack: '70%', attackN: '14/20', fp: '20%', fpN: '2/10' },
+];
+---
+
+<section id="work" class="work wrap">
+  <SectionHead num="01" label="WORK" />
+
+  <!-- ── AEGIS ─────────────────────────────────────────────────────── -->
+  <article class="project">
+    <header class="project__head">
+      <h3 class="project__name">AEGIS</h3>
+      <p class="project__what">Agent security evaluation harness</p>
+      <a class="meta project__repo" href="https://github.com/richter-max/aegis">github.com/richter-max/aegis ↗</a>
+    </header>
+
+    <p class="project__desc">
+      A deterministic harness for measuring what a defense stack stops when a
+      tool-using agent is attacked — and what it breaks in the process. 20
+      attacks across four families at three evasion tiers, plus 10 benign
+      controls, run against every policy and guard configuration.
+    </p>
+
+    <figure class="results">
+      <figcaption class="meta results__caption">
+        TABLE 1 · PERMISSIVE POLICY — GUARDS ARE THE ONLY THING ACTING
+      </figcaption>
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">GUARDS</th>
+            <th scope="col">ATTACK SUCCESS</th>
+            <th scope="col">FALSE POSITIVES</th>
+          </tr>
+        </thead>
+        <tbody>
+          {aegisRows.map((r) => (
+            <tr>
+              <th scope="row" class="data">{r.guards}</th>
+              <td>
+                <span class="data results__val">{r.attack}</span>
+                <span class="meta results__n">{r.attackN}</span>
+              </td>
+              <td>
+                <span class:list={['data', 'results__val', { 'results__val--hit': r.fp !== '0%' }]}>{r.fp}</span>
+                <span class="meta results__n">{r.fpN}</span>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p class="caveat">
+        The harness runs a deterministic mock agent, not a live LLM. These
+        figures characterize the guard stack — they are not an attack success
+        rate for GPT‑4, Claude, or any real model.
+      </p>
+    </figure>
+
+    <div class="findings">
+      <div class="finding">
+        <p class="meta finding__idx">FINDING 1</p>
+        <h4>Content inspection only catches attacks that name themselves.</h4>
+        <p>
+          Every guard stops 100% of the attacks that carry literal tokens
+          like <code>exfil</code>, and 0% of the 14 that avoid the
+          vocabulary. Read the 70% as one evasion tier fully stopped and two
+          fully missed. There is no gradient in the data.
+        </p>
+      </div>
+      <div class="finding">
+        <p class="meta finding__idx">FINDING 2</p>
+        <h4>Layering made it strictly worse.</h4>
+        <p>
+          The layered stack detects exactly what the semantic guard detects
+          on its own, and inherits the keyword guard's false positives on
+          top. Two extra layers bought nothing. They cost 20% of benign
+          traffic.
+        </p>
+      </div>
+    </div>
+  </article>
+
+  <!-- ── Scanner ───────────────────────────────────────────────────── -->
+  <article class="project">
+    <header class="project__head">
+      <h3 class="project__name">Attack Surface Scanner</h3>
+      <p class="project__what">External attack surface &amp; transport security, non-intrusive</p>
+      <a class="meta project__repo" href="https://github.com/richter-max/attack-surface-scanner">github.com/richter-max/attack-surface-scanner ↗</a>
+    </header>
+
+    <p class="project__desc">
+      Passive hostname discovery from Certificate Transparency, DNS
+      resolution, HTTP/HTTPS probing, TLS version and certificate analysis,
+      security header checks, deterministic risk scoring. Emits a JSON
+      artifact plus a console summary, with a <code>--fail-on</code> flag for
+      use as a CI gate.
+    </p>
+    <p class="project__scope">
+      Explicitly not: port scanning, brute forcing, exploitation. DNS
+      lookups, plain GET requests, and TLS handshakes only.
+    </p>
+
+    <div class="detail">
+      <p class="meta detail__idx">CT DISCOVERY → SCOPE CHECK → PROBE</p>
+      <h4>Scope containment.</h4>
+      <p>
+        Certificate Transparency data is attacker-influenceable — anyone can
+        obtain a certificate for a lookalike domain, and it appears in the
+        logs. Every discovered hostname is therefore checked against the
+        target scope before it is probed, because a naive suffix test would
+        authorize sending traffic to a host the operator never approved:
+      </p>
+      <pre class="code"><code>&gt;&gt;&gt; "evilexample.com".endswith("example.com")
+True</code></pre>
+    </div>
+  </article>
+</section>
+
+<style>
+  .work {
+    border-top: 1px solid var(--hairline);
+  }
+
+  .project {
+    border-top: 1px solid var(--hairline);
+    padding-block: clamp(36px, 6vh, 64px);
+    display: grid;
+    gap: 28px;
+  }
+  .project:last-child {
+    padding-bottom: clamp(48px, 8vh, 96px);
+  }
+
+  .project__head {
+    display: grid;
+    gap: 4px;
+  }
+  .project__name {
+    font-size: clamp(1.5rem, 2.8vw, 2rem);
+    font-weight: 585;
+    letter-spacing: -0.02em;
+  }
+  .project__what {
+    color: var(--ink-mid);
+    font-size: 1rem;
+  }
+  .project__repo {
+    margin-top: 10px;
+    color: var(--ink-mid);
+    text-decoration: none;
+    text-transform: none;
+    letter-spacing: 0.02em;
+  }
+  .project__repo:hover {
+    color: var(--ink);
+  }
+
+  .project__desc,
+  .project__scope {
+    max-width: 62ch;
+  }
+  .project__scope {
+    color: var(--ink-mid);
+  }
+
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.875em;
+    background: var(--paper-2);
+    padding: 1px 5px;
+  }
+
+  /* ── results table ────────────────────────────────────────────── */
+  .results {
+    max-width: 620px;
+  }
+  .results__caption {
+    margin-bottom: 12px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    border-top: 1px solid var(--hairline-strong);
+  }
+  th,
+  td {
+    text-align: left;
+    padding: 10px 16px 10px 0;
+    border-bottom: 1px solid var(--hairline);
+    vertical-align: baseline;
+  }
+  thead th {
+    font-family: var(--font-mono);
+    font-size: var(--meta-size);
+    font-weight: 400;
+    letter-spacing: var(--meta-tracking);
+    color: var(--ink-low);
+  }
+  tbody th {
+    font-weight: 400;
+    font-size: 0.9375rem;
+  }
+  .results__val {
+    font-size: 1.0625rem;
+  }
+  .results__val--hit {
+    color: var(--accent);
+  }
+  .results__n {
+    margin-left: 10px;
+    text-transform: none;
+  }
+
+  .caveat {
+    margin-top: 16px;
+    padding-left: 16px;
+    border-left: 2px solid var(--accent);
+    color: var(--ink-mid);
+    font-size: 0.9375rem;
+    max-width: 58ch;
+  }
+
+  /* ── findings ─────────────────────────────────────────────────── */
+  .findings {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 32px;
+    max-width: 900px;
+  }
+  .finding__idx {
+    color: var(--accent-ink);
+    margin-bottom: 10px;
+  }
+  .finding h4,
+  .detail h4 {
+    font-size: 1.125rem;
+    font-weight: 560;
+    letter-spacing: -0.012em;
+    margin-bottom: 8px;
+    max-width: 32ch;
+  }
+  .finding p:last-child,
+  .detail p {
+    font-size: 0.9375rem;
+    color: var(--ink-mid);
+    max-width: 52ch;
+  }
+
+  /* ── scanner detail ───────────────────────────────────────────── */
+  .detail__idx {
+    color: var(--accent-ink);
+    margin-bottom: 10px;
+  }
+  .code {
+    margin-top: 16px;
+    background: var(--paper-2);
+    border: 1px solid var(--hairline);
+    padding: 14px 16px;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    line-height: 1.6;
+    overflow-x: auto;
+    max-width: 480px;
+  }
+  .code code {
+    background: none;
+    padding: 0;
+  }
+</style>

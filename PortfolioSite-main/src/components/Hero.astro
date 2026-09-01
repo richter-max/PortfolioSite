@@ -1,0 +1,188 @@
+---
+// Hero.astro — report front matter.
+// Name, one line on the work, actual status stated plainly, and the
+// next-start block. No availability dot, no practice language, no
+// loader, no animation.
+//
+// The next-start block is built so it cannot expire: both at build
+// time and on the client it picks the first upcoming race whose date
+// hasn't passed. When Berlin is over, Frankfurt takes its place with
+// no edit; when the list is empty, the block removes itself. Day
+// precision only — the data has no start times, so the countdown
+// doesn't pretend to have them.
+import { upcoming } from '../data/races';
+
+const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+
+function fmtDate(iso: string): string {
+  const [y, m, d] = iso.split('-').map(Number);
+  return `${d} ${MONTHS[m - 1]} ${y}`;
+}
+function daysUntil(iso: string, from: Date): number {
+  const [y, m, d] = iso.split('-').map(Number);
+  const race = new Date(y, m - 1, d);
+  const today = new Date(from.getFullYear(), from.getMonth(), from.getDate());
+  return Math.round((race.getTime() - today.getTime()) / 86400000);
+}
+
+const now = new Date();
+const future = upcoming.filter((r) => daysUntil(r.date, now) >= 0);
+const next = future[0] ?? null;
+const then = future[1] ?? null;
+---
+
+<section class="hero wrap">
+  <p class="hero__topline meta">AI AGENT SECURITY · ALLGÄU, DE</p>
+
+  <h1 class="hero__name">Maximilian Richter</h1>
+
+  <p class="hero__lede">
+    I work on AI agent security — prompt injection, tool misuse, and how you
+    measure whether a defense actually works.
+  </p>
+
+  <div class="hero__grid">
+    <dl class="hero__status">
+      <div class="hero__row">
+        <dt class="meta">NOW</dt>
+        <dd>Software developer. Ausbildung completed January 2026.</dd>
+      </div>
+      <div class="hero__row">
+        <dt class="meta">FROM OCT 2026</dt>
+        <dd>Dual B.Sc. Computer Science, cybersecurity focus, at Bosch.</dd>
+      </div>
+      <div class="hero__row">
+        <dt class="meta">ELSEWHERE</dt>
+        <dd>
+          <a href="https://github.com/richter-max">GitHub</a> ·
+          <a href="https://www.linkedin.com/in/maximilian-richter-40697a298">LinkedIn</a> ·
+          <a href="mailto:max.richter.dev@proton.me">Email</a>
+        </dd>
+      </div>
+    </dl>
+
+    {next && (
+      <aside
+        class="nextstart"
+        id="nextstart"
+        aria-label="Next race"
+        data-races={JSON.stringify(upcoming)}
+      >
+        <p class="meta nextstart__label">NEXT START</p>
+        <p class="nextstart__name" data-ns-name>{next.name}</p>
+        <p class="nextstart__spec meta" data-ns-spec>
+          {fmtDate(next.date)} · {next.format}{next.target ? ` · TARGET ${next.target}` : ''}
+        </p>
+        <p class="nextstart__count">
+          <span class="data nextstart__days" data-ns-days>{daysUntil(next.date, now)}</span>
+          <span class="meta">DAYS</span>
+        </p>
+        {then && (
+          <p class="meta nextstart__then" data-ns-then>
+            THEN · {then.name.toUpperCase()} · {fmtDate(then.date)}
+          </p>
+        )}
+      </aside>
+    )}
+  </div>
+</section>
+
+<script>
+  import '../scripts/nextstart.js';
+</script>
+
+<style>
+  .hero {
+    padding-block: clamp(56px, 10vh, 128px) clamp(48px, 8vh, 96px);
+  }
+
+  .hero__topline {
+    margin-bottom: 28px;
+  }
+
+  .hero__name {
+    font-family: var(--font-sans);
+    font-size: clamp(2.75rem, 8.5vw, 6.75rem);
+    font-weight: 585;
+    letter-spacing: -0.035em;
+    line-height: 0.98;
+    margin: 0 0 32px -0.04em; /* optical left align of the M */
+    max-width: 12ch;
+  }
+
+  .hero__lede {
+    font-size: clamp(1.1875rem, 2.2vw, 1.5rem);
+    line-height: 1.45;
+    font-weight: 450;
+    letter-spacing: -0.008em;
+    max-width: 34ch;
+    text-wrap: balance;
+    margin-bottom: clamp(48px, 7vh, 80px);
+  }
+
+  .hero__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 340px);
+    gap: 48px;
+    align-items: start;
+    border-top: 1px solid var(--hairline);
+    padding-top: 32px;
+  }
+  @media (max-width: 720px) {
+    .hero__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ── status table ─────────────────────────────────────────────── */
+  .hero__status {
+    display: grid;
+    gap: 18px;
+    max-width: 52ch;
+  }
+  .hero__row {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 16px;
+    align-items: baseline;
+  }
+  .hero__row dd {
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--ink);
+  }
+
+  /* ── next start ───────────────────────────────────────────────── */
+  .nextstart {
+    border: 1px solid var(--hairline);
+    padding: 20px 22px 18px;
+  }
+  .nextstart__label {
+    margin-bottom: 14px;
+  }
+  .nextstart__name {
+    font-size: 1.25rem;
+    font-weight: 550;
+    letter-spacing: -0.015em;
+    margin-bottom: 6px;
+  }
+  .nextstart__spec {
+    color: var(--ink-mid);
+    margin-bottom: 18px;
+  }
+  .nextstart__count {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .nextstart__days {
+    font-size: 2.5rem;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .nextstart__then {
+    border-top: 1px solid var(--hairline);
+    padding-top: 12px;
+  }
+</style>
