@@ -70,8 +70,10 @@ const last = coords.length ? coords[coords.length - 1] : null;
             {results.map((r) => (
               <tr>
                 <th scope="row">
-                  {r.name}
-                  <span class="meta rtable__sub">{fmtDate(r.date)} · {r.format}</span>
+                  {r.href ? <a href={r.href}>{r.name}</a> : r.name}
+                  <span class="meta rtable__sub">
+                    {fmtDate(r.date)} · {r.format}{r.href ? ' · REPORT' : ''}
+                  </span>
                 </th>
                 <td>
                   <span class="data rtable__val">{r.result}</span>
