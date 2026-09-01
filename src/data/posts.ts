@@ -41,7 +41,7 @@ export const posts: Post[] = [
       'What strangers can pull from your social media. The gap between ' +
       'sharing one thing and revealing another — and what to actually do ' +
       'about it.',
-    pubDate: '2026-04-20',
+    pubDate: '2026-03-14',
     readTime: '7 min',
   },
   {
@@ -51,7 +51,7 @@ export const posts: Post[] = [
       'Why I did the German vocational route before going to university — ' +
       'and why I\u2019m starting the university part now anyway. Practice ' +
       'first, theory second.',
-    pubDate: '2026-04-30',
+    pubDate: '2026-07-22',
     readTime: '6 min',
   },
 ];
