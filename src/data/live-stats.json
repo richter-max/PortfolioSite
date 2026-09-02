@@ -1,12 +1,12 @@
 {
-  "updatedAt": "2026-09-01T08:59:49.962Z",
+  "updatedAt": "2026-09-02T08:13:42.656Z",
   "strava": {
     "streakWeeks": 45,
-    "sessionsThisYear": 259,
+    "sessionsThisYear": 260,
     "lastRun": {
-      "weekday": "Sunday",
-      "km": 25.7,
-      "isoDate": "2026-08-30"
+      "weekday": "Tuesday",
+      "km": 10.3,
+      "isoDate": "2026-09-01"
     },
     "weeklyKmLast12": [
       119.1,
@@ -20,17 +20,17 @@
       20.3,
       45,
       44.3,
-      0
+      10.3
     ]
   },
   "github": {
-    "commits30d": 18,
+    "commits30d": 20,
     "latestRepo": {
       "name": "PortfolioSite",
       "url": "https://github.com/richter-max/PortfolioSite",
-      "pushedAt": "2026-09-01T08:51:33Z",
-      "headline": "Add comments and update section attributes in Figure.astro",
-      "commitDate": "2026-09-01T08:51:33Z"
+      "pushedAt": "2026-09-01T14:33:52Z",
+      "headline": "Dark Mode added",
+      "commitDate": "2026-09-01T14:33:48Z"
     }
   }
 }
