@@ -6,7 +6,22 @@ import ScanTerminal from '../components/v3/ScanTerminal.astro';
 import AegisCase from '../components/v3/AegisCase.astro';
 import Bridge from '../components/v3/Bridge.astro';
 import { SITE } from '../data/site';
-import { fields, projects, path, degree, roadmap } from '../data/offtrack';
+import { fields, projects, path, degree, roadmap, blockRange } from '../data/offtrack';
+
+// Which block of the degree is running today (build time; degree.js
+// recomputes in the browser, so it is right between daily builds).
+const todayIso = new Date().toISOString().slice(0, 10);
+const blocks = degree.years.flatMap((y, yi) =>
+  y.blocks.map(([kind, name, sub], qi) => {
+    const n = yi * 4 + qi;
+    const { start, end } = blockRange(n);
+    const days = Math.round((Date.parse(end) - Date.parse(start)) / 864e5);
+    const day = Math.floor((Date.parse(todayIso) - Date.parse(start)) / 864e5) + 1;
+    const now = todayIso >= start && todayIso < end;
+    return { yi, qi, kind, name, sub, start, end, now, days, day };
+  }),
+);
+const blockOf = (yi: number, qi: number) => blocks[yi * 4 + qi];
 
 const CHIP: Record<string, string> = { focus: 'Focus', groundwork: 'Groundwork', next: 'Next' };
 
@@ -110,13 +125,20 @@ const scanFile = Object.values(import.meta.glob('../data/scan.json', { eager: tr
           <li>
             <span class="display-xs">{y.label} <span class="label-s">{y.cal}</span></span>
             <ol>
-              {y.blocks.map(([kind, name, sub, now], i) => (
-                <li class:list={['blk', kind === 'P' ? 'blk--p' : 'blk--t', { 'is-now': now }]}>
-                  <span class="label-s degree__q">{degree.quarters[i]}</span>
-                  <strong>{now ? `Now · ${name}` : name}</strong>
-                  <span>{sub}</span>
-                </li>
-              ))}
+              {y.blocks.map((_, i) => {
+                const b = blockOf(degree.years.indexOf(y), i);
+                return (
+                  <li class:list={['blk', b.kind === 'P' ? 'blk--p' : 'blk--t', { 'is-now': b.now }]} data-blk data-start={b.start} data-end={b.end} data-name={b.name}>
+                    <span class="label-s degree__q">{degree.quarters[i]}</span>
+                    <strong data-blk-name>{b.now ? `Now · ${b.name}` : b.name}</strong>
+                    <span>{b.sub}</span>
+                    <span class="blk__prog" data-blk-prog hidden={!b.now}>
+                      <span class="blk__bar"><span style={`width:${b.now ? ((b.day / b.days) * 100).toFixed(1) : 0}%`} data-blk-fill></span></span>
+                      <span class="label-s" data-blk-day>{b.now ? `Day ${b.day} of ${b.days}` : ''}</span>
+                    </span>
+                  </li>
+                );
+              })}
             </ol>
           </li>
         ))}
@@ -134,12 +156,19 @@ const scanFile = Object.values(import.meta.glob('../data/scan.json', { eager: tr
             {degree.years.map((y) => (
               <tr>
                 <th scope="row"><span class="display-xs">{y.label}</span><span class="label-s">{y.cal}</span></th>
-                {y.blocks.map(([kind, name, sub, now]) => (
-                  <td class:list={['blk', kind === 'P' ? 'blk--p' : 'blk--t', { 'is-now': now }]}>
-                    <strong>{now ? `Now · ${name}` : name}</strong>
-                    <span>{sub}</span>
-                  </td>
-                ))}
+                {y.blocks.map((_, i) => {
+                  const b = blockOf(degree.years.indexOf(y), i);
+                  return (
+                    <td class:list={['blk', b.kind === 'P' ? 'blk--p' : 'blk--t', { 'is-now': b.now }]} data-blk data-start={b.start} data-end={b.end} data-name={b.name}>
+                      <strong data-blk-name>{b.now ? `Now · ${b.name}` : b.name}</strong>
+                      <span>{b.sub}</span>
+                      <span class="blk__prog" data-blk-prog hidden={!b.now}>
+                        <span class="blk__bar"><span style={`width:${b.now ? ((b.day / b.days) * 100).toFixed(1) : 0}%`} data-blk-fill></span></span>
+                        <span class="label-s" data-blk-day>{b.now ? `Day ${b.day} of ${b.days}` : ''}</span>
+                      </span>
+                    </td>
+                  );
+                })}
               </tr>
             ))}
           </tbody>
@@ -182,6 +211,7 @@ const scanFile = Object.values(import.meta.glob('../data/scan.json', { eager: tr
 
 <script>
   import '../scripts/v3/grid.js';
+  import '../scripts/v3/degree.js';
 </script>
 
 <style>
@@ -247,6 +277,13 @@ const scanFile = Object.values(import.meta.glob('../data/scan.json', { eager: tr
     max-width: 560px;
     min-width: 0;
     padding-top: 110px;
+  }
+  /* Wide screens: tuck the terminal up next to the short last line of the
+     headline, so terminal and badge sit above the fold. */
+  @media (min-width: 1360px) {
+    .offhero .offhero__side {
+      margin-top: calc(-0.82 * min(11.5vw, 176px) - 148px);
+    }
   }
   /* The badge is clipped onto the terminal's corner. */
   .offhero__clip {
@@ -456,6 +493,8 @@ const scanFile = Object.values(import.meta.glob('../data/scan.json', { eager: tr
   .degree {
     min-width: 640px;
     width: 100%;
+    /* four equal quarters, whatever text a block holds */
+    table-layout: fixed;
     border-collapse: separate;
     border-spacing: 6px;
     margin-inline: -6px;
@@ -469,6 +508,7 @@ const scanFile = Object.values(import.meta.glob('../data/scan.json', { eager: tr
     text-align: left;
     font-weight: 400;
   }
+  .degree thead td,
   .degree tbody th {
     width: 110px;
     vertical-align: middle;
@@ -508,6 +548,29 @@ const scanFile = Object.values(import.meta.glob('../data/scan.json', { eager: tr
   .blk.is-now {
     outline: 3px solid var(--ink);
     outline-offset: 3px;
+  }
+  .blk__prog {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 6px;
+  }
+  .blk__prog[hidden] {
+    display: none;
+  }
+  .blk__bar {
+    display: block;
+    height: 4px;
+    background: color-mix(in srgb, currentColor 25%, transparent);
+  }
+  .blk__bar > span {
+    display: block;
+    height: 100%;
+    background: currentColor;
+  }
+  .blk--p .blk__prog .label-s {
+    color: inherit;
+    opacity: 0.85;
   }
 
   .road li {
