@@ -6,7 +6,7 @@
 // The GitHub Action refreshes the JSON and commits; the commit
 // triggers the redeploy.
 import SectionHead from './SectionHead.astro';
-import { results, upcoming } from '../data/races';
+import { getRaces } from '../data/races';
 import live from '../data/live-stats.json';
 
 const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
@@ -19,6 +19,7 @@ const streakWeeks = live.strava?.streakWeeks ?? null;
 const sessionsThisYear = live.strava?.sessionsThisYear ?? null;
 const weekly = live.strava?.weeklyKmLast12 ?? [];
 const lastRun = live.strava?.lastRun ?? null;
+const { results, upcoming } = await getRaces();
 const updated = live.updatedAt ? fmtDate(live.updatedAt.slice(0, 10)) : null;
 const year = new Date().getFullYear();
 
@@ -72,7 +73,7 @@ const last = coords.length ? coords[coords.length - 1] : null;
                 <th scope="row">
                   {r.href ? <a href={r.href}>{r.name}</a> : r.name}
                   <span class="meta rtable__sub">
-                    {fmtDate(r.date)} · {r.format}{r.href ? ' · REPORT' : ''}
+                    {r.dateLabel} · {r.format}{r.href ? ' · REPORT' : ''}
                   </span>
                 </th>
                 <td>
@@ -93,7 +94,7 @@ const last = coords.length ? coords[coords.length - 1] : null;
               <tr>
                 <th scope="row">
                   {r.name}
-                  <span class="meta rtable__sub">{fmtDate(r.date)} · {r.format}</span>
+                  <span class="meta rtable__sub">{r.dateLabel} · {r.format}</span>
                 </th>
                 <td>
                   <span class="data rtable__val">{r.target ? r.target : '—'}</span>

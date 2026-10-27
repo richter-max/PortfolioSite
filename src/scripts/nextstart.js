@@ -23,12 +23,12 @@
       const [next, then] = future;
       el.querySelector('[data-ns-name]').textContent = next.name;
       el.querySelector('[data-ns-spec]').textContent =
-        `${fmt(next.date)} · ${next.format}${next.target ? ` · TARGET ${next.target}` : ''}`;
+        `${next.dateLabel ?? fmt(next.date)} · ${next.format}${next.target ? ` · TARGET ${next.target}` : ''}`;
       el.querySelector('[data-ns-days]').textContent = String(days(next.date));
       const thenEl = el.querySelector('[data-ns-then]');
       if (thenEl) {
         if (then) {
-          thenEl.textContent = `THEN · ${then.name.toUpperCase()} · ${fmt(then.date)}`;
+          thenEl.textContent = `THEN · ${then.name.toUpperCase()} · ${then.dateLabel ?? fmt(then.date)}`;
         } else {
           thenEl.remove();
         }
