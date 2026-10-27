@@ -12,7 +12,7 @@ const posts = (await sortedPosts()).slice(0, limit);
 <section id="journal" class="journal wrap" aria-labelledby="journal-h">
   <div class="journal__head">
     <h2 id="journal-h" class="label">Journal</h2>
-    <a class="label" href="/blog">All posts →</a>
+    <a class="label link" href="/blog">All posts <span class="arr">→</span></a>
   </div>
   <div class="journal__grid">
     {posts.map((p) => (

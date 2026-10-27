@@ -138,6 +138,26 @@ a {
   font-variant-numeric: tabular-nums;
 }
 
+/* Text links: an underline that wipes in from the left, and an arrow
+   (wrapped in .arr) that steps forward. */
+.link {
+  text-decoration: none;
+  background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+  transition: background-size 0.5s var(--ease-wipe);
+  padding-bottom: 2px;
+}
+.link:hover,
+.link:focus-visible {
+  background-size: 100% 1px;
+}
+.link .arr {
+  display: inline-block;
+  transition: transform 0.4s var(--ease-settle);
+}
+.link:hover .arr {
+  transform: translateX(5px);
+}
+
 /* Headline settles from wide to tight tracking on load. */
 .settle {
   animation: settle var(--dur-headline) var(--ease-settle) 0.2s both;

@@ -1,0 +1,199 @@
+---
+// Training.astro — the training made visible: one square per week of the
+// streak (last 52 weeks) and the kilometres of the last 12 weeks as a
+// curve. Plus the small numbers. All from live-stats.json, refreshed daily
+// by the Strava workflow. Squares fill and the curve draws when the block
+// scrolls into view; without JS or with reduced motion it is simply shown.
+import live from '../../data/live-stats.json';
+import { daysUntil, type UpcomingRace } from '../../data/races';
+
+interface Props {
+  next?: UpcomingRace;
+}
+const { next } = Astro.props;
+const s = live.strava;
+const streak = Math.min(52, s?.streakWeeks ?? 0);
+const weeks = Array.from({ length: 52 }, (_, i) => ({ on: i >= 52 - streak, now: i === 51 }));
+const km: number[] = s?.weeklyKmLast12 ?? [];
+
+// curve geometry (viewBox 560 × 240, baseline 220)
+const W = 560;
+const H = 220;
+const max = Math.max(10, Math.ceil(Math.max(...km, 0) / 10) * 10);
+const pts = km.map((v, i) => ({ x: km.length > 1 ? (i * W) / (km.length - 1) : 0, y: H - (v / max) * (H - 24), v }));
+const line = pts.map((p, i) => `${i ? 'L' : 'M'}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+const area = pts.length ? `${line} L${W},${H} L0,${H} Z` : '';
+const peakIdx = km.length ? km.indexOf(Math.max(...km)) : -1;
+const peak = peakIdx >= 0 ? pts[peakIdx] : null;
+const year = new Date(live.updatedAt).getFullYear();
+---
+
+<section class="train wrap" aria-labelledby="train-h" data-reveal>
+  <h2 id="train-h" class="label">Training · from Strava, updated daily · no routes</h2>
+
+  <div class="train__grid">
+    <div class="train__streak">
+      <span class="label">Weeks in a row</span>
+      <span class="stat-l train__big">{s?.streakWeeks ?? '—'}</span>
+      <div class="train__squares" role="img" aria-label={`${streak} of the last 52 weeks with training, without a gap`}>
+        {weeks.map((w, i) => (
+          <span class:list={['sq', { 'is-on': w.on, 'is-now': w.now }]} style={`--i:${i}`}></span>
+        ))}
+      </div>
+      <span class="label-s">One square per week · the light one is this week</span>
+    </div>
+
+    {km.length > 0 && (
+      <div class="train__km">
+        <span class="label">Kilometres per week · last 12 weeks</span>
+        <span class="stat-l train__big">{km[peakIdx]}<span class="train__unit"> km peak</span></span>
+        <svg viewBox={`0 -20 ${W} ${H + 24}`} class="train__svg" role="img" aria-label={`Weekly kilometres for the last 12 weeks: ${km.join(', ')}. This week is still in progress.`}>
+          <line x1="0" y1={H} x2={W} y2={H} class="train__base"></line>
+          <path d={area} class="train__area"></path>
+          <path d={line} class="train__line" pathLength="1"></path>
+          {pts.map((p, i) => <circle cx={p.x} cy={p.y} r={i === peakIdx ? 5 : 3} class="train__dot"></circle>)}
+          {peak && <text x={peak.x} y={peak.y - 14} text-anchor="middle" class="train__peak">{km[peakIdx]}</text>}
+        </svg>
+        <div class="label-s train__axis"><span>12 weeks ago</span><span>This week, in progress</span></div>
+      </div>
+    )}
+  </div>
+
+  <div class="train__small">
+    {s?.sessionsThisYear != null && <div><span class="label">Sessions {year}</span><span class="stat-m">{s.sessionsThisYear}</span></div>}
+    {s?.lastRun && <div><span class="label">Last run · {s.lastRun.weekday}</span><span class="stat-m">{s.lastRun.km} km</span></div>}
+    {next && <div><span class="label">Days to {next.name.split(' ')[0]}</span><span class="stat-m" data-days-until={next.date}>{daysUntil(next.date)}</span></div>}
+  </div>
+</section>
+
+<script>
+  import '../../scripts/v3/reveal.js';
+</script>
+
+<style>
+  .train {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+  .train__grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-7) 64px;
+  }
+  .train__streak {
+    flex: 0 1 470px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .train__km {
+    flex: 1 1 420px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .train__big {
+    font-size: clamp(72px, 9vw, 120px);
+  }
+  .train__unit {
+    font-size: 0.28em;
+    font-weight: 400;
+  }
+  .train__squares {
+    display: grid;
+    grid-template-columns: repeat(13, minmax(0, 1fr));
+    gap: 6px;
+    max-width: 440px;
+  }
+  .sq {
+    aspect-ratio: 1;
+    background: var(--line);
+  }
+  .sq.is-on {
+    background: var(--ink);
+  }
+  .sq.is-now {
+    background: var(--lamp);
+    outline: 1.5px solid var(--lamp);
+    outline-offset: 3px;
+    box-shadow: 0 0 18px color-mix(in srgb, var(--lamp) 45%, transparent);
+  }
+  .train__svg {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+  .train__base {
+    stroke: var(--line);
+    stroke-width: 1;
+  }
+  .train__area {
+    fill: var(--ink);
+    fill-opacity: 0.08;
+  }
+  .train__line {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 2.5;
+    stroke-linejoin: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
+  }
+  .train__dot {
+    fill: var(--ink);
+  }
+  .train__peak {
+    fill: var(--ink);
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+  .train__axis {
+    display: flex;
+    justify-content: space-between;
+  }
+  .train__small {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    border-top: 1px solid var(--line);
+  }
+  .train__small > div {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 20px;
+  }
+
+  /* Scroll reveal: only when JS has marked the block as pending. */
+  :global(.will-reveal) .sq.is-on {
+    background: var(--line);
+  }
+  :global(.will-reveal) .train__line {
+    stroke-dashoffset: 1;
+  }
+  :global(.will-reveal) .train__area,
+  :global(.will-reveal) .train__dot,
+  :global(.will-reveal) .train__peak {
+    opacity: 0;
+  }
+  :global(.is-revealed) .sq.is-on {
+    animation: fill 0.35s var(--ease-settle) both;
+    animation-delay: calc(var(--i) * 28ms);
+  }
+  @keyframes fill {
+    from {
+      transform: scale(0.3);
+      background: var(--line);
+    }
+  }
+  :global(.is-revealed) .train__line {
+    transition: stroke-dashoffset 2.2s var(--ease-wipe) 0.4s;
+  }
+  :global(.is-revealed) .train__area,
+  :global(.is-revealed) .train__dot,
+  :global(.is-revealed) .train__peak {
+    transition: opacity 0.8s 2.2s;
+  }
+</style>

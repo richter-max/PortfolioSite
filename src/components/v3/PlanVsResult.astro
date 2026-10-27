@@ -40,7 +40,7 @@ const pct = (h: number) => `${((h / max) * 100).toFixed(1)}%`;
           </div>
         )}
         <p>
-          {r.note} {r.href && <a class="label-s" href={r.href}>Read the report →</a>}
+          {r.note} {r.href && <a class="label-s link" href={r.href}>Read the report <span class="arr">→</span></a>}
         </p>
       </article>
     ))}

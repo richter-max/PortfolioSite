@@ -2,12 +2,15 @@
 // OnHero.astro — night landscape (canvas), headline, the bib.
 // The canvas is decoration (aria-hidden); everything readable is HTML.
 import RaceBib from './RaceBib.astro';
-import type { UpcomingRace } from '../../data/races';
+import { daysUntil, type UpcomingRace } from '../../data/races';
 
 interface Props {
   races: UpcomingRace[];
 }
 const { races } = Astro.props;
+const next = races[0];
+// Race day at 00:00 in Germany; the start time is not published yet.
+const target = next ? `${next.date}T00:00:00+02:00` : null;
 ---
 
 <section class="onhero">
@@ -22,8 +25,19 @@ const { races } = Astro.props;
           The main event of my 2027 season. I'm documenting the whole way there,
           including the races that go wrong.
         </p>
+        {next && target && (
+          <div class="onhero__count" data-countdown={target} aria-label={`${daysUntil(next.date)} days to ${next.name}`}>
+            <span class="label onhero__countlabel">{next.name} · race day</span>
+            <span class="onhero__clock" aria-hidden="true">
+              <span><b data-cd="d">{daysUntil(next.date)}</b><i>d</i></span>
+              <span><b data-cd="h">--</b><i>h</i></span>
+              <span><b data-cd="m">--</b><i>m</i></span>
+              <span class="onhero__sec"><b data-cd="s">--</b><i>s</i></span>
+            </span>
+          </div>
+        )}
         <p class="label onhero__cross">
-          Off track: dual student, IT security, Bosch · <a href="/off-track">Switch →</a>
+          Off track: dual student, IT security, Bosch · <a class="link" href="/off-track">Switch <span class="arr">→</span></a>
         </p>
       </div>
     </div>
@@ -33,6 +47,7 @@ const { races } = Astro.props;
 
 <script>
   import '../../scripts/v3/landscape.js';
+  import '../../scripts/v3/countdown.js';
 </script>
 
 <style>
@@ -114,6 +129,42 @@ const { races } = Astro.props;
     margin: 0;
     flex: 1 1 260px;
     max-width: 42ch;
+  }
+  .onhero__count {
+    flex: 1 1 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2) var(--space-5);
+    margin: 0;
+  }
+  .onhero__countlabel {
+    color: #edebe6;
+    opacity: 0.8;
+  }
+  .onhero__clock {
+    display: flex;
+    gap: var(--space-4);
+    font-family: var(--font-display);
+    font-stretch: var(--stretch-display);
+    font-variant-numeric: tabular-nums;
+  }
+  .onhero__clock b {
+    font-weight: 300;
+    font-size: 40px;
+    line-height: 1;
+  }
+  .onhero__clock i {
+    margin-left: 2px;
+    font-style: normal;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+  .onhero__sec b {
+    color: var(--lamp);
   }
   .onhero :global(.bibscene) {
     flex: 0 1 320px;
