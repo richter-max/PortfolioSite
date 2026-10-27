@@ -1,0 +1,48 @@
+{
+  "scannedAt": "2026-10-27T09:16:10.522Z",
+  "target": "richtermax.com",
+  "discovery": "crt.sh",
+  "hosts": 2,
+  "resolved": 2,
+  "outOfScopeRejected": 0,
+  "durationSeconds": 18.6,
+  "apex": {
+    "https": true,
+    "redirectsToHttps": true,
+    "httpReachable": true,
+    "tls": [
+      "TLSv1.2",
+      "TLSv1.3"
+    ],
+    "certificateDaysLeft": 81,
+    "headers": [
+      {
+        "name": "Strict-Transport-Security",
+        "present": true
+      },
+      {
+        "name": "Content-Security-Policy",
+        "present": true
+      },
+      {
+        "name": "X-Frame-Options",
+        "present": true
+      },
+      {
+        "name": "X-Content-Type-Options",
+        "present": true
+      },
+      {
+        "name": "Referrer-Policy",
+        "present": true
+      }
+    ],
+    "risk": "low"
+  },
+  "findings": {
+    "high": 0,
+    "medium": 0,
+    "low": 0
+  },
+  "warnings": []
+}
