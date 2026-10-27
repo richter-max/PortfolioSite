@@ -56,6 +56,8 @@ const reports = defineCollection({
       image: image().optional(),
       imageAlt: z.string().optional(),
       imageCredit: z.string().optional(),
+      /** Replay of the race against a goal-pace ghost; key of src/data/<key>-ghost.json */
+      ghost: z.enum(['berlin']).optional(),
       draft: z.boolean().default(false),
     }),
 });
