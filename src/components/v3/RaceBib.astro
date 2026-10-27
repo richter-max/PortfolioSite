@@ -30,7 +30,7 @@ const strip = races.slice(0, 4).map((r) => {
 ---
 
 <div class="bibscene" data-tilt="14">
-  <div class="bibsway">
+  <div class="bibsway" data-vt-sig>
     <div class="bibtilt" data-tilt-target>
       <button
         class="bib"
@@ -89,6 +89,8 @@ const strip = races.slice(0, 4).map((r) => {
   }
   .bibsway {
     width: 100%;
+    /* the same name as the ID badge: on a side switch one turns into the other */
+    view-transition-name: signature;
     /* The fade-in lives here, not on the bib: opacity on an element with
        preserve-3d flattens it, and the back would show the mirrored front. */
     animation:
