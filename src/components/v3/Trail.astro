@@ -1,0 +1,424 @@
+---
+// Trail.astro — "The way there": every start since the first result and
+// every one up to the main event, as stations on a trail at night. With
+// JS and motion allowed, the page goes dark and a headlamp beam follows
+// the trail while you scroll (the mouse turns your head a little). After
+// the main event the night lifts. Without JS or with reduced motion the
+// section is simply lit. Everything comes from the races collection and
+// live-stats.json, so it needs no care.
+import live from '../../data/live-stats.json';
+import { daysUntil, toHours, type RaceResult, type UpcomingRace } from '../../data/races';
+
+// Same deterministic generator as motion.js, so the stones never move.
+const rng = (seed: number) => {
+  let v = seed >>> 0;
+  return () => {
+    v = (v * 1664525 + 1013904223) >>> 0;
+    return v / 4294967296;
+  };
+};
+
+interface Props {
+  upcoming: UpcomingRace[];
+  results: RaceResult[];
+}
+const { upcoming, results } = Astro.props;
+
+interface Station {
+  kind: 'past' | 'now' | 'ahead' | 'main';
+  label: string;
+  name: string;
+  fig: string;
+  sub?: string;
+  href?: string;
+  days?: string;
+}
+
+const goalText = (goal?: string) => {
+  if (!goal) return undefined;
+  if (!toHours(goal)) return goal;
+  return /^sub/i.test(goal) ? `goal ${goal.replace(/^sub-?/i, 'sub-')}` : `plan ${goal}`;
+};
+
+const past: Station[] = [...results].reverse().map((r) => ({
+  kind: 'past',
+  label: r.dateLabel,
+  name: r.name,
+  fig: r.result,
+  sub: goalText(r.goal),
+  href: r.href,
+}));
+
+const mainIdx = upcoming.findIndex((r) => r.weight === 'main');
+const ahead: Station[] = upcoming.slice(0, mainIdx + 1).map((r) => ({
+  kind: r.weight === 'main' ? 'main' : 'ahead',
+  label: r.dateLabel,
+  name: r.name,
+  fig: r.weight === 'main' ? r.format : (r.target ?? r.format),
+  sub: r.weight === 'main' ? 'Start at midnight in Kitzbühel. The finish in Fieberbrunn comes after sunrise.' : r.format,
+}));
+
+const s = live.strava;
+const next = upcoming[0];
+const now: Station = {
+  kind: 'now',
+  label: 'Now',
+  name: 'Training',
+  fig: s?.streakWeeks ? `${s.streakWeeks} weeks` : 'In training',
+  sub: s?.streakWeeks ? 'in a row without a gap' : undefined,
+  days: next?.datePrecision === 'day' ? next.date : undefined,
+};
+
+const stations = [...past, now, ...ahead];
+const n = stations.length;
+
+// Trail geometry, shared with trail.js: t runs 0..1 down the section;
+// station i sits at t = (i + 1.1) / (n + 1.6), where the curve is at its
+// outermost point, alternating sides.
+const phase = (t: number) => Math.PI * (t * (n + 1.6) - 0.6);
+const xWide = (t: number) => 0.5 + 0.16 * Math.sin(phase(t));
+const xNarrow = (t: number) => 0.09 + 0.03 * Math.sin(phase(t));
+const path = (x: (t: number) => number) =>
+  Array.from({ length: 241 }, (_, i) => {
+    const t = i / 240;
+    return `${i ? 'L' : 'M'}${(x(t) * 100).toFixed(2)},${(t * 1000).toFixed(1)}`;
+  }).join(' ');
+const tOf = (i: number) => (i + 1.1) / (n + 1.6);
+
+// Stones beside the trail (wide layout only), deterministic.
+const r = rng(204);
+const stones = Array.from({ length: 46 }, () => {
+  const t = r();
+  const side = r() < 0.5 ? -1 : 1;
+  return {
+    x: (xWide(t) + side * (0.035 + r() * 0.09)) * 100,
+    y: t * 100,
+    s: 3 + r() * 9,
+  };
+});
+
+// The mountains at the end, in front of the sunrise. Filled with the page
+// colour, so the night ends on the next section without a seam.
+const rr = rng(2027);
+const ridge = (() => {
+  const pts: string[] = [];
+  let y = 18;
+  for (let i = 0; i <= 40; i++) {
+    y = Math.min(26, Math.max(4, y + (rr() - 0.5) * 7));
+    pts.push(`${(i * 2.5).toFixed(1)},${y.toFixed(1)}`);
+  }
+  return `M0,30 L${pts.join(' L')} L100,30 Z`;
+})();
+
+const pct = (v: number) => `${(v * 100).toFixed(2)}%`;
+---
+
+<section class="trail" aria-labelledby="trail-h" data-trail data-n={n} style={`--n:${n}`}>
+  <div class="trail__stage" aria-hidden="true">
+    <canvas class="trail__beam" data-trail-beam></canvas>
+  </div>
+
+  <div class="trail__ground" aria-hidden="true">
+    <svg class="trail__svg is-wide" viewBox="0 0 100 1000" preserveAspectRatio="none">
+      <path d={path(xWide)} class="trail__band"></path>
+      <path d={path(xWide)} class="trail__dash"></path>
+    </svg>
+    <svg class="trail__svg is-narrow" viewBox="0 0 100 1000" preserveAspectRatio="none">
+      <path d={path(xNarrow)} class="trail__band"></path>
+      <path d={path(xNarrow)} class="trail__dash"></path>
+    </svg>
+    {stones.map((st) => (
+      <span class="trail__stone" style={`left:${st.x.toFixed(2)}%;top:${st.y.toFixed(2)}%;--s:${st.s.toFixed(1)}px`}></span>
+    ))}
+    <div class="trail__dawn"></div>
+    <svg class="trail__ridge" viewBox="0 0 100 30" preserveAspectRatio="none"><path d={ridge}></path></svg>
+  </div>
+
+  <header class="trail__head wrap">
+    <h2 id="trail-h" class="label">The way there · {past.length} starts behind, {ahead.length} ahead</h2>
+    <p class="display-l">From the first finish line to the start in Kitzbühel.</p>
+  </header>
+
+  <ol class="trail__list">
+    {stations.map((st, i) => {
+      const t = tOf(i);
+      const right = Math.sin(phase(t)) > 0;
+      return (
+        <li
+          class:list={['trail__st', `is-${st.kind}`, right ? 'is-right' : 'is-left']}
+          style={`--y:${i + 1.1};--xw:${pct(xWide(t))};--xn:${pct(xNarrow(t))}`}
+          data-trail-st
+        >
+          <span class="trail__dot" aria-hidden="true"></span>
+          <div class="trail__card">
+            <span class="label">{st.label}</span>
+            <h3 class="trail__name">{st.name}</h3>
+            <span class="trail__fig">{st.fig}</span>
+            {st.sub && <span class="trail__sub">{st.sub}</span>}
+            {st.days && (
+              <span class="trail__sub">
+                <span data-days-until={st.days}>{daysUntil(st.days)}</span> days to {next.name.split(' ')[0]}
+              </span>
+            )}
+            {st.href && <a class="label-s link" href={st.href}>Read the report <span class="arr">→</span></a>}
+          </div>
+        </li>
+      );
+    })}
+  </ol>
+</section>
+
+<script>
+  import '../../scripts/v3/trail.js';
+</script>
+
+<style>
+  .trail {
+    --step: 56vh;
+    --night: #060605;
+    position: relative;
+    height: calc((var(--n) + 1.6) * var(--step));
+    background: var(--night);
+    overflow: clip;
+  }
+  @supports (height: 1svh) {
+    .trail {
+      --step: 56svh;
+    }
+  }
+
+  /* Darkness with the beam cut out. Sticky, so it covers the viewport
+     while the section passes; only shown once JS has turned the night on. */
+  .trail__stage {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    height: 100vh;
+    height: 100svh;
+    margin-bottom: -100vh;
+    margin-bottom: -100svh;
+    pointer-events: none;
+    display: none;
+  }
+  .trail.is-night .trail__stage {
+    display: block;
+  }
+  .trail__beam {
+    width: 100%;
+    height: 100%;
+    animation: flicker 3.4s steps(1) infinite;
+  }
+  @keyframes flicker {
+    47% {
+      opacity: 0.94;
+    }
+    48% {
+      opacity: 0.86;
+    }
+    49% {
+      opacity: 1;
+    }
+  }
+
+  /* The ground: a faint texture you only see where the light falls. */
+  .trail__ground {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background-image: radial-gradient(circle, #23221f 1.1px, transparent 1.6px);
+    background-size: 19px 23px;
+  }
+  .trail__svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .trail__band {
+    fill: none;
+    stroke: #201f1c;
+    stroke-width: 64px;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+  }
+  .trail__dash {
+    fill: none;
+    stroke: #77736c;
+    stroke-width: 1.5px;
+    stroke-dasharray: 5 13;
+    vector-effect: non-scaling-stroke;
+  }
+  .trail__svg.is-narrow {
+    display: none;
+  }
+  .trail__stone {
+    position: absolute;
+    width: var(--s);
+    height: calc(var(--s) * 0.7);
+    border-radius: 45% 55% 40% 50%;
+    background: #34322e;
+    transform: translate(-50%, -50%);
+  }
+  /* The night lifts after the main event: a low glow on the horizon. */
+  .trail__dawn {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: calc(var(--step) * 1.9);
+    background:
+      radial-gradient(ellipse 60% 55% at 50% 88%, rgb(255 248 230 / 0.2), rgb(255 248 230 / 0) 70%),
+      linear-gradient(to bottom, rgb(255 248 230 / 0), rgb(255 248 230 / 0.06) 80%);
+  }
+  .trail__ridge {
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    width: 100%;
+    height: calc(var(--step) * 0.55);
+    fill: var(--surface);
+  }
+
+  .trail__head {
+    position: relative;
+    z-index: 2;
+    padding-top: calc(var(--step) * 0.22);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+  .trail__head p {
+    margin: 0;
+    max-width: 14ch;
+  }
+
+  .trail__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .trail__st {
+    position: absolute;
+    z-index: 2;
+    top: calc(var(--y) * var(--step));
+    left: 0;
+    right: 0;
+    transition: opacity 0.7s var(--ease-settle);
+  }
+  .trail__dot {
+    position: absolute;
+    left: var(--xw);
+    top: 0;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1.5px solid var(--ink);
+    background: var(--night);
+    transform: translate(-50%, -50%);
+  }
+  .is-now .trail__dot,
+  .is-main .trail__dot {
+    background: var(--lamp);
+    border-color: var(--lamp);
+    box-shadow: 0 0 22px rgb(255 248 230 / 0.6);
+  }
+  .is-past .trail__dot {
+    background: var(--ink);
+  }
+  .trail__card {
+    position: absolute;
+    top: 0;
+    width: min(440px, 40vw);
+    transform: translateY(-34px);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .is-right .trail__card {
+    right: calc(100% - var(--xw) + 44px);
+    align-items: flex-end;
+    text-align: right;
+  }
+  .is-left .trail__card {
+    left: calc(var(--xw) + 44px);
+  }
+  .trail__name {
+    margin: 0;
+    font-family: var(--font-display);
+    font-stretch: 62%;
+    font-weight: 700;
+    font-size: clamp(38px, 5vw, 72px);
+    line-height: 0.88;
+    text-transform: uppercase;
+  }
+  .is-main .trail__name {
+    font-size: clamp(48px, 7vw, 104px);
+  }
+  .trail__fig {
+    font-family: var(--font-display);
+    font-stretch: 62%;
+    font-weight: 300;
+    font-size: clamp(26px, 2.6vw, 38px);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .is-now .trail__fig,
+  .is-main .trail__fig {
+    color: var(--lamp);
+  }
+  .trail__sub {
+    color: var(--ink-muted);
+    font-size: 15px;
+    line-height: 1.5;
+    max-width: 34ch;
+  }
+  .trail__card .link {
+    color: var(--ink);
+  }
+
+  /* Stations wait in the dark until the light reaches them. */
+  .trail.is-night .trail__st:not(.is-lit) {
+    opacity: 0.12;
+  }
+
+  @media (max-width: 759px) {
+    .trail {
+      --step: 50vh;
+    }
+    @supports (height: 1svh) {
+      .trail {
+        --step: 50svh;
+      }
+    }
+    .trail__svg.is-wide,
+    .trail__stone {
+      display: none;
+    }
+    .trail__svg.is-narrow {
+      display: block;
+    }
+    .trail__band {
+      stroke-width: 26px;
+    }
+    .trail__dot {
+      left: var(--xn);
+    }
+    .is-right .trail__card,
+    .is-left .trail__card {
+      left: calc(var(--xn) + 26px);
+      right: 16px;
+      width: auto;
+      align-items: flex-start;
+      text-align: left;
+    }
+    .trail__head {
+      padding-left: 64px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .trail__beam {
+      animation: none;
+    }
+  }
+</style>
