@@ -20,7 +20,7 @@ const { id, image, imageAlt, caption, credit, label, title, figures, href } = As
 
 <section class="feature wrap" aria-labelledby={id}>
   <figure class="feature__fig">
-    <Image src={image} alt={imageAlt} widths={[520, 1040]} sizes="(max-width: 760px) 100vw, 520px" />
+    <Image src={image} alt={imageAlt} widths={[520, 1040]} quality={72} sizes="(max-width: 760px) 100vw, 520px" />
     <figcaption class="label-s"><span>{caption}</span>{credit && <span>{credit}</span>}</figcaption>
   </figure>
   <div class="feature__text">

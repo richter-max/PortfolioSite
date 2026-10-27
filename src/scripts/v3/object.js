@@ -22,6 +22,7 @@ for (const scene of document.querySelectorAll('[data-tilt]')) {
 for (const btn of document.querySelectorAll('[data-flip]')) {
   btn.addEventListener('click', () => {
     const back = btn.classList.toggle('is-back');
-    btn.setAttribute('aria-label', back ? btn.dataset.labelBack : btn.dataset.labelFront);
+    const label = btn.querySelector('[data-flip-label]');
+    if (label) label.textContent = back ? btn.dataset.labelBack : btn.dataset.labelFront;
   });
 }
