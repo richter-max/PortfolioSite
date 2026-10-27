@@ -138,6 +138,16 @@ function setup(canvas) {
     let peak = 20;
     for (let i = 20; i < ridge3.length - 20; i++) if (ridge3[i] < ridge3[peak]) peak = i;
     trail = { from: Math.max(0, peak - 90), to: peak };
+    if (W < 1000) {
+      // Phones and tablets (bib below the text): the copy spans the width and would sit under the lamps.
+      // Climb from the right edge to the highest point of the right
+      // quarter instead, where the text lines end.
+      const n = ridge3.length;
+      const start = Math.floor(n * 0.78);
+      let p = start;
+      for (let i = start; i < n - 2; i++) if (ridge3[i] < ridge3[p]) p = i;
+      trail = { from: n - 1, to: p };
+    }
   };
 
   const draw = (t) => {

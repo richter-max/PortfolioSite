@@ -6,7 +6,15 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://richtermax.com',
   output: 'static',
-  integrations: [sitemap()],
+  // Vercel serves /off-track and redirects /off-track/ (cleanUrls,
+  // trailingSlash false); canonical, og:url and sitemap must match that.
+  trailingSlash: 'never',
+  integrations: [
+    sitemap({
+      // legal pages are noindex, so they stay out of the sitemap
+      filter: (page) => !/\/(impressum|datenschutz)\/?$/.test(page),
+    }),
+  ],
   vite: {
     build: {
       // keep every script external so the deployed CSP can stay
