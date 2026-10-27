@@ -1,0 +1,141 @@
+---
+// IdBadge.astro — the Off Track signature object: portrait, name, three
+// facts, a barcode, and a stepped scan line. A personal object; it does
+// not imitate any company badge.
+import { Image } from 'astro:assets';
+import portrait from '../../assets/photos/portrait.webp';
+---
+
+<div class="badgescene" data-tilt="10">
+  <div class="badge" data-tilt-target>
+    <span class="badge__scan" aria-hidden="true"></span>
+    <div class="badge__photo">
+      <Image src={portrait} alt="Portrait of Max Richter" widths={[320, 640]} sizes="320px" />
+      <span class="badge__tag">Off track</span>
+    </div>
+    <div class="badge__body">
+      <span class="badge__name">Richter, M.</span>
+      <dl>
+        <dt>Study</dt><dd>B.Sc. CS · IT security · dual</dd>
+        <dt>Since</dt><dd>October 2026</dd>
+        <dt>Aim</dt><dd>AI security</dd>
+      </dl>
+      <span class="badge__code" aria-hidden="true"></span>
+    </div>
+  </div>
+</div>
+
+<script>
+  import '../../scripts/v3/object.js';
+</script>
+
+<style>
+  .badgescene {
+    perspective: 1400px;
+    width: 100%;
+    max-width: 320px;
+  }
+  .badge {
+    position: relative;
+    display: grid;
+    grid-template-rows: 46% 1fr;
+    aspect-ratio: 5 / 6;
+    border-radius: var(--radius-object);
+    overflow: hidden;
+    background: var(--object-surface);
+    color: var(--object-ink);
+    box-shadow: var(--shadow-object);
+    transition: transform 0.3s ease-out;
+    animation: arrive var(--dur-flip) var(--ease-flip) 0.15s both;
+  }
+  @keyframes arrive {
+    from {
+      transform: rotateY(-180deg);
+    }
+  }
+  .badge__scan {
+    position: absolute;
+    left: 0;
+    right: 0;
+    z-index: 3;
+    height: 1px;
+    background: var(--object-ink);
+    box-shadow: 0 0 10px 1px var(--object-ink);
+    opacity: 0.7;
+    animation: scan 4s 1.5s steps(40) infinite;
+  }
+  @keyframes scan {
+    from {
+      top: 4%;
+    }
+    to {
+      top: 96%;
+    }
+  }
+  .badge__photo {
+    position: relative;
+    overflow: hidden;
+  }
+  .badge__photo :global(img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 30%;
+  }
+  .badge__tag {
+    position: absolute;
+    left: 12px;
+    top: 10px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #edebe6;
+  }
+  .badge__body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px 16px;
+  }
+  .badge__name {
+    font-family: var(--font-display);
+    font-stretch: var(--stretch-display);
+    font-weight: 700;
+    font-size: 34px;
+    line-height: 0.9;
+    text-transform: uppercase;
+  }
+  dl {
+    margin: 0;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 5px 12px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    line-height: 1.3;
+  }
+  dt {
+    opacity: 0.62;
+    text-transform: uppercase;
+  }
+  dd {
+    margin: 0;
+  }
+  .badge__code {
+    margin-top: auto;
+    height: 26px;
+    background: repeating-linear-gradient(90deg, var(--object-ink) 0 2px, transparent 2px 4px, var(--object-ink) 4px 5px, transparent 5px 8px, var(--object-ink) 8px 11px, transparent 11px 13px);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .badge,
+    .badge__scan {
+      animation: none;
+    }
+    .badge__scan {
+      display: none;
+    }
+  }
+</style>
