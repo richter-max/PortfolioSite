@@ -11,12 +11,12 @@ const { side } = Astro.props;
 const nav =
   side === 'on'
     ? [
-        { href: '#season', label: 'Season' },
-        { href: '#journal', label: 'Journal' },
+        { href: '/#season', label: 'Season' },
+        { href: '/#journal', label: 'Journal' },
       ]
     : [
-        { href: '#fields', label: 'Fields' },
-        { href: '#roadmap', label: 'Roadmap' },
+        { href: '/off-track#fields', label: 'Fields' },
+        { href: '/off-track#roadmap', label: 'Roadmap' },
         { href: SITE.author.github, label: 'GitHub' },
         { href: SITE.author.linkedin, label: 'LinkedIn' },
       ];

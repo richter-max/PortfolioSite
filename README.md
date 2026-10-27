@@ -1,21 +1,32 @@
 # richtermax.com
 
-Personal site of Maximilian Richter — AI agent security, endurance sport.
+Personal site of Maximilian Richter. Two sides of one page:
+**On Track** (`/`, endurance sport, building in public) and **Off Track**
+(`/off-track`, IT security, the dual degree, projects).
 
-Static Astro build, no client framework. IBM Plex Sans + Mono self-hosted.
-The only JavaScript on the page is a small countdown script and the lazily
-loaded Three.js figure. No cookies, no analytics, no forms, no third-party
+Static Astro build, no client framework. Small vanilla modules draw the
+canvas scenes (night landscape, dot grid, AEGIS run) and run the bib flip
+and the season window. No cookies, no analytics, no forms, no third-party
 requests.
 
 ## Stack
 
-| Concern    | Choice                                             |
-| ---------- | -------------------------------------------------- |
-| Framework  | Astro (static output)                              |
-| 3D         | Three.js + Draco-compressed glTF, lazy-loaded      |
-| Typography | IBM Plex Sans Variable + IBM Plex Mono (local)     |
-| CSS        | Design tokens + scoped Astro styles, no framework  |
-| Headers    | HSTS, strict CSP, COOP/CORP etc. via `vercel.json` |
+| Concern    | Choice                                                     |
+| ---------- | ---------------------------------------------------------- |
+| Framework  | Astro (static output), content collections                 |
+| Motion     | Canvas 2D, CSS, cross-document view transitions            |
+| Typography | Archivo (wdth/wght variable) + IBM Plex Sans/Mono, local   |
+| CSS        | Design tokens in `src/styles/v3`, scoped Astro styles      |
+| Headers    | HSTS, strict CSP, COOP/CORP etc. via `vercel.json`         |
+
+## Content
+
+- `src/content/races/` — one Markdown file per race. Add `result` after the
+  race and it moves from the season list to the results.
+- `src/content/reports/` — race reports, short reports, monthly updates.
+  `draft: true` keeps an entry out of production.
+- `src/data/offtrack.ts` — fields, projects, path, degree plan, roadmap.
+- `src/assets/photos/` — photos in the black-and-white preset, no metadata.
 
 ## Getting started
 

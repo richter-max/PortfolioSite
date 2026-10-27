@@ -15,23 +15,29 @@ interface Props {
   side: 'on' | 'off';
   title?: string;
   description?: string;
+  /** Keep this page out of search results (legal pages with a postal address). */
+  noindex?: boolean;
+  /** Page language; legal pages are German. */
+  lang?: 'en' | 'de';
 }
 
 const { side } = Astro.props;
 const meta = SITE.sides[side];
 const title = Astro.props.title ?? meta.title;
 const description = Astro.props.description ?? meta.description;
+const noindex = Astro.props.noindex ?? false;
 const canonical = new URL(Astro.url.pathname, SITE.url).href;
 ---
 
 <!doctype html>
-<html lang="en" data-side={side}>
+<html lang={Astro.props.lang ?? 'en'} data-side={side}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="author" content={SITE.author.name} />
+    {noindex && <meta name="robots" content="noindex" />}
     <meta name="theme-color" content={side === 'on' ? '#0c0c0b' : '#edebe6'} />
     <link rel="canonical" href={canonical} />
 
@@ -40,6 +46,9 @@ const canonical = new URL(Astro.url.pathname, SITE.url).href;
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL(`/og-${side}.png`, SITE.url).href} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />

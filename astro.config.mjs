@@ -1,8 +1,8 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
-// richtermax.com v2 — static output. The only client runtime is
-// Three.js for the figure, loaded lazily when the section approaches.
+// richtermax.com v3 — static output. Client scripts are small vanilla
+// modules (canvas scenes, bib flip, season window), all external.
 export default defineConfig({
   site: 'https://richtermax.com',
   output: 'static',
