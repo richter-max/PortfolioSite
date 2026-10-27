@@ -1,24 +1,46 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import Nav from '../components/Nav.astro';
-import Hero from '../components/Hero.astro';
-import Work from '../components/Work.astro';
-import Foundations from '../components/Foundations.astro';
-import Writing from '../components/Writing.astro';
-import Sport from '../components/Sport.astro';
-import Figure from '../components/Figure.astro';
-import Contact from '../components/Contact.astro';
+// / — On Track. Sections are added in step 3 (hero landscape and bib,
+// stats, season, plan vs. result, journal, table tennis).
+import SideLayout from '../layouts/SideLayout.astro';
+import Bridge from '../components/v3/Bridge.astro';
 ---
 
-<BaseLayout>
-  <Nav />
-  <main id="main">
-    <Hero />
-    <Work />
-    <Foundations />
-    <Writing />
-    <Sport />
-    <Figure />
-    <Contact />
-  </main>
-</BaseLayout>
+<SideLayout side="on">
+  <section class="hero wrap">
+    <p class="label">KAT100 Endurance Trail · Kitzbühel → Fieberbrunn · August 2027</p>
+    <h1 class="display-xl settle">81 km.<br />4,850 m up.<br />Start 00:00.</h1>
+    <div class="hero__copy">
+      <p>
+        The main event of my 2027 season. I'm documenting the whole way there,
+        including the races that go wrong.
+      </p>
+      <p class="label">
+        Off track: dual student, IT security, Bosch · <a href="/off-track">Switch →</a>
+      </p>
+    </div>
+  </section>
+
+  <Bridge
+    to="off"
+    text="Dual student in Computer Science, IT security, at Bosch. Heading for AI security."
+  />
+</SideLayout>
+
+<style>
+  .hero {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    padding-block: var(--space-8) var(--space-9);
+  }
+  .hero__copy {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4) var(--space-7);
+  }
+  .hero__copy p {
+    margin: 0;
+    flex: 1 1 280px;
+    max-width: 42ch;
+  }
+</style>

@@ -1,0 +1,48 @@
+---
+// /off-track — Off Track. Sections are added in step 4 (hero grid and
+// badge, fields, AEGIS case, projects, path, degree, roadmap, contact).
+import SideLayout from '../layouts/SideLayout.astro';
+import Bridge from '../components/v3/Bridge.astro';
+---
+
+<SideLayout side="off">
+  <section class="hero wrap">
+    <p class="label">Off track · IT security</p>
+    <h1 class="display-xl settle">Studying IT security.<br />Heading for AI security.</h1>
+    <div class="hero__copy">
+      <p>
+        Dual B.Sc. Computer Science with an IT security focus at Bosch, since
+        October 2026. Before that: an apprenticeship as a software developer and
+        eight months as an IT key user. It's early. On the side I build security
+        tools, test them until they fail, and write down what I learn.
+      </p>
+      <p class="label">
+        On track: training for an 81 km night race · <a href="/">Switch →</a>
+      </p>
+    </div>
+  </section>
+
+  <Bridge
+    to="on"
+    text="Training for KAT100: 81 km and 4,850 m of climbing, starting at midnight in Kitzbühel."
+  />
+</SideLayout>
+
+<style>
+  .hero {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    padding-block: var(--space-8) var(--space-9);
+  }
+  .hero__copy {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4) var(--space-7);
+  }
+  .hero__copy p {
+    margin: 0;
+    flex: 1 1 280px;
+    max-width: 48ch;
+  }
+</style>

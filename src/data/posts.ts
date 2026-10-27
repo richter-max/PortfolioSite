@@ -25,37 +25,6 @@ export const posts: Post[] = [
     pubDate: '2026-06-18',
     readTime: '7 min',
   },
-  {
-    slug: 'building-aegis',
-    title: 'Six lessons from AEGIS.',
-    description:
-      'What building a deterministic security evaluation harness for ' +
-      'tool-using AI agents actually taught me — about decisions, scope, ' +
-      'and the discipline of staying boring.',
-    pubDate: '2026-04-25',
-    revised: '2026-09-01',
-    readTime: '8 min',
-  },
-  {
-    slug: 'public-by-accident',
-    title: 'Public, by accident.',
-    description:
-      'What strangers can pull from your social media. The gap between ' +
-      'sharing one thing and revealing another — and what to actually do ' +
-      'about it.',
-    pubDate: '2026-03-14',
-    readTime: '7 min',
-  },
-  {
-    slug: 'ausbildung-first',
-    title: 'Ausbildung first.',
-    description:
-      'Why I did the German vocational route before going to university — ' +
-      'and why I\u2019m starting the university part now anyway. Practice ' +
-      'first, theory second.',
-    pubDate: '2026-07-22',
-    readTime: '6 min',
-  },
 ];
 
 /**

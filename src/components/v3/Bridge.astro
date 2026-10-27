@@ -1,0 +1,41 @@
+---
+// Bridge.astro — the inverted block at the end of each side that leads
+// to the other one. One link, concrete copy.
+import { SITE } from '../../data/site';
+
+interface Props {
+  to: 'on' | 'off';
+  text: string;
+}
+const { to, text } = Astro.props;
+---
+
+<div class="wrap">
+  <a class="bridge" href={SITE.sides[to].path}>
+    <span class="display-l">{SITE.sides[to].label} →</span>
+    <span class="bridge__text">{text}</span>
+  </a>
+</div>
+
+<style>
+  .bridge {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: var(--space-4);
+    padding: clamp(28px, 5vw, 64px) clamp(20px, 4vw, 48px);
+    background: var(--ink);
+    color: var(--surface);
+    text-decoration: none;
+  }
+  .bridge__text {
+    flex: 0 1 320px;
+    min-width: 0;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .bridge:focus-visible {
+    outline-offset: 4px;
+  }
+</style>
