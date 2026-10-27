@@ -89,8 +89,17 @@ const strip = races.slice(0, 4).map((r) => {
   }
   .bibsway {
     width: 100%;
-    animation: sway 7s ease-in-out infinite;
+    /* The fade-in lives here, not on the bib: opacity on an element with
+       preserve-3d flattens it, and the back would show the mirrored front. */
+    animation:
+      sway 7s ease-in-out infinite,
+      fade-in 0.5s ease-out 0.15s backwards;
     transform-origin: 50% 0;
+  }
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
   }
   @keyframes sway {
     0%,
@@ -117,12 +126,13 @@ const strip = races.slice(0, 4).map((r) => {
     color: var(--paper-ink);
     transform-style: preserve-3d;
     transition: transform var(--dur-flip) var(--ease-flip);
-    animation: arrive var(--dur-flip) var(--ease-flip) 0.15s both;
+    /* backwards only: once it has arrived, nothing may hold the
+       transform, or the flip below stops working */
+    animation: arrive var(--dur-flip) var(--ease-flip) 0.15s backwards;
   }
   @keyframes arrive {
     from {
       transform: rotateY(-80deg);
-      opacity: 0;
     }
   }
   .bib.is-back {
