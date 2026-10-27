@@ -13,11 +13,12 @@ interface Props {
   noindex?: boolean;
   side?: 'on' | 'off';
   lang?: 'en' | 'de';
+  ogImage?: string;
 }
-const { title, description, kicker, metaLine, noindex = false, side = 'on', lang = 'en' } = Astro.props;
+const { title, description, kicker, metaLine, noindex = false, side = 'on', lang = 'en', ogImage } = Astro.props;
 ---
 
-<SideLayout side={side} title={`${title} — ${SITE.name}`} description={description ?? SITE.sides[side].description} noindex={noindex} lang={lang}>
+<SideLayout side={side} title={`${title} — ${SITE.name}`} description={description ?? SITE.sides[side].description} noindex={noindex} lang={lang} ogImage={ogImage}>
   <div class="prosewrap wrap">
     <header class="prose__head">
       {kicker && <p class="label">{kicker}</p>}
