@@ -2,6 +2,7 @@
 // / — On Track.
 import SideLayout from '../layouts/SideLayout.astro';
 import OnHero from '../components/v3/OnHero.astro';
+import Trail from '../components/v3/Trail.astro';
 import Training from '../components/v3/Training.astro';
 import SeasonList from '../components/v3/SeasonList.astro';
 import Feature from '../components/v3/Feature.astro';
@@ -16,6 +17,7 @@ const { upcoming, results } = await getRaces();
 
 <SideLayout side="on">
   <OnHero races={upcoming} />
+  <Trail upcoming={upcoming} results={results} />
 
   <div class="stack">
     <Training next={upcoming[0]} />
