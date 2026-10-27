@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-27T09:26:04.849Z",
+  "updatedAt": "2026-10-27T14:04:39.646Z",
   "strava": {
     "streakWeeks": 53,
     "sessionsThisYear": 308,
@@ -16,21 +16,818 @@
       59.3,
       34.6,
       60.2,
-      2.8,
-      48.3,
+      0,
+      47.7,
       71.9,
-      34,
+      32.4,
       7.6
+    ],
+    "weeks": [
+      {
+        "week": "2025-W45",
+        "start": "2025-11-03",
+        "km": 1.1,
+        "sessions": 4,
+        "hours": 7.5,
+        "sports": {
+          "run": 1,
+          "tabletennis": 3
+        },
+        "kmBy": {
+          "run": 1.1
+        }
+      },
+      {
+        "week": "2025-W46",
+        "start": "2025-11-10",
+        "km": 0,
+        "sessions": 1,
+        "hours": 2.3,
+        "sports": {
+          "tabletennis": 1
+        },
+        "kmBy": {}
+      },
+      {
+        "week": "2025-W47",
+        "start": "2025-11-17",
+        "km": 0,
+        "sessions": 2,
+        "hours": 6.4,
+        "sports": {
+          "tabletennis": 2
+        },
+        "kmBy": {}
+      },
+      {
+        "week": "2025-W48",
+        "start": "2025-11-24",
+        "km": 0,
+        "sessions": 3,
+        "hours": 12.4,
+        "sports": {
+          "tabletennis": 3
+        },
+        "kmBy": {}
+      },
+      {
+        "week": "2025-W49",
+        "start": "2025-12-01",
+        "km": 59.5,
+        "sessions": 4,
+        "hours": 5.5,
+        "sports": {
+          "ride": 2,
+          "run": 1,
+          "tabletennis": 1
+        },
+        "kmBy": {
+          "ride": 49.2,
+          "run": 10.3
+        }
+      },
+      {
+        "week": "2025-W50",
+        "start": "2025-12-08",
+        "km": 211.2,
+        "sessions": 7,
+        "hours": 10.4,
+        "sports": {
+          "tabletennis": 1,
+          "ride": 3,
+          "run": 2,
+          "swim": 1
+        },
+        "kmBy": {
+          "ride": 190.9,
+          "run": 19.1,
+          "swim": 1.1
+        }
+      },
+      {
+        "week": "2025-W51",
+        "start": "2025-12-15",
+        "km": 60.4,
+        "sessions": 6,
+        "hours": 5.2,
+        "sports": {
+          "ride": 2,
+          "tabletennis": 1,
+          "swim": 2,
+          "run": 1
+        },
+        "kmBy": {
+          "ride": 48.3,
+          "swim": 1.8,
+          "run": 10.3
+        }
+      },
+      {
+        "week": "2025-W52",
+        "start": "2025-12-22",
+        "km": 82.3,
+        "sessions": 7,
+        "hours": 8.1,
+        "sports": {
+          "tabletennis": 2,
+          "ride": 2,
+          "run": 2,
+          "strength": 1
+        },
+        "kmBy": {
+          "ride": 69.6,
+          "run": 12.8
+        }
+      },
+      {
+        "week": "2026-W01",
+        "start": "2025-12-29",
+        "km": 26.1,
+        "sessions": 5,
+        "hours": 12.2,
+        "sports": {
+          "tabletennis": 3,
+          "ride": 1,
+          "strength": 1
+        },
+        "kmBy": {
+          "ride": 26.1
+        }
+      },
+      {
+        "week": "2026-W02",
+        "start": "2026-01-05",
+        "km": 34.5,
+        "sessions": 8,
+        "hours": 11,
+        "sports": {
+          "strength": 2,
+          "swim": 1,
+          "ride": 2,
+          "tabletennis": 3
+        },
+        "kmBy": {
+          "swim": 1.1,
+          "ride": 33.4
+        }
+      },
+      {
+        "week": "2026-W03",
+        "start": "2026-01-12",
+        "km": 102.4,
+        "sessions": 9,
+        "hours": 10.5,
+        "sports": {
+          "strength": 3,
+          "ride": 2,
+          "tabletennis": 2,
+          "swim": 2
+        },
+        "kmBy": {
+          "ride": 101.3,
+          "swim": 1.1
+        }
+      },
+      {
+        "week": "2026-W04",
+        "start": "2026-01-19",
+        "km": 99.1,
+        "sessions": 8,
+        "hours": 11.8,
+        "sports": {
+          "strength": 2,
+          "run": 2,
+          "tabletennis": 3,
+          "ride": 1
+        },
+        "kmBy": {
+          "run": 23.8,
+          "ride": 75.3
+        }
+      },
+      {
+        "week": "2026-W05",
+        "start": "2026-01-26",
+        "km": 15.1,
+        "sessions": 6,
+        "hours": 13.6,
+        "sports": {
+          "strength": 1,
+          "tabletennis": 4,
+          "run": 1
+        },
+        "kmBy": {
+          "run": 15.1
+        }
+      },
+      {
+        "week": "2026-W06",
+        "start": "2026-02-02",
+        "km": 87.2,
+        "sessions": 10,
+        "hours": 13,
+        "sports": {
+          "strength": 3,
+          "run": 2,
+          "swim": 1,
+          "ride": 1,
+          "tabletennis": 3
+        },
+        "kmBy": {
+          "run": 40.3,
+          "swim": 0.8,
+          "ride": 46.2
+        }
+      },
+      {
+        "week": "2026-W07",
+        "start": "2026-02-09",
+        "km": 39.6,
+        "sessions": 9,
+        "hours": 16.6,
+        "sports": {
+          "strength": 2,
+          "run": 2,
+          "tabletennis": 3,
+          "ride": 1,
+          "swim": 1
+        },
+        "kmBy": {
+          "run": 25,
+          "ride": 13.3,
+          "swim": 1.2
+        }
+      },
+      {
+        "week": "2026-W08",
+        "start": "2026-02-16",
+        "km": 17,
+        "sessions": 7,
+        "hours": 10.6,
+        "sports": {
+          "strength": 2,
+          "tabletennis": 3,
+          "run": 1,
+          "other": 1
+        },
+        "kmBy": {
+          "run": 17
+        }
+      },
+      {
+        "week": "2026-W09",
+        "start": "2026-02-23",
+        "km": 26,
+        "sessions": 6,
+        "hours": 11.6,
+        "sports": {
+          "strength": 1,
+          "run": 1,
+          "ride": 1,
+          "other": 1,
+          "tabletennis": 2
+        },
+        "kmBy": {
+          "run": 9.1,
+          "ride": 16.9
+        }
+      },
+      {
+        "week": "2026-W10",
+        "start": "2026-03-02",
+        "km": 0,
+        "sessions": 9,
+        "hours": 13.2,
+        "sports": {
+          "strength": 1,
+          "tabletennis": 3,
+          "other": 5
+        },
+        "kmBy": {}
+      },
+      {
+        "week": "2026-W11",
+        "start": "2026-03-09",
+        "km": 0,
+        "sessions": 7,
+        "hours": 12.1,
+        "sports": {
+          "strength": 2,
+          "tabletennis": 4,
+          "other": 1
+        },
+        "kmBy": {}
+      },
+      {
+        "week": "2026-W12",
+        "start": "2026-03-16",
+        "km": 21.9,
+        "sessions": 7,
+        "hours": 12.6,
+        "sports": {
+          "strength": 1,
+          "other": 1,
+          "run": 2,
+          "tabletennis": 3
+        },
+        "kmBy": {
+          "run": 21.9
+        }
+      },
+      {
+        "week": "2026-W13",
+        "start": "2026-03-23",
+        "km": 13.2,
+        "sessions": 5,
+        "hours": 2.1,
+        "sports": {
+          "strength": 1,
+          "run": 3,
+          "other": 1
+        },
+        "kmBy": {
+          "run": 13.2
+        }
+      },
+      {
+        "week": "2026-W14",
+        "start": "2026-03-30",
+        "km": 108.8,
+        "sessions": 10,
+        "hours": 10.5,
+        "sports": {
+          "strength": 2,
+          "run": 6,
+          "other": 1,
+          "ride": 1
+        },
+        "kmBy": {
+          "run": 46.1,
+          "ride": 62.7
+        }
+      },
+      {
+        "week": "2026-W15",
+        "start": "2026-04-06",
+        "km": 0,
+        "sessions": 7,
+        "hours": 11.5,
+        "sports": {
+          "strength": 3,
+          "tabletennis": 3,
+          "other": 1
+        },
+        "kmBy": {}
+      },
+      {
+        "week": "2026-W16",
+        "start": "2026-04-13",
+        "km": 20.4,
+        "sessions": 7,
+        "hours": 8.3,
+        "sports": {
+          "strength": 2,
+          "run": 2,
+          "other": 2,
+          "tabletennis": 1
+        },
+        "kmBy": {
+          "run": 20.4
+        }
+      },
+      {
+        "week": "2026-W17",
+        "start": "2026-04-20",
+        "km": 66.2,
+        "sessions": 7,
+        "hours": 6.6,
+        "sports": {
+          "strength": 1,
+          "run": 2,
+          "other": 2,
+          "ride": 2
+        },
+        "kmBy": {
+          "run": 14.1,
+          "ride": 52.1
+        }
+      },
+      {
+        "week": "2026-W18",
+        "start": "2026-04-27",
+        "km": 73.2,
+        "sessions": 8,
+        "hours": 8.8,
+        "sports": {
+          "strength": 3,
+          "run": 4,
+          "ride": 1
+        },
+        "kmBy": {
+          "run": 39.3,
+          "ride": 33.9
+        }
+      },
+      {
+        "week": "2026-W19",
+        "start": "2026-05-04",
+        "km": 15.9,
+        "sessions": 10,
+        "hours": 12.6,
+        "sports": {
+          "strength": 3,
+          "run": 2,
+          "tabletennis": 4,
+          "swim": 1
+        },
+        "kmBy": {
+          "run": 15.4,
+          "swim": 0.5
+        }
+      },
+      {
+        "week": "2026-W20",
+        "start": "2026-05-11",
+        "km": 39.3,
+        "sessions": 11,
+        "hours": 10.3,
+        "sports": {
+          "strength": 6,
+          "run": 4,
+          "swim": 1
+        },
+        "kmBy": {
+          "run": 38.9,
+          "swim": 0.4
+        }
+      },
+      {
+        "week": "2026-W21",
+        "start": "2026-05-18",
+        "km": 7.6,
+        "sessions": 4,
+        "hours": 2.7,
+        "sports": {
+          "strength": 1,
+          "tabletennis": 1,
+          "swim": 1,
+          "run": 1
+        },
+        "kmBy": {
+          "swim": 1,
+          "run": 6.6
+        }
+      },
+      {
+        "week": "2026-W22",
+        "start": "2026-05-25",
+        "km": 178.4,
+        "sessions": 10,
+        "hours": 11.2,
+        "sports": {
+          "run": 4,
+          "ride": 2,
+          "strength": 3,
+          "swim": 1
+        },
+        "kmBy": {
+          "run": 43,
+          "ride": 134.1,
+          "swim": 1.3
+        }
+      },
+      {
+        "week": "2026-W23",
+        "start": "2026-06-01",
+        "km": 59.1,
+        "sessions": 5,
+        "hours": 4.9,
+        "sports": {
+          "strength": 2,
+          "run": 2,
+          "ride": 1
+        },
+        "kmBy": {
+          "run": 14.2,
+          "ride": 44.9
+        }
+      },
+      {
+        "week": "2026-W24",
+        "start": "2026-06-08",
+        "km": 60.4,
+        "sessions": 9,
+        "hours": 8.4,
+        "sports": {
+          "strength": 2,
+          "run": 4,
+          "ride": 2,
+          "other": 1
+        },
+        "kmBy": {
+          "run": 21.2,
+          "ride": 39.1
+        }
+      },
+      {
+        "week": "2026-W25",
+        "start": "2026-06-15",
+        "km": 119.1,
+        "sessions": 9,
+        "hours": 12.1,
+        "sports": {
+          "strength": 3,
+          "run": 5,
+          "ride": 1
+        },
+        "kmBy": {
+          "run": 55.2,
+          "ride": 63.8
+        }
+      },
+      {
+        "week": "2026-W26",
+        "start": "2026-06-22",
+        "km": 38.7,
+        "sessions": 7,
+        "hours": 10.2,
+        "sports": {
+          "strength": 2,
+          "run": 3,
+          "tabletennis": 2
+        },
+        "kmBy": {
+          "run": 38.7
+        }
+      },
+      {
+        "week": "2026-W27",
+        "start": "2026-06-29",
+        "km": 37.2,
+        "sessions": 7,
+        "hours": 7.5,
+        "sports": {
+          "strength": 4,
+          "run": 3
+        },
+        "kmBy": {
+          "run": 37.2
+        }
+      },
+      {
+        "week": "2026-W28",
+        "start": "2026-07-06",
+        "km": 79.9,
+        "sessions": 6,
+        "hours": 8.3,
+        "sports": {
+          "strength": 2,
+          "run": 3,
+          "ride": 1
+        },
+        "kmBy": {
+          "run": 42.6,
+          "ride": 37.3
+        }
+      },
+      {
+        "week": "2026-W29",
+        "start": "2026-07-13",
+        "km": 43.7,
+        "sessions": 7,
+        "hours": 7.8,
+        "sports": {
+          "strength": 2,
+          "run": 4,
+          "tabletennis": 1
+        },
+        "kmBy": {
+          "run": 43.7
+        }
+      },
+      {
+        "week": "2026-W30",
+        "start": "2026-07-20",
+        "km": 81.7,
+        "sessions": 8,
+        "hours": 16.9,
+        "sports": {
+          "strength": 2,
+          "run": 5,
+          "other": 1
+        },
+        "kmBy": {
+          "run": 81.7
+        }
+      },
+      {
+        "week": "2026-W31",
+        "start": "2026-07-27",
+        "km": 48.2,
+        "sessions": 7,
+        "hours": 8,
+        "sports": {
+          "strength": 3,
+          "run": 4
+        },
+        "kmBy": {
+          "run": 48.2
+        }
+      },
+      {
+        "week": "2026-W32",
+        "start": "2026-08-03",
+        "km": 43.4,
+        "sessions": 6,
+        "hours": 6.3,
+        "sports": {
+          "strength": 3,
+          "run": 3
+        },
+        "kmBy": {
+          "run": 43.4
+        }
+      },
+      {
+        "week": "2026-W33",
+        "start": "2026-08-10",
+        "km": 20.3,
+        "sessions": 4,
+        "hours": 4.9,
+        "sports": {
+          "strength": 2,
+          "run": 2
+        },
+        "kmBy": {
+          "run": 20.3
+        }
+      },
+      {
+        "week": "2026-W34",
+        "start": "2026-08-17",
+        "km": 45,
+        "sessions": 5,
+        "hours": 6.5,
+        "sports": {
+          "strength": 2,
+          "run": 3
+        },
+        "kmBy": {
+          "run": 45
+        }
+      },
+      {
+        "week": "2026-W35",
+        "start": "2026-08-24",
+        "km": 44.3,
+        "sessions": 8,
+        "hours": 10.7,
+        "sports": {
+          "strength": 4,
+          "run": 3,
+          "ride": 1
+        },
+        "kmBy": {
+          "run": 44.3,
+          "ride": 0
+        }
+      },
+      {
+        "week": "2026-W36",
+        "start": "2026-08-31",
+        "km": 52.4,
+        "sessions": 6,
+        "hours": 8.2,
+        "sports": {
+          "strength": 3,
+          "run": 3
+        },
+        "kmBy": {
+          "run": 52.4
+        }
+      },
+      {
+        "week": "2026-W37",
+        "start": "2026-09-07",
+        "km": 59.3,
+        "sessions": 6,
+        "hours": 8.8,
+        "sports": {
+          "strength": 2,
+          "run": 4
+        },
+        "kmBy": {
+          "run": 59.3
+        }
+      },
+      {
+        "week": "2026-W38",
+        "start": "2026-09-14",
+        "km": 34.6,
+        "sessions": 5,
+        "hours": 6,
+        "sports": {
+          "strength": 2,
+          "run": 3
+        },
+        "kmBy": {
+          "run": 34.6
+        }
+      },
+      {
+        "week": "2026-W39",
+        "start": "2026-09-21",
+        "km": 60.2,
+        "sessions": 5,
+        "hours": 6.4,
+        "sports": {
+          "strength": 1,
+          "run": 4
+        },
+        "kmBy": {
+          "run": 60.2
+        }
+      },
+      {
+        "week": "2026-W40",
+        "start": "2026-09-28",
+        "km": 0,
+        "sessions": 5,
+        "hours": 9.1,
+        "sports": {
+          "strength": 2,
+          "tabletennis": 3
+        },
+        "kmBy": {}
+      },
+      {
+        "week": "2026-W41",
+        "start": "2026-10-05",
+        "km": 47.7,
+        "sessions": 8,
+        "hours": 10,
+        "sports": {
+          "strength": 3,
+          "run": 4,
+          "tabletennis": 1
+        },
+        "kmBy": {
+          "run": 47.7
+        }
+      },
+      {
+        "week": "2026-W42",
+        "start": "2026-10-12",
+        "km": 71.9,
+        "sessions": 7,
+        "hours": 10.1,
+        "sports": {
+          "strength": 2,
+          "run": 5
+        },
+        "kmBy": {
+          "run": 71.9
+        }
+      },
+      {
+        "week": "2026-W43",
+        "start": "2026-10-19",
+        "km": 32.4,
+        "sessions": 6,
+        "hours": 14.1,
+        "sports": {
+          "strength": 2,
+          "tabletennis": 2,
+          "run": 2
+        },
+        "kmBy": {
+          "run": 32.4
+        }
+      },
+      {
+        "week": "2026-W44",
+        "start": "2026-10-26",
+        "km": 7.6,
+        "sessions": 2,
+        "hours": 3,
+        "sports": {
+          "strength": 1,
+          "run": 1
+        },
+        "kmBy": {
+          "run": 7.6
+        }
+      }
     ]
   },
   "github": {
-    "commits30d": 7,
+    "commits30d": 15,
     "latestRepo": {
       "name": "PortfolioSite",
       "url": "https://github.com/richter-max/PortfolioSite",
-      "pushedAt": "2026-10-27T09:16:19Z",
-      "headline": "chore: refresh self-scan (2026-10-27)",
-      "commitDate": "2026-10-27T09:16:14Z"
+      "pushedAt": "2026-10-27T14:04:09Z",
+      "headline": "Round two: ghost race, week squares, trail season, terminal, degree, …",
+      "commitDate": "2026-10-27T14:04:08Z"
     }
   }
 }
