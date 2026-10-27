@@ -10,7 +10,8 @@
 // no edit; when the list is empty, the block removes itself. Day
 // precision only — the data has no start times, so the countdown
 // doesn't pretend to have them.
-import { upcoming } from '../data/races';
+import { getRaces } from '../data/races';
+const { upcoming } = await getRaces();
 
 const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
 
@@ -71,7 +72,7 @@ const then = future[1] ?? null;
         <p class="meta nextstart__label">NEXT START</p>
         <p class="nextstart__name" data-ns-name>{next.name}</p>
         <p class="nextstart__spec meta" data-ns-spec>
-          {fmtDate(next.date)} · {next.format}{next.target ? ` · TARGET ${next.target}` : ''}
+          {next.dateLabel} · {next.format}{next.target ? ` · TARGET ${next.target}` : ''}
         </p>
         <p class="nextstart__count">
           <span class="data nextstart__days" data-ns-days>{daysUntil(next.date, now)}</span>
@@ -79,7 +80,7 @@ const then = future[1] ?? null;
         </p>
         {then && (
           <p class="meta nextstart__then" data-ns-then>
-            THEN · {then.name.toUpperCase()} · {fmtDate(then.date)}
+            THEN · {then.name.toUpperCase()} · {then.dateLabel}
           </p>
         )}
       </aside>

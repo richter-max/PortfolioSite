@@ -1,0 +1,65 @@
+---
+// /blog/[slug] — reports from the `reports` collection (src/content/reports).
+// Drafts are built in `astro dev` only, never in production.
+// The older hand-written posts (/blog/ironman-kraichgau etc.) stay as
+// their own .astro pages until they are migrated.
+import { getCollection, render } from 'astro:content';
+import { Image } from 'astro:assets';
+import ProseLayout from '../../layouts/ProseLayout.astro';
+
+export async function getStaticPaths() {
+  const reports = await getCollection(
+    'reports',
+    ({ data }) => import.meta.env.DEV || !data.draft,
+  );
+  return reports.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const d = entry.data;
+
+const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+const KIND = {
+  'race-report': 'RACE REPORT',
+  'short-report': 'SHORT REPORT',
+  'monthly-update': 'MONTHLY UPDATE',
+  preview: 'PREVIEW',
+} as const;
+const metaLine = [
+  `${d.date.getUTCDate()} ${MONTHS[d.date.getUTCMonth()]} ${d.date.getUTCFullYear()}`,
+  d.result && d.goal ? `${d.result} · GOAL ${d.goal.toUpperCase()}` : d.result,
+  d.draft ? 'DRAFT' : undefined,
+]
+  .filter(Boolean)
+  .join(' · ');
+---
+
+<ProseLayout
+  title={d.title}
+  description={d.summary}
+  kicker={`WRITING · ${KIND[d.type]}`}
+  metaLine={metaLine}
+>
+  {d.image && (
+    <figure class="report__figure">
+      <Image src={d.image} alt={d.imageAlt ?? ''} widths={[640, 960, 1280]} sizes="(max-width: 760px) 100vw, 760px" />
+      {d.imageCredit && <figcaption class="meta">{d.imageCredit}</figcaption>}
+    </figure>
+  )}
+  <Content />
+</ProseLayout>
+
+<style>
+  .report__figure {
+    margin: 0 0 2rem;
+  }
+  .report__figure :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .report__figure figcaption {
+    margin-top: 0.5rem;
+  }
+</style>

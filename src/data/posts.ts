@@ -2,6 +2,8 @@
 // instead of a long mixed one. The homepage Writing section, /blog, and
 // the RSS feed all read from here.
 
+import { getCollection } from 'astro:content';
+
 export interface Post {
   slug: string;
   title: string;
@@ -56,8 +58,20 @@ export const posts: Post[] = [
   },
 ];
 
-/** Sort by the date the post last changed — a revision counts. */
-export function sortedPosts(): Post[] {
+/**
+ * All published posts: the hand-written ones above plus every non-draft
+ * entry of the `reports` collection. Sorted by the date the post last
+ * changed — a revision counts.
+ */
+export async function sortedPosts(): Promise<Post[]> {
+  const reports = await getCollection('reports', ({ data }) => !data.draft);
+  const fromReports: Post[] = reports.map((r) => ({
+    slug: r.id,
+    title: r.data.title,
+    description: r.data.summary,
+    pubDate: r.data.date.toISOString().slice(0, 10),
+    readTime: `${Math.max(1, Math.round((r.body ?? '').split(/\s+/).length / 200))} min`,
+  }));
   const eff = (p: Post) => new Date(p.revised ?? p.pubDate).getTime();
-  return [...posts].sort((a, b) => eff(b) - eff(a));
+  return [...posts, ...fromReports].sort((a, b) => eff(b) - eff(a));
 }
