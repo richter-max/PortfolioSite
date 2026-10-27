@@ -80,7 +80,10 @@ async function main() {
     entries.push({ slug: f.replace(/\.md$/, ''), ...fm });
   }
   await fs.mkdir(OUT, { recursive: true });
-  const browser = await chromium.launch();
+  // CI uses the runner's Chrome (OG_BROWSER_CHANNEL=chrome); locally the
+  // bundled Chromium.
+  const channel = process.env.OG_BROWSER_CHANNEL;
+  const browser = await chromium.launch(channel ? { channel } : {});
   const page = await browser.newPage({ viewport: { width: 1200, height: 630 } });
   // A file:// page, so the local font files may load.
   const tmp = path.join(await fs.mkdtemp(path.join(os.tmpdir(), 'og-')), 'card.html');
