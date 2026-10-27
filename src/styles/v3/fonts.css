@@ -1,13 +1,14 @@
-/* v3/fonts.css — Archivo, self-hosted, variable in width (62–125 %) and
- * weight (100–900). Display type is always set at font-stretch 62 %.
+/* v3/fonts.css — Archivo, self-hosted, variable in width and weight,
+ * trimmed with fontTools' instancer to what the site uses (wdth 62–100 %,
+ * wght 300–800): 60 KB instead of 90 KB per subset. Display type is always set at font-stretch 62 %.
  * Files from @fontsource-variable/archivo 5.3.0 (SIL Open Font License 1.1),
  * copied to public/fonts. IBM Plex comes from ../fonts.css. */
 
 @font-face {
   font-family: 'Archivo Var';
   font-style: normal;
-  font-weight: 100 900;
-  font-stretch: 62% 125%;
+  font-weight: 300 800;
+  font-stretch: 62% 100%;
   font-display: swap;
   src: url('/fonts/archivo-latin-wdth-normal.woff2') format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
@@ -17,8 +18,8 @@
 @font-face {
   font-family: 'Archivo Var';
   font-style: normal;
-  font-weight: 100 900;
-  font-stretch: 62% 125%;
+  font-weight: 300 800;
+  font-stretch: 62% 100%;
   font-display: swap;
   src: url('/fonts/archivo-latin-ext-wdth-normal.woff2') format('woff2');
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,

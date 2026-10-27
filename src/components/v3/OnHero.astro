@@ -52,6 +52,11 @@ const { races } = Astro.props;
     inset: 0;
     width: 100%;
     height: 100%;
+    opacity: 0;
+    transition: opacity 1.2s var(--ease-settle);
+  }
+  .onhero__sky:global(.is-ready) {
+    opacity: 1;
   }
   .onhero__grain {
     position: absolute;

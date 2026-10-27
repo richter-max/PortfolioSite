@@ -90,6 +90,22 @@ const CHIP: Record<string, string> = { focus: 'Focus', groundwork: 'Groundwork',
           Each theory phase ends with an exam week.
         </p>
       </div>
+      <ol class="degree__list" aria-label="Block plan">
+        {degree.years.map((y) => (
+          <li>
+            <span class="display-xs">{y.label} <span class="label-s">{y.cal}</span></span>
+            <ol>
+              {y.blocks.map(([kind, name, sub, now], i) => (
+                <li class:list={['blk', kind === 'P' ? 'blk--p' : 'blk--t', { 'is-now': now }]}>
+                  <span class="label-s degree__q">{degree.quarters[i]}</span>
+                  <strong>{now ? `Now · ${name}` : name}</strong>
+                  <span>{sub}</span>
+                </li>
+              ))}
+            </ol>
+          </li>
+        ))}
+      </ol>
       <div class="degree__scroll">
         <table class="degree">
           <caption class="label-s">Block plan · filled: practice at Bosch · outlined: theory at DHBW</caption>
@@ -132,12 +148,6 @@ const CHIP: Record<string, string> = { focus: 'Focus', groundwork: 'Groundwork',
       </ul>
     </section>
 
-    <section class="wrap block" aria-labelledby="writing-h">
-      <div class="block__head">
-        <h2 id="writing-h" class="display-m">Writing</h2>
-      </div>
-      <p class="writing__empty">Nothing here yet. The first post comes with the first theory phase.</p>
-    </section>
 
     <Bridge to="on" text="Training for KAT100: 81 km and 4,850 m of climbing, starting at midnight in Kitzbühel." />
 
@@ -339,6 +349,41 @@ const CHIP: Record<string, string> = { focus: 'Focus', groundwork: 'Groundwork',
   .degree__scroll {
     overflow-x: auto;
   }
+  .degree__list {
+    display: none;
+  }
+  @media (max-width: 699px) {
+    .degree__scroll {
+      display: none;
+    }
+    .degree__list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-5);
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .degree__list ol {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+      margin: var(--space-3) 0 0;
+      padding: 0;
+      list-style: none;
+    }
+    .degree__list .blk {
+      height: auto;
+      min-height: 104px;
+      box-sizing: border-box;
+    }
+    .degree__q {
+      display: block;
+      margin-bottom: 6px;
+      color: inherit;
+      opacity: 0.75;
+    }
+  }
   .degree {
     min-width: 640px;
     width: 100%;
@@ -420,12 +465,6 @@ const CHIP: Record<string, string> = { focus: 'Focus', groundwork: 'Groundwork',
     color: var(--ink-muted);
   }
 
-  .writing__empty {
-    margin: 0;
-    padding-top: 18px;
-    border-top: 1px solid var(--line);
-    color: var(--ink-muted);
-  }
 
   .contact {
     display: flex;

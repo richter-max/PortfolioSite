@@ -38,8 +38,8 @@ const strip = races.slice(0, 4).map((r) => {
         data-flip
         data-label-front="Turn the bib around"
         data-label-back="Turn the bib to the front"
-        aria-label="Turn the bib around"
       >
+        <span class="sr" data-flip-label>Turn the bib around</span>
         <span class="face front">
           <span class="pin" style="top:8px;left:8px"></span>
           <span class="pin" style="top:8px;right:8px"></span>
@@ -59,7 +59,7 @@ const strip = races.slice(0, 4).map((r) => {
           </span>
         </span>
         <span class="face back">
-          <Image src={portrait} alt="Portrait of Max Richter" widths={[320, 640]} sizes="320px" class="back__img" />
+          <Image src={portrait} alt="Portrait of Max Richter" widths={[320, 640]} sizes="320px" class="back__img" loading="lazy" fetchpriority="low" />
           <span class="back__shade"></span>
           <span class="back__top"><span>No. {SITE.bibNumber}</span><span>Berlin, 2026</span></span>
           <span class="back__name">
@@ -121,7 +121,8 @@ const strip = races.slice(0, 4).map((r) => {
   }
   @keyframes arrive {
     from {
-      transform: rotateY(-180deg);
+      transform: rotateY(-80deg);
+      opacity: 0;
     }
   }
   .bib.is-back {
@@ -257,6 +258,14 @@ const strip = races.slice(0, 4).map((r) => {
     font-size: 44px;
     line-height: 0.9;
     letter-spacing: 0;
+  }
+  .sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
   }
   .bibscene__hint {
     color: inherit;

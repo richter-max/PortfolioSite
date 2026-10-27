@@ -45,8 +45,15 @@ export function animate(canvas, { draw, onResize, stillAt = 0 }) {
 
   onResize();
   start();
+  canvas.classList.add('is-ready');
 
+  let w = canvas.clientWidth;
+  let h = canvas.clientHeight;
   new ResizeObserver(() => {
+    // The observer also fires once on start; only rebuild on a real change.
+    if (canvas.clientWidth === w && canvas.clientHeight === h) return;
+    w = canvas.clientWidth;
+    h = canvas.clientHeight;
     onResize();
     if (still) draw(stillAt);
   }).observe(canvas);

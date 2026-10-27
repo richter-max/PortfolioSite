@@ -29,7 +29,8 @@ const pad = (n: number) => String(n).padStart(2, '0');
               sizes="(max-width: 900px) 100vw, 460px"
               class:list={['season__layer', { 'is-on': i === first }]}
               data-season-layer
-              loading={i === first ? 'eager' : 'lazy'}
+              loading="lazy"
+              quality={72}
             />
           ) : (
             <div class:list={['season__layer season__card', { 'is-on': i === first }]} data-season-layer>
@@ -109,6 +110,27 @@ const pad = (n: number) => String(n).padStart(2, '0');
       top: var(--space-5);
     }
   }
+  /* Phones: the window sits above the list and stays in view while the
+     rows scroll under it, so a tap always shows its picture. */
+  @media (max-width: 899px) {
+    .season__window {
+      position: sticky;
+      top: 0;
+      z-index: 4;
+      max-width: none;
+      padding: var(--space-2) 0 var(--space-3);
+      background: var(--surface);
+    }
+    .season .season__frame {
+      aspect-ratio: 16 / 10;
+    }
+    .season .season__frame :global(.season__layer) {
+      object-position: 50% 35%;
+    }
+    .season .season__fig {
+      font-size: 88px;
+    }
+  }
   .season__frame {
     position: relative;
     aspect-ratio: 4 / 5;
@@ -139,7 +161,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
   }
   .season__card {
     box-sizing: border-box;
-    padding: 18px;
+    padding: 40px 18px 18px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -186,14 +208,14 @@ const pad = (n: number) => String(n).padStart(2, '0');
     font: inherit;
     text-align: left;
     cursor: pointer;
-    opacity: var(--opacity-inactive);
+    color: var(--ink-muted);
     transition:
-      opacity var(--dur-ui),
+      color var(--dur-ui),
       padding var(--dur-ui) var(--ease-settle),
       box-shadow var(--dur-ui);
   }
   .season__row[aria-pressed='true'] {
-    opacity: 1;
+    color: var(--ink);
     padding-left: 20px;
     box-shadow: inset 2px 0 0 var(--line-strong);
   }
@@ -204,7 +226,6 @@ const pad = (n: number) => String(n).padStart(2, '0');
     font-family: var(--font-mono);
     font-size: 12px;
     letter-spacing: 0.1em;
-    color: var(--ink-muted);
     font-variant-numeric: tabular-nums;
   }
   .season__name {

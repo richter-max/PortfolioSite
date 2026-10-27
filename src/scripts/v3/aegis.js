@@ -50,9 +50,11 @@ for (const root of document.querySelectorAll('[data-aegis]')) {
     const hasK = setup === 'keyword' || setup === 'layered';
     const hasS = setup === 'semantic' || setup === 'layered';
     const narrow = W < 640;
-    const left = Math.min(190, W * 0.28);
-    const KX = left + (W - left) * 0.38;
-    const SX = left + (W - left) * 0.64;
+    // On phones the lane labels get less room and the guards move apart,
+    // so their labels never overlap.
+    const left = narrow ? W * 0.24 : Math.min(190, W * 0.28);
+    const KX = left + (W - left) * (narrow ? 0.26 : 0.38);
+    const SX = left + (W - left) * (narrow ? 0.64 : 0.64);
     const top = 40;
     const bands = [
       [top, H * 0.38, narrow ? 'Obvious' : 'Attacks that name themselves', '6 cases'],
@@ -91,7 +93,7 @@ for (const root of document.querySelectorAll('[data-aegis]')) {
       ctx.stroke();
       ctx.setLineDash([]);
       ctx.fillStyle = INK;
-      ctx.fillText(label + (on ? ' GUARD' : ' · OFF'), x + 8, 14);
+      ctx.fillText(narrow ? (on ? label : label + ' · OFF') : label + (on ? ' GUARD' : ' · OFF'), x + 6, 14);
       ctx.globalAlpha = 1;
     });
 
@@ -149,7 +151,7 @@ for (const root of document.querySelectorAll('[data-aegis]')) {
         if (!c.atk) {
           ctx.font = '500 10px "IBM Plex Mono", monospace';
           ctx.fillStyle = INK;
-          ctx.fillText('FALSE POSITIVE', cx + 12, y - 5);
+          ctx.fillText(narrow ? 'FP' : 'FALSE POSITIVE', cx + 12, y - 5);
           ctx.font = '500 11px "IBM Plex Mono", monospace';
         }
       }
