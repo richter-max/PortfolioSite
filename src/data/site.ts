@@ -40,6 +40,7 @@ export const SITE = {
     email: 'max.richter.dev@proton.me',
     github: 'https://github.com/richter-max',
     linkedin: 'https://www.linkedin.com/in/maximilian-richter-40697a298',
+    instagram: 'https://www.instagram.com/max.rce/',
   },
   // Legal — carried over from v1, used by /impressum and /datenschutz.
   legal: {
