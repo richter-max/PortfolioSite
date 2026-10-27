@@ -13,7 +13,47 @@ interface Props {
 const { next } = Astro.props;
 const s = live.strava;
 const streak = Math.min(52, s?.streakWeeks ?? 0);
-const weeks = Array.from({ length: 52 }, (_, i) => ({ on: i >= 52 - streak, now: i === 51 }));
+// Per-week detail (written by the Strava workflow). Older snapshots
+// don't have it yet: then the squares are a plain picture of the streak.
+interface Week {
+  week: string;
+  start: string;
+  km: number;
+  sessions: number;
+  hours: number;
+  sports: Record<string, number>;
+  kmBy?: Record<string, number>;
+}
+const detail: Week[] | null = Array.isArray((s as any)?.weeks) && (s as any).weeks.length === 52 ? (s as any).weeks : null;
+const weeks = Array.from({ length: 52 }, (_, i) => ({
+  on: detail ? detail[i].sessions > 0 : i >= 52 - streak,
+  now: i === 51,
+  w: detail?.[i],
+}));
+const maxHours = detail ? Math.max(1, ...detail.map((w) => w.hours)) : 1;
+const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const weekLabel = (w: Week) => {
+  const [y, m, d] = w.start.split('-').map(Number);
+  return `${d} ${MON[m - 1]} ${y}`;
+};
+const SPORT_NAME: Record<string, string> = {
+  run: 'Run',
+  ride: 'Ride',
+  swim: 'Swim',
+  strength: 'Strength',
+  tabletennis: 'Table tennis',
+  other: 'Other',
+};
+const sportsText = (w: Week) =>
+  Object.entries(w.sports)
+    .sort((a, b) => b[1] - a[1])
+    .map(([k, n]) => {
+      const km = w.kmBy?.[k];
+      return `${SPORT_NAME[k] ?? k} ${n}×${km ? ` · ${km} km` : ''}`;
+    })
+    .join('  /  ');
+const summary = (w: Week) =>
+  w.sessions === 0 ? 'No training logged' : `${w.km} km · ${w.sessions} session${w.sessions === 1 ? '' : 's'} · ${w.hours} h`;
 const km: number[] = s?.weeklyKmLast12 ?? [];
 
 // curve geometry (viewBox 560 × 240, baseline 220)
@@ -35,12 +75,40 @@ const year = new Date(live.updatedAt).getFullYear();
     <div class="train__streak">
       <span class="label">Weeks in a row</span>
       <span class="stat-l train__big">{s?.streakWeeks ?? '—'}</span>
-      <div class="train__squares" role="img" aria-label={`${streak} of the last 52 weeks with training, without a gap`}>
-        {weeks.map((w, i) => (
-          <span class:list={['sq', { 'is-on': w.on, 'is-now': w.now }]} style={`--i:${i}`}></span>
-        ))}
-      </div>
-      <span class="label-s">One square per week · the light one is this week</span>
+      {detail ? (
+        <>
+          <div class="train__squares" role="group" aria-label="The last 52 weeks. Pick a week to see what I did." data-weeks>
+            {weeks.map((w, i) => (
+              <button
+                type="button"
+                class:list={['sq', { 'is-on': w.on, 'is-now': w.now }]}
+                style={`--i:${i};--a:${w.w ? (0.35 + 0.65 * Math.min(1, w.w.hours / maxHours)).toFixed(2) : 1}`}
+                tabindex={w.now ? 0 : -1}
+                aria-pressed={w.now ? 'true' : 'false'}
+                aria-label={`Week of ${weekLabel(w.w!)}: ${summary(w.w!)}`}
+                data-when={`Week of ${weekLabel(w.w!)}${w.now ? ' · this week, so far' : ''}`}
+                data-sum={summary(w.w!)}
+                data-sports={sportsText(w.w!)}
+              ></button>
+            ))}
+          </div>
+          <div class="train__week" aria-live="polite" data-week-out>
+            <span class="label-s" data-week-when>Week of {weekLabel(detail[51])} · this week, so far</span>
+            <span class="train__weeksum" data-week-sum>{summary(detail[51])}</span>
+            <span class="label-s train__sports" data-week-sports>{sportsText(detail[51])}</span>
+          </div>
+          <span class="label-s">One square per week · brighter = more hours · tap a week</span>
+        </>
+      ) : (
+        <>
+          <div class="train__squares" role="img" aria-label={`${streak} of the last 52 weeks with training, without a gap`}>
+            {weeks.map((w, i) => (
+              <span class:list={['sq', { 'is-on': w.on, 'is-now': w.now }]} style={`--i:${i}`}></span>
+            ))}
+          </div>
+          <span class="label-s">One square per week · the light one is this week</span>
+        </>
+      )}
     </div>
 
     {km.length > 0 && (
@@ -68,6 +136,7 @@ const year = new Date(live.updatedAt).getFullYear();
 
 <script>
   import '../../scripts/v3/reveal.js';
+  import '../../scripts/v3/weeks.js';
 </script>
 
 <style>
@@ -111,9 +180,48 @@ const year = new Date(live.updatedAt).getFullYear();
   .sq {
     aspect-ratio: 1;
     background: var(--line);
+    border: 0;
+    padding: 0;
+    border-radius: 0;
   }
   .sq.is-on {
-    background: var(--ink);
+    background: rgb(237 235 230 / var(--a, 1));
+  }
+  button.sq {
+    cursor: pointer;
+    transition: transform 0.2s var(--ease-settle);
+  }
+  button.sq:hover {
+    transform: scale(1.18);
+  }
+  button.sq[aria-pressed='true'] {
+    outline: 1.5px solid var(--ink);
+    outline-offset: 3px;
+  }
+  button.sq:focus-visible {
+    outline: 2px solid var(--lamp);
+    outline-offset: 3px;
+  }
+  .train__week {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-height: 92px;
+    padding: 14px 0 4px;
+    border-top: 1px solid var(--line);
+    max-width: 440px;
+  }
+  .train__weeksum {
+    font-family: var(--font-display);
+    font-stretch: 62%;
+    font-weight: 300;
+    font-size: 30px;
+    line-height: 1.05;
+    font-variant-numeric: tabular-nums;
+  }
+  .train__sports {
+    color: var(--ink);
+    letter-spacing: 0.06em;
   }
   .sq.is-now {
     background: var(--lamp);
