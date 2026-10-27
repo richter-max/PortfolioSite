@@ -23,19 +23,20 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       # The runner image ships Google Chrome; Playwright only drives it,
       # so nothing is downloaded or installed system-wide.
       - name: Install Playwright (not a project dependency)
         env:
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
-        run: npm install --no-save --no-package-lock playwright@1.63.0
+        # Into its own folder: the site's dependencies are not needed here.
+        run: npm install --prefix "$RUNNER_TEMP/pw" playwright@1.63.0
 
       - name: Render images
         env:
           OG_BROWSER_CHANNEL: chrome
-        run: node scripts/og-images.mjs
+        run: NODE_PATH="$RUNNER_TEMP/pw/node_modules" node scripts/og-images.mjs
 
       - name: Commit if changed
         run: |
