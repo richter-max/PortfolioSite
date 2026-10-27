@@ -1,0 +1,65 @@
+---
+// Journal.astro — the newest posts as text entries. No thumbnails.
+import { sortedPosts } from '../../data/posts';
+
+interface Props {
+  limit?: number;
+}
+const { limit = 3 } = Astro.props;
+const posts = (await sortedPosts()).slice(0, limit);
+---
+
+<section id="journal" class="journal wrap" aria-labelledby="journal-h">
+  <div class="journal__head">
+    <h2 id="journal-h" class="label">Journal</h2>
+    <a class="label" href="/blog">All posts →</a>
+  </div>
+  <div class="journal__grid">
+    {posts.map((p) => (
+      <a class="journal__item" href={`/blog/${p.slug}`}>
+        <span class="label-s">{p.kind} · {p.readTime}</span>
+        <h3 class="display-xs">{p.title}</h3>
+        <p>{p.description}</p>
+      </a>
+    ))}
+  </div>
+</section>
+
+<style>
+  .journal {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+  .journal__head {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+  .journal__head a {
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .journal__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--space-6);
+  }
+  .journal__item {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--line-strong);
+    text-decoration: none;
+  }
+  .journal__item:hover h3 {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 6px;
+  }
+  .journal__item p {
+    margin: 0;
+    line-height: 1.6;
+  }
+</style>

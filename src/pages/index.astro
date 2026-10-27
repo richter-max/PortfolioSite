@@ -1,24 +1,92 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import Nav from '../components/Nav.astro';
-import Hero from '../components/Hero.astro';
-import Work from '../components/Work.astro';
-import Foundations from '../components/Foundations.astro';
-import Writing from '../components/Writing.astro';
-import Sport from '../components/Sport.astro';
-import Figure from '../components/Figure.astro';
-import Contact from '../components/Contact.astro';
+// / — On Track.
+import SideLayout from '../layouts/SideLayout.astro';
+import OnHero from '../components/v3/OnHero.astro';
+import StatRow from '../components/v3/StatRow.astro';
+import SeasonList from '../components/v3/SeasonList.astro';
+import Feature from '../components/v3/Feature.astro';
+import PlanVsResult from '../components/v3/PlanVsResult.astro';
+import Journal from '../components/v3/Journal.astro';
+import Bridge from '../components/v3/Bridge.astro';
+import rothaarsteig from '../assets/photos/rothaarsteig.webp';
+import { getRaces } from '../data/races';
+
+const { upcoming, results } = await getRaces();
 ---
 
-<BaseLayout>
-  <Nav />
-  <main id="main">
-    <Hero />
-    <Work />
-    <Foundations />
-    <Writing />
-    <Sport />
-    <Figure />
-    <Contact />
-  </main>
-</BaseLayout>
+<SideLayout side="on">
+  <OnHero races={upcoming} />
+
+  <div class="stack">
+    <StatRow next={upcoming[0]} />
+
+    <SeasonList races={upcoming} />
+
+    <Feature
+      id="rothaarsteig"
+      image={rothaarsteig}
+      imageAlt="Running a trail section of the Rothaarsteig Marathon with friends, everyone smiling"
+      caption="Rothaarsteig, 17.10.2026"
+      credit="Photo: race organizer"
+      label="Rothaarsteig Marathon · 42.2 km · ~900 m up"
+      title="Not a race.<br />A ticket."
+      figures={[
+        { value: '5:10', label: 'Finish time' },
+        { value: 'Z2', label: 'Effort' },
+        { value: '50K', label: 'UTMB index' },
+      ]}
+      href="/blog/rothaarsteig-2026"
+    >
+      <p>
+        I ran it with a friend at zone 2, started together and finished
+        together. The real reason I was there: a finish in a UTMB-indexed trail
+        race, for the 50K index I need to start at KAT100 in Kitzbühel next
+        August.
+      </p>
+    </Feature>
+
+    <PlanVsResult results={results} />
+
+    <Journal />
+
+    <section class="offseason wrap" aria-label="Off season">
+      <span class="label">Off season</span>
+      <span class="offseason__what">Table tennis, Landesliga, DJK Seifriedsberg</span>
+      <span class="data">TTR 1670 → 1757 · 2025/26</span>
+    </section>
+
+    <Bridge
+      to="off"
+      text="Dual student in Computer Science, IT security, at Bosch. Heading for AI security."
+    />
+  </div>
+</SideLayout>
+
+<style>
+  .stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-9);
+    padding-top: var(--space-6);
+  }
+  .offseason {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-4);
+  }
+  .offseason > * {
+    padding-top: 22px;
+  }
+  .offseason::before {
+    content: '';
+    flex: 0 0 100%;
+    border-top: 1px solid var(--line);
+    margin-bottom: -22px;
+  }
+  .offseason__what {
+    flex: 1 1 300px;
+    font-size: 15px;
+  }
+</style>

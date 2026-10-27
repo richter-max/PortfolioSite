@@ -1,0 +1,147 @@
+---
+// AegisCase.astro — the AEGIS finding with a live run. The canvas is the
+// illustration; the numbers and the verdict are text, so they also work
+// without JavaScript and for screen readers.
+import { aegis } from '../../data/offtrack';
+const start = aegis.setups.find((s) => s.id === 'layered')!;
+---
+
+<section id="aegis" class="aegis wrap" aria-labelledby="aegis-h" data-aegis>
+  <div class="aegis__head">
+    <div class="aegis__title">
+      <p class="label">Case · AEGIS · <a href={aegis.repo}>github.com/richter-max/aegis ↗</a></p>
+      <h2 id="aegis-h" class="display-m">Layering made it strictly worse.</h2>
+    </div>
+    <p class="aegis__intro">
+      An evaluation harness for agent security: 20 attacks and 10 harmless
+      requests, run against every guard setup. Pick a setup and watch the run.
+    </p>
+  </div>
+
+  <div class="aegis__toggle" role="group" aria-label="Guard setup">
+    {aegis.setups.map((s) => (
+      <button
+        type="button"
+        aria-pressed={String(s.id === start.id)}
+        data-setup={s.id}
+        data-through={s.through}
+        data-blocked={s.blocked}
+        data-verdict={s.verdict}
+      >
+        {s.label}
+      </button>
+    ))}
+  </div>
+
+  <figure class="aegis__fig">
+    <div class="aegis__panel">
+      <canvas role="img" aria-label={`AEGIS run with layered guards: ${start.through} attacks get through, ${start.blocked} harmless requests are blocked.`}></canvas>
+    </div>
+    <figcaption class="aegis__out">
+      <span class="display-xs"><span data-out-through>{start.through}</span> <span class="label-s">attacks through</span></span>
+      <span class="display-xs"><span data-out-blocked>{start.blocked}</span> <span class="label-s">harmless blocked</span></span>
+      <span class="aegis__verdict" data-out-verdict aria-live="polite">{start.verdict}</span>
+    </figcaption>
+    <p class="label-s">
+      Deterministic mock agent, permissive policy: the guards are the only thing
+      acting. These numbers describe the guards, not a real model.
+    </p>
+  </figure>
+</section>
+
+<script>
+  import '../../scripts/v3/aegis.js';
+</script>
+
+<style>
+  .aegis {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+  .aegis__head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: var(--space-5);
+  }
+  .aegis__title {
+    flex: 1 1 520px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  .aegis__title a {
+    color: var(--ink);
+  }
+  .aegis__intro {
+    flex: 0 1 420px;
+    min-width: 0;
+    margin: 0;
+  }
+  .aegis__toggle {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .aegis__toggle button {
+    min-height: 44px;
+    padding: 10px 18px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-pill);
+    background: transparent;
+    color: var(--ink);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .aegis__toggle button[aria-pressed='true'] {
+    background: var(--ink);
+    color: var(--surface);
+  }
+  .aegis__fig {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+  .aegis__panel {
+    position: relative;
+    height: clamp(300px, 34vw, 420px);
+    border-radius: var(--radius-panel);
+    overflow: hidden;
+    background: #0c0c0b;
+  }
+  .aegis__panel canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .aegis__out {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-4) var(--space-7);
+  }
+  .aegis__out .display-xs {
+    font-size: clamp(30px, 3.4vw, 46px);
+    font-variant-numeric: tabular-nums;
+  }
+  .aegis__out .label-s {
+    font-family: var(--font-mono);
+    font-weight: 400;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+  }
+  .aegis__verdict {
+    flex: 1 1 280px;
+    min-width: 0;
+    font-size: 15px;
+    line-height: 1.55;
+  }
+</style>

@@ -1,0 +1,84 @@
+/* v3/tokens.css — richtermax design system, v1 (Phase 2).
+ *
+ * One site, two sides. On Track is ink on black, Off Track is the same
+ * page as a paper negative. Every component reads only these tokens, so
+ * it works on both sides without a second stylesheet. The side is set on
+ * <html data-side="on|off"> by the layout; it is a route, not a toggle.
+ * No accent colour: emphasis is size, weight and inversion.
+ */
+
+:root {
+  /* ── type ───────────────────────────────────────────────────────── */
+  --font-display: 'Archivo Var', 'Arial Narrow', sans-serif;
+  --font-sans: 'IBM Plex Sans Var', 'IBM Plex Sans', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  --stretch-display: 62%;
+
+  /* ── space ──────────────────────────────────────────────────────── */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 72px;
+  --space-9: 120px;
+  --container: 1320px;
+  --gutter: clamp(16px, 4vw, 48px);
+
+  /* ── shape ──────────────────────────────────────────────────────── */
+  --radius-panel: 4px;
+  --radius-object: 6px;
+  --radius-pill: 999px;
+
+  /* ── motion ─────────────────────────────────────────────────────── */
+  --dur-step: 200ms;
+  --dur-ui: 350ms;
+  --dur-wipe: 1000ms;
+  --dur-flip: 1200ms;
+  --dur-headline: 1400ms;
+  --ease-flip: cubic-bezier(0.6, -0.3, 0.25, 1.3);
+  --ease-wipe: cubic-bezier(0.77, 0, 0.18, 1);
+  --ease-settle: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --opacity-inactive: 0.42;
+
+  /* ── fixed colours (same on both sides) ─────────────────────────── */
+  --paper: #f1efea;
+  --paper-ink: #111110;
+  --lamp: #fff8e6;
+  --ridge-1: #3a3a37;
+  --ridge-2: #2c2c2a;
+  --ridge-3: #1f1f1e;
+  --ridge-4: #151514;
+  --ridge-5: #0c0c0b;
+}
+
+/* ── On Track: ink on black ───────────────────────────────────────── */
+:root,
+[data-side='on'] {
+  color-scheme: dark;
+  --surface: #0c0c0b;
+  --surface-raised: #1a1a19;
+  --ink: #edebe6;
+  --ink-muted: #8f8b84;
+  --line: #2c2b28;
+  --line-strong: var(--ink);
+  --object-surface: var(--paper);
+  --object-ink: var(--paper-ink);
+  --shadow-object: 0 40px 80px -30px rgba(0, 0, 0, 0.9);
+}
+
+/* ── Off Track: the paper negative ────────────────────────────────── */
+[data-side='off'] {
+  color-scheme: light;
+  --surface: #edebe6;
+  --surface-raised: #e2dfd8;
+  --ink: #0c0c0b;
+  --ink-muted: #5e5a53;
+  --line: #cfcbc2;
+  --line-strong: var(--ink);
+  --object-surface: #0c0c0b;
+  --object-ink: #edebe6;
+  --shadow-object: 0 40px 70px -34px rgba(12, 12, 11, 0.7);
+}

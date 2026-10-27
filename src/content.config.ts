@@ -12,7 +12,7 @@ import { z } from 'astro/zod';
 
 const races = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/races' }),
-  schema: z.object({
+  schema: ({ image }) => z.object({
     name: z.string(),
     /** ISO date. For month precision use any day in the month and set datePrecision. */
     date: z.coerce.date(),
@@ -30,6 +30,14 @@ const races = defineCollection({
     report: reference('reports').optional(),
     /** Link to a report that is not in the collection yet (older .astro posts). */
     reportUrl: z.string().optional(),
+    /** Photo for the season window (4:5). Without one, the window shows a type card. */
+    image: image().optional(),
+    imageAlt: z.string().optional(),
+    /** Caption under the season window: left and right part. */
+    caption: z.string().optional(),
+    captionRight: z.string().optional(),
+    /** The one number for the type card when there is no photo. */
+    cardFigure: z.string().optional(),
   }),
 });
 

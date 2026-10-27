@@ -1,0 +1,90 @@
+---
+// SiteHeader.astro — name, side switch, section nav.
+// The switch is two real links; the URL is the state.
+import { SITE } from '../../data/site';
+
+interface Props {
+  side: 'on' | 'off';
+}
+const { side } = Astro.props;
+
+const nav =
+  side === 'on'
+    ? [
+        { href: '/#season', label: 'Season' },
+        { href: '/#journal', label: 'Journal' },
+        { href: SITE.author.instagram, label: 'Instagram' },
+      ]
+    : [
+        { href: '/off-track#fields', label: 'Fields' },
+        { href: '/off-track#roadmap', label: 'Roadmap' },
+        { href: SITE.author.github, label: 'GitHub' },
+        { href: SITE.author.linkedin, label: 'LinkedIn' },
+      ];
+---
+
+<header class="hdr wrap">
+  <a class="hdr__name" href="/">Max Richter</a>
+  <nav class="hdr__switch" aria-label="Choose a side">
+    {(['on', 'off'] as const).map((s) =>
+      s === side ? (
+        <span aria-current="page">{SITE.sides[s].label}</span>
+      ) : (
+        <a href={SITE.sides[s].path}>{SITE.sides[s].label}</a>
+      ),
+    )}
+  </nav>
+  <nav class="hdr__nav" aria-label="Sections">
+    {nav.map((n) => <a href={n.href}>{n.label}</a>)}
+  </nav>
+</header>
+
+<style>
+  .hdr {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding-block: 22px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  a {
+    text-decoration: none;
+  }
+  a:hover {
+    opacity: 0.6;
+  }
+  .hdr__name {
+    font-weight: 500;
+  }
+  .hdr__switch,
+  .hdr__nav {
+    display: flex;
+    gap: 22px;
+  }
+  .hdr__switch a,
+  .hdr__switch span {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+  .hdr__switch a {
+    opacity: 0.55;
+  }
+  .hdr__switch [aria-current] {
+    text-decoration: underline;
+    text-underline-offset: 6px;
+    text-decoration-thickness: 1px;
+  }
+  @media (max-width: 640px) {
+    .hdr__nav {
+      display: none;
+    }
+  }
+</style>

@@ -1,0 +1,46 @@
+---
+import { SITE } from '../../data/site';
+const year = new Date().getFullYear();
+---
+
+<footer class="ftr wrap">
+  <span>© {year} {SITE.author.name} · Open source · No tracking, no cookies</span>
+  <span class="ftr__links">
+    <a href={SITE.author.instagram}>Instagram</a>
+    <a href={SITE.author.github}>GitHub</a>
+    <a href={SITE.author.linkedin}>LinkedIn</a>
+    <a href={SITE.repo}>Source</a>
+    <a href="/rss.xml">RSS</a>
+    <a href="/security">Security</a>
+    <a href="/impressum">Impressum</a>
+    <a href="/datenschutz">Datenschutz</a>
+  </span>
+</footer>
+
+<style>
+  .ftr {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-top: var(--space-9);
+    padding-block: var(--space-4) var(--space-7);
+    border-top: 1px solid var(--line);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+  .ftr__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+  a {
+    text-decoration: none;
+  }
+  a:hover {
+    color: var(--ink);
+  }
+</style>

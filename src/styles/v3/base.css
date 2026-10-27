@@ -1,0 +1,184 @@
+/* v3/base.css — reset, page frame, type utilities, motion rules. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--surface);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-weight: 300;
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+img,
+svg,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
+.wrap {
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: max(var(--gutter), env(safe-area-inset-left, 0px))
+    max(var(--gutter), env(safe-area-inset-right, 0px));
+}
+
+.skip {
+  position: absolute;
+  left: -9999px;
+}
+.skip:focus {
+  left: var(--space-4);
+  top: var(--space-4);
+  z-index: 100;
+  padding: var(--space-2) var(--space-4);
+  background: var(--ink);
+  color: var(--surface);
+}
+
+/* ── type scale (design system: Display, Numbers, Text, Labels) ───── */
+.display-xl,
+.display-l,
+.display-m,
+.display-s,
+.display-xs,
+.stat-l,
+.stat-m {
+  margin: 0;
+  font-family: var(--font-display);
+  font-stretch: var(--stretch-display);
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+.display-xl {
+  font-weight: 700;
+  font-size: clamp(64px, 11.5vw, 176px);
+  line-height: 0.82;
+  letter-spacing: -0.01em;
+}
+.display-l {
+  font-weight: 700;
+  font-size: clamp(52px, 7vw, 104px);
+  line-height: 0.84;
+  letter-spacing: -0.01em;
+}
+.display-m {
+  font-weight: 700;
+  font-size: clamp(44px, 5.4vw, 80px);
+  line-height: 0.88;
+}
+.display-s {
+  font-weight: 500;
+  font-size: clamp(36px, 4.2vw, 60px);
+  line-height: 0.9;
+}
+.display-xs {
+  font-weight: 600;
+  font-size: 32px;
+  line-height: 0.95;
+}
+.stat-l {
+  font-weight: 300;
+  font-size: clamp(52px, 6vw, 84px);
+  line-height: 0.9;
+  font-variant-numeric: tabular-nums;
+}
+.stat-m {
+  font-weight: 300;
+  font-size: 52px;
+  line-height: 0.9;
+  font-variant-numeric: tabular-nums;
+}
+.body-l {
+  font-size: 17px;
+  line-height: 1.6;
+}
+.label,
+.label-s {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-weight: 400;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+.label {
+  font-size: 12px;
+  letter-spacing: 0.16em;
+}
+.label-s {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+}
+.data {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Headline settles from wide to tight tracking on load. */
+.settle {
+  animation: settle var(--dur-headline) var(--ease-settle) 0.2s both;
+}
+@keyframes settle {
+  from {
+    letter-spacing: 0.12em;
+  }
+}
+
+/* ── switching sides: a wipe between the two pages ─────────────────
+ * Cross-document view transitions, no client router and no inline JS
+ * (CSP stays script-src 'self'). Browsers without support just load
+ * the page. */
+@view-transition {
+  navigation: auto;
+}
+::view-transition-old(root) {
+  animation: none;
+}
+::view-transition-new(root) {
+  animation: side-wipe var(--dur-wipe) var(--ease-wipe) both;
+}
+@keyframes side-wipe {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  ::view-transition-new(root) {
+    animation: none;
+  }
+}

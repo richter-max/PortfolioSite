@@ -1,0 +1,275 @@
+---
+// RaceBib.astro — the On Track signature object. Paper, four safety pins,
+// the permanent number, and a tear-off strip with the season's starts.
+// A real <button>: click or Enter turns it around to the portrait.
+import { Image } from 'astro:assets';
+import portrait from '../../assets/photos/portrait.webp';
+import { SITE } from '../../data/site';
+import type { UpcomingRace } from '../../data/races';
+
+interface Props {
+  races: UpcomingRace[];
+}
+const { races } = Astro.props;
+const main = races.find((r) => r.weight === 'main');
+const ABBR: Record<string, string> = {
+  'Hamburg Marathon': 'HAM',
+  'Ironman Frankfurt': 'FRA',
+  'KAT100 Endurance Trail': 'KAT',
+  'Backyard Ultra': 'BYU',
+};
+const strip = races.slice(0, 4).map((r) => {
+  const [, m, d] = r.date.split('-');
+  const y = r.date.slice(2, 4);
+  return {
+    code: ABBR[r.name] ?? r.name.slice(0, 3).toUpperCase(),
+    when: r.datePrecision === 'month' ? `${m}.${y}` : `${d}.${m}`,
+    main: r.weight === 'main',
+  };
+});
+---
+
+<div class="bibscene" data-tilt="14">
+  <div class="bibsway">
+    <div class="bibtilt" data-tilt-target>
+      <button
+        class="bib"
+        type="button"
+        data-flip
+        data-label-front="Turn the bib around"
+        data-label-back="Turn the bib to the front"
+        aria-label="Turn the bib around"
+      >
+        <span class="face front">
+          <span class="pin" style="top:8px;left:8px"></span>
+          <span class="pin" style="top:8px;right:8px"></span>
+          <span class="pin" style="bottom:8px;left:8px"></span>
+          <span class="pin" style="bottom:8px;right:8px"></span>
+          <span class="front__top"><span>Season 2027</span><span>On track</span></span>
+          <span class="front__bar"></span>
+          <span class="front__mid">
+            <span class="num">{SITE.bibNumber}</span>
+            <span class="name">Richter</span>
+            {main && <span class="sub">Main event · KAT100 · Start 00:00</span>}
+          </span>
+          <span class="strip">
+            {strip.map((s) => (
+              <span class:list={{ 'is-main': s.main }}>{s.code}<br />{s.when}</span>
+            ))}
+          </span>
+        </span>
+        <span class="face back">
+          <Image src={portrait} alt="Portrait of Max Richter" widths={[320, 640]} sizes="320px" class="back__img" />
+          <span class="back__shade"></span>
+          <span class="back__top"><span>No. {SITE.bibNumber}</span><span>Berlin, 2026</span></span>
+          <span class="back__name">
+            <span class="back__big">Max Richter</span>
+            <span>Triathlon · Marathon · Trail</span>
+          </span>
+        </span>
+      </button>
+    </div>
+  </div>
+  <p class="label-s bibscene__hint">Tap the bib</p>
+</div>
+
+<script>
+  import '../../scripts/v3/object.js';
+</script>
+
+<style>
+  .bibscene {
+    perspective: 1400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+    width: 100%;
+    max-width: 320px;
+  }
+  .bibsway {
+    width: 100%;
+    animation: sway 7s ease-in-out infinite;
+    transform-origin: 50% 0;
+  }
+  @keyframes sway {
+    0%,
+    100% {
+      transform: rotate(-1.2deg);
+    }
+    50% {
+      transform: rotate(1.4deg);
+    }
+  }
+  .bibtilt {
+    transition: transform 0.3s ease-out;
+    transform-style: preserve-3d;
+  }
+  .bib {
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: 5 / 6;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    color: var(--paper-ink);
+    transform-style: preserve-3d;
+    transition: transform var(--dur-flip) var(--ease-flip);
+    animation: arrive var(--dur-flip) var(--ease-flip) 0.15s both;
+  }
+  @keyframes arrive {
+    from {
+      transform: rotateY(-180deg);
+    }
+  }
+  .bib.is-back {
+    transform: rotateY(180deg);
+  }
+  .bib:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 6px;
+  }
+  .face {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    border-radius: var(--radius-object);
+    overflow: hidden;
+    text-align: left;
+    box-shadow: var(--shadow-object);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  .front {
+    padding: 22px 20px 16px;
+    background: var(--paper);
+  }
+  .pin {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #fff, #7d8086 70%);
+  }
+  .front__top,
+  .back__top {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 10px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .front__bar {
+    height: 8px;
+    margin-top: 10px;
+    background: var(--paper-ink);
+  }
+  .front__mid {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .num {
+    font-family: var(--font-display);
+    font-stretch: var(--stretch-display);
+    font-weight: 800;
+    font-size: clamp(110px, 32vw, 168px);
+    line-height: 0.78;
+    letter-spacing: -0.02em;
+  }
+  .name {
+    margin-top: 8px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+  .sub {
+    margin-top: 6px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .strip {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 4px;
+    padding-top: 8px;
+    border-top: 1.5px dashed var(--paper-ink);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    line-height: 1.3;
+    text-align: center;
+  }
+  .strip .is-main {
+    border-radius: 2px;
+    background: var(--paper-ink);
+    color: var(--paper);
+  }
+  .back {
+    justify-content: space-between;
+    padding: 18px;
+    background: #1b1b1a;
+    color: #edebe6;
+    transform: rotateY(180deg);
+  }
+  .back :global(.back__img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 35%;
+  }
+  .back__shade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.35), transparent 22%, transparent 55%, rgba(0, 0, 0, 0.8));
+  }
+  .back__top,
+  .back__name {
+    position: relative;
+    padding: 0;
+  }
+  .back__name {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .back__big {
+    font-family: var(--font-display);
+    font-stretch: var(--stretch-display);
+    font-weight: 700;
+    font-size: 44px;
+    line-height: 0.9;
+    letter-spacing: 0;
+  }
+  .bibscene__hint {
+    color: inherit;
+    opacity: 0.7;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .bibsway,
+    .bib {
+      animation: none;
+    }
+    .bib,
+    .bibtilt {
+      transition: none;
+    }
+  }
+</style>
