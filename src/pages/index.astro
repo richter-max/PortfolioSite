@@ -4,7 +4,6 @@ import SideLayout from '../layouts/SideLayout.astro';
 import OnHero from '../components/v3/OnHero.astro';
 import Trail from '../components/v3/Trail.astro';
 import Training from '../components/v3/Training.astro';
-import SeasonList from '../components/v3/SeasonList.astro';
 import Feature from '../components/v3/Feature.astro';
 import PlanVsResult from '../components/v3/PlanVsResult.astro';
 import Journal from '../components/v3/Journal.astro';
@@ -22,7 +21,6 @@ const { upcoming, results } = await getRaces();
   <div class="stack">
     <Training next={upcoming[0]} />
 
-    <SeasonList races={upcoming} />
 
     <Feature
       id="rothaarsteig"
