@@ -2,21 +2,29 @@
 // /off-track — Off Track: IT security, the degree, the path there.
 import SideLayout from '../layouts/SideLayout.astro';
 import IdBadge from '../components/v3/IdBadge.astro';
+import ScanTerminal from '../components/v3/ScanTerminal.astro';
 import AegisCase from '../components/v3/AegisCase.astro';
 import Bridge from '../components/v3/Bridge.astro';
 import { SITE } from '../data/site';
 import { fields, projects, path, degree, roadmap } from '../data/offtrack';
 
 const CHIP: Record<string, string> = { focus: 'Focus', groundwork: 'Groundwork', next: 'Next' };
+
+// Written weekly by .github/workflows/scan-self.yml. Until the first scan
+// exists, the hero shows the badge on its own.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const scanFile = Object.values(import.meta.glob('../data/scan.json', { eager: true, import: 'default' }))[0] as any;
 ---
 
 <SideLayout side="off">
   <section class="offhero">
     <canvas class="offhero__grid" data-grid aria-hidden="true"></canvas>
     <div class="offhero__inner wrap">
-      <div class="offhero__text">
+      <div class="offhero__head">
         <p class="label">Off track · IT security</p>
         <h1 class="display-xl settle">Studying IT security.<br />Heading for AI security.</h1>
+      </div>
+      <div class="offhero__text">
         <div class="offhero__copy">
           <p>
             Dual B.Sc. Computer Science with an IT security focus at Bosch, since
@@ -24,10 +32,17 @@ const CHIP: Record<string, string> = { focus: 'Focus', groundwork: 'Groundwork',
             and eight months as an IT key user. It's early. On the side I build
             security tools, test them until they fail, and write down what I learn.
           </p>
-          <p class="label">On track: training for an 81 km night race · <a href="/">Switch →</a></p>
+          <p class="label">On track: training for an 81 km night race · <a class="link" href="/">Switch <span class="arr">→</span></a></p>
         </div>
       </div>
-      <IdBadge />
+      {scanFile ? (
+        <div class="offhero__side">
+          <ScanTerminal scan={scanFile} />
+          <div class="offhero__clip"><IdBadge /></div>
+        </div>
+      ) : (
+        <IdBadge />
+      )}
     </div>
   </section>
 
@@ -44,7 +59,7 @@ const CHIP: Record<string, string> = { focus: 'Focus', groundwork: 'Groundwork',
             <h3 class="display-xs field__name">{f.name}</h3>
             <p>{f.text}</p>
             <span class="field__proof data">
-              {'href' in f && f.href ? <a href={f.href}>→ {f.proof}</a> : f.proof}
+              {'href' in f && f.href ? <a class="link" href={f.href}><span class="arr">→</span> {f.proof}</a> : f.proof}
             </span>
           </li>
         ))}
@@ -60,7 +75,7 @@ const CHIP: Record<string, string> = { focus: 'Focus', groundwork: 'Groundwork',
           <h3 class="display-s">{p.name}</h3>
           <p>{p.text}</p>
           <span class="label-s">{p.note}</span>
-          {p.href && <a class="label-s project__link" href={p.href}>Source ↗</a>}
+          {p.href && <a class="label-s project__link link" href={p.href}>Source <span class="arr">↗</span></a>}
         </article>
       ))}
     </section>
@@ -192,8 +207,14 @@ const CHIP: Record<string, string> = { focus: 'Focus', groundwork: 'Groundwork',
     gap: var(--space-7);
     padding-block: var(--space-8) var(--space-8);
   }
+  .offhero__head {
+    flex: 1 1 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
   .offhero__text {
-    flex: 1 1 620px;
+    flex: 1 1 380px;
     min-width: 0;
     display: flex;
     flex-direction: column;
@@ -204,14 +225,54 @@ const CHIP: Record<string, string> = { focus: 'Focus', groundwork: 'Groundwork',
     flex-wrap: wrap;
     gap: var(--space-4) var(--space-7);
   }
+  .offhero__copy {
+    flex-direction: column;
+  }
   .offhero__copy p {
     margin: 0;
-    flex: 1 1 300px;
     max-width: 48ch;
   }
   .offhero :global(.badgescene) {
     flex: 0 1 320px;
     margin-inline: auto;
+  }
+  @media (max-width: 640px) {
+    .offhero .offhero__side {
+      padding-top: 84px;
+    }
+  }
+  .offhero__side {
+    position: relative;
+    flex: 1 1 460px;
+    max-width: 560px;
+    min-width: 0;
+    padding-top: 110px;
+  }
+  /* The badge is clipped onto the terminal's corner. */
+  .offhero__clip {
+    position: absolute;
+    top: 0;
+    right: -44px;
+    z-index: 2;
+    width: 140px;
+    transform: rotate(5deg);
+  }
+  .offhero__clip :global(.badgescene) {
+    max-width: none;
+  }
+  .offhero__clip :global(.badge__body dl),
+  .offhero__clip :global(.badge__tag) {
+    display: none;
+  }
+  .offhero__clip :global(.badge__name) {
+    font-size: 20px;
+  }
+  @media (max-width: 640px) {
+    .offhero__clip {
+      width: 110px;
+      top: 20px;
+      right: -4px;
+    }
   }
 
   .stack {

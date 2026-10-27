@@ -26,3 +26,33 @@ for (const btn of document.querySelectorAll('[data-flip]')) {
     if (label) label.textContent = back ? btn.dataset.labelBack : btn.dataset.labelFront;
   });
 }
+
+// Phones: the bib flutters a little with scroll speed, like a bib in the
+// wind while running. Settles back when scrolling stops.
+if (!reduceMotion() && window.matchMedia('(pointer: coarse)').matches) {
+  const bibs = [...document.querySelectorAll('.bibscene [data-tilt-target]')];
+  if (bibs.length) {
+    let lastY = window.scrollY;
+    let lastT = performance.now();
+    let v = 0;
+    let raf = 0;
+    const settle = () => {
+      v *= 0.9;
+      const a = Math.max(-6, Math.min(6, v * 3));
+      for (const b of bibs) b.style.transform = `skewX(${a.toFixed(2)}deg) rotate(${(a / 2).toFixed(2)}deg)`;
+      raf = Math.abs(v) > 0.01 ? requestAnimationFrame(settle) : 0;
+    };
+    window.addEventListener(
+      'scroll',
+      () => {
+        const now = performance.now();
+        const dy = window.scrollY - lastY;
+        v = dy / Math.max(16, now - lastT);
+        lastY = window.scrollY;
+        lastT = now;
+        if (!raf) raf = requestAnimationFrame(settle);
+      },
+      { passive: true },
+    );
+  }
+}

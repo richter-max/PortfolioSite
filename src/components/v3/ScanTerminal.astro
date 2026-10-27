@@ -1,0 +1,192 @@
+---
+// ScanTerminal.astro — this site, scanned by my own Attack Surface
+// Scanner. Data: src/data/scan.json, written weekly by the "Scan this
+// site" workflow. Every line is a fact from the last scan. The lines type
+// out on load; without JS or with reduced motion they are simply there.
+
+interface Header { name: string; present: boolean }
+interface Scan {
+  scannedAt: string;
+  target: string;
+  discovery: string;
+  hosts: number;
+  resolved: number;
+  outOfScopeRejected: number;
+  durationSeconds: number | null;
+  apex: null | {
+    https: boolean;
+    redirectsToHttps: boolean;
+    httpReachable: boolean;
+    tls: string[];
+    certificateDaysLeft: number | null;
+    headers: Header[];
+    risk: string;
+  };
+  findings: { high: number; medium: number; low: number };
+  warnings: string[];
+}
+
+interface Props {
+  scan: Scan;
+}
+const { scan } = Astro.props;
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const d = new Date(scan.scannedAt);
+const date = `${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+const a = scan.apex;
+const ok = (b: boolean) => (b ? '✓' : '✗');
+const short: Record<string, string> = {
+  'Strict-Transport-Security': 'hsts',
+  'Content-Security-Policy': 'csp',
+  'X-Frame-Options': 'x-frame',
+  'X-Content-Type-Options': 'nosniff',
+  'Referrer-Policy': 'referrer',
+};
+const total = scan.findings.high + scan.findings.medium + scan.findings.low;
+
+const lines: { k: string; v: string; kind?: 'cmd' | 'gap' | 'result' | 'warn' }[] = [
+  { k: '$ ', v: `asm ${scan.target}`, kind: 'cmd' },
+  { k: '', v: '', kind: 'gap' },
+  { k: 'scope', v: `${scan.target} · ${scan.outOfScopeRejected} out-of-scope host${scan.outOfScopeRejected === 1 ? '' : 's'} rejected` },
+  { k: 'hosts', v: `${scan.hosts} found via ${scan.discovery} · ${scan.resolved} resolved` },
+  ...(a
+    ? [
+        { k: 'https', v: a.redirectsToHttps ? 'http redirects to https ✓' : a.https ? 'https ✓ · no redirect from http' : 'no https ✗' },
+        ...(a.tls.length ? [{ k: 'tls', v: a.tls.join(', ') }] : []),
+        ...(a.certificateDaysLeft != null ? [{ k: 'certificate', v: `valid · ${a.certificateDaysLeft} days left` }] : []),
+        { k: 'headers', v: a.headers.map((h) => `${short[h.name] ?? h.name} ${ok(h.present)}`).join('  ') },
+      ]
+    : []),
+  ...scan.warnings.map((w) => ({ k: 'warning', v: w, kind: 'warn' as const })),
+  { k: '', v: '', kind: 'gap' },
+  {
+    k: 'findings',
+    v: total === 0 ? '0 · nothing to report' : `${scan.findings.high} high · ${scan.findings.medium} medium · ${scan.findings.low} low`,
+    kind: 'result',
+  },
+];
+---
+
+<figure class="term" aria-label={`Attack Surface Scanner run against ${scan.target} on ${date}: ${total} findings.`}>
+  <div class="term__bar">
+    <span>asm · passive · {date}</span>
+  </div>
+  <div class="term__body">
+    {lines.map((l, i) => (
+      <div class:list={['term__line', l.kind && `is-${l.kind}`]} style={`--i:${i}`}>
+        {l.kind !== 'gap' && <span class="term__k">{l.k.padEnd(l.kind === 'cmd' ? 2 : 12, ' ')}</span>}
+        <span>{l.v}</span>
+      </div>
+    ))}
+    <span class="term__caret" aria-hidden="true"></span>
+  </div>
+  <figcaption class="label-s term__cap">
+    <span>Re-run every Monday by GitHub Actions</span>
+    <a class="link" href="https://github.com/richter-max/attack-surface-scanner">The scanner <span class="arr">↗</span></a>
+  </figcaption>
+</figure>
+
+<style>
+  .term {
+    margin: 0;
+    width: 100%;
+    max-width: 560px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  .term__bar {
+    display: flex;
+    gap: var(--space-3);
+    padding: 12px 18px;
+    border-radius: var(--radius-panel) var(--radius-panel) 0 0;
+    background: #0c0c0b;
+    color: #8f8b84;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    border-bottom: 1px solid #2c2b28;
+  }
+  .term__body {
+    margin-top: calc(-1 * var(--space-3));
+    padding: 16px 18px 20px;
+    border-radius: 0 0 var(--radius-panel) var(--radius-panel);
+    background: #0c0c0b;
+    color: #edebe6;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.75;
+    overflow-x: auto;
+    box-shadow: var(--shadow-object);
+  }
+  .term__line {
+    white-space: pre;
+    /* hidden while the animation runs, shown when it ends: no fill */
+    animation: type calc(0.5s + var(--i) * 0.22s) linear;
+  }
+  @keyframes type {
+    from,
+    to {
+      visibility: hidden;
+    }
+  }
+  .term__k {
+    color: #8f8b84;
+  }
+  .is-cmd,
+  .is-cmd .term__k {
+    color: #edebe6;
+    font-weight: 500;
+  }
+  .is-gap {
+    height: 8px;
+  }
+  .is-warn {
+    color: #fff8e6;
+  }
+  .is-result {
+    display: inline-block;
+    margin-top: 4px;
+    padding: 1px 8px;
+    background: #edebe6;
+    color: #0c0c0b;
+  }
+  .is-result .term__k {
+    color: #5e5a53;
+  }
+  .term__caret {
+    display: inline-block;
+    width: 8px;
+    height: 15px;
+    margin-top: 6px;
+    background: #edebe6;
+    vertical-align: -2px;
+    animation: blink 1s steps(2) infinite;
+  }
+  @keyframes blink {
+    50% {
+      opacity: 0;
+    }
+  }
+  .term__cap {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+  .term__cap a {
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  @media (max-width: 640px) {
+    .term__body {
+      font-size: 11.5px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .term__line,
+    .term__caret {
+      animation: none;
+    }
+  }
+</style>

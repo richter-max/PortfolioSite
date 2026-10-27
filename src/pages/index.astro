@@ -2,7 +2,7 @@
 // / — On Track.
 import SideLayout from '../layouts/SideLayout.astro';
 import OnHero from '../components/v3/OnHero.astro';
-import StatRow from '../components/v3/StatRow.astro';
+import Training from '../components/v3/Training.astro';
 import SeasonList from '../components/v3/SeasonList.astro';
 import Feature from '../components/v3/Feature.astro';
 import PlanVsResult from '../components/v3/PlanVsResult.astro';
@@ -18,7 +18,7 @@ const { upcoming, results } = await getRaces();
   <OnHero races={upcoming} />
 
   <div class="stack">
-    <StatRow next={upcoming[0]} />
+    <Training next={upcoming[0]} />
 
     <SeasonList races={upcoming} />
 
