@@ -190,6 +190,30 @@ a {
   }
 }
 
+/* Side switch: the bib flies to the badge's place and turns into it
+   (both carry view-transition-name: signature). */
+::view-transition-group(signature) {
+  z-index: 10;
+  animation-duration: var(--dur-wipe);
+  animation-timing-function: var(--ease-wipe);
+}
+::view-transition-old(signature) {
+  animation: sig-out calc(var(--dur-wipe) * 0.5) ease-in both;
+}
+::view-transition-new(signature) {
+  animation: sig-in calc(var(--dur-wipe) * 0.5) ease-out calc(var(--dur-wipe) * 0.5) both;
+}
+@keyframes sig-out {
+  to {
+    transform: perspective(900px) rotateY(90deg);
+  }
+}
+@keyframes sig-in {
+  from {
+    transform: perspective(900px) rotateY(-90deg);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

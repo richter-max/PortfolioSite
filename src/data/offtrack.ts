@@ -37,11 +37,23 @@ export const path = [
 export const degree = {
   quarters: ['Oct – Dec', 'Jan – Mar', 'Apr – Jun', 'Jul – Sep'],
   years: [
-    { label: 'Year 1', cal: '2026/27', blocks: [['P', 'Practice 1', 'Basics', true], ['T', 'Theory 1', 'Core modules'], ['T', 'Theory 2', 'Core modules'], ['P', 'Practice 2', 'Project work']] },
+    { label: 'Year 1', cal: '2026/27', blocks: [['P', 'Practice 1', 'Basics'], ['T', 'Theory 1', 'Core modules'], ['T', 'Theory 2', 'Core modules'], ['P', 'Practice 2', 'Project work']] },
     { label: 'Year 2', cal: '2027/28', blocks: [['T', 'Theory 3', 'Core and profile · semester abroad possible'], ['T', 'Theory 4', 'Core and profile'], ['P', 'Practice 3', 'Project work'], ['P', 'Practice 4', 'Project work · oral exam']] },
     { label: 'Year 3', cal: '2028/29', blocks: [['T', 'Theory 5', 'Profile modules · student paper'], ['P', 'Practice 5', 'Project work'], ['T', 'Theory 6', 'Profile modules · student paper'], ['P', 'Practice 6', 'Bachelor thesis']] },
-  ] as { label: string; cal: string; blocks: [string, string, string, boolean?][] }[],
+  ] as { label: string; cal: string; blocks: [string, string, string][] }[],
+  /** First day of block 1; every block is three calendar months. */
+  start: '2026-10-01',
 };
+
+/** Start (inclusive) and end (exclusive) of block n (0–11) as ISO dates. */
+export function blockRange(n: number): { start: string; end: string } {
+  const [y, m] = degree.start.split('-').map(Number);
+  const at = (k: number) => {
+    const d = new Date(Date.UTC(y, m - 1 + 3 * k, 1));
+    return d.toISOString().slice(0, 10);
+  };
+  return { start: at(n), end: at(n + 1) };
+}
 
 export const roadmap = [
   { state: 'In progress', what: 'B.Sc. CS, IT security, dual', note: 'Practice phase 1 at Bosch now. First theory phase starts in January.' },

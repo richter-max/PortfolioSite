@@ -19,6 +19,8 @@ interface Props {
   noindex?: boolean;
   /** Page language; legal pages are German. */
   lang?: 'en' | 'de';
+  /** Link-preview image (path under public), e.g. /og/berlin-marathon-2026.png */
+  ogImage?: string;
 }
 
 const { side } = Astro.props;
@@ -46,7 +48,7 @@ const canonical = new URL(Astro.url.pathname, SITE.url).href;
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
-    <meta property="og:image" content={new URL(`/og-${side}.png`, SITE.url).href} />
+    <meta property="og:image" content={new URL(Astro.props.ogImage ?? `/og-${side}.png`, SITE.url).href} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />

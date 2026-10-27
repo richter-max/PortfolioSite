@@ -1,0 +1,328 @@
+---
+// GhostRace.astro — the race replayed against a ghost at goal pace.
+// Data: time and distance from Strava only (no route, no heart rate),
+// see src/data/<key>-ghost.json. Without JS the section shows the end
+// state: both finish lines, the gap, and every kilometre split.
+import berlin from '../../data/berlin-ghost.json';
+
+interface Props {
+  race: 'berlin';
+}
+const { race } = Astro.props;
+const data = { berlin }[race];
+
+const KM = 42.195;
+const fmt = (s: number) => {
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = Math.round(s % 60);
+  return `${h}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+};
+const pace = (s: number) => `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, '0')}`;
+const goalPace = data.goal / KM;
+
+// What happened where. Kilometres from the report and the data.
+const events = [
+  { km: 3.5, label: 'Stepped on' },
+  { km: 19.7, label: 'Medical tent' },
+  { km: 25, label: 'Pacing someone' },
+];
+
+// Split bars: capped so the tent kilometre doesn't flatten the rest.
+const CAP = 480;
+const bars = data.splits.map((s, i) => ({ km: i + 1, s, h: Math.min(s, CAP) / CAP, capped: s > CAP }));
+const goalY = goalPace / CAP;
+---
+
+<section class="ghost" data-ghost aria-labelledby="ghost-h">
+  <script type="application/json" data-ghost-data set:html={JSON.stringify({ points: data.points, goal: data.goal, official: data.official })} />
+
+  <div class="ghost__head">
+    <h2 id="ghost-h" class="label">Replay · me against a sub-3 ghost</h2>
+    <p class="ghost__note">
+      The ghost runs an even {pace(goalPace)} per km and finishes in {fmt(data.goal)}. The white dot is
+      me, from my watch.
+    </p>
+  </div>
+
+  <div class="ghost__board" aria-hidden="true">
+    <div><span class="label-s">Race clock</span><span class="ghost__big" data-g-clock>{fmt(data.official)}</span></div>
+    <div><span class="label-s">Me</span><span class="ghost__mid" data-g-me>42.2 km</span></div>
+    <div><span class="label-s">Ghost</span><span class="ghost__mid is-ghost" data-g-ghost>Finished</span></div>
+    <div><span class="label-s">Gap</span><span class="ghost__mid" data-g-gap>{fmt(data.official - data.goal)}</span></div>
+  </div>
+
+  <div class="ghost__track" aria-hidden="true">
+    <div class="ghost__line"></div>
+    {[0, 5, 10, 15, 20, 25, 30, 35, 40].map((k) => (
+      <span class="ghost__tick" style={`--x:${(k / KM) * 100}%`}><span>{k}</span></span>
+    ))}
+    {events.map((e, i) => (
+      <span class:list={['ghost__event', `is-${i}`]} style={`--x:${(e.km / KM) * 100}%`}><span>{e.label}</span></span>
+    ))}
+    <span class="ghost__dot is-ghost" data-g-ghostdot style="--x:100%"></span>
+    <span class="ghost__dot is-me" data-g-medot style="--x:100%"></span>
+  </div>
+
+  <div class="ghost__controls">
+    <button type="button" class="ghost__play label" data-g-play aria-pressed="false">Replay</button>
+    <input
+      type="range"
+      min="0"
+      max={data.official}
+      step="1"
+      value={data.official}
+      data-g-scrub
+      aria-label="Race time"
+      aria-valuetext={fmt(data.official)}
+    />
+  </div>
+
+  <figure class="ghost__splits">
+    <svg viewBox={`0 0 ${bars.length * 10} 100`} preserveAspectRatio="none" role="img" aria-label={`Kilometre splits: ${bars.map((b) => pace(b.s)).join(', ')}. Goal pace ${pace(goalPace)}.`}>
+      {bars.map((b, i) => (
+        <rect x={i * 10 + 1.5} y={100 - b.h * 100} width="7" height={b.h * 100} class:list={['ghost__bar', { 'is-slow': b.s > goalPace + 8 }]} data-g-bar={b.km}></rect>
+      ))}
+      <line x1="0" x2={bars.length * 10} y1={100 - goalY * 100} y2={100 - goalY * 100} class="ghost__goal"></line>
+    </svg>
+    <figcaption class="label-s ghost__cap">
+      <span>Pace per km · line = {pace(goalPace)} goal · km 20 is the tent ({pace(data.splits[19])} min, cut off)</span>
+      <span>Strava: time and distance only, scaled to 42.195 km</span>
+    </figcaption>
+  </figure>
+</section>
+
+<script>
+  import '../../scripts/v3/ghost.js';
+</script>
+
+<style>
+  .ghost {
+    margin: 0 0 var(--space-7);
+    padding: var(--space-5);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-panel);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    overflow-wrap: normal;
+  }
+  .ghost__head {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  /* the prose styles would turn this into a big headline */
+  .ghost__head h2 {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 400;
+    font-stretch: normal;
+    line-height: 1.4;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+  .ghost__note {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--ink-muted);
+  }
+  .ghost__board {
+    display: grid;
+    grid-template-columns: 1.6fr repeat(3, 1fr);
+    gap: var(--space-4);
+    align-items: end;
+  }
+  .ghost__board > div {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+  .ghost__big,
+  .ghost__mid {
+    font-family: var(--font-display);
+    font-stretch: 62%;
+    font-weight: 300;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .ghost__big {
+    font-size: clamp(36px, 6vw, 56px);
+  }
+  .ghost__mid {
+    font-size: clamp(20px, 3vw, 28px);
+  }
+  .ghost__mid.is-ghost {
+    color: var(--lamp);
+  }
+
+  .ghost__track {
+    position: relative;
+    height: 74px;
+    margin: 0 8px;
+  }
+  .ghost__line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 36px;
+    height: 2px;
+    background: var(--line);
+  }
+  .ghost__tick {
+    position: absolute;
+    left: var(--x);
+    top: 30px;
+    width: 1px;
+    height: 14px;
+    background: var(--line);
+  }
+  .ghost__tick span {
+    position: absolute;
+    top: 20px;
+    left: 0;
+    transform: translateX(-50%);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--ink-muted);
+  }
+  .ghost__event {
+    position: absolute;
+    left: var(--x);
+    top: 0;
+    width: 1px;
+    height: 36px;
+    border-left: 1px dashed var(--ink-muted);
+  }
+  .ghost__event span {
+    position: absolute;
+    top: -2px;
+    left: 6px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--ink-muted);
+  }
+  .ghost__event.is-1 span {
+    top: 12px;
+  }
+  .ghost__dot {
+    position: absolute;
+    left: var(--x);
+    top: 37px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .ghost__dot.is-me {
+    background: var(--ink);
+  }
+  .ghost__dot.is-ghost {
+    border: 2px solid var(--lamp);
+    box-shadow: 0 0 16px rgb(255 248 230 / 0.45);
+  }
+
+  .ghost__controls {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
+  .ghost__play {
+    flex: none;
+    min-height: 44px;
+    padding: 0 20px;
+    border: 1px solid var(--ink);
+    border-radius: var(--radius-pill);
+    background: var(--ink);
+    color: var(--surface);
+    cursor: pointer;
+  }
+  .ghost__play[aria-pressed='true'] {
+    background: transparent;
+    color: var(--ink);
+  }
+  .ghost__controls input {
+    flex: 1;
+    min-width: 0;
+    accent-color: var(--ink);
+    height: 44px;
+  }
+
+  .ghost__splits {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .ghost__splits svg {
+    width: 100%;
+    height: 120px;
+  }
+  .ghost__bar {
+    fill: var(--ink);
+    fill-opacity: 0.85;
+    transition: fill-opacity 0.3s;
+  }
+  .ghost__bar.is-slow {
+    fill-opacity: 0.45;
+  }
+  .ghost__bar.is-future {
+    fill-opacity: 0.08;
+  }
+  .ghost__goal {
+    stroke: var(--lamp);
+    stroke-width: 1.5;
+    stroke-dasharray: 4 4;
+    vector-effect: non-scaling-stroke;
+  }
+  .ghost__cap {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 6px 16px;
+  }
+
+  @media (max-width: 640px) {
+    .ghost {
+      padding: var(--space-4);
+    }
+    .ghost__board {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .ghost__board > div:first-child {
+      grid-column: 1 / -1;
+    }
+    .ghost__track {
+      height: 90px;
+    }
+    .ghost__line {
+      top: 52px;
+    }
+    .ghost__tick {
+      top: 46px;
+    }
+    .ghost__dot {
+      top: 53px;
+    }
+    .ghost__event {
+      height: 52px;
+    }
+    .ghost__event span {
+      font-size: 9px;
+    }
+    .ghost__event.is-1 span {
+      top: 14px;
+    }
+    .ghost__event.is-2 span {
+      top: 28px;
+    }
+  }
+</style>

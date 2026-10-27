@@ -4,6 +4,9 @@
 // site" workflow. Every line is a fact from the last scan. The lines type
 // out on load; without JS or with reduced motion they are simply there.
 
+import { SITE } from '../../data/site';
+import { projects, roadmap, aegis, degree, blockRange } from '../../data/offtrack';
+
 interface Header { name: string; present: boolean }
 interface Scan {
   scannedAt: string;
@@ -65,6 +68,19 @@ const lines: { k: string; v: string; kind?: 'cmd' | 'gap' | 'result' | 'warn' }[
     kind: 'result',
   },
 ];
+
+// What the interactive prompt can answer. Everything here is already on
+// the page; the terminal is another way in, not new information.
+const cmdData = {
+  scan: { date, total, target: scan.target },
+  email: SITE.author.email,
+  github: SITE.author.github,
+  projects: [{ name: 'AEGIS', text: 'Evaluation harness for agent security.' }, ...projects.map((p) => ({ name: p.name, text: p.text.split('. ')[0] + '.' }))],
+  roadmap: roadmap.map((r) => ({ state: r.state, what: r.what })),
+  aegis: aegis.setups.map((x) => ({ label: x.label, through: x.through, blocked: x.blocked })),
+  blocks: degree.years.flatMap((y, yi) => y.blocks.map(([, name], qi) => ({ name, ...blockRange(yi * 4 + qi) }))),
+};
+const chips = ['help', 'whoami', 'degree', 'projects', 'aegis', 'roadmap', 'contact'];
 ---
 
 <figure class="term" aria-label={`Attack Surface Scanner run against ${scan.target} on ${date}: ${total} findings.`}>
@@ -78,13 +94,26 @@ const lines: { k: string; v: string; kind?: 'cmd' | 'gap' | 'result' | 'warn' }[
         <span>{l.v}</span>
       </div>
     ))}
-    <span class="term__caret" aria-hidden="true"></span>
+    <span class="term__caret" aria-hidden="true" data-term-caret></span>
+    <div class="term__out" data-term-out aria-live="polite"></div>
+    <form class="term__prompt" data-term-form hidden>
+      <label for="term-in" class="term__k">$</label>
+      <input id="term-in" name="cmd" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="send" aria-label="Type a command, for example help" placeholder="type help" />
+    </form>
   </div>
+  <div class="term__chips" data-term-chips hidden>
+    {chips.map((c) => <button type="button" data-cmd={c}>{c}</button>)}
+  </div>
+  <script type="application/json" data-term-data set:html={JSON.stringify(cmdData)} />
   <figcaption class="label-s term__cap">
     <span>Re-run every Monday by GitHub Actions</span>
     <a class="link" href="https://github.com/richter-max/attack-surface-scanner">The scanner <span class="arr">↗</span></a>
   </figcaption>
 </figure>
+
+<script>
+  import '../../scripts/v3/term.js';
+</script>
 
 <style>
   .term {
@@ -184,7 +213,83 @@ const lines: { k: string; v: string; kind?: 'cmd' | 'gap' | 'result' | 'warn' }[
     color: var(--ink);
     white-space: nowrap;
   }
+  .term.is-live .term__caret {
+    display: none;
+  }
+  .term__out {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .term__out:empty {
+    display: none;
+  }
+  .term__out .is-in {
+    margin-top: 10px;
+    color: #edebe6;
+    font-weight: 500;
+  }
+  .term__out .is-res {
+    color: #c9c6bf;
+  }
+  .term__out a {
+    color: #fff8e6;
+  }
+  .term__prompt {
+    display: flex;
+    align-items: center;
+    gap: 1ch;
+    margin-top: 10px;
+  }
+  .term__prompt[hidden],
+  .term__chips[hidden] {
+    display: none;
+  }
+  .term__prompt input {
+    flex: 1;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #edebe6;
+    font: inherit;
+    caret-color: #fff8e6;
+    outline: none;
+  }
+  .term__prompt input::placeholder {
+    color: #5e5a53;
+  }
+  .term__prompt:focus-within {
+    box-shadow: 0 1px 0 #fff8e6;
+  }
+  .term__body.has-out {
+    max-height: 520px;
+    overflow-y: auto;
+  }
+  .term__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .term__chips button {
+    min-height: 36px;
+    padding: 0 12px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-pill);
+    background: transparent;
+    color: var(--ink);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .term__chips button:hover {
+    background: var(--ink);
+    color: var(--surface);
+  }
   @media (max-width: 640px) {
+    /* 16px stops iOS from zooming into the field */
+    .term__prompt input {
+      font-size: 16px;
+    }
     .term__body {
       font-size: 11.5px;
     }

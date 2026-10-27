@@ -7,7 +7,7 @@ import portrait from '../../assets/photos/portrait.webp';
 ---
 
 <div class="badgescene" data-tilt="10">
-  <div class="badge" data-tilt-target>
+  <div class="badge" data-tilt-target data-vt-sig>
     <span class="badge__scan" aria-hidden="true"></span>
     <div class="badge__photo">
       <Image src={portrait} alt="Portrait of Max Richter" widths={[320, 640]} sizes="320px" />
@@ -36,6 +36,7 @@ import portrait from '../../assets/photos/portrait.webp';
     max-width: 320px;
   }
   .badge {
+    view-transition-name: signature;
     position: relative;
     display: grid;
     grid-template-rows: 46% 1fr;

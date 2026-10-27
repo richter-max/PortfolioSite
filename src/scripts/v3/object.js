@@ -56,3 +56,16 @@ if (!reduceMotion() && window.matchMedia('(pointer: coarse)').matches) {
     );
   }
 }
+
+// Side switch: only morph the signature object if it is on screen when
+// leaving; otherwise it would fly in from somewhere off the page.
+window.addEventListener('pageswap', (e) => {
+  if (!e.viewTransition) return;
+  for (const el of document.querySelectorAll('[data-vt-sig]')) {
+    const r = el.getBoundingClientRect();
+    if (r.bottom < 0 || r.top > window.innerHeight) el.style.viewTransitionName = 'none';
+  }
+});
+window.addEventListener('pageshow', () => {
+  for (const el of document.querySelectorAll('[data-vt-sig]')) el.style.viewTransitionName = '';
+});

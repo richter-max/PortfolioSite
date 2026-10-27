@@ -104,7 +104,7 @@ function pickLastRun(activities) {
 function weeklyKmLast12(activities) {
   const buckets = new Map(); // "YYYY-Www" → km
   for (const a of activities) {
-    if (!a.distance) continue;
+    if (!a.distance || !DISTANCE_SPORTS.has(sportOf(a))) continue;
     const wk = isoYearWeek(new Date(a.start_date));
     buckets.set(wk, (buckets.get(wk) || 0) + a.distance / 1000);
   }
@@ -115,6 +115,61 @@ function weeklyKmLast12(activities) {
     d.setDate(d.getDate() - 7 * i);
     const wk = isoYearWeek(d);
     out.push(Math.round((buckets.get(wk) || 0) * 10) / 10);
+  }
+  return out;
+}
+
+// The last 52 ISO weeks, oldest first, ending in the current week:
+// kilometres, sessions, moving hours and sessions per sport. Powers the
+// clickable week squares on On Track. No routes, no heart rate.
+const SPORT = {
+  Run: 'run', TrailRun: 'run', VirtualRun: 'run',
+  Ride: 'ride', VirtualRide: 'ride', GravelRide: 'ride', MountainBikeRide: 'ride', EBikeRide: 'ride',
+  Swim: 'swim',
+  TableTennis: 'tabletennis',
+  WeightTraining: 'strength', Workout: 'strength', Crossfit: 'strength', HighIntensityIntervalTraining: 'strength',
+};
+// Only these sports have kilometres that mean something; the few hundred
+// metres a watch logs during table tennis or football are noise.
+const DISTANCE_SPORTS = new Set(['run', 'ride', 'swim']);
+const sportOf = (a) => SPORT[a.sport_type] ?? SPORT[a.type] ?? 'other';
+
+function mondayOf(d) {
+  const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  t.setUTCDate(t.getUTCDate() - ((t.getUTCDay() || 7) - 1));
+  return t.toISOString().slice(0, 10);
+}
+function weeks52(activities) {
+  const buckets = new Map();
+  for (const a of activities) {
+    const wk = isoYearWeek(new Date(a.start_date));
+    const b = buckets.get(wk) ?? { km: 0, sessions: 0, hours: 0, sports: {}, kmBy: {} };
+    const sp = sportOf(a);
+    if (DISTANCE_SPORTS.has(sp)) {
+      b.km += (a.distance || 0) / 1000;
+      b.kmBy[sp] = (b.kmBy[sp] || 0) + (a.distance || 0) / 1000;
+    }
+    b.sessions += 1;
+    b.hours += (a.moving_time || 0) / 3600;
+    b.sports[sp] = (b.sports[sp] || 0) + 1;
+    buckets.set(wk, b);
+  }
+  const out = [];
+  for (let i = 51; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - 7 * i);
+    const wk = isoYearWeek(d);
+    const b = buckets.get(wk) ?? { km: 0, sessions: 0, hours: 0, sports: {}, kmBy: {} };
+    const kmBy = Object.fromEntries(Object.entries(b.kmBy).map(([k, v]) => [k, Math.round(v * 10) / 10]));
+    out.push({
+      week: wk,
+      start: mondayOf(d),
+      km: Math.round(b.km * 10) / 10,
+      sessions: b.sessions,
+      hours: Math.round(b.hours * 10) / 10,
+      sports: b.sports,
+      kmBy,
+    });
   }
   return out;
 }
@@ -138,6 +193,7 @@ async function fetchStrava() {
     sessionsThisYear,
     lastRun:         pickLastRun(acts),
     weeklyKmLast12:  weeklyKmLast12(acts),
+    weeks:           weeks52(acts),
   };
 }
 
