@@ -8,7 +8,7 @@ function fmt(iso: string) {
   const [y, m] = iso.split('-').map(Number);
   return `${MONTHS[m - 1]} ${y}`;
 }
-const posts = sortedPosts();
+const posts = await sortedPosts();
 ---
 
 <section id="writing" class="writing wrap">

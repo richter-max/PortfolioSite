@@ -2,12 +2,13 @@ import rss from '@astrojs/rss';
 import { sortedPosts } from '../data/posts';
 import { SITE } from '../data/site';
 
-export function GET(context) {
+export async function GET(context) {
+  const posts = await sortedPosts();
   return rss({
     title: SITE.title,
     description: SITE.description,
     site: context.site,
-    items: sortedPosts().map((p) => ({
+    items: posts.map((p) => ({
       title: p.title,
       description: p.description,
       link: `/blog/${p.slug}`,

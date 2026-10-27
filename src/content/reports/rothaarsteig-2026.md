@@ -10,7 +10,7 @@ summary: "A zone 2 marathon with a friend, run for the 50K UTMB index that gets 
 image: ./rothaarsteig.webp
 imageAlt: "Running a trail section of the Rothaarsteig Marathon with friends, everyone smiling."
 imageCredit: "Photo: race organizer"
-draft: true
+draft: false
 ---
 
 Three weeks after Berlin, a trail marathon in the Sauerland. Not a race for me.

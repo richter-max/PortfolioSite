@@ -7,7 +7,7 @@ function fmt(iso: string) {
   const [y, m] = iso.split('-').map(Number);
   return `${MONTHS[m - 1]} ${y}`;
 }
-const posts = sortedPosts();
+const posts = await sortedPosts();
 ---
 
 <ProseLayout title="Writing." kicker="WRITING" metaLine={`${posts.length} POSTS`}>

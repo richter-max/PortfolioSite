@@ -9,7 +9,7 @@ result: "3:48:28"
 summary: "Stepped on at km 3.5, about 15 minutes in the medical tent at km 19, and a finish far from the goal."
 image: ./berlin-after-finish.webp
 imageAlt: "Sitting on the grass after the finish, medal on, one shoe off, the ankle taped."
-draft: true
+draft: false
 ---
 
 Official time 3:48. The goal was sub-3:00. That's the result, so it goes first.

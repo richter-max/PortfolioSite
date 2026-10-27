@@ -7,9 +7,11 @@ import { SITE } from '../data/site';
 interface Props {
   title?: string;
   description?: string;
+  /** Keep this page out of search results (legal pages with a postal address). */
+  noindex?: boolean;
 }
 
-const { title = SITE.title, description = SITE.description } = Astro.props;
+const { title = SITE.title, description = SITE.description, noindex = false } = Astro.props;
 ---
 
 <!doctype html>
@@ -20,6 +22,7 @@ const { title = SITE.title, description = SITE.description } = Astro.props;
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="author" content={SITE.author.name} />
+    {noindex && <meta name="robots" content="noindex" />}
     <link rel="canonical" href={new URL(Astro.url.pathname, SITE.url).href} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicons/favicon-32.png" sizes="32x32" />

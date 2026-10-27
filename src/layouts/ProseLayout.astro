@@ -10,12 +10,13 @@ interface Props {
   description?: string;
   kicker?: string;
   metaLine?: string;
+  noindex?: boolean;
 }
-const { title, description, kicker, metaLine } = Astro.props;
+const { title, description, kicker, metaLine, noindex = false } = Astro.props;
 const year = new Date().getFullYear();
 ---
 
-<BaseLayout title={`${title} — ${SITE.name}`} description={description}>
+<BaseLayout title={`${title} — ${SITE.name}`} description={description} noindex={noindex}>
   <Nav />
   <main id="main" class="prosewrap wrap">
     <header class="prose__head">
