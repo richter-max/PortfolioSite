@@ -74,7 +74,7 @@ const lines: { k: string; v: string; kind?: 'cmd' | 'gap' | 'result' | 'warn' }[
   <div class="term__body">
     {lines.map((l, i) => (
       <div class:list={['term__line', l.kind && `is-${l.kind}`]} style={`--i:${i}`}>
-        {l.kind !== 'gap' && <span class="term__k">{l.k.padEnd(l.kind === 'cmd' ? 2 : 12, ' ')}</span>}
+        {l.kind !== 'gap' && <span class="term__k">{l.k}</span>}
         <span>{l.v}</span>
       </div>
     ))}
@@ -120,8 +120,11 @@ const lines: { k: string; v: string; kind?: 'cmd' | 'gap' | 'result' | 'warn' }[
     overflow-x: auto;
     box-shadow: var(--shadow-object);
   }
+  /* key column + value column; long values wrap instead of scrolling */
   .term__line {
-    white-space: pre;
+    display: grid;
+    grid-template-columns: 12ch minmax(0, 1fr);
+    column-gap: 1ch;
     /* hidden while the animation runs, shown when it ends: no fill */
     animation: type calc(0.5s + var(--i) * 0.22s) linear;
   }
@@ -133,6 +136,9 @@ const lines: { k: string; v: string; kind?: 'cmd' | 'gap' | 'result' | 'warn' }[
   }
   .term__k {
     color: #8f8b84;
+  }
+  .is-cmd {
+    grid-template-columns: 2ch minmax(0, 1fr);
   }
   .is-cmd,
   .is-cmd .term__k {
@@ -146,7 +152,7 @@ const lines: { k: string; v: string; kind?: 'cmd' | 'gap' | 'result' | 'warn' }[
     color: #fff8e6;
   }
   .is-result {
-    display: inline-block;
+    display: inline-grid;
     margin-top: 4px;
     padding: 1px 8px;
     background: #edebe6;
@@ -182,6 +188,7 @@ const lines: { k: string; v: string; kind?: 'cmd' | 'gap' | 'result' | 'warn' }[
     .term__body {
       font-size: 11.5px;
     }
+
   }
   @media (prefers-reduced-motion: reduce) {
     .term__line,

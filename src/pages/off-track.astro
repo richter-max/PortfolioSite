@@ -264,6 +264,14 @@ const scanFile = Object.values(import.meta.glob('../data/scan.json', { eager: tr
   .offhero__clip :global(.badge__tag) {
     display: none;
   }
+  /* Small clipped badge: more photo, closer crop. */
+  .offhero__clip :global(.badge) {
+    grid-template-rows: 62% 1fr;
+  }
+  .offhero__clip :global(.badge__photo img) {
+    transform: scale(1.75);
+    transform-origin: 52% 17%;
+  }
   .offhero__clip :global(.badge__name) {
     font-size: 20px;
   }

@@ -8,6 +8,7 @@ export async function GET(context) {
     title: SITE.title,
     description: SITE.description,
     site: context.site,
+    trailingSlash: false, // the site serves /blog/x, /blog/x/ redirects
     items: posts.map((p) => ({
       title: p.title,
       description: p.description,
