@@ -8,6 +8,7 @@
 // `result` in its file.
 
 import { getCollection } from 'astro:content';
+import type { ImageMetadata } from 'astro';
 
 export interface UpcomingRace {
   name: string;
@@ -18,7 +19,13 @@ export interface UpcomingRace {
   datePrecision: 'day' | 'month';
   format: string;
   target?: string;
+  note?: string;
   weight: 'main' | 'high' | 'side' | 'open';
+  image?: ImageMetadata;
+  imageAlt?: string;
+  caption?: string;
+  captionRight?: string;
+  cardFigure?: string;
 }
 
 export interface RaceResult {
@@ -27,6 +34,8 @@ export interface RaceResult {
   dateLabel: string;
   format: string;
   result: string;
+  /** Planned or goal time, if the goal was a time ("5:30", "Sub-3:00"). */
+  goal?: string;
   note?: string;
   href?: string;
 }
@@ -58,7 +67,13 @@ export async function getRaces(): Promise<{ upcoming: UpcomingRace[]; results: R
       datePrecision: e.data.datePrecision,
       format: e.data.format,
       target: e.data.goal,
+      note: e.data.note,
       weight: e.data.weight,
+      image: e.data.image,
+      imageAlt: e.data.imageAlt,
+      caption: e.data.caption,
+      captionRight: e.data.captionRight,
+      cardFigure: e.data.cardFigure,
     }));
 
   const results: RaceResult[] = entries
@@ -70,10 +85,26 @@ export async function getRaces(): Promise<{ upcoming: UpcomingRace[]; results: R
       dateLabel: label(e.data.date, 'day'),
       format: e.data.format,
       result: e.data.result!,
+      goal: e.data.goal,
       note: e.data.note,
       href:
         e.data.report && published.has(e.data.report.id) ? `/blog/${e.data.report.id}` : e.data.reportUrl,
     }));
 
   return { upcoming, results };
+}
+
+/** "6:52:07" → hours; "Sub-3:00" or "5:30" → hours; anything else → null. */
+export function toHours(t?: string): number | null {
+  const m = t?.match(/(\d+):(\d{2})(?::(\d{2}))?/);
+  if (!m) return null;
+  return Number(m[1]) + Number(m[2]) / 60 + Number(m[3] ?? 0) / 3600;
+}
+
+/** Whole days from today (UTC midnight) to an ISO date; never negative. */
+export function daysUntil(iso: string): number {
+  const now = new Date();
+  const today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  const [y, m, d] = iso.split('-').map(Number);
+  return Math.max(0, Math.round((Date.UTC(y, m - 1, d) - today) / 864e5));
 }

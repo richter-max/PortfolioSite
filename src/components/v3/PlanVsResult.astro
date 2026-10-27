@@ -1,0 +1,137 @@
+---
+// PlanVsResult.astro — every finished race: the plan as a thin tick, the
+// result as a bar on the same scale. A miss is not coloured; the gap is
+// the story.
+import { Image } from 'astro:assets';
+import finish from '../../assets/photos/kraichgau-finish.webp';
+import { toHours, type RaceResult } from '../../data/races';
+
+interface Props {
+  results: RaceResult[];
+}
+const { results } = Astro.props;
+const rows = results.map((r) => ({ ...r, h: toHours(r.result), plan: toHours(r.goal) }));
+const max = Math.ceil(Math.max(...rows.map((r) => Math.max(r.h ?? 0, r.plan ?? 0)))) || 1;
+const pct = (h: number) => `${((h / max) * 100).toFixed(1)}%`;
+---
+
+<section class="pvr wrap" aria-labelledby="pvr-h">
+  <div class="pvr__side">
+    <h2 id="pvr-h" class="label">Plan vs. what happened</h2>
+    <p class="display-l">The hard races are the good stories.</p>
+    <figure class="pvr__fig">
+      <Image src={finish} alt="Crossing the finish line of Ironman 70.3 Kraichgau, arms open, laughing" widths={[400, 800]} sizes="(max-width: 760px) 100vw, 380px" />
+      <figcaption class="label-s"><span>Kraichgau, 6:52:07 in</span><span>Photo: Sportograf</span></figcaption>
+    </figure>
+  </div>
+  <div class="pvr__list">
+    {rows.map((r) => (
+      <article class="pvr__row">
+        <div class="pvr__head">
+          <h3 class="display-xs">{r.name}</h3>
+          <span class="data">
+            {r.result} <span class="pvr__muted">/ {r.plan ? `${r.goal?.toLowerCase().startsWith('sub') ? 'goal' : 'plan'} ${r.goal?.replace(/^sub-?/i, '')}` : 'no clock'}</span>
+          </span>
+        </div>
+        {r.h && (
+          <div class="pvr__track" aria-hidden="true">
+            <div class="pvr__bar" style={`width:${pct(r.h)}`}></div>
+            {r.plan && <div class="pvr__plan" style={`left:${pct(r.plan)}`}></div>}
+          </div>
+        )}
+        <p>
+          {r.note} {r.href && <a class="label-s" href={r.href}>Read the report →</a>}
+        </p>
+      </article>
+    ))}
+    <p class="label-s">Scale 0 to {max} h. Bar: finish time. Tick: plan or goal.</p>
+  </div>
+</section>
+
+<style>
+  .pvr {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-7);
+  }
+  .pvr__side {
+    flex: 0 1 380px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+  .pvr__fig {
+    margin: var(--space-2) 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  .pvr__fig :global(img) {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+  }
+  .pvr__fig figcaption {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+  .pvr__list {
+    flex: 1 1 520px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  .pvr__row {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: 22px 0;
+    border-top: 1px solid var(--line);
+  }
+  .pvr__head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-2) var(--space-5);
+  }
+  .pvr__muted {
+    color: var(--ink-muted);
+  }
+  .pvr__track {
+    position: relative;
+    height: 2px;
+    background: var(--line);
+  }
+  .pvr__bar {
+    position: absolute;
+    left: 0;
+    top: -1px;
+    height: 4px;
+    background: var(--ink);
+    transform-origin: left;
+    animation: grow 1.2s var(--ease-settle) 0.2s both;
+  }
+  @keyframes grow {
+    from {
+      transform: scaleX(0.1);
+    }
+  }
+  .pvr__plan {
+    position: absolute;
+    top: -8px;
+    height: 18px;
+    border-left: 1px solid var(--ink);
+  }
+  .pvr__row p {
+    margin: 0;
+    max-width: 60ch;
+  }
+  .pvr__row a {
+    color: var(--ink);
+    white-space: nowrap;
+  }
+</style>

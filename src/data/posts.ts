@@ -10,6 +10,8 @@ export interface Post {
   description: string;
   pubDate: string; // ISO
   readTime: string;
+  /** Short label for lists: "Race report", "Short report", … */
+  kind: string;
   /** Set when the post was substantively revised after publication. */
   revised?: string; // ISO
 }
@@ -24,6 +26,7 @@ export const posts: Post[] = [
       'none of the four were about the pain.',
     pubDate: '2026-06-18',
     readTime: '7 min',
+    kind: 'Race report',
   },
 ];
 
@@ -32,6 +35,13 @@ export const posts: Post[] = [
  * entry of the `reports` collection. Sorted by the date the post last
  * changed — a revision counts.
  */
+const KIND = {
+  'race-report': 'Race report',
+  'short-report': 'Short report',
+  'monthly-update': 'Monthly update',
+  preview: 'Preview',
+} as const;
+
 export async function sortedPosts(): Promise<Post[]> {
   const reports = await getCollection('reports', ({ data }) => !data.draft);
   const fromReports: Post[] = reports.map((r) => ({
@@ -40,6 +50,7 @@ export async function sortedPosts(): Promise<Post[]> {
     description: r.data.summary,
     pubDate: r.data.date.toISOString().slice(0, 10),
     readTime: `${Math.max(1, Math.round((r.body ?? '').split(/\s+/).length / 200))} min`,
+    kind: KIND[r.data.type],
   }));
   const eff = (p: Post) => new Date(p.revised ?? p.pubDate).getTime();
   return [...posts, ...fromReports].sort((a, b) => eff(b) - eff(a));

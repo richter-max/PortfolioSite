@@ -1,46 +1,92 @@
 ---
-// / — On Track. Sections are added in step 3 (hero landscape and bib,
-// stats, season, plan vs. result, journal, table tennis).
+// / — On Track.
 import SideLayout from '../layouts/SideLayout.astro';
+import OnHero from '../components/v3/OnHero.astro';
+import StatRow from '../components/v3/StatRow.astro';
+import SeasonList from '../components/v3/SeasonList.astro';
+import Feature from '../components/v3/Feature.astro';
+import PlanVsResult from '../components/v3/PlanVsResult.astro';
+import Journal from '../components/v3/Journal.astro';
 import Bridge from '../components/v3/Bridge.astro';
+import rothaarsteig from '../assets/photos/rothaarsteig.webp';
+import { getRaces } from '../data/races';
+
+const { upcoming, results } = await getRaces();
 ---
 
 <SideLayout side="on">
-  <section class="hero wrap">
-    <p class="label">KAT100 Endurance Trail · Kitzbühel → Fieberbrunn · August 2027</p>
-    <h1 class="display-xl settle">81 km.<br />4,850 m up.<br />Start 00:00.</h1>
-    <div class="hero__copy">
-      <p>
-        The main event of my 2027 season. I'm documenting the whole way there,
-        including the races that go wrong.
-      </p>
-      <p class="label">
-        Off track: dual student, IT security, Bosch · <a href="/off-track">Switch →</a>
-      </p>
-    </div>
-  </section>
+  <OnHero races={upcoming} />
 
-  <Bridge
-    to="off"
-    text="Dual student in Computer Science, IT security, at Bosch. Heading for AI security."
-  />
+  <div class="stack">
+    <StatRow next={upcoming[0]} />
+
+    <SeasonList races={upcoming} />
+
+    <Feature
+      id="rothaarsteig"
+      image={rothaarsteig}
+      imageAlt="Running a trail section of the Rothaarsteig Marathon with friends, everyone smiling"
+      caption="Rothaarsteig, 17.10.2026"
+      credit="Photo: race organizer"
+      label="Rothaarsteig Marathon · 42.2 km · ~900 m up"
+      title="Not a race.<br />A ticket."
+      figures={[
+        { value: '5:10', label: 'Finish time' },
+        { value: 'Z2', label: 'Effort' },
+        { value: '50K', label: 'UTMB index' },
+      ]}
+      href="/blog/rothaarsteig-2026"
+    >
+      <p>
+        I ran it with a friend at zone 2, started together and finished
+        together. The real reason I was there: a finish in a UTMB-indexed trail
+        race, for the 50K index I need to start at KAT100 in Kitzbühel next
+        August.
+      </p>
+    </Feature>
+
+    <PlanVsResult results={results} />
+
+    <Journal />
+
+    <section class="offseason wrap" aria-label="Off season">
+      <span class="label">Off season</span>
+      <span class="offseason__what">Table tennis, Landesliga, DJK Seifriedsberg</span>
+      <span class="data">TTR 1670 → 1757 · 2025/26</span>
+    </section>
+
+    <Bridge
+      to="off"
+      text="Dual student in Computer Science, IT security, at Bosch. Heading for AI security."
+    />
+  </div>
 </SideLayout>
 
 <style>
-  .hero {
+  .stack {
     display: flex;
     flex-direction: column;
-    gap: var(--space-5);
-    padding-block: var(--space-8) var(--space-9);
+    gap: var(--space-9);
+    padding-top: var(--space-6);
   }
-  .hero__copy {
+  .offseason {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-4) var(--space-7);
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-4);
   }
-  .hero__copy p {
-    margin: 0;
-    flex: 1 1 280px;
-    max-width: 42ch;
+  .offseason > * {
+    padding-top: 22px;
+  }
+  .offseason::before {
+    content: '';
+    flex: 0 0 100%;
+    border-top: 1px solid var(--line);
+    margin-bottom: -22px;
+  }
+  .offseason__what {
+    flex: 1 1 300px;
+    font-size: 15px;
   }
 </style>

@@ -7,7 +7,7 @@ distance: "42.2 km, ~900 m up"
 goal: "Zone 2, finish"
 result: "5:10"
 summary: "A zone 2 marathon with a friend, run for the 50K UTMB index that gets me to Kitzbühel."
-image: ./rothaarsteig.webp
+image: ../../assets/photos/rothaarsteig.webp
 imageAlt: "Running a trail section of the Rothaarsteig Marathon with friends, everyone smiling."
 imageCredit: "Photo: race organizer"
 draft: false
