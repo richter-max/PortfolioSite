@@ -16,7 +16,8 @@ permissions:
 
 jobs:
   render:
-    runs-on: ubuntu-latest
+    # pinned: Playwright lists the system packages per Ubuntu release
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
@@ -26,7 +27,7 @@ jobs:
 
       - name: Install Playwright (not a project dependency)
         run: |
-          npm install --no-save --no-package-lock playwright@1.49.1
+          npm install --no-save --no-package-lock playwright@1.63.0
           npx playwright install --with-deps chromium
 
       - name: Render images
