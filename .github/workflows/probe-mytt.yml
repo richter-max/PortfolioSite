@@ -8,26 +8,25 @@ jobs:
     steps:
       - run: |
           B='https://www.mytischtennis.de/click-tt/ByTTV'
-          i=0
-          for U in "$B/26--27/verein/310079/DJK_Seifriedsberg/meldungen" "$B/26--27/verein/310079/DJK_Seifriedsberg/bilanzen/vr" "$B/25--26/verein/310079/DJK_Seifriedsberg/bilanzen/rr" "$B/25--26/verein/310079/DJK_Seifriedsberg/bilanzen/vr"; do
-            i=$((i+1))
-            code=$(curl -sSL -A 'richtermax.com season stats' -o p$i.html -w '%{http_code} %{url_effective}' "$U")
-            echo "::notice::[$i] $code bytes=$(wc -c < p$i.html) tables=$(grep -o '<table' p$i.html | wc -l) Richter=$(grep -c 'Richter' p$i.html) TTR=$(grep -c 'TTR' p$i.html)"
-            python3 - p$i.html $i <<'PY'
+          cat > d.py <<'PY'
           import re,sys,html as H
           s=open(sys.argv[1],encoding='utf-8',errors='ignore').read(); n=sys.argv[2]
           d=lambda x: re.sub(r'\s+',' ',H.unescape(re.sub(r'<[^>]+>',' ',x))).strip()
           for k,t in enumerate(re.findall(r'<table[\s\S]*?</table>',s)):
             head=[d(h) for h in re.findall(r'<th[^>]*>([\s\S]*?)</th>',t)]
-            pre=d(s[max(0,s.find(t)-400):s.find(t)])[-120:]
-            print(f'::notice::[{n}.{k}] before="{pre}" head={"|".join(head)}')
-            for tr in re.findall(r'<tr[^>]*>([\s\S]*?)</tr>',t):
+            rows=re.findall(r'<tr[^>]*>([\s\S]*?)</tr>',t)
+            print(f'::notice::[{n}.{k}] rows={len(rows)} head={"|".join(head)}')
+            for tr in rows:
               cells=[d(c) for c in re.findall(r'<td[^>]*>([\s\S]*?)</td>',tr)]
               if any('Richter' in c for c in cells): print(f'::notice::[{n}.{k}] ROW={"|".join(cells)}')
-          for m in re.finditer(r'TTR',s):
-            print(f'::notice::[{n}] ttrctx='+d(s[max(0,m.start()-200):m.start()+200])[:300]); break
-          for m in re.finditer(r'Richter',s):
-            print(f'::notice::[{n}] richterctx='+d(s[max(0,m.start()-300):m.start()+300])[:400]); break
+          hs=sorted(set(h for h in re.findall(r'href="([^"]+)"',s) if re.search(r'meldung|/mannschaft/|spieler|ttr',h,re.I) and 'rankings' not in h))
+          print(f'::notice::[{n}] links='+' '.join(hs)[:1800])
           PY
-            sleep 3
-          done
+          get(){ curl -sSL -A 'richtermax.com season stats' -o "$1" -w '%{http_code}' "$2"; }
+          echo "::notice::m=$(get m.html "$B/26--27/verein/310079/DJK_Seifriedsberg/meldungen")"; python3 d.py m.html M
+          echo "::notice::t=$(get t.html "$B/25--26/verein/310079/DJK_Seifriedsberg/mannschaften")"; python3 d.py t.html T
+          M=$(grep -o 'href="[^"]*mannschaftsmeldung[^"]*"' m.html | grep -i erwachsene | head -1 | cut -d'"' -f2)
+          [ -z "$M" ] && M=$(grep -o 'href="[^"]*meldung[^"]*"' m.html | grep -v '/meldungen"' | head -1 | cut -d'"' -f2)
+          case "$M" in /*) M="https://www.mytischtennis.de$M";; esac
+          echo "::notice::meldung url=$M code=$(get mm.html "$M")"; python3 d.py mm.html MM
+          grep -o 'TTR[^<]\{0,80\}' mm.html | head -5 | sed 's/^/::notice::mmTTR=/'
