@@ -7,31 +7,21 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - run: |
-          get(){ curl -sSL -A 'richtermax.com season stats' -o "$1" -w '%{http_code}' "$2"; }
-          get mm.html 'https://www.mytischtennis.de/click-tt/ByTTV/26--27/verein/310079/DJK_Seifriedsberg/meldungendetails/E/vr' >/dev/null
-          P=$(python3 - <<'PY'
-          import re
-          s=open('mm.html',encoding='utf-8').read()
-          for tr in re.findall(r'<tr[^>]*>([\s\S]*?)</tr>',s):
-            if 'Max Richter' in re.sub(r'<[^>]+>',' ',tr):
-              m=re.search(r'href="([^"]*spielerportrait[^"]*)"',tr); print(m.group(1) if m else 'none'); break
-          PY
-          )
-          echo "::notice::portrait=$P"
-          echo "::notice::code=$(get p.html "https://www.mytischtennis.de$P") bytes=$(wc -c < p.html)"
-          python3 - <<'PY'
-          import re,html as H
-          s=open('p.html',encoding='utf-8',errors='ignore').read()
+          U='https://www.mytischtennis.de/click-tt/spieler/PD9D9D021/spielerportrait'
+          cat > d.py <<'PY'
+          import re,sys,html as H
+          s=open(sys.argv[1],encoding='utf-8',errors='ignore').read(); n=sys.argv[2]
           d=lambda x: re.sub(r'\s+',' ',H.unescape(re.sub(r'<[^>]+>',' ',x))).strip()
-          body=s[s.find('<body'):]
-          body=re.sub(r'<script[\s\S]*?</script>','',body)
-          t=d(body)
-          i=t.find('Max Richter')
-          print('::notice::text='+t[max(0,i-100):i+1500].replace('%','%25'))
-          for k,tb in enumerate(re.findall(r'<table[\s\S]*?</table>',s)):
-            head=[d(h) for h in re.findall(r'<th[^>]*>([\s\S]*?)</th>',tb)]
-            rows=[[d(c) for c in re.findall(r'<td[^>]*>([\s\S]*?)</td>',tr)] for tr in re.findall(r'<tr[^>]*>([\s\S]*?)</tr>',tb)]
-            print(f'::notice::T{k} head={"|".join(head)} rows={len(rows)} first={"|".join(rows[1] if len(rows)>1 else (rows[0] if rows else []))[:300]}')
-          for m in re.finditer(r'role="group" aria-label="[^"]*"',s): print('::notice::card='+m.group(0))
-          for m in re.finditer(r'TTR',t): print('::notice::ttr='+t[max(0,m.start()-60):m.start()+80]); 
+          b=re.sub(r'<script[\s\S]*?</script>','',s[s.find('<body'):])
+          t=d(b); i=t.find('Q-TTR')
+          print(f'::notice::[{n}] text='+t[max(0,i-300):i+700].replace('%','%25'))
+          ids=sorted(set(re.findall(r'"(routes/[^"]+)"',s)))
+          print(f'::notice::[{n}] routes='+' '.join(ids)[:1500])
+          for m in re.finditer(r'(ttr|TTR)[^,]{0,40}":\s*\d+',s): print(f'::notice::[{n}] json='+m.group(0)); 
           PY
+          curl -sSL -A 'richtermax.com season stats' -c j -b j -o a.html "$U"; python3 d.py a.html A
+          sleep 25
+          curl -sSL -A 'richtermax.com season stats' -c j -b j -o b.html "$U"; python3 d.py b.html B
+          R=$(grep -o '"routes/[^"]*spielerportrait[^"]*"' a.html | head -1 | tr -d '"')
+          echo "::notice::rid=$R"
+          [ -n "$R" ] && curl -sSL -A 'richtermax.com season stats' -b j -o c.json "$U?_data=$(python3 -c 'import urllib.parse,sys;print(urllib.parse.quote(sys.argv[1],safe=""))' "$R")" && echo "::notice::data=$(head -c 1500 c.json | tr '\n' ' ' | sed 's/%/%25/g')"
