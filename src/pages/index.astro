@@ -7,8 +7,25 @@ import Training from '../components/v3/Training.astro';
 import Journal from '../components/v3/Journal.astro';
 import Bridge from '../components/v3/Bridge.astro';
 import { getRaces } from '../data/races';
+import tt from '../data/tabletennis.json';
 
 const { upcoming, results } = await getRaces();
+
+// Table tennis: refreshed daily from the team's click-TT page (see
+// scripts/fetch-tabletennis.mjs); the TTR is kept by hand.
+const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const ttNext = tt.next
+  ? (() => {
+      const d = new Date(`${tt.next.date}T12:00:00Z`);
+      return `${DAYS[d.getUTCDay()]} ${d.getUTCDate()} ${MON[d.getUTCMonth()]}, ${tt.next.home ? 'home vs' : 'away at'} ${tt.next.opponent}`;
+    })()
+  : null;
+const ttFacts = [
+  tt.ttr ? `TTR ${tt.ttr}` : null,
+  tt.me ? `Singles ${tt.me.singles}` : null,
+  tt.me ? `Table: ${tt.tablePlace}.` : null,
+].filter(Boolean);
 ---
 
 <SideLayout side="on">
@@ -21,10 +38,11 @@ const { upcoming, results } = await getRaces();
 
     <Journal />
 
-    <section class="offseason wrap" aria-label="Off season">
-      <span class="label">Off season</span>
-      <span class="offseason__what">Table tennis, Landesliga, DJK Seifriedsberg</span>
-      <span class="data">TTR 1670 → 1757 · 2025/26</span>
+    <section class="offseason wrap" aria-label="Table tennis">
+      <span class="label">Table tennis · {tt.season}</span>
+      <span class="offseason__what">{tt.league}, {tt.team}</span>
+      {ttFacts.length > 0 && <span class="data">{ttFacts.join(' · ')}</span>}
+      {ttNext && <span class="data offseason__next">Next: {ttNext}</span>}
     </section>
 
     <Bridge
@@ -60,5 +78,8 @@ const { upcoming, results } = await getRaces();
   .offseason__what {
     flex: 1 1 300px;
     font-size: 15px;
+  }
+  .offseason__next {
+    color: var(--ink-muted);
   }
 </style>
