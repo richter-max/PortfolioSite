@@ -126,12 +126,13 @@ const SPORT = {
   Run: 'run', TrailRun: 'run', VirtualRun: 'run',
   Ride: 'ride', VirtualRide: 'ride', GravelRide: 'ride', MountainBikeRide: 'ride', EBikeRide: 'ride',
   Swim: 'swim',
+  Hike: 'hike',
   TableTennis: 'tabletennis',
   WeightTraining: 'strength', Workout: 'strength', Crossfit: 'strength', HighIntensityIntervalTraining: 'strength',
 };
 // Only these sports have kilometres that mean something; the few hundred
 // metres a watch logs during table tennis or football are noise.
-const DISTANCE_SPORTS = new Set(['run', 'ride', 'swim']);
+const DISTANCE_SPORTS = new Set(['run', 'ride', 'swim', 'hike']);
 const sportOf = (a) => SPORT[a.sport_type] ?? SPORT[a.type] ?? 'other';
 
 function mondayOf(d) {

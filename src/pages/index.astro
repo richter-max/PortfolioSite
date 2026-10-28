@@ -4,11 +4,8 @@ import SideLayout from '../layouts/SideLayout.astro';
 import OnHero from '../components/v3/OnHero.astro';
 import Trail from '../components/v3/Trail.astro';
 import Training from '../components/v3/Training.astro';
-import Feature from '../components/v3/Feature.astro';
-import PlanVsResult from '../components/v3/PlanVsResult.astro';
 import Journal from '../components/v3/Journal.astro';
 import Bridge from '../components/v3/Bridge.astro';
-import rothaarsteig from '../assets/photos/rothaarsteig.webp';
 import { getRaces } from '../data/races';
 
 const { upcoming, results } = await getRaces();
@@ -19,33 +16,8 @@ const { upcoming, results } = await getRaces();
   <Trail upcoming={upcoming} results={results} />
 
   <div class="stack">
-    <Training next={upcoming[0]} />
+    <Training />
 
-
-    <Feature
-      id="rothaarsteig"
-      image={rothaarsteig}
-      imageAlt="Running a trail section of the Rothaarsteig Marathon with friends, everyone smiling"
-      caption="Rothaarsteig, 17.10.2026"
-      credit="Photo: race organizer"
-      label="Rothaarsteig Marathon · 42.2 km · ~900 m up"
-      title="Not a race.<br />A ticket."
-      figures={[
-        { value: '5:10', label: 'Finish time' },
-        { value: 'Z2', label: 'Effort' },
-        { value: '50K', label: 'UTMB index' },
-      ]}
-      href="/blog/rothaarsteig-2026"
-    >
-      <p>
-        I ran it with a friend at zone 2, started together and finished
-        together. The real reason I was there: a finish in a UTMB-indexed trail
-        race, for the 50K index I need to start at KAT100 in Kitzbühel next
-        August.
-      </p>
-    </Feature>
-
-    <PlanVsResult results={results} />
 
     <Journal />
 

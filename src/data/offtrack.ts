@@ -30,7 +30,7 @@ export const path = [
   { when: 'Sep 2023 – Jan 2026', title: 'Apprenticeship, software developer', text: 'At Bosch in Blaichach/Seifen, vocational school in Kempten. Shipping software in a team before any university theory.' },
   { when: 'Feb – Sep 2026', title: 'IT key user, digitalization', text: 'Full time at Bosch between apprenticeship and degree.' },
   { when: '2026', title: 'Own security projects', text: 'AEGIS, the scanner and the Cloud Signal Engine, built and documented in public.' },
-  { when: 'Oct 2026 · now', title: 'Dual B.Sc. at DHBW and Bosch', text: 'Computer Science, IT security focus. DHBW Ravensburg, Campus Friedrichshafen. Currently in practice phase 1.', now: true },
+  { when: 'Oct 2026 · now', title: 'Dual B.Sc. at DHBW and Bosch', text: 'Computer Science, IT security focus. DHBW Ravensburg, Campus Friedrichshafen.', now: true },
 ];
 
 /** Block plan of the dual degree: P = practice at Bosch, T = theory at DHBW. */
@@ -56,7 +56,6 @@ export function blockRange(n: number): { start: string; end: string } {
 }
 
 export const roadmap = [
-  { state: 'In progress', what: 'B.Sc. CS, IT security, dual', note: 'Practice phase 1 at Bosch now. First theory phase starts in January.' },
   { state: 'Planned', what: 'Hands-on labs', note: 'TryHackMe or similar. Not started yet.' },
   { state: 'Planned', what: 'First security conference', note: 'Nothing booked yet.' },
   { state: 'Long term', what: 'Work in AI security', note: 'After the degree. A long way off, and that’s fine.' },

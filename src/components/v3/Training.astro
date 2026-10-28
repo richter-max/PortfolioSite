@@ -5,12 +5,7 @@
 // by the Strava workflow. Squares fill and the curve draws when the block
 // scrolls into view; without JS or with reduced motion it is simply shown.
 import live from '../../data/live-stats.json';
-import { daysUntil, type UpcomingRace } from '../../data/races';
 
-interface Props {
-  next?: UpcomingRace;
-}
-const { next } = Astro.props;
 const s = live.strava;
 const streak = Math.min(52, s?.streakWeeks ?? 0);
 // Per-week detail (written by the Strava workflow). Older snapshots
@@ -30,6 +25,8 @@ const weeks = Array.from({ length: 52 }, (_, i) => ({
   now: i === 51,
   w: detail?.[i],
 }));
+// Hours over the last four weeks (this one included), from the week data.
+const hours4 = detail ? Math.round(detail.slice(-4).reduce((a, w) => a + w.hours, 0)) : null;
 const maxHours = detail ? Math.max(1, ...detail.map((w) => w.hours)) : 1;
 const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const weekLabel = (w: Week) => {
@@ -40,6 +37,7 @@ const SPORT_NAME: Record<string, string> = {
   run: 'Run',
   ride: 'Ride',
   swim: 'Swim',
+  hike: 'Hike',
   strength: 'Strength',
   tabletennis: 'Table tennis',
   other: 'Other',
@@ -68,7 +66,7 @@ const peak = peakIdx >= 0 ? pts[peakIdx] : null;
 const year = new Date(live.updatedAt).getFullYear();
 ---
 
-<section class="train wrap" aria-labelledby="train-h" data-reveal>
+<section id="training" class="train wrap" aria-labelledby="train-h" data-reveal>
   <h2 id="train-h" class="label">Training · from Strava, updated daily · no routes</h2>
 
   <div class="train__grid">
@@ -130,7 +128,7 @@ const year = new Date(live.updatedAt).getFullYear();
   <div class="train__small">
     {s?.sessionsThisYear != null && <div><span class="label">Sessions {year}</span><span class="stat-m">{s.sessionsThisYear}</span></div>}
     {s?.lastRun && <div><span class="label">Last run · {s.lastRun.weekday}</span><span class="stat-m">{s.lastRun.km} km</span></div>}
-    {next && <div><span class="label">Days to {next.name.split(' ')[0]}</span><span class="stat-m" data-days-until={next.date}>{daysUntil(next.date)}</span></div>}
+    {hours4 != null && <div><span class="label">Hours · last 4 weeks</span><span class="stat-m">{hours4} h</span></div>}
   </div>
 </section>
 
