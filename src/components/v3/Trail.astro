@@ -488,7 +488,7 @@ const leadPath = seg(xNarrow(0), xn[0]);
   /* A race ahead: the unworn bib, paper like the 204 in the hero. It
      sways a little once the headlamp reaches it. */
   .trail__bibswing {
-    width: 270px;
+    width: 176px;
     margin-bottom: 14px;
     transform-origin: 50% 0;
     transform: rotate(var(--tilt, -2.5deg));
@@ -497,7 +497,7 @@ const leadPath = seg(xNarrow(0), xn[0]);
     --tilt: 2deg;
   }
   .is-main .trail__bibswing {
-    width: 320px;
+    width: 208px;
     --tilt: -1.5deg;
   }
   .trail.is-night .is-lit .trail__bibswing {
@@ -529,8 +529,8 @@ const leadPath = seg(xNarrow(0), xn[0]);
   }
   .trail__pin {
     position: absolute;
-    width: 9px;
-    height: 9px;
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
     background: radial-gradient(circle at 35% 35%, #fff, #7d8086 70%);
   }
@@ -540,8 +540,8 @@ const leadPath = seg(xNarrow(0), xn[0]);
   .trail__bibleg,
   .trail__bibchip {
     font-family: var(--font-mono);
-    font-size: max(9px, 4.2cqw);
-    letter-spacing: 0.12em;
+    font-size: max(7px, 4.6cqw);
+    letter-spacing: 0.1em;
     text-transform: uppercase;
   }
   .trail__bibtop,
@@ -627,8 +627,8 @@ const leadPath = seg(xNarrow(0), xn[0]);
     white-space: nowrap;
     border: 1.5px solid var(--paper-ink);
     border-radius: 3px;
-    font-size: max(8px, 3.6cqw);
-    letter-spacing: 0.06em;
+    font-size: max(6.5px, 3.8cqw);
+    letter-spacing: 0.02em;
   }
   .trail__bibleg.is-ink {
     background: var(--paper-ink);
@@ -828,10 +828,13 @@ const leadPath = seg(xNarrow(0), xn[0]);
       height: auto;
       aspect-ratio: 5 / 4;
     }
-    .trail__bibswing,
+    .trail__bibswing {
+      width: 44%;
+      max-width: 168px;
+    }
     .is-main .trail__bibswing {
-      width: 60%;
-      max-width: 240px;
+      width: 50%;
+      max-width: 196px;
     }
     .trail__dawn {
       height: 620px;
