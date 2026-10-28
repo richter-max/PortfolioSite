@@ -11,8 +11,8 @@ import tt from '../data/tabletennis.json';
 
 const { upcoming, results } = await getRaces();
 
-// Table tennis: refreshed daily from the team's click-TT page (see
-// scripts/fetch-tabletennis.mjs); the TTR is kept by hand.
+// Table tennis: refreshed every Monday from myTischtennis (see
+// scripts/fetch-tabletennis.mjs). Q-TTR is public; a hand-kept `ttr` wins.
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const ttNext = tt.next
@@ -21,11 +21,10 @@ const ttNext = tt.next
       return `${DAYS[d.getUTCDay()]} ${d.getUTCDate()} ${MON[d.getUTCMonth()]}, ${tt.next.home ? 'home vs' : 'away at'} ${tt.next.opponent}`;
     })()
   : null;
-const ttFacts = [
-  tt.ttr ? `TTR ${tt.ttr}` : null,
-  tt.me ? `Singles ${tt.me.singles}` : null,
-  tt.me ? `Table: ${tt.tablePlace}.` : null,
-].filter(Boolean);
+const ttRating = tt.ttr ? `TTR ${tt.ttr}` : tt.qttr ? `Q-TTR ${tt.qttr}` : null;
+const ttRecord = tt.me
+  ? `Singles ${tt.me.singles} in ${tt.me.matches} ${tt.me.matches === 1 ? 'match' : 'matches'} · Table: ${tt.tablePlace}.`
+  : 'Singles: no match yet';
 ---
 
 <SideLayout side="on">
@@ -41,7 +40,7 @@ const ttFacts = [
     <section class="offseason wrap" aria-label="Table tennis">
       <span class="label">Table tennis · {tt.season}</span>
       <span class="offseason__what">{tt.league}, {tt.team}</span>
-      {ttFacts.length > 0 && <span class="data">{ttFacts.join(' · ')}</span>}
+      <span class="data">{[ttRating, ttRecord].filter(Boolean).join(' · ')}</span>
       {ttNext && <span class="data offseason__next">Next: {ttNext}</span>}
     </section>
 

@@ -1,0 +1,37 @@
+name: Refresh table tennis
+
+# Every Monday after the weekend's matches: own singles record, table
+# position, next match and Q-TTR from myTischtennis (two public pages,
+# two requests a week). Commits only on change; the commit triggers the
+# Vercel deploy.
+
+on:
+  schedule:
+    # 06:00 UTC Monday (08:00 CEST / 07:00 CET)
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run fetch-tabletennis
+        run: node scripts/fetch-tabletennis.mjs
+      - name: Commit if changed
+        run: |
+          if [[ -z "$(git status --porcelain src/data/tabletennis.json)" ]]; then
+            echo "No changes — skipping commit."
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/data/tabletennis.json
+          git commit -m "chore: refresh table tennis ($(date -u +%Y-%m-%d))"
+          git pull --rebase -q && git push
