@@ -10,9 +10,9 @@ Four starts are planned for 2027. One of them decides whether the season worked:
 
 ## Why KAT100
 
-Most races I've done were about holding a pace. KAT100 is about holding on: a midnight start, hours in the dark with a headlamp, 4,850 m of climbing, and a finish in Fieberbrunn long after sunrise.
+Most races I've done were about holding a pace. KAT100 is about holding on: a midnight start, hours in the dark with a headlamp, and a finish in Fieberbrunn long after sunrise.
 
-What draws me is the head, not the legs. I want to find out where my limit is when the effort lasts all night, not for one all-out 10k. An all-out 10k hurts, but it's over before you can start arguing with yourself. This one won't be.
+What draws me is the head, not the legs. I want to find out where my limit is when the effort lasts all night. An all-out 10k hurts, but it's over before you can start arguing with yourself. This one won't be.
 
 The entry requirement is already done. I ran the [Rothaarsteig Marathon](/blog/rothaarsteig-2026) in October at zone 2 for one reason: the 50K UTMB index I need to start.
 
