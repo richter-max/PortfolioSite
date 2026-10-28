@@ -7,21 +7,15 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - run: |
-          U='https://www.mytischtennis.de/click-tt/spieler/PD9D9D021/spielerportrait'
-          cat > d.py <<'PY'
-          import re,sys,html as H
-          s=open(sys.argv[1],encoding='utf-8',errors='ignore').read(); n=sys.argv[2]
-          d=lambda x: re.sub(r'\s+',' ',H.unescape(re.sub(r'<[^>]+>',' ',x))).strip()
-          b=re.sub(r'<script[\s\S]*?</script>','',s[s.find('<body'):])
-          t=d(b); i=t.find('Q-TTR')
-          print(f'::notice::[{n}] text='+t[max(0,i-300):i+700].replace('%','%25'))
-          ids=sorted(set(re.findall(r'"(routes/[^"]+)"',s)))
-          print(f'::notice::[{n}] routes='+' '.join(ids)[:1500])
-          for m in re.finditer(r'(ttr|TTR)[^,]{0,40}":\s*\d+',s): print(f'::notice::[{n}] json='+m.group(0)); 
+          curl -sSL -A 'richtermax.com season stats (1 request/week)' -o a.html 'https://www.mytischtennis.de/click-tt/spieler/PD9D9D021/spielerportrait'
+          python3 - <<'PY'
+          import re
+          s=open('a.html',encoding='utf-8',errors='ignore').read()
+          print('::notice::verify=%d'%('Gleich gehts weiter' in s))
+          for m in re.finditer(r'ttr"',s, re.I):
+            print('::notice::ctx='+s[max(0,m.start()-500):m.start()+300].replace('%','%25').replace('\n',' '))
+          i=s.find('1234'); print('::notice::1234ctx='+re.sub(r'\s+',' ',s[max(0,i-300):i+100]).replace('%','%25'))
+          for k in ['singles','balance','bilanz','won','lost','wins']:
+            j=s.find('"'+k); 
+            if j>=0: print(f'::notice::{k}='+s[max(0,j-200):j+300].replace('%','%25').replace('\n',' '))
           PY
-          curl -sSL -A 'richtermax.com season stats' -c j -b j -o a.html "$U"; python3 d.py a.html A
-          sleep 25
-          curl -sSL -A 'richtermax.com season stats' -c j -b j -o b.html "$U"; python3 d.py b.html B
-          R=$(grep -o '"routes/[^"]*spielerportrait[^"]*"' a.html | head -1 | tr -d '"')
-          echo "::notice::rid=$R"
-          [ -n "$R" ] && curl -sSL -A 'richtermax.com season stats' -b j -o c.json "$U?_data=$(python3 -c 'import urllib.parse,sys;print(urllib.parse.quote(sys.argv[1],safe=""))' "$R")" && echo "::notice::data=$(head -c 1500 c.json | tr '\n' ' ' | sed 's/%/%25/g')"
