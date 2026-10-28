@@ -1,8 +1,8 @@
 {
-  "updatedAt": "2026-10-27T14:04:39.646Z",
+  "updatedAt": "2026-10-28T06:56:25.984Z",
   "strava": {
     "streakWeeks": 53,
-    "sessionsThisYear": 308,
+    "sessionsThisYear": 309,
     "lastRun": {
       "weekday": "Tuesday",
       "km": 7.6,
@@ -20,7 +20,7 @@
       47.7,
       71.9,
       32.4,
-      7.6
+      20.7
     ],
     "weeks": [
       {
@@ -515,18 +515,19 @@
       {
         "week": "2026-W24",
         "start": "2026-06-08",
-        "km": 60.4,
+        "km": 67.8,
         "sessions": 9,
         "hours": 8.4,
         "sports": {
           "strength": 2,
           "run": 4,
           "ride": 2,
-          "other": 1
+          "hike": 1
         },
         "kmBy": {
           "run": 21.2,
-          "ride": 39.1
+          "ride": 39.1,
+          "hike": 7.5
         }
       },
       {
@@ -608,16 +609,17 @@
       {
         "week": "2026-W30",
         "start": "2026-07-20",
-        "km": 81.7,
+        "km": 96.9,
         "sessions": 8,
         "hours": 16.9,
         "sports": {
           "strength": 2,
           "run": 5,
-          "other": 1
+          "hike": 1
         },
         "kmBy": {
-          "run": 81.7
+          "run": 81.7,
+          "hike": 15.2
         }
       },
       {
@@ -807,27 +809,29 @@
       {
         "week": "2026-W44",
         "start": "2026-10-26",
-        "km": 7.6,
-        "sessions": 2,
-        "hours": 3,
+        "km": 20.7,
+        "sessions": 3,
+        "hours": 5.8,
         "sports": {
           "strength": 1,
-          "run": 1
+          "run": 1,
+          "hike": 1
         },
         "kmBy": {
-          "run": 7.6
+          "run": 7.6,
+          "hike": 13.1
         }
       }
     ]
   },
   "github": {
-    "commits30d": 15,
+    "commits30d": 23,
     "latestRepo": {
       "name": "PortfolioSite",
       "url": "https://github.com/richter-max/PortfolioSite",
-      "pushedAt": "2026-10-27T14:04:09Z",
-      "headline": "Round two: ghost race, week squares, trail season, terminal, degree, …",
-      "commitDate": "2026-10-27T14:04:08Z"
+      "pushedAt": "2026-10-28T06:55:57Z",
+      "headline": "One place for each thing; hikes count as kilometres (#12)",
+      "commitDate": "2026-10-28T06:55:57Z"
     }
   }
 }
