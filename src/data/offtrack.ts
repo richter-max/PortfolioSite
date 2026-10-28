@@ -29,8 +29,6 @@ export const projects = [
 export const path = [
   { when: 'Sep 2023 – Jan 2026', title: 'Apprenticeship, software developer', text: 'At Bosch in Blaichach/Seifen, vocational school in Kempten. Shipping software in a team before any university theory.' },
   { when: 'Feb – Sep 2026', title: 'IT key user, digitalization', text: 'Full time at Bosch between apprenticeship and degree.' },
-  { when: '2026', title: 'Own security projects', text: 'AEGIS, the scanner and the Cloud Signal Engine, built and documented in public.' },
-  { when: 'Oct 2026 · now', title: 'Dual B.Sc. at DHBW and Bosch', text: 'Computer Science, IT security focus. DHBW Ravensburg, Campus Friedrichshafen.', now: true },
 ];
 
 /** Block plan of the dual degree: P = practice at Bosch, T = theory at DHBW. */
