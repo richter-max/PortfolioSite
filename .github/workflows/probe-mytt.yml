@@ -7,19 +7,27 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - run: |
-          URL='https://www.mytischtennis.de/click-tt/ByTTV/26--27/ligen/gruppe/523733/mannschaft/3115844/DJK_Seifriedsberg/spielerbilanzen/gesamt'
-          code=$(curl -sS -A 'richtermax.com stats (max.richter.dev@proton.me)' -o p.html -w '%{http_code}' "$URL")
-          echo "::notice::status=$code bytes=$(wc -c < p.html) tables=$(grep -o '<table' p.html | wc -l) nextdata=$(grep -c '__NEXT_DATA__' p.html) jsonld=$(grep -c 'application/json' p.html) rsc=$(grep -c 'self.__next_f' p.html)"
-          echo "::notice::title=$(grep -o '<title>[^<]*' p.html | head -1)"
-          echo "::notice::head=$(grep -o '<th[^>]*>[^<]*' p.html | head -20 | sed 's/<th[^>]*>//' | tr '\n' '|')"
-          echo "::notice::rows=$(grep -o '<tr' p.html | wc -l) tds=$(grep -o '<td' p.html | wc -l) Einzel=$(grep -c 'Einzel' p.html) Richter=$(grep -c 'Richter' p.html)"
-          python3 - <<'PY'
-          import re
-          s=open('p.html',encoding='utf-8',errors='ignore').read()
-          i=s.find('Bilanz')
-          snip=re.sub(r'\s+',' ',s[i:i+1500]) if i>=0 else 'none'
-          snip=re.sub(r'[A-ZÄÖÜ][a-zäöüß]+, [A-ZÄÖÜ][a-zäöüß]+','NAME',snip)
-          print('::notice::snip='+snip[:900].replace('%','%25'))
-          j=s.find('Tabelle')
-          print('::notice::tab='+re.sub(r'\s+',' ',s[j:j+600]).replace('%','%25')[:600] if j>=0 else '::notice::tab=none')
+          B='https://www.mytischtennis.de/click-tt/ByTTV'
+          i=0
+          for U in "$B/26--27/verein/310079/DJK_Seifriedsberg/meldungen" "$B/26--27/verein/310079/DJK_Seifriedsberg/bilanzen/vr" "$B/25--26/verein/310079/DJK_Seifriedsberg/bilanzen/rr" "$B/25--26/verein/310079/DJK_Seifriedsberg/bilanzen/vr"; do
+            i=$((i+1))
+            code=$(curl -sSL -A 'richtermax.com season stats' -o p$i.html -w '%{http_code} %{url_effective}' "$U")
+            echo "::notice::[$i] $code bytes=$(wc -c < p$i.html) tables=$(grep -o '<table' p$i.html | wc -l) Richter=$(grep -c 'Richter' p$i.html) TTR=$(grep -c 'TTR' p$i.html)"
+            python3 - p$i.html $i <<'PY'
+          import re,sys,html as H
+          s=open(sys.argv[1],encoding='utf-8',errors='ignore').read(); n=sys.argv[2]
+          d=lambda x: re.sub(r'\s+',' ',H.unescape(re.sub(r'<[^>]+>',' ',x))).strip()
+          for k,t in enumerate(re.findall(r'<table[\s\S]*?</table>',s)):
+            head=[d(h) for h in re.findall(r'<th[^>]*>([\s\S]*?)</th>',t)]
+            pre=d(s[max(0,s.find(t)-400):s.find(t)])[-120:]
+            print(f'::notice::[{n}.{k}] before="{pre}" head={"|".join(head)}')
+            for tr in re.findall(r'<tr[^>]*>([\s\S]*?)</tr>',t):
+              cells=[d(c) for c in re.findall(r'<td[^>]*>([\s\S]*?)</td>',tr)]
+              if any('Richter' in c for c in cells): print(f'::notice::[{n}.{k}] ROW={"|".join(cells)}')
+          for m in re.finditer(r'TTR',s):
+            print(f'::notice::[{n}] ttrctx='+d(s[max(0,m.start()-200):m.start()+200])[:300]); break
+          for m in re.finditer(r'Richter',s):
+            print(f'::notice::[{n}] richterctx='+d(s[max(0,m.start()-300):m.start()+300])[:400]); break
           PY
+            sleep 3
+          done
