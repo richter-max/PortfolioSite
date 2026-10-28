@@ -9,7 +9,7 @@ export const SITE = {
   description:
     'Dual B.Sc. Computer Science with an IT security focus at Bosch and ' +
     'DHBW Ravensburg, heading for AI security. Building in public toward ' +
-    'KAT100: 81 km, starting at midnight.',
+    'KAT100: 75 km, starting at midnight.',
   /** The two sides. Title and description are what search results and
    *  link previews (LinkedIn, WhatsApp, Instagram) show for each route. */
   sides: {
@@ -18,7 +18,7 @@ export const SITE = {
       label: 'On track',
       title: 'Maximilian Richter — On Track',
       description:
-        'Building in public toward KAT100: 81 km through the Kitzbühel Alps, ' +
+        'Building in public toward KAT100: 75 km through the Kitzbühel Alps, ' +
         'starting at midnight. Race reports, monthly updates and live training ' +
         'numbers. Off track: IT security student at Bosch.',
     },

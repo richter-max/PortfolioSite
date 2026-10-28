@@ -52,7 +52,7 @@ for (const term of document.querySelectorAll('.term')) {
       ),
     whoami: () =>
       line(
-        'Max Richter. Dual student, B.Sc. Computer Science with an IT security focus, Bosch and DHBW. Heading for AI security.\nOff the keyboard: training for an 81 km night race.',
+        'Max Richter. Dual student, B.Sc. Computer Science with an IT security focus, Bosch and DHBW. Heading for AI security.\nOff the keyboard: training for a 75 km night race.',
         'is-res',
       ),
     degree: () => {
