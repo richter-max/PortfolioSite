@@ -81,7 +81,9 @@ function parse(html) {
       const home = r[h.indexOf('Heimmannschaft')] ?? '';
       const away = r[h.indexOf('Gastmannschaft')] ?? '';
       const isHome = home.includes(TEAM);
-      next = { date: iso, time: r[h.indexOf('Zeit')] ?? null, home: isHome, opponent: isHome ? away : home };
+      // "20:00 v" → "20:00" (click-TT appends flags like "v" for a moved date)
+      const time = (r[h.indexOf('Zeit')] ?? '').match(/\d{1,2}:\d{2}/)?.[0] ?? null;
+      next = { date: iso, time, home: isHome, opponent: isHome ? away : home };
       break;
     }
   }
