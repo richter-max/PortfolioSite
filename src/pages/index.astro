@@ -7,24 +7,10 @@ import Training from '../components/v3/Training.astro';
 import Journal from '../components/v3/Journal.astro';
 import Bridge from '../components/v3/Bridge.astro';
 import { getRaces } from '../data/races';
-import tt from '../data/tabletennis.json';
+import TableTennis from '../components/v3/TableTennis.astro';
 
 const { upcoming, results } = await getRaces();
 
-// Table tennis: refreshed every Monday from myTischtennis (see
-// scripts/fetch-tabletennis.mjs). Q-TTR is public; a hand-kept `ttr` wins.
-const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const ttNext = tt.next
-  ? (() => {
-      const d = new Date(`${tt.next.date}T12:00:00Z`);
-      return `${DAYS[d.getUTCDay()]} ${d.getUTCDate()} ${MON[d.getUTCMonth()]}, ${tt.next.home ? 'home vs' : 'away at'} ${tt.next.opponent}`;
-    })()
-  : null;
-const ttRating = tt.ttr ? `TTR ${tt.ttr}` : tt.qttr ? `Q-TTR ${tt.qttr}` : null;
-const ttRecord = tt.me
-  ? `Singles ${tt.me.singles} in ${tt.me.matches} ${tt.me.matches === 1 ? 'match' : 'matches'} · Table: ${tt.tablePlace}.`
-  : 'Singles: no match yet';
 ---
 
 <SideLayout side="on">
@@ -34,15 +20,9 @@ const ttRecord = tt.me
   <div class="stack">
     <Training />
 
-
     <Journal />
 
-    <section class="offseason wrap" aria-label="Table tennis">
-      <span class="label">Table tennis · {tt.season}</span>
-      <span class="offseason__what">{tt.league}, {tt.team}</span>
-      <span class="data">{[ttRating, ttRecord].filter(Boolean).join(' · ')}</span>
-      {ttNext && <span class="data offseason__next">Next: {ttNext}</span>}
-    </section>
+    <TableTennis />
 
     <Bridge
       to="off"
@@ -57,28 +37,5 @@ const ttRecord = tt.me
     flex-direction: column;
     gap: var(--space-9);
     padding-top: var(--space-6);
-  }
-  .offseason {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: var(--space-4);
-  }
-  .offseason > * {
-    padding-top: 22px;
-  }
-  .offseason::before {
-    content: '';
-    flex: 0 0 100%;
-    border-top: 1px solid var(--line);
-    margin-bottom: -22px;
-  }
-  .offseason__what {
-    flex: 1 1 300px;
-    font-size: 15px;
-  }
-  .offseason__next {
-    color: var(--ink-muted);
   }
 </style>
