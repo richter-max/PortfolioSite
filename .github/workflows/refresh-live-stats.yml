@@ -32,11 +32,6 @@ jobs:
           STRAVA_CLIENT_ID:     ${{ secrets.STRAVA_CLIENT_ID }}
           STRAVA_CLIENT_SECRET: ${{ secrets.STRAVA_CLIENT_SECRET }}
           STRAVA_REFRESH_TOKEN: ${{ secrets.STRAVA_REFRESH_TOKEN }}
-          # The auto-provided GITHUB_TOKEN works fine for the public
-          # commit-search call. A separate PAT (LIVE_STATS_GH_PAT) can
-          # override it if rate limiting becomes an issue.
-          GITHUB_TOKEN: ${{ secrets.LIVE_STATS_GH_PAT || secrets.GITHUB_TOKEN }}
-          GITHUB_USER:  richter-max
         run: node scripts/fetch-live-stats.mjs
 
       - name: Commit if changed

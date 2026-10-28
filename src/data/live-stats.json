@@ -823,15 +823,5 @@
         }
       }
     ]
-  },
-  "github": {
-    "commits30d": 31,
-    "latestRepo": {
-      "name": "PortfolioSite",
-      "url": "https://github.com/richter-max/PortfolioSite",
-      "pushedAt": "2026-10-28T08:03:07Z",
-      "headline": "Table tennis season from click-TT, refreshed daily (#16)",
-      "commitDate": "2026-10-28T08:03:06Z"
-    }
   }
 }

@@ -48,7 +48,7 @@ const metaLine = [
 >
   {d.image && (
     <figure class="report__figure">
-      <Image src={d.image} alt={d.imageAlt ?? ''} widths={[640, 960, 1280]} sizes="(max-width: 760px) 100vw, 760px" />
+      <Image src={d.image} alt={d.imageAlt ?? ''} widths={[480, 760, 960, 1120]} sizes="(max-width: 760px) 100vw, 760px" quality={70} loading="eager" fetchpriority="high" />
       {d.imageCredit && <figcaption class="meta">{d.imageCredit}</figcaption>}
     </figure>
   )}
