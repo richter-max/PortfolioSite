@@ -36,8 +36,10 @@ interface Station {
   image?: ImageMetadata;
   imageAlt?: string;
   caption?: string;
-  /** Race format, drawn as a small card when there is no photo yet. */
+  /** Race format, printed on an unworn bib while there is no photo yet. */
   format?: string;
+  /** Start time and place, printed on the bib's chip strip. */
+  start?: { time: string; place?: string };
   /** Plan vs. result on one scale (0..1), for races with a time goal. */
   bar?: { result: number; plan: number };
 }
@@ -93,6 +95,10 @@ const glyphOf = (format?: string): Glyph | undefined => {
   return km ? { kind: 'road', km: km[1] } : undefined;
 };
 
+// Printed on the main event's bib: a stylised night of climbs, ending low
+// in the valley at the finish. Not the real course.
+const BIB_CLIMB = 'M0,90 L7,78 L12,83 L20,52 L27,62 L35,30 L42,48 L48,40 L56,14 L63,36 L70,28 L78,54 L86,62 L93,80 L100,88';
+
 const mainIdx = upcoming.findIndex((r) => r.weight === 'main');
 const ahead: Station[] = upcoming.slice(0, mainIdx + 1).map((r) => ({
   kind: r.weight === 'main' ? 'main' : 'ahead',
@@ -105,6 +111,7 @@ const ahead: Station[] = upcoming.slice(0, mainIdx + 1).map((r) => ({
   imageAlt: r.imageAlt,
   caption: r.caption,
   format: r.format,
+  start: /midnight/i.test(r.note ?? '') ? { time: '00:00', place: r.note?.match(/\bin ([A-ZÄÖÜ][\wäöüß-]+)/)?.[1] } : undefined,
 }));
 // What comes after the main event, told after the sunrise.
 const after = upcoming.slice(mainIdx + 1);
@@ -210,7 +217,7 @@ const leadPath = seg(xNarrow(0), xn[0]);
       const right = Math.sin(phase(t)) > 0;
       return (
         <li
-          class:list={['trail__st', `is-${st.kind}`, right ? 'is-right' : 'is-left']}
+          class:list={['trail__st', `is-${st.kind}`, right ? 'is-right' : 'is-left', { 'has-bib': !st.image && !!glyphOf(st.format) }]}
           style={`--y:${i + 1.1};--xw:${pct(xWide(t))};--xn:${pct(xNarrow(t))}`}
           data-trail-st
         >
@@ -227,30 +234,45 @@ const leadPath = seg(xNarrow(0), xn[0]);
               </figure>
             )}
             {!st.image && glyphOf(st.format) && (() => {
+              // The race ahead as the bib I'll pin on: same paper as the 204
+              // in the hero. After the race, the result and a photo replace it.
               const g = glyphOf(st.format)!;
-              const max = g.kind === 'tri' ? Math.max(...g.legs.map((l) => l.km)) : 1;
+              const big = g.kind === 'tri' ? String(Math.round(g.legs.reduce((a, l) => a + l.km, 0))) : g.kind === 'climb' ? (st.format?.match(/^([\d.]+)\s*km/)?.[1] ?? '') : g.km;
+              const unit = g.kind === 'tri' ? 'km in one day' : g.kind === 'climb' ? `km · ${g.up} m up` : 'km · road';
+              const total = g.kind === 'tri' ? g.legs.reduce((a, l) => a + l.km, 0) : 1;
               return (
-                <div class:list={['trail__glyph', `is-${g.kind}`]} aria-hidden="true">
-                  {g.kind === 'tri' &&
-                    g.legs.map((l) => (
-                      <span class="trail__leg">
-                        <span class="label-s">{l.name} {l.km}</span>
-                        <span class="trail__legbar"><span style={`width:${Math.max(4, (l.km / max) * 100).toFixed(1)}%`}></span></span>
+                <div class="trail__bibswing" aria-hidden="true">
+                  <div class:list={['trail__bib', `is-${g.kind}`]}>
+                    <span class="trail__pin" style="top:7px;left:7px"></span>
+                    <span class="trail__pin" style="top:7px;right:7px"></span>
+                    <span class="trail__pin" style="bottom:7px;left:7px"></span>
+                    <span class="trail__pin" style="bottom:7px;right:7px"></span>
+                    <span class="trail__bibtop"><span>{st.label}</span><span>No. 204</span></span>
+                    <span class="trail__bibbar"></span>
+                    <span class="trail__bibmid">
+                      {g.kind === 'climb' && (
+                        <svg viewBox="0 0 100 100" preserveAspectRatio="none"><path class="trail__bibfill" d={`${BIB_CLIMB} L100,100 L0,100 Z`} /><path d={BIB_CLIMB} /></svg>
+                      )}
+                      {g.kind === 'road' && <span class="trail__bibticks"></span>}
+                      <span class="trail__bibnum">{big}</span>
+                      <span class="trail__bibunit">{unit}</span>
+                    </span>
+                    {g.kind === 'tri' && (
+                      <span class="trail__biblegs">
+                        {g.legs.map((l, i) => (
+                          <span class:list={['trail__bibleg', { 'is-ink': i === 1 }]} style={`flex:${Math.max(0.9, Math.sqrt(l.km / total) * 3).toFixed(2)}`}>{l.name} {l.km}</span>
+                        ))}
                       </span>
-                    ))}
-                  {g.kind === 'climb' && (
-                    <>
-                      <svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d={g.path} /></svg>
-                      <span class="trail__glyphfig">{g.up} m ↑</span>
-                    </>
-                  )}
-                  {g.kind === 'road' && (
-                    <span class="trail__glyphfig is-big">{g.km}<span class="label-s"> km</span></span>
-                  )}
+                    )}
+                    {st.start && (
+                      <span class="trail__bibchip"><span>Start</span><span class="trail__bibtime">{st.start.time}</span><span>{st.start.place}</span></span>
+                    )}
+                    <span class="trail__bibstrip"><span>Richter</span><span>Not yet run</span></span>
+                  </div>
                 </div>
               );
             })()}
-            <span class="label">{st.label}</span>
+            {(st.image || !glyphOf(st.format)) && <span class="label">{st.label}</span>}
             <h3 class="trail__name">{st.name}</h3>
             <span class="trail__fig">{st.fig}</span>
             {st.bar && (
@@ -463,63 +485,178 @@ const leadPath = seg(xNarrow(0), xn[0]);
   .trail__photo figcaption {
     line-height: 1.4;
   }
-  /* Card for a race without a photo yet, drawn from its format. */
-  .trail__glyph {
+  /* A race ahead: the unworn bib, paper like the 204 in the hero. It
+     sways a little once the headlamp reaches it. */
+  .trail__bibswing {
+    width: 270px;
+    margin-bottom: 14px;
+    transform-origin: 50% 0;
+    transform: rotate(var(--tilt, -2.5deg));
+  }
+  .is-right .trail__bibswing {
+    --tilt: 2deg;
+  }
+  .is-main .trail__bibswing {
+    width: 320px;
+    --tilt: -1.5deg;
+  }
+  .trail.is-night .is-lit .trail__bibswing {
+    animation: bibsway 5s ease-in-out infinite;
+  }
+  @keyframes bibsway {
+    50% {
+      transform: rotate(calc(var(--tilt, -2.5deg) + 1.4deg)) translateY(3px);
+    }
+  }
+  .trail__bib {
+    container-type: inline-size;
     position: relative;
-    width: 128px;
-    height: 160px;
-    margin-bottom: 6px;
-    padding: 12px;
-    box-sizing: border-box;
-    border: 1px solid var(--line);
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
-    gap: 10px;
+    box-sizing: border-box;
+    aspect-ratio: 5 / 6;
+    padding: 9% 7% 6%;
+    border-radius: var(--radius-object);
+    background: var(--paper);
+    color: var(--paper-ink);
+    box-shadow: var(--shadow-object);
     text-align: left;
   }
-  .trail__glyph.is-tri {
-    justify-content: center;
+  .is-main .trail__bib {
+    box-shadow:
+      0 0 70px rgb(255 248 230 / 0.16),
+      var(--shadow-object);
   }
-  .trail__leg {
+  .trail__pin {
+    position: absolute;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #fff, #7d8086 70%);
+  }
+  .trail__bibtop,
+  .trail__bibstrip,
+  .trail__bibunit,
+  .trail__bibleg,
+  .trail__bibchip {
+    font-family: var(--font-mono);
+    font-size: max(9px, 4.2cqw);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .trail__bibtop,
+  .trail__bibstrip {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    padding-inline: 3%;
+  }
+  .trail__bibbar {
+    height: 3.4cqw;
+    margin-top: 4cqw;
+    background: var(--paper-ink);
+  }
+  .trail__bibmid {
+    position: relative;
+    flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    align-items: center;
+    justify-content: center;
+    gap: 2cqw;
   }
-  .trail__legbar {
+  .trail__bibmid svg {
+    order: 3;
     display: block;
-    height: 4px;
-    background: var(--line);
+    width: calc(100% + 16cqw);
+    height: 24cqw;
+    margin: 2cqw -8cqw 0;
   }
-  .trail__legbar > span {
-    display: block;
-    height: 100%;
-    background: var(--ink);
-  }
-  .trail__glyph svg {
+  /* 42 km marks on the marathon bib, every fifth one longer */
+  .trail__bibticks {
     position: absolute;
-    inset: 12px 12px 40px;
-    width: calc(100% - 24px);
-    height: calc(100% - 52px);
+    left: 0;
+    right: 0;
+    bottom: 4cqw;
+    height: 5cqw;
+    background:
+      repeating-linear-gradient(90deg, var(--paper-ink) 0 1px, transparent 1px calc(100% / 42)) bottom / 100% 45% no-repeat,
+      repeating-linear-gradient(90deg, var(--paper-ink) 0 1.5px, transparent 1.5px calc(500% / 42)) bottom / 100% 100% no-repeat;
+  }
+  .is-climb .trail__bibmid {
+    justify-content: flex-start;
+    padding-top: 5cqw;
+  }
+  .trail__bibmid svg path {
     fill: none;
-    stroke: var(--ink);
-    stroke-width: 1.5;
+    stroke: var(--paper-ink);
+    stroke-width: 1.2;
     vector-effect: non-scaling-stroke;
     stroke-linejoin: round;
   }
-  .trail__glyphfig {
+  .trail__bibmid svg .trail__bibfill {
+    fill: #e2dfd8;
+    stroke: none;
+  }
+  .trail__bibnum {
+    position: relative;
     font-family: var(--font-display);
     font-stretch: 62%;
-    font-weight: 300;
-    font-size: 22px;
+    font-weight: 800;
+    font-size: 40cqw;
+    line-height: 0.8;
+    letter-spacing: -0.02em;
+  }
+  .is-road .trail__bibnum {
+    font-size: 34cqw;
+  }
+  .is-climb .trail__bibnum {
+    font-size: 52cqw;
+  }
+  .trail__bibunit {
+    position: relative;
+  }
+  .trail__biblegs {
+    display: flex;
+    gap: 2.4cqw;
+    margin-bottom: 4cqw;
+  }
+  .trail__bibleg {
+    padding: 2.4cqw 0;
+    text-align: center;
+    white-space: nowrap;
+    border: 1.5px solid var(--paper-ink);
+    border-radius: 3px;
+    font-size: max(8px, 3.6cqw);
+    letter-spacing: 0.06em;
+  }
+  .trail__bibleg.is-ink {
+    background: var(--paper-ink);
+    color: var(--paper);
+  }
+  .trail__bibchip {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4cqw;
+    padding: 2.4cqw 3.6cqw;
+    border-radius: 3px;
+    background: var(--paper-ink);
+    color: var(--paper);
+  }
+  .trail__bibtime {
+    font-family: var(--font-display);
+    font-stretch: 62%;
+    font-weight: 800;
+    font-size: 11cqw;
+    letter-spacing: 0;
     line-height: 1;
+    color: var(--lamp);
   }
-  .trail__glyphfig.is-big {
-    font-size: 40px;
-    font-weight: 700;
-  }
-  .is-main .trail__glyph svg {
-    stroke: var(--lamp);
+  .trail__bibstrip {
+    padding-top: 3cqw;
+    border-top: 2px dashed var(--paper-ink);
+    color: #5e5a53;
   }
 
   /* Plan vs. result: bar = finish time, tick = plan, same scale. */
@@ -599,6 +736,21 @@ const leadPath = seg(xNarrow(0), xn[0]);
   .trail.is-night .trail__st:not(.is-lit) {
     opacity: 0.12;
   }
+  /* Bibs dim with brightness instead of opacity: dark ink on dimmed paper
+     keeps its contrast ratio, so the paper reads right in every state. */
+  .trail.is-night .trail__st.has-bib:not(.is-lit) {
+    opacity: 1;
+  }
+  .trail.is-night .trail__st.has-bib:not(.is-lit) > :not(.trail__card),
+  .trail.is-night .trail__st.has-bib:not(.is-lit) .trail__card > :not(.trail__bibswing) {
+    opacity: 0.12;
+  }
+  .trail.is-night .trail__st.has-bib .trail__bibswing {
+    transition: filter 0.7s var(--ease-settle);
+  }
+  .trail.is-night .trail__st.has-bib:not(.is-lit) .trail__bibswing {
+    filter: brightness(0.14);
+  }
 
   /* Phones and small tablets: stations in normal flow, each as tall as its
      card, with the trail drawn per station (.trail__seg). About a third
@@ -676,13 +828,10 @@ const leadPath = seg(xNarrow(0), xn[0]);
       height: auto;
       aspect-ratio: 5 / 4;
     }
-    .trail__glyph {
-      width: 96px;
-      height: 120px;
-      padding: 8px;
-    }
-    .trail__glyphfig.is-big {
-      font-size: 30px;
+    .trail__bibswing,
+    .is-main .trail__bibswing {
+      width: 60%;
+      max-width: 240px;
     }
     .trail__dawn {
       height: 620px;
@@ -693,7 +842,8 @@ const leadPath = seg(xNarrow(0), xn[0]);
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .trail__beam {
+    .trail__beam,
+    .trail.is-night .is-lit .trail__bibswing {
       animation: none;
     }
   }
