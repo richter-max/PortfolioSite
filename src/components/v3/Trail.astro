@@ -4,12 +4,12 @@
 // JS and motion allowed, the page goes dark and a headlamp beam follows
 // the trail while you scroll (the mouse turns your head a little). After
 // the main event the night lifts. Without JS or with reduced motion the
-// section is simply lit. Everything comes from the races collection and
-// live-stats.json, so it needs no care.
+// section is simply lit. Everything comes from the races collection, so
+// it needs no care. This is the one place for the races: results and
+// plans sit here, the stories in the reports.
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
-import live from '../../data/live-stats.json';
-import { daysUntil, toHours, type RaceResult, type UpcomingRace } from '../../data/races';
+import { toHours, type RaceResult, type UpcomingRace } from '../../data/races';
 
 // Same deterministic generator as motion.js, so the stones never move.
 const rng = (seed: number) => {
@@ -33,9 +33,11 @@ interface Station {
   fig: string;
   sub?: string;
   href?: string;
-  days?: string;
   image?: ImageMetadata;
   imageAlt?: string;
+  caption?: string;
+  /** Plan vs. result on one scale (0..1), for races with a time goal. */
+  bar?: { result: number; plan: number };
 }
 
 const goalText = (goal?: string) => {
@@ -44,37 +46,45 @@ const goalText = (goal?: string) => {
   return /^sub/i.test(goal) ? `goal ${goal.replace(/^sub-?/i, 'sub-')}` : `plan ${goal}`;
 };
 
-const past: Station[] = [...results].reverse().map((r) => ({
-  kind: 'past',
-  label: r.dateLabel,
-  name: r.name,
-  fig: r.result,
-  sub: goalText(r.goal),
-  href: r.href,
-}));
+const past: Station[] = [...results].reverse().map((r) => {
+  const res = toHours(r.result);
+  const plan = toHours(r.goal);
+  const max = Math.max(res ?? 0, plan ?? 0);
+  return {
+    kind: 'past',
+    label: r.dateLabel,
+    name: r.name,
+    fig: r.result,
+    sub: goalText(r.goal),
+    href: r.href,
+    image: r.image,
+    imageAlt: r.imageAlt,
+    caption: r.caption,
+    bar: res && plan ? { result: res / max, plan: plan / max } : undefined,
+  };
+});
 
 const mainIdx = upcoming.findIndex((r) => r.weight === 'main');
 const ahead: Station[] = upcoming.slice(0, mainIdx + 1).map((r) => ({
   kind: r.weight === 'main' ? 'main' : 'ahead',
   label: r.dateLabel,
   name: r.name,
-  fig: r.weight === 'main' ? r.format : (r.target ?? r.format),
-  sub: r.weight === 'main' ? 'Start at midnight in Kitzbühel. The finish in Fieberbrunn comes after sunrise.' : r.format,
+  fig: r.target ?? r.format,
+  sub: r.weight === 'main' ? 'The finish in Fieberbrunn comes after sunrise.' : r.format,
   image: r.image,
   imageAlt: r.imageAlt,
+  caption: r.caption,
 }));
 // What comes after the main event, told after the sunrise.
 const after = upcoming.slice(mainIdx + 1);
 
-const s = live.strava;
-const next = upcoming[0];
+// "You are here". The numbers live in the training block right below.
 const now: Station = {
   kind: 'now',
   label: 'Now',
-  name: 'Training',
-  fig: s?.streakWeeks ? `${s.streakWeeks} weeks` : 'In training',
-  sub: s?.streakWeeks ? 'in a row without a gap' : undefined,
-  days: next?.datePrecision === 'day' ? next.date : undefined,
+  name: 'You are here',
+  fig: 'Training',
+  sub: `Every week of it is right below the sunrise.`,
 };
 
 const stations = [...past, now, ...ahead];
@@ -160,17 +170,22 @@ const pct = (v: number) => `${(v * 100).toFixed(2)}%`;
           <span class="trail__dot" aria-hidden="true"></span>
           <div class="trail__card">
             {st.image && (
-              <Image src={st.image} alt={st.imageAlt ?? ''} widths={[128, 256]} sizes="128px" class="trail__img" loading="lazy" quality={70} />
+              <figure class="trail__photo">
+                <Image src={st.image} alt={st.imageAlt ?? ''} widths={[128, 256]} sizes="128px" class="trail__img" loading="lazy" quality={70} />
+                {st.caption && <figcaption class="label-s">{st.caption}</figcaption>}
+              </figure>
             )}
             <span class="label">{st.label}</span>
             <h3 class="trail__name">{st.name}</h3>
             <span class="trail__fig">{st.fig}</span>
-            {st.sub && <span class="trail__sub">{st.sub}</span>}
-            {st.days && (
-              <span class="trail__sub">
-                <span data-days-until={st.days}>{daysUntil(st.days)}</span> days to {next.name.split(' ')[0]}
+            {st.bar && (
+              <span class="trail__bar" role="img" aria-label={`Result against ${st.sub}`}>
+                <span class="trail__barfill" style={`width:${(st.bar.result * 100).toFixed(1)}%`}></span>
+                <span class="trail__bartick" style={`left:${(st.bar.plan * 100).toFixed(1)}%`}></span>
               </span>
             )}
+            {st.sub && <span class="trail__sub">{st.sub}</span>}
+            {st.kind === 'now' && <a class="label-s link" href="#training">Training <span class="arr">↓</span></a>}
             {st.href && <a class="label-s link" href={st.href}>Read the report <span class="arr">→</span></a>}
           </div>
         </li>
@@ -187,12 +202,11 @@ const pct = (v: number) => `${(v * 100).toFixed(2)}%`;
 
 <script>
   import '../../scripts/v3/trail.js';
-  import '../../scripts/v3/days.js';
 </script>
 
 <style>
   .trail {
-    --step: 48vh;
+    --step: 58vh;
     --night: #060605;
     position: relative;
     height: calc((var(--n) + 1.6) * var(--step));
@@ -201,7 +215,7 @@ const pct = (v: number) => `${(v * 100).toFixed(2)}%`;
   }
   @supports (height: 1svh) {
     .trail {
-      --step: 48svh;
+      --step: 58svh;
     }
   }
 
@@ -360,6 +374,41 @@ const pct = (v: number) => `${(v * 100).toFixed(2)}%`;
   .is-left .trail__card {
     left: calc(var(--xw) + 44px);
   }
+  .trail__photo {
+    margin: 0 0 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-width: 200px;
+  }
+  .is-right .trail__photo {
+    align-items: flex-end;
+  }
+  .trail__photo figcaption {
+    line-height: 1.4;
+  }
+  /* Plan vs. result: bar = finish time, tick = plan, same scale. */
+  .trail__bar {
+    position: relative;
+    display: block;
+    width: 180px;
+    height: 6px;
+    margin: 4px 0 2px;
+    background: var(--line);
+  }
+  .trail__barfill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    background: var(--ink);
+  }
+  .trail__bartick {
+    position: absolute;
+    top: -5px;
+    width: 2px;
+    height: 16px;
+    background: var(--lamp);
+    transform: translateX(-1px);
+  }
   .trail__img {
     display: block;
     width: 128px;
@@ -418,11 +467,11 @@ const pct = (v: number) => `${(v * 100).toFixed(2)}%`;
 
   @media (max-width: 759px) {
     .trail {
-      --step: 50vh;
+      --step: 56vh;
     }
     @supports (height: 1svh) {
       .trail {
-        --step: 50svh;
+        --step: 56svh;
       }
     }
     .trail__svg.is-wide,
@@ -448,6 +497,10 @@ const pct = (v: number) => `${(v * 100).toFixed(2)}%`;
     }
     .trail__head {
       padding-left: 64px;
+    }
+    .trail__img {
+      width: 96px;
+      height: 120px;
     }
   }
 

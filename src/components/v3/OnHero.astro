@@ -36,9 +36,6 @@ const target = next ? `${next.date}T00:00:00+02:00` : null;
             </span>
           </div>
         )}
-        <p class="label onhero__cross">
-          Off track: dual student, IT security, Bosch · <a class="link" href="/off-track">Switch <span class="arr">→</span></a>
-        </p>
       </div>
     </div>
     <RaceBib races={races} />
@@ -115,8 +112,7 @@ const target = next ? `${next.date}T00:00:00+02:00` : null;
     flex-direction: column;
     gap: var(--space-5);
   }
-  .onhero__eyebrow,
-  .onhero__cross {
+  .onhero__eyebrow {
     color: #edebe6;
     opacity: 0.8;
   }

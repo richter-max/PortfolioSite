@@ -38,6 +38,9 @@ export interface RaceResult {
   goal?: string;
   note?: string;
   href?: string;
+  image?: ImageMetadata;
+  imageAlt?: string;
+  caption?: string;
 }
 
 const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
@@ -87,6 +90,9 @@ export async function getRaces(): Promise<{ upcoming: UpcomingRace[]; results: R
       result: e.data.result!,
       goal: e.data.goal,
       note: e.data.note,
+      image: e.data.image,
+      imageAlt: e.data.imageAlt,
+      caption: e.data.caption,
       href:
         e.data.report && published.has(e.data.report.id) ? `/blog/${e.data.report.id}` : e.data.reportUrl,
     }));
