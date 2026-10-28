@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // fetch-live-stats.mjs
 // Build-time data fetcher. Pulls a curated handful of numbers from
-// Strava and GitHub and snapshots them to src/data/live-stats.json.
+// Strava and snapshots them to src/data/live-stats.json.
 // The site reads that JSON statically at SSG time — no client-side
 // API calls, no tokens in the browser.
 //
@@ -19,10 +19,6 @@ const OUT = path.resolve(process.cwd(), 'src/data/live-stats.json');
 const STRAVA_CLIENT_ID     = process.env.STRAVA_CLIENT_ID;
 const STRAVA_CLIENT_SECRET = process.env.STRAVA_CLIENT_SECRET;
 const STRAVA_REFRESH_TOKEN = process.env.STRAVA_REFRESH_TOKEN;
-
-// ── GitHub ────────────────────────────────────────────────────────────
-const GITHUB_USER  = process.env.GITHUB_USER  || 'richter-max';
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN; // optional — boosts rate limit
 
 async function refreshStravaAccessToken() {
   const r = await fetch('https://www.strava.com/api/v3/oauth/token', {
@@ -198,128 +194,6 @@ async function fetchStrava() {
   };
 }
 
-async function fetchLatestPushedRepo() {
-  // Returns the public repo with the most recent push, plus the
-  // first line of its newest commit message. Powers the
-  // "currently shipping" indicator in the redesigned STATS section.
-  if (!GITHUB_TOKEN) return null;
-  const query = `
-    query($login: String!) {
-      user(login: $login) {
-        repositories(
-          first: 1,
-          ownerAffiliations: OWNER,
-          isFork: false,
-          privacy: PUBLIC,
-          orderBy: { field: PUSHED_AT, direction: DESC }
-        ) {
-          nodes {
-            name
-            pushedAt
-            url
-            defaultBranchRef {
-              target {
-                ... on Commit {
-                  history(first: 1) {
-                    nodes { messageHeadline committedDate }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  `;
-  const r = await fetch('https://api.github.com/graphql', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${GITHUB_TOKEN}`,
-      'User-Agent': 'richtermax-portfolio-build',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ query, variables: { login: GITHUB_USER } }),
-  });
-  if (!r.ok) return null;
-  const j = await r.json();
-  const node = j.data?.user?.repositories?.nodes?.[0];
-  if (!node) return null;
-  const commit = node.defaultBranchRef?.target?.history?.nodes?.[0];
-  return {
-    name:        node.name,
-    url:         node.url,
-    pushedAt:    node.pushedAt,
-    headline:    commit?.messageHeadline ?? null,
-    commitDate:  commit?.committedDate   ?? node.pushedAt,
-  };
-}
-
-async function fetchGitHubCommits30d() {
-  // GraphQL contributionsCollection — same number that drives the
-  // green heatmap on github.com/<user>. Includes private repos when
-  // the user has "Include private contributions on my profile"
-  // enabled in their GitHub settings. Far more representative than
-  // search/commits, which is public-only and index-lagged.
-  if (!GITHUB_TOKEN) {
-    throw new Error('GITHUB_TOKEN missing — keeping previous commit count.');
-  }
-  const to   = new Date();
-  const from = new Date(Date.now() - 30 * 86400000);
-
-  const query = `
-    query($login: String!, $from: DateTime!, $to: DateTime!) {
-      user(login: $login) {
-        contributionsCollection(from: $from, to: $to) {
-          totalCommitContributions
-          contributionCalendar { totalContributions }
-        }
-      }
-    }
-  `;
-
-  const r = await fetch('https://api.github.com/graphql', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${GITHUB_TOKEN}`,
-      'User-Agent': 'richtermax-portfolio-build',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      query,
-      variables: {
-        login: GITHUB_USER,
-        from: from.toISOString(),
-        to:   to.toISOString(),
-      },
-    }),
-  });
-  if (!r.ok) throw new Error(`GitHub GraphQL: ${r.status} ${await r.text()}`);
-  const j = await r.json();
-  if (j.errors?.length) throw new Error(`GitHub GraphQL: ${JSON.stringify(j.errors)}`);
-
-  const cc = j.data?.user?.contributionsCollection;
-  if (!cc) throw new Error('GitHub GraphQL: no contributionsCollection in response.');
-
-  // Prefer the calendar total (commits + PRs + issues + reviews) over
-  // commits-only — same number visitors see on the green heatmap and
-  // less prone to under-counting when commit author-email doesn't match
-  // the GitHub user (a common gotcha after a username rename: old
-  // commits stay tied to the previous noreply email and don't roll up
-  // to the renamed profile).
-  const total = cc.contributionCalendar?.totalContributions
-             ?? cc.totalCommitContributions
-             ?? 0;
-
-  // Sanity floor: anything under 5 is almost certainly the underrun
-  // we're trying to avoid (auth/email-attribution issue), not a real
-  // sub-5 month. Keep the previous value rather than ship a misleading
-  // small number.
-  if (typeof total !== 'number' || total < 5) {
-    throw new Error(`GitHub returned ${total} contributions — treating as under-counting, keeping previous value.`);
-  }
-  return total;
-}
-
 async function main() {
   // Read existing snapshot — used as the persistent fallback if anything
   // fetched here fails. Never overwrite with partial data.
@@ -329,10 +203,10 @@ async function main() {
   } catch {
     snapshot = {
       strava: { streakWeeks: 0, sessionsThisYear: 0, lastRun: null },
-      github: { commits30d: 0 },
     };
   }
   delete snapshot._note;
+  delete snapshot.github; // no longer collected (nothing on the site read it)
 
   const errors = [];
 
@@ -341,18 +215,6 @@ async function main() {
     console.log(`✓ Strava: streak=${snapshot.strava.streakWeeks}w, sessions=${snapshot.strava.sessionsThisYear}, lastRun=${snapshot.strava.lastRun?.weekday} ${snapshot.strava.lastRun?.km}km`);
   } catch (e) {
     errors.push(`Strava: ${e.message}`);
-  }
-
-  try {
-    const commits30d   = await fetchGitHubCommits30d();
-    const latestRepo   = await fetchLatestPushedRepo();
-    snapshot.github = {
-      commits30d,
-      latestRepo: latestRepo ?? snapshot.github?.latestRepo ?? null,
-    };
-    console.log(`✓ GitHub: ${commits30d} commits / 30d${latestRepo ? `, latest push → ${latestRepo.name}` : ''}`);
-  } catch (e) {
-    errors.push(`GitHub: ${e.message}`);
   }
 
   snapshot.updatedAt = new Date().toISOString();

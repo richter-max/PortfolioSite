@@ -5,12 +5,11 @@
 export const SITE = {
   url: 'https://richtermax.com',
   name: 'Maximilian Richter',
-  title: 'Maximilian Richter — AI agent security',
+  title: 'Maximilian Richter — On Track / Off Track',
   description:
-    'Maximilian Richter works on AI agent security — prompt injection, tool ' +
-    'misuse, and how you measure whether a defense works. Software developer ' +
-    '(Ausbildung, 2026); dual B.Sc. Computer Science at Bosch from October ' +
-    '2026. Endurance athlete. Based in the Allgäu.',
+    'Dual B.Sc. Computer Science with an IT security focus at Bosch and ' +
+    'DHBW Ravensburg, heading for AI security. Building in public toward ' +
+    'KAT100: 81 km, starting at midnight.',
   /** The two sides. Title and description are what search results and
    *  link previews (LinkedIn, WhatsApp, Instagram) show for each route. */
   sides: {
