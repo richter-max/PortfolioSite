@@ -38,4 +38,10 @@ const { upcoming, results } = await getRaces();
     gap: var(--space-9);
     padding-top: var(--space-6);
   }
+  /* phones: the full gap between blocks read as an empty screen */
+  @media (max-width: 759px) {
+    .stack {
+      gap: var(--space-8);
+    }
+  }
 </style>
