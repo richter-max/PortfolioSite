@@ -36,6 +36,8 @@ interface Station {
   image?: ImageMetadata;
   imageAlt?: string;
   caption?: string;
+  /** Race format, drawn as a small card when there is no photo yet. */
+  format?: string;
   /** Plan vs. result on one scale (0..1), for races with a time goal. */
   bar?: { result: number; plan: number };
 }
@@ -64,16 +66,45 @@ const past: Station[] = [...results].reverse().map((r) => {
   };
 });
 
+// No photo yet for a race ahead: a small card drawn from its format.
+// Original graphics only, no race logos (trademarks).
+type Glyph =
+  | { kind: 'tri'; legs: { name: string; km: number }[] }
+  | { kind: 'climb'; up: string; path: string }
+  | { kind: 'road'; km: string };
+const glyphOf = (format?: string): Glyph | undefined => {
+  if (!format) return undefined;
+  const tri = format.match(/([\d.]+)\s*\/\s*([\d.]+)\s*\/\s*([\d.]+)/);
+  if (tri) {
+    const km = tri.slice(1, 4).map(Number);
+    return { kind: 'tri', legs: ['Swim', 'Bike', 'Run'].map((name, i) => ({ name, km: km[i] })) };
+  }
+  const up = format.match(/([\d,.]+)\s*m up/);
+  if (up) {
+    const g = rng(4850);
+    let y = 80;
+    const pts = Array.from({ length: 23 }, (_, i) => {
+      y = Math.min(88, Math.max(14, y + (g() - 0.52) * 34));
+      return `${(i * 100) / 22},${y.toFixed(1)}`;
+    });
+    return { kind: 'climb', up: up[1], path: `M${pts.join(' L')}` };
+  }
+  const km = format.match(/([\d.]+)\s*km/);
+  return km ? { kind: 'road', km: km[1] } : undefined;
+};
+
 const mainIdx = upcoming.findIndex((r) => r.weight === 'main');
 const ahead: Station[] = upcoming.slice(0, mainIdx + 1).map((r) => ({
   kind: r.weight === 'main' ? 'main' : 'ahead',
   label: r.dateLabel,
   name: r.name,
   fig: r.target ?? r.format,
-  sub: r.weight === 'main' ? 'The finish in Fieberbrunn comes after sunrise.' : r.format,
+  // The format is shown once: as the card when there is no photo, else as text.
+  sub: r.weight === 'main' ? 'The finish in Fieberbrunn comes after sunrise.' : r.image || !glyphOf(r.format) ? r.format : undefined,
   image: r.image,
   imageAlt: r.imageAlt,
   caption: r.caption,
+  format: r.format,
 }));
 // What comes after the main event, told after the sunrise.
 const after = upcoming.slice(mainIdx + 1);
@@ -175,6 +206,30 @@ const pct = (v: number) => `${(v * 100).toFixed(2)}%`;
                 {st.caption && <figcaption class="label-s">{st.caption}</figcaption>}
               </figure>
             )}
+            {!st.image && glyphOf(st.format) && (() => {
+              const g = glyphOf(st.format)!;
+              const max = g.kind === 'tri' ? Math.max(...g.legs.map((l) => l.km)) : 1;
+              return (
+                <div class:list={['trail__glyph', `is-${g.kind}`]} aria-hidden="true">
+                  {g.kind === 'tri' &&
+                    g.legs.map((l) => (
+                      <span class="trail__leg">
+                        <span class="label-s">{l.name} {l.km}</span>
+                        <span class="trail__legbar"><span style={`width:${Math.max(4, (l.km / max) * 100).toFixed(1)}%`}></span></span>
+                      </span>
+                    ))}
+                  {g.kind === 'climb' && (
+                    <>
+                      <svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d={g.path} /></svg>
+                      <span class="trail__glyphfig">{g.up} m ↑</span>
+                    </>
+                  )}
+                  {g.kind === 'road' && (
+                    <span class="trail__glyphfig is-big">{g.km}<span class="label-s"> km</span></span>
+                  )}
+                </div>
+              );
+            })()}
             <span class="label">{st.label}</span>
             <h3 class="trail__name">{st.name}</h3>
             <span class="trail__fig">{st.fig}</span>
@@ -387,6 +442,65 @@ const pct = (v: number) => `${(v * 100).toFixed(2)}%`;
   .trail__photo figcaption {
     line-height: 1.4;
   }
+  /* Card for a race without a photo yet, drawn from its format. */
+  .trail__glyph {
+    position: relative;
+    width: 128px;
+    height: 160px;
+    margin-bottom: 6px;
+    padding: 12px;
+    box-sizing: border-box;
+    border: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 10px;
+    text-align: left;
+  }
+  .trail__glyph.is-tri {
+    justify-content: center;
+  }
+  .trail__leg {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .trail__legbar {
+    display: block;
+    height: 4px;
+    background: var(--line);
+  }
+  .trail__legbar > span {
+    display: block;
+    height: 100%;
+    background: var(--ink);
+  }
+  .trail__glyph svg {
+    position: absolute;
+    inset: 12px 12px 40px;
+    width: calc(100% - 24px);
+    height: calc(100% - 52px);
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 1.5;
+    vector-effect: non-scaling-stroke;
+    stroke-linejoin: round;
+  }
+  .trail__glyphfig {
+    font-family: var(--font-display);
+    font-stretch: 62%;
+    font-weight: 300;
+    font-size: 22px;
+    line-height: 1;
+  }
+  .trail__glyphfig.is-big {
+    font-size: 40px;
+    font-weight: 700;
+  }
+  .is-main .trail__glyph svg {
+    stroke: var(--lamp);
+  }
+
   /* Plan vs. result: bar = finish time, tick = plan, same scale. */
   .trail__bar {
     position: relative;
@@ -498,9 +612,16 @@ const pct = (v: number) => `${(v * 100).toFixed(2)}%`;
     .trail__head {
       padding-left: 64px;
     }
-    .trail__img {
+    .trail__img,
+    .trail__glyph {
       width: 96px;
       height: 120px;
+    }
+    .trail__glyph {
+      padding: 8px;
+    }
+    .trail__glyphfig.is-big {
+      font-size: 30px;
     }
   }
 
