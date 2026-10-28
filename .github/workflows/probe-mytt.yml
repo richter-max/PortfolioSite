@@ -7,26 +7,31 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - run: |
-          B='https://www.mytischtennis.de/click-tt/ByTTV'
-          cat > d.py <<'PY'
-          import re,sys,html as H
-          s=open(sys.argv[1],encoding='utf-8',errors='ignore').read(); n=sys.argv[2]
-          d=lambda x: re.sub(r'\s+',' ',H.unescape(re.sub(r'<[^>]+>',' ',x))).strip()
-          for k,t in enumerate(re.findall(r'<table[\s\S]*?</table>',s)):
-            head=[d(h) for h in re.findall(r'<th[^>]*>([\s\S]*?)</th>',t)]
-            rows=re.findall(r'<tr[^>]*>([\s\S]*?)</tr>',t)
-            print(f'::notice::[{n}.{k}] rows={len(rows)} head={"|".join(head)}')
-            for tr in rows:
-              cells=[d(c) for c in re.findall(r'<td[^>]*>([\s\S]*?)</td>',tr)]
-              if any('Richter' in c for c in cells): print(f'::notice::[{n}.{k}] ROW={"|".join(cells)}')
-          hs=sorted(set(h for h in re.findall(r'href="([^"]+)"',s) if re.search(r'meldung|/mannschaft/|spieler|ttr',h,re.I) and 'rankings' not in h))
-          print(f'::notice::[{n}] links='+' '.join(hs)[:1800])
-          PY
           get(){ curl -sSL -A 'richtermax.com season stats' -o "$1" -w '%{http_code}' "$2"; }
-          echo "::notice::m=$(get m.html "$B/26--27/verein/310079/DJK_Seifriedsberg/meldungen")"; python3 d.py m.html M
-          echo "::notice::t=$(get t.html "$B/25--26/verein/310079/DJK_Seifriedsberg/mannschaften")"; python3 d.py t.html T
-          M=$(grep -o 'href="[^"]*mannschaftsmeldung[^"]*"' m.html | grep -i erwachsene | head -1 | cut -d'"' -f2)
-          [ -z "$M" ] && M=$(grep -o 'href="[^"]*meldung[^"]*"' m.html | grep -v '/meldungen"' | head -1 | cut -d'"' -f2)
-          case "$M" in /*) M="https://www.mytischtennis.de$M";; esac
-          echo "::notice::meldung url=$M code=$(get mm.html "$M")"; python3 d.py mm.html MM
-          grep -o 'TTR[^<]\{0,80\}' mm.html | head -5 | sed 's/^/::notice::mmTTR=/'
+          get mm.html 'https://www.mytischtennis.de/click-tt/ByTTV/26--27/verein/310079/DJK_Seifriedsberg/meldungendetails/E/vr' >/dev/null
+          P=$(python3 - <<'PY'
+          import re
+          s=open('mm.html',encoding='utf-8').read()
+          for tr in re.findall(r'<tr[^>]*>([\s\S]*?)</tr>',s):
+            if 'Max Richter' in re.sub(r'<[^>]+>',' ',tr):
+              m=re.search(r'href="([^"]*spielerportrait[^"]*)"',tr); print(m.group(1) if m else 'none'); break
+          PY
+          )
+          echo "::notice::portrait=$P"
+          echo "::notice::code=$(get p.html "https://www.mytischtennis.de$P") bytes=$(wc -c < p.html)"
+          python3 - <<'PY'
+          import re,html as H
+          s=open('p.html',encoding='utf-8',errors='ignore').read()
+          d=lambda x: re.sub(r'\s+',' ',H.unescape(re.sub(r'<[^>]+>',' ',x))).strip()
+          body=s[s.find('<body'):]
+          body=re.sub(r'<script[\s\S]*?</script>','',body)
+          t=d(body)
+          i=t.find('Max Richter')
+          print('::notice::text='+t[max(0,i-100):i+1500].replace('%','%25'))
+          for k,tb in enumerate(re.findall(r'<table[\s\S]*?</table>',s)):
+            head=[d(h) for h in re.findall(r'<th[^>]*>([\s\S]*?)</th>',tb)]
+            rows=[[d(c) for c in re.findall(r'<td[^>]*>([\s\S]*?)</td>',tr)] for tr in re.findall(r'<tr[^>]*>([\s\S]*?)</tr>',tb)]
+            print(f'::notice::T{k} head={"|".join(head)} rows={len(rows)} first={"|".join(rows[1] if len(rows)>1 else (rows[0] if rows else []))[:300]}')
+          for m in re.finditer(r'role="group" aria-label="[^"]*"',s): print('::notice::card='+m.group(0))
+          for m in re.finditer(r'TTR',t): print('::notice::ttr='+t[max(0,m.start()-60):m.start()+80]); 
+          PY
