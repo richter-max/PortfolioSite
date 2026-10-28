@@ -1,0 +1,18 @@
+{
+  "season": "2026/27",
+  "league": "Landesliga Westsüdwest",
+  "team": "DJK Seifriedsberg",
+  "source": "https://www.mytischtennis.de/click-tt/ByTTV/26--27/ligen/gruppe/523733/mannschaft/3115844/DJK_Seifriedsberg/spielerbilanzen/gesamt",
+  "ttr": null,
+  "ttrAsOf": null,
+  "tablePlace": 10,
+  "teamWins": 0,
+  "me": null,
+  "next": {
+    "date": "2026-10-30",
+    "time": "20:00",
+    "home": true,
+    "opponent": "TSG Thannhausen"
+  },
+  "updatedAt": "2026-10-28T08:05:00.000Z"
+}
