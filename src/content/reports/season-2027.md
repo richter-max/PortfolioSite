@@ -3,7 +3,7 @@ title: "Season 2027. Four starts, one that matters."
 date: 2026-10-28
 type: preview
 summary: "Hamburg, Frankfurt, KAT100 and a backyard ultra: what each start is for, and why an 81 km night race decides the year."
-draft: true
+draft: false
 ---
 
 Four starts are planned for 2027. One of them decides whether the season worked: KAT100 in August, 81 km and 4,850 m of climbing, starting at midnight in Kitzbühel. Everything before it is either preparation or unfinished business.
