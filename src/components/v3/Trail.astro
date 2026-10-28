@@ -160,6 +160,18 @@ const ridge = (() => {
 })();
 
 const pct = (v: number) => `${(v * 100).toFixed(2)}%`;
+
+// Phones: stations sit in normal flow (each as tall as its card), so the
+// trail is drawn per station: a half-wave from its dot down to the next
+// one, stretched to whatever height the station ends up with.
+const seg = (a: number, b: number) =>
+  Array.from({ length: 25 }, (_, i) => {
+    const u = i / 24;
+    const x = a + ((b - a) * (1 - Math.cos(Math.PI * u))) / 2;
+    return `${i ? 'L' : 'M'}${(x * 100).toFixed(2)},${(u * 100).toFixed(1)}`;
+  }).join(' ');
+const xn = stations.map((_, i) => xNarrow(tOf(i)));
+const leadPath = seg(xNarrow(0), xn[0]);
 ---
 
 <section id="season" class="trail" aria-labelledby="trail-h" data-trail data-n={n} style={`--n:${n}`}>
@@ -184,6 +196,10 @@ const pct = (v: number) => `${(v * 100).toFixed(2)}%`;
   </div>
 
   <header class="trail__head wrap">
+    <svg class="trail__seg trail__lead" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+      <path d={leadPath} class="trail__band"></path>
+      <path d={leadPath} class="trail__dash"></path>
+    </svg>
     <h2 id="trail-h" class="label">The way there · {past.length} starts behind, {ahead.length} ahead</h2>
     <p class="display-l">From the first finish line to the start in Kitzbühel.</p>
   </header>
@@ -198,11 +214,15 @@ const pct = (v: number) => `${(v * 100).toFixed(2)}%`;
           style={`--y:${i + 1.1};--xw:${pct(xWide(t))};--xn:${pct(xNarrow(t))}`}
           data-trail-st
         >
+          <svg class="trail__seg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <path d={seg(xn[i], xn[i + 1] ?? xn[i])} class="trail__band"></path>
+            <path d={seg(xn[i], xn[i + 1] ?? xn[i])} class="trail__dash"></path>
+          </svg>
           <span class="trail__dot" aria-hidden="true"></span>
           <div class="trail__card">
             {st.image && (
               <figure class="trail__photo">
-                <Image src={st.image} alt={st.imageAlt ?? ''} widths={[128, 256]} sizes="128px" class="trail__img" loading="lazy" quality={70} />
+                <Image src={st.image} alt={st.imageAlt ?? ''} widths={[128, 256, 480, 720]} sizes="(max-width: 759px) 48vw, 128px" class="trail__img" loading="lazy" quality={70} />
                 {st.caption && <figcaption class="label-s">{st.caption}</figcaption>}
               </figure>
             )}
@@ -335,7 +355,8 @@ const pct = (v: number) => `${(v * 100).toFixed(2)}%`;
     stroke-dasharray: 5 13;
     vector-effect: non-scaling-stroke;
   }
-  .trail__svg.is-narrow {
+  .trail__svg.is-narrow,
+  .trail__seg {
     display: none;
   }
   .trail__stone {
@@ -579,49 +600,95 @@ const pct = (v: number) => `${(v * 100).toFixed(2)}%`;
     opacity: 0.12;
   }
 
+  /* Phones and small tablets: stations in normal flow, each as tall as its
+     card, with the trail drawn per station (.trail__seg). About a third
+     shorter than the fixed steps of the wide layout, and room for photos. */
   @media (max-width: 759px) {
     .trail {
-      --step: 56vh;
-    }
-    @supports (height: 1svh) {
-      .trail {
-        --step: 56svh;
-      }
+      height: auto;
     }
     .trail__svg.is-wide,
     .trail__stone {
       display: none;
     }
-    .trail__svg.is-narrow {
-      display: block;
-    }
     .trail__band {
       stroke-width: 26px;
+    }
+    .trail__head {
+      padding-top: 40px;
+      padding-bottom: 56px;
+      padding-left: 64px;
+    }
+    .trail__seg {
+      display: block;
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: visible;
+    }
+    .trail__st {
+      position: relative;
+      top: auto;
+      padding-bottom: 44px;
+    }
+    .trail__st.is-main {
+      padding-bottom: 190px;
+    }
+    /* the trail ends in the sunrise, not through the mountains */
+    .is-main .trail__seg {
+      -webkit-mask-image: linear-gradient(#000 30%, transparent 70%);
+      mask-image: linear-gradient(#000 30%, transparent 70%);
+    }
+    .trail__card {
+      gap: 6px;
+    }
+    .trail__name {
+      font-size: 34px;
+    }
+    .trail.is-night .trail__lead {
+      opacity: 0.35;
     }
     .trail__dot {
       left: var(--xn);
     }
     .is-right .trail__card,
     .is-left .trail__card {
-      left: calc(var(--xn) + 26px);
-      right: 16px;
+      position: relative;
+      left: auto;
+      right: auto;
       width: auto;
+      margin-left: calc(var(--xn) + 26px);
+      margin-right: 16px;
       align-items: flex-start;
       text-align: left;
     }
-    .trail__head {
-      padding-left: 64px;
+    .trail__photo,
+    .is-right .trail__photo {
+      align-items: flex-start;
+      width: 60%;
+      max-width: none;
     }
-    .trail__img,
+    .trail__img {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 5 / 4;
+    }
     .trail__glyph {
       width: 96px;
       height: 120px;
-    }
-    .trail__glyph {
       padding: 8px;
     }
     .trail__glyphfig.is-big {
       font-size: 30px;
+    }
+    .trail__dawn {
+      height: 620px;
+    }
+    .trail__ridge {
+      height: 170px;
     }
   }
 

@@ -20,7 +20,10 @@ if (root && !reduceMotion()) {
   // Must match Trail.astro.
   const phase = (t) => Math.PI * (t * (n + 1.6) - 0.6);
   const xAt = (t) => (wide.matches ? 0.5 + 0.16 * Math.sin(phase(t)) : 0.09 + 0.03 * Math.sin(phase(t)));
-  const mainT = (n - 1 + 1.1) / (n + 1.6);
+  // Where the main event sits, as a share of the section. Read from the
+  // layout: fixed steps on wide screens, normal flow on phones.
+  const mainEl = root.querySelector('.is-main');
+  let mainT = (n - 1 + 1.1) / (n + 1.6);
 
   let W = 0;
   let H = 0;
@@ -29,6 +32,7 @@ if (root && !reduceMotion()) {
     H = canvas.clientHeight;
     canvas.width = Math.max(1, Math.round(W * SCALE));
     canvas.height = Math.max(1, Math.round(H * SCALE));
+    if (mainEl && root.offsetHeight) mainT = mainEl.offsetTop / root.offsetHeight;
   };
 
   let mx = 0; // pointer target, -0.5..0.5
