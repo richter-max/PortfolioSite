@@ -113,6 +113,11 @@ function parseQttr(html) {
   return Number(m[1]);
 }
 
+// In Actions, show results as annotations on the run page (no log digging).
+const GH = process.env.GITHUB_ACTIONS === 'true';
+const ok = (...a) => console.log((GH ? '::notice::' : '') + a.join(' '));
+const warn = (...a) => console.warn((GH ? '::warning::' : '') + a.join(' '));
+
 async function page(url) {
   const r = await fetch(url, { headers: UA });
   if (!r.ok) throw new Error(`HTTP ${r.status}`);
@@ -140,9 +145,9 @@ async function main() {
     const data = parse(await page(URL));
     Object.assign(snap, base, data);
     changed = true;
-    console.log('✓ Table tennis, team page:', JSON.stringify(data));
+    ok('✓ Table tennis, team page:', JSON.stringify(data));
   } catch (e) {
-    console.warn('⚠ Table tennis, team page: keeping previous —', e.message);
+    warn('⚠ Table tennis, team page: keeping previous —', e.message);
   }
   await new Promise((r) => setTimeout(r, 15_000));
   try {
@@ -150,9 +155,9 @@ async function main() {
     if (qttr !== snap.qttr) snap.qttrAsOf = new Date().toISOString().slice(0, 10);
     Object.assign(snap, base, { qttr });
     changed = true;
-    console.log('✓ Table tennis, Q-TTR:', qttr);
+    ok('✓ Table tennis, Q-TTR:', qttr);
   } catch (e) {
-    console.warn('⚠ Table tennis, portrait: keeping previous —', e.message);
+    warn('⚠ Table tennis, portrait: keeping previous —', e.message);
   }
   if (!changed) return;
   snap.updatedAt = new Date().toISOString();
