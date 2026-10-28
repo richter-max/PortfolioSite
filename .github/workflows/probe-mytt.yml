@@ -1,0 +1,25 @@
+name: probe mytt (temporary)
+on:
+  push:
+    branches: ['probe/mytt']
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    steps:
+      - run: |
+          URL='https://www.mytischtennis.de/click-tt/ByTTV/26--27/ligen/gruppe/523733/mannschaft/3115844/DJK_Seifriedsberg/spielerbilanzen/gesamt'
+          code=$(curl -sS -A 'richtermax.com stats (max.richter.dev@proton.me)' -o p.html -w '%{http_code}' "$URL")
+          echo "::notice::status=$code bytes=$(wc -c < p.html) tables=$(grep -o '<table' p.html | wc -l) nextdata=$(grep -c '__NEXT_DATA__' p.html) jsonld=$(grep -c 'application/json' p.html) rsc=$(grep -c 'self.__next_f' p.html)"
+          echo "::notice::title=$(grep -o '<title>[^<]*' p.html | head -1)"
+          echo "::notice::head=$(grep -o '<th[^>]*>[^<]*' p.html | head -20 | sed 's/<th[^>]*>//' | tr '\n' '|')"
+          echo "::notice::rows=$(grep -o '<tr' p.html | wc -l) tds=$(grep -o '<td' p.html | wc -l) Einzel=$(grep -c 'Einzel' p.html) Richter=$(grep -c 'Richter' p.html)"
+          python3 - <<'PY'
+          import re
+          s=open('p.html',encoding='utf-8',errors='ignore').read()
+          i=s.find('Bilanz')
+          snip=re.sub(r'\s+',' ',s[i:i+1500]) if i>=0 else 'none'
+          snip=re.sub(r'[A-ZÄÖÜ][a-zäöüß]+, [A-ZÄÖÜ][a-zäöüß]+','NAME',snip)
+          print('::notice::snip='+snip[:900].replace('%','%25'))
+          j=s.find('Tabelle')
+          print('::notice::tab='+re.sub(r'\s+',' ',s[j:j+600]).replace('%','%25')[:600] if j>=0 else '::notice::tab=none')
+          PY
