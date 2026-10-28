@@ -6,7 +6,7 @@ race: Berlin Marathon
 distance: "42.195 km"
 goal: "Sub-3:00"
 result: "3:48:28"
-summary: "Stepped on at km 3.5, about 15 minutes in the medical tent at km 19, and a finish far from the goal."
+summary: "Stepped on at km 3.5, about 19 minutes in the medical tent at km 19, and a finish far from the goal."
 image: ../../assets/photos/berlin-after-finish.webp
 imageAlt: "Sitting on the grass after the finish, medal on, one shoe off, the ankle taped."
 ghost: berlin
@@ -33,7 +33,7 @@ From km 12 the pain came back. From km 17 it was hell. At km 19 I stepped off th
 
 ## The tent
 
-About 15 minutes. When I came out, sub-3 was gone and there were 23 km left. I was really frustrated, but I wanted to bring it home.
+About 19 minutes, by my watch. When I came out, sub-3 was gone and there were 23 km left. I was really frustrated, but I wanted to bring it home.
 
 ## Km 19 to 25
 
@@ -64,7 +64,7 @@ Hamburg Marathon, 25 April 2027. Same goal.
 | Official time | 3:48:28 |
 | Goal | sub-3:00, 4:16 per km |
 | Start to medical tent | ~19 km at 4:15 per km (watch) |
-| Medical tent | about 15 min |
+| Medical tent | about 19 min (watch) |
 | Km 25 to finish | ~5:20 per km, pacing |
 | Distance on the watch | 42.66 km |
 | Conditions | clear, 12.5 °C, light ESE wind |
