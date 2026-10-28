@@ -118,17 +118,21 @@ function weeklyKmLast12(activities) {
 // The last 52 ISO weeks, oldest first, ending in the current week:
 // kilometres, sessions, moving hours and sessions per sport. Powers the
 // clickable week squares on On Track. No routes, no heart rate.
+// Everything on foot counts towards kilometres: road, trail, track and
+// treadmill runs (Strava logs all of them as Run/TrailRun/VirtualRun; a
+// treadmill run is a Run with the trainer flag), hikes and snowshoe tours.
 const SPORT = {
   Run: 'run', TrailRun: 'run', VirtualRun: 'run',
   Ride: 'ride', VirtualRide: 'ride', GravelRide: 'ride', MountainBikeRide: 'ride', EBikeRide: 'ride',
   Swim: 'swim',
   Hike: 'hike',
+  Snowshoe: 'snowshoe',
   TableTennis: 'tabletennis',
   WeightTraining: 'strength', Workout: 'strength', Crossfit: 'strength', HighIntensityIntervalTraining: 'strength',
 };
 // Only these sports have kilometres that mean something; the few hundred
 // metres a watch logs during table tennis or football are noise.
-const DISTANCE_SPORTS = new Set(['run', 'ride', 'swim', 'hike']);
+const DISTANCE_SPORTS = new Set(['run', 'hike', 'snowshoe', 'ride', 'swim']);
 const sportOf = (a) => SPORT[a.sport_type] ?? SPORT[a.type] ?? 'other';
 
 function mondayOf(d) {
