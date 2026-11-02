@@ -13,11 +13,12 @@ jobs:
           import re,html as H
           s=open('p.html',encoding='utf-8',errors='ignore').read()
           d=lambda x: re.sub(r'\s+',' ',H.unescape(re.sub(r'<[^>]+>',' ',x))).strip()
-          for k,t in enumerate(re.findall(r'<table[\s\S]*?</table>',s)):
-            head=[d(h) for h in re.findall(r'<th[^>]*>([\s\S]*?)</th>',t)]
-            print(f'::notice::T{k} head='+'|'.join(head))
+          tabs=re.findall(r'<table[\s\S]*?</table>',s)
+          print(f'::notice::tables={len(tabs)}')
+          for k,t in enumerate(tabs):
             for tr in re.findall(r'<tr[^>]*>([\s\S]*?)</tr>',t):
               cells=[d(c) for c in re.findall(r'<t[dh][^>]*>([\s\S]*?)</t[dh]>',tr)]
-              if any('Richter' in c for c in cells) or (k>0 and cells and re.search(r'\d+:\d+',' '.join(cells))): print(f'::notice::T{k} row='+'|'.join(cells))
-          for m in re.finditer(r'role="group" aria-label="[^"]*"',s): print('::notice::'+m.group(0))
+              print(f'::notice::T{k} '+'|'.join(cells))
+          b=d(re.sub(r'<script[\s\S]*?</script>','',s))
+          for m in re.finditer(r'Doppel',b): print('::notice::ctx='+b[max(0,m.start()-80):m.start()+220])
           PY
