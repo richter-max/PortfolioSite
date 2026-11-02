@@ -1,12 +1,16 @@
 ---
-// Journal.astro — the newest posts as text entries. No thumbnails.
+// Journal.astro — the newest posts. Each card shows the post's link
+// preview (the bib-style image in public/og, made by og-images.yml).
+import { existsSync } from 'node:fs';
 import { sortedPosts } from '../../data/posts';
 
 interface Props {
   limit?: number;
 }
 const { limit = 3 } = Astro.props;
-const posts = (await sortedPosts()).slice(0, limit);
+const posts = (await sortedPosts())
+  .slice(0, limit)
+  .map((p) => ({ ...p, og: existsSync(`public/og/${p.slug}.png`) ? `/og/${p.slug}.png` : null }));
 ---
 
 <section id="journal" class="journal wrap" aria-labelledby="journal-h">
@@ -17,9 +21,12 @@ const posts = (await sortedPosts()).slice(0, limit);
   <div class="journal__grid">
     {posts.map((p) => (
       <a class="journal__item" href={`/blog/${p.slug}`}>
-        <span class="label-s">{p.kind} · {p.readTime}</span>
-        <h3 class="display-xs">{p.title}</h3>
-        <p>{p.description}</p>
+        {p.og && <img class="journal__img" src={p.og} alt="" width="1200" height="630" loading="lazy" decoding="async" />}
+        <span class="journal__text">
+          <span class="label-s">{p.kind} · {p.readTime}</span>
+          <h3 class="display-xs">{p.title}</h3>
+          <p>{p.description}</p>
+        </span>
       </a>
     ))}
   </div>
@@ -47,16 +54,37 @@ const posts = (await sortedPosts()).slice(0, limit);
   }
   .journal__item {
     display: flex;
-    flex-direction: column;
-    gap: 10px;
+    align-items: flex-start;
+    gap: var(--space-4);
     padding-top: var(--space-4);
-    border-top: 1px solid var(--line-strong);
+    border-top: 1px solid var(--line);
     text-decoration: none;
   }
   .journal__item:hover h3 {
     text-decoration: underline;
     text-decoration-thickness: 2px;
     text-underline-offset: 6px;
+  }
+  /* Only the bib from the link preview (its right part): the title is
+     already in the text, so it isn't shown twice. */
+  .journal__img {
+    flex: 0 0 92px;
+    width: 92px;
+    height: auto;
+    aspect-ratio: 0.7;
+    object-fit: cover;
+    object-position: 100% 50%;
+    border-radius: var(--radius-panel);
+    transition: transform 0.5s var(--ease-settle);
+  }
+  .journal__item:hover .journal__img {
+    transform: rotate(-3deg) translateY(-3px);
+  }
+  .journal__text {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 0;
   }
   .journal__item p {
     margin: 0;

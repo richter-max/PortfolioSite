@@ -13,17 +13,17 @@ if (root && !reduceMotion()) {
   const canvas = root.querySelector('[data-trail-beam]');
   const ctx = canvas.getContext('2d');
   const n = Number(root.dataset.n);
-  const wide = window.matchMedia('(min-width: 760px)');
+  const wide = window.matchMedia('(min-width: 1100px)');
   const fine = window.matchMedia('(pointer: fine)').matches;
   const SCALE = 0.4; // the beam is soft; a quarter of the pixels is plenty
 
   // Must match Trail.astro.
-  const phase = (t) => Math.PI * (t * (n + 1.6) - 0.6);
+  const phase = (t) => Math.PI * (t * (n + 2.4) - 0.6);
   const xAt = (t) => (wide.matches ? 0.5 + 0.16 * Math.sin(phase(t)) : 0.09 + 0.03 * Math.sin(phase(t)));
   // Where the main event sits, as a share of the section. Read from the
   // layout: fixed steps on wide screens, normal flow on phones.
   const mainEl = root.querySelector('.is-main');
-  let mainT = (n - 1 + 1.1) / (n + 1.6);
+  let mainT = (n - 1 + 1.1) / (n + 2.4);
 
   let W = 0;
   let H = 0;
