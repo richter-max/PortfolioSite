@@ -43,6 +43,7 @@ const label = me ? `My singles this season: ${won} won, ${lost} lost` : next ? `
       )
     }
     {me && tt.tablePlace && <span class="data tt__muted">Team: {ord(tt.tablePlace)} in the table</span>}
+    {tt.leagueUrl && <a class="label-s link tt__league-link" href={tt.leagueUrl} rel="noopener">League table on myTischtennis <span class="arr">↗</span></a>}
   </div>
 
   <div class="tt__scene" data-tilt="10">
@@ -157,6 +158,10 @@ const label = me ? `My singles this season: ${won} won, ${lost} lost` : next ? `
   }
   .tt__muted {
     color: var(--ink-muted);
+  }
+  .tt__league-link {
+    align-self: flex-start;
+    color: var(--ink);
   }
 
   /* ── the object ─────────────────────────────────────────────────── */
