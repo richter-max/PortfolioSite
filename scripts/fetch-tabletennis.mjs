@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // fetch-tabletennis.mjs — the table tennis season from myTischtennis
-// (click-TT), once a week (Sunday night, refresh-tabletennis.yml), two requests:
+// (click-TT), once a week (Monday 06:00, refresh-tabletennis.yml), two requests:
 //  1. the team's public "Spielerbilanzen" page → own singles record, table
 //     position, next match. Other players never leave the page.
 //  2. Max's public player portrait → Q-TTR (the official quarterly value).

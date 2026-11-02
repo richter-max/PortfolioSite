@@ -16,7 +16,7 @@ for (const board of document.querySelectorAll('[data-scoreboard]')) {
     const [y, m, d] = days.dataset.daysFlaps.split('-').map(Number);
     const t = new Date();
     const n = Math.max(0, Math.round((Date.UTC(y, m - 1, d) - Date.UTC(t.getFullYear(), t.getMonth(), t.getDate())) / DAY));
-    const digits = String(Math.min(99, n)).padStart(2, '0').split('');
+    const digits = String(Math.min(99, n)).padStart(2, ' ').split('');
     days.querySelectorAll('[data-flap]').forEach((f, i) => {
       f.dataset.to = digits[i];
       f.textContent = digits[i];
@@ -36,7 +36,7 @@ for (const board of document.querySelectorAll('[data-scoreboard]')) {
     return { flaps, to: Number(flaps.map((f) => f.dataset.to).join('')) };
   });
   const show = (flaps, n) => {
-    String(n).padStart(2, '0').split('').forEach((ch, i) => {
+    String(n).padStart(2, ' ').split('').forEach((ch, i) => {
       const f = flaps[i];
       if (f.textContent === ch) return;
       f.textContent = ch;

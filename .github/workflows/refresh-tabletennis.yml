@@ -1,15 +1,15 @@
 name: Refresh table tennis
 
-# Every Sunday night after the weekend's matches: own singles record, table
+# Every Monday morning after the weekend's matches: own singles record, table
 # position, next match and Q-TTR from myTischtennis (two public pages,
 # two requests a week). Commits only on change; the commit triggers the
 # Vercel deploy.
 
 on:
   schedule:
-    # 22:00 UTC Sunday (23:00 CET / 00:00 CEST). GitHub often starts
-    # scheduled runs late, so it can land on Monday morning.
-    - cron: '0 22 * * 0'
+    # 05:00 UTC Monday = 06:00 in Germany in winter (07:00 in summer).
+    # GitHub often starts scheduled runs late.
+    - cron: '0 5 * * 1'
   workflow_dispatch:
 
 permissions:
