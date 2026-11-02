@@ -7,6 +7,8 @@ import { getCollection, render } from 'astro:content';
 import { Image } from 'astro:assets';
 import ProseLayout from '../../layouts/ProseLayout.astro';
 import GhostRace from '../../components/v3/GhostRace.astro';
+import WornBib from '../../components/v3/WornBib.astro';
+import { sortedPosts } from '../../data/posts';
 import { existsSync } from 'node:fs';
 
 export async function getStaticPaths() {
@@ -30,13 +32,21 @@ const KIND = {
   'monthly-update': 'MONTHLY UPDATE',
   preview: 'PREVIEW',
 } as const;
+// The result and goal live on the bib when there is one; not twice.
+const hasBib = Boolean(d.race && d.result);
 const metaLine = [
   `${d.date.getUTCDate()} ${MONTHS[d.date.getUTCMonth()]} ${d.date.getUTCFullYear()}`,
-  d.result && d.goal ? `${d.result} · GOAL ${d.goal.toUpperCase()}` : d.result,
+  hasBib ? undefined : d.result && d.goal ? `${d.result} · GOAL ${d.goal.toUpperCase()}` : d.result,
   d.draft ? 'DRAFT' : undefined,
 ]
   .filter(Boolean)
   .join(' · ');
+
+// Older and newer post for the links under the report.
+const all = await sortedPosts();
+const at = all.findIndex((p) => p.slug === entry.id);
+const newer = at > 0 ? all[at - 1] : undefined;
+const older = at >= 0 && at < all.length - 1 ? all[at + 1] : undefined;
 ---
 
 <ProseLayout
@@ -52,11 +62,38 @@ const metaLine = [
       {d.imageCredit && <figcaption class="meta">{d.imageCredit}</figcaption>}
     </figure>
   )}
+  {hasBib && (
+    <WornBib slot="aside" race={d.race!} result={d.result!} goal={d.goal} distance={d.distance} date={d.date} />
+  )}
   {d.ghost && <GhostRace race={d.ghost} />}
   <Content />
+  <Fragment slot="after">
+    <a class="label link" href="/#season"><span class="arr">←</span> Back to the trail</a>
+    <span class="report__more">
+      {older && <a class="label link" href={`/blog/${older.slug}`}>Before: {older.title} <span class="arr">→</span></a>}
+      {newer && <a class="label link" href={`/blog/${newer.slug}`}>After: {newer.title} <span class="arr">→</span></a>}
+    </span>
+  </Fragment>
 </ProseLayout>
 
 <style>
+  .report__more {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--space-3);
+    text-align: right;
+  }
+  @media (max-width: 759px) {
+    .report__more {
+      align-items: flex-start;
+      text-align: left;
+    }
+  }
+  .report__more a,
+  :global(.prose__after) > a {
+    color: var(--ink);
+  }
   .report__figure {
     margin: 0 0 2rem;
   }
