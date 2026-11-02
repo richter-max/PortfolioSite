@@ -27,6 +27,7 @@ const TEAM = 'DJK Seifriedsberg';
 const decode = (s) =>
   s
     .replace(/<[^>]+>/g, ' ')
+    .replace(/&shy;|\u00ad/g, '')
     .replace(/&nbsp;/g, ' ')
     .replace(/&amp;/g, '&')
     .replace(/&#x27;|&#39;/g, "'")
@@ -55,20 +56,36 @@ function parse(html) {
   const t = tables(html);
   const c = cards(html);
 
-  // Player records: the table with a "Name" column.
+  // Player records: the table with a "Name" column. Headers can carry
+  // soft hyphens ("E­insätze" decodes to "E insätze"), so compare squashed.
   const bil = t.find((x) => x.head.includes('Name'));
   let me = null;
   if (bil) {
-    const row = bil.rows.find((r) => r.some((cell) => ME.test(cell)));
-    if (row) {
-      // align header and cells from the right (rows may lack a leading cell)
-      const shift = row.length - bil.head.length;
-      const col = (...names) => names.map((n) => bil.head.indexOf(n)).find((i) => i >= 0) ?? -1;
-      const get = (...names) => (col(...names) >= 0 ? (row[col(...names) + shift] ?? null) : null);
+    const sq = (v) => v.replace(/[\s\u00ad]/g, '').toLowerCase();
+    const head = bil.head.map(sq);
+    const col = (...names) => names.map((n) => head.indexOf(sq(n))).find((i) => i >= 0) ?? -1;
+    const tidy = (v) => (v ?? '').replace(/\s*:\s*/, ':').trim() || null;
+    // Singles: the row whose name cell is me alone. Doubles rows read
+    // "Max Richter / Partner" and are summed separately.
+    const nameAt = col('Name');
+    const single = bil.rows.find((r) => r.length === bil.head.length && ME.test(r[nameAt] ?? '') && !(r[nameAt] ?? '').includes('/'));
+    if (single) {
+      const get = (...names) => (col(...names) >= 0 ? single[col(...names)] : null);
+      let dw = 0;
+      let dl = 0;
+      for (const r of bil.rows) {
+        if (!r.some((c) => c.includes('/') && ME.test(c))) continue;
+        const m = r[r.length - 1]?.match(/(\d+)\s*:\s*(\d+)/);
+        if (m) {
+          dw += Number(m[1]);
+          dl += Number(m[2]);
+        }
+      }
       me = {
         position: get('Rang'),
-        matches: Number(get('E', 'Einsätze')) || 0,
-        singles: get('Gesamt'), // e.g. "6:2"
+        matches: Number(get('Einsätze', 'E')) || 0,
+        singles: tidy(get('Gesamt')),
+        doubles: dw + dl ? `${dw}:${dl}` : null,
       };
     }
   }

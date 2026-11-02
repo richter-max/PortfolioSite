@@ -10,7 +10,7 @@ const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const ord = (n: number) => n + (n % 100 >= 11 && n % 100 <= 13 ? 'th' : ['th', 'st', 'nd', 'rd'][n % 10] ?? 'th');
 
-const me = tt.me as { singles: string; matches: number } | null;
+const me = tt.me as { singles: string; matches: number; doubles?: string | null } | null;
 const next = tt.next as { date: string; time: string | null; home: boolean; opponent: string } | null;
 const rating = tt.ttr ? { label: 'TTR', value: tt.ttr } : tt.qttr ? { label: 'Q-TTR', value: tt.qttr } : null;
 
@@ -42,7 +42,7 @@ const label = me ? `My singles this season: ${won} won, ${lost} lost` : next ? `
         </div>
       )
     }
-    {me && <span class="data tt__muted">Team: {ord(tt.tablePlace)} of 10</span>}
+    {me && tt.tablePlace && <span class="data tt__muted">Team: {ord(tt.tablePlace)} in the table</span>}
   </div>
 
   <div class="tt__scene" data-tilt="10">
@@ -80,7 +80,7 @@ const label = me ? `My singles this season: ${won} won, ${lost} lost` : next ? `
           )
         }
         <p class="board__foot">
-          {me ? `${me.matches} ${me.matches === 1 ? 'match' : 'matches'} played` : 'Counting starts on match day 1.'}
+          {me ? `${me.matches} ${me.matches === 1 ? 'match' : 'matches'} played${me.doubles ? ` · doubles ${me.doubles}` : ''}` : 'Counting starts on match day 1.'}
         </p>
       </div>
       {
