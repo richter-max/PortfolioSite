@@ -23,7 +23,8 @@ const nextWhen = nextDate
 const [won, lost] = me ? me.singles.split(':').map((n) => Number(n) || 0) : [0, 0];
 const daysTo = nextDate ? Math.max(0, Math.round((nextDate.getTime() - Date.now()) / 864e5)) : 0;
 const mode = me ? 'record' : next ? 'countdown' : 'off';
-const two = (n: number) => String(Math.min(99, n)).padStart(2, '0').split('');
+// Like a real flip counter: no leading zero ("04:02" read like a clock).
+const two = (n: number) => String(Math.min(99, n)).padStart(2, ' ').split('');
 const label = me ? `My singles this season: ${won} won, ${lost} lost` : next ? `${daysTo} days to the first match` : 'Season not started';
 ---
 
@@ -50,7 +51,7 @@ const label = me ? `My singles this season: ${won} won, ${lost} lost` : next ? `
     <div class="tt__obj" data-tilt-target>
       <div class="board" role="img" aria-label={label}>
         <span class="board__ball" aria-hidden="true"></span>
-        <div class="board__top"><span>Richter · singles</span><span>No. 204</span></div>
+        <div class="board__top"><span>{me ? `My singles · ${tt.season}` : `Richter · ${tt.season}`}</span><span>No. 204</span></div>
         <div class="board__bar"></div>
         {
           mode === 'record' ? (
@@ -59,14 +60,14 @@ const label = me ? `My singles this season: ${won} won, ${lost} lost` : next ? `
                 <div class="board__pair">
                   {two(won).map((d) => <span class="flap" data-flap data-to={d}>{d}</span>)}
                 </div>
-                <span class="board__cap">Won</span>
+                <span class="board__cap">Singles won</span>
               </div>
-              <span class="board__colon" aria-hidden="true">:</span>
+              <span class="board__rule" aria-hidden="true"></span>
               <div class="board__col">
                 <div class="board__pair">
                   {two(lost).map((d) => <span class="flap" data-flap data-to={d}>{d}</span>)}
                 </div>
-                <span class="board__cap">Lost</span>
+                <span class="board__cap">Singles lost</span>
               </div>
             </div>
           ) : (
@@ -220,6 +221,12 @@ const label = me ? `My singles this season: ${won} won, ${lost} lost` : next ? `
     font-size: 11px;
     letter-spacing: 0.16em;
     text-transform: uppercase;
+  }
+  .board__rule {
+    align-self: stretch;
+    width: 2px;
+    margin: 0 clamp(6px, 2vw, 14px) 22px;
+    background: repeating-linear-gradient(var(--paper-ink) 0 6px, transparent 6px 11px);
   }
   .board__colon {
     font-family: var(--font-display);
