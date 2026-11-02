@@ -1,0 +1,123 @@
+---
+// WornBib.astro — the bib after the race: the result is printed where the
+// distance was. Sits next to a report (sticky on wide screens, under the
+// title on phones). Same paper as the 204 in the hero and the unworn bibs
+// in the trail, so the trail's story ends here: bib before, result after.
+import { toHours } from '../../data/races';
+
+interface Props {
+  race: string;
+  result: string;
+  goal?: string;
+  distance?: string;
+  date: Date;
+}
+const { race, result, goal, distance, date } = Astro.props;
+const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const when = `${date.getUTCDate()} ${MON[date.getUTCMonth()]} ${date.getUTCFullYear()}`;
+// A time goal that was missed gets struck through; text goals stay as they are.
+const r = toHours(result);
+const g = toHours(goal);
+const missed = r != null && g != null && r > g;
+---
+
+<div class="worn" role="img" aria-label={`${race}, ${when}: ${result}${goal ? `, goal ${goal}${missed ? ', missed' : ''}` : ''}`}>
+  <div class="worn__bib">
+    <span class="worn__pin" style="top:7px;left:7px"></span>
+    <span class="worn__pin" style="top:7px;right:7px"></span>
+    <span class="worn__pin" style="bottom:7px;left:7px"></span>
+    <span class="worn__pin" style="bottom:7px;right:7px"></span>
+    <span class="worn__top"><span>{race}</span><span>No. 204</span></span>
+    <span class="worn__bar"></span>
+    <span class="worn__mid">
+      <span class="worn__result">{result}</span>
+      {goal && <span class:list={['worn__goal', { 'is-missed': missed }]}>Goal {goal.replace(/^sub-?/i, 'sub-')}</span>}
+    </span>
+    <span class="worn__strip"><span>{when}</span><span>{distance}</span></span>
+  </div>
+</div>
+
+<style>
+  .worn {
+    width: 240px;
+  }
+  .worn__bib {
+    container-type: inline-size;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    aspect-ratio: 5 / 6;
+    padding: 9% 7% 6%;
+    border-radius: var(--radius-object);
+    background: var(--paper);
+    color: var(--paper-ink);
+    box-shadow: var(--shadow-object);
+    transform: rotate(-2deg);
+  }
+  .worn__pin {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #fff, #7d8086 70%);
+  }
+  .worn__top,
+  .worn__strip,
+  .worn__goal {
+    font-family: var(--font-mono);
+    font-size: max(10px, 4.4cqw);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .worn__top,
+  .worn__strip {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    padding-inline: 3%;
+  }
+  .worn__top span:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .worn__bar {
+    height: 3.4cqw;
+    margin-top: 4cqw;
+    background: var(--paper-ink);
+  }
+  .worn__mid {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3cqw;
+  }
+  .worn__result {
+    font-family: var(--font-display);
+    font-stretch: var(--stretch-display);
+    font-weight: 800;
+    font-size: 30cqw;
+    line-height: 0.85;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+  .worn__goal {
+    font-size: max(12px, 5.4cqw);
+  }
+  .worn__goal.is-missed {
+    text-decoration: line-through;
+    text-decoration-thickness: 2px;
+  }
+  .worn__strip {
+    padding-top: 3cqw;
+    border-top: 2px dashed var(--paper-ink);
+    color: #5e5a53;
+  }
+  .worn__top span,
+  .worn__strip span {
+    white-space: nowrap;
+  }
+</style>
