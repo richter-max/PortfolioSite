@@ -111,7 +111,11 @@ const ahead: Station[] = upcoming.slice(0, mainIdx + 1).map((r) => ({
   imageAlt: r.imageAlt,
   caption: r.caption,
   format: r.format,
-  start: /midnight/i.test(r.note ?? '') ? { time: '00:00', place: r.note?.match(/\bin ([A-ZÄÖÜ][\wäöüß-]+)/)?.[1] } : undefined,
+  // "Start 23:59 in Kitzbühel" → the chip on the bib
+  start: (() => {
+    const t = r.note?.match(/\bstart(?:s)?\s+(?:at\s+)?(\d{1,2}:\d{2})/i)?.[1];
+    return t ? { time: t, place: r.note?.match(/\bin ([A-ZÄÖÜ][\wäöüß-]+)/)?.[1] } : undefined;
+  })(),
 }));
 // What comes after the main event, told after the sunrise.
 const after = upcoming.slice(mainIdx + 1);

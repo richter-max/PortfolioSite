@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // fetch-tabletennis.mjs — the table tennis season from myTischtennis
-// (click-TT), once a week (Monday, refresh-tabletennis.yml), two requests:
+// (click-TT), once a week (Sunday night, refresh-tabletennis.yml), two requests:
 //  1. the team's public "Spielerbilanzen" page → own singles record, table
 //     position, next match. Other players never leave the page.
 //  2. Max's public player portrait → Q-TTR (the official quarterly value).
@@ -18,6 +18,7 @@ const OUT = path.resolve(process.cwd(), 'src/data/tabletennis.json');
 const SEASON = '2026/27';
 const URL =
   'https://www.mytischtennis.de/click-tt/ByTTV/26--27/ligen/gruppe/523733/mannschaft/3115844/DJK_Seifriedsberg/spielerbilanzen/gesamt';
+const LEAGUE = 'https://www.mytischtennis.de/click-tt/ByTTV/26--27/ligen/-/gruppe/523733/tabelle/gesamt';
 const PORTRAIT = 'https://www.mytischtennis.de/click-tt/spieler/PD9D9D021/spielerportrait';
 const ME = /Richter/i;
 const UA = { 'User-Agent': 'richtermax.com season stats (2 requests/week)' };
@@ -153,6 +154,7 @@ async function main() {
     league: 'Landesliga Westsüdwest',
     team: TEAM,
     source: URL,
+    leagueUrl: LEAGUE,
     // hand-kept (myTT shows the live TTR only after login); never overwritten
     ttr: snap.ttr ?? null,
     ttrAsOf: snap.ttrAsOf ?? null,

@@ -3,6 +3,7 @@
   "league": "Landesliga Westsüdwest",
   "team": "DJK Seifriedsberg",
   "source": "https://www.mytischtennis.de/click-tt/ByTTV/26--27/ligen/gruppe/523733/mannschaft/3115844/DJK_Seifriedsberg/spielerbilanzen/gesamt",
+  "leagueUrl": "https://www.mytischtennis.de/click-tt/ByTTV/26--27/ligen/-/gruppe/523733/tabelle/gesamt",
   "ttr": null,
   "ttrAsOf": null,
   "qttr": 1757,
@@ -13,7 +14,7 @@
     "position": "1 . 3",
     "matches": 3,
     "singles": "4:2",
-    "doubles": "1:0"
+    "doubles": "1:2"
   },
   "next": {
     "date": "2026-11-28",
