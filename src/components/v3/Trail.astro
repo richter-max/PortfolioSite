@@ -133,9 +133,9 @@ const stations = [...past, now, ...ahead];
 const n = stations.length;
 
 // Trail geometry, shared with trail.js: t runs 0..1 down the section;
-// station i sits at t = (i + 1.1) / (n + 1.6), where the curve is at its
+// station i sits at t = (i + 1.1) / (n + 2.4), where the curve is at its
 // outermost point, alternating sides.
-const phase = (t: number) => Math.PI * (t * (n + 1.6) - 0.6);
+const phase = (t: number) => Math.PI * (t * (n + 2.4) - 0.6);
 const xWide = (t: number) => 0.5 + 0.16 * Math.sin(phase(t));
 const xNarrow = (t: number) => 0.09 + 0.03 * Math.sin(phase(t));
 const path = (x: (t: number) => number) =>
@@ -143,7 +143,7 @@ const path = (x: (t: number) => number) =>
     const t = i / 240;
     return `${i ? 'L' : 'M'}${(x(t) * 100).toFixed(2)},${(t * 1000).toFixed(1)}`;
   }).join(' ');
-const tOf = (i: number) => (i + 1.1) / (n + 1.6);
+const tOf = (i: number) => (i + 1.1) / (n + 2.4);
 
 // Stones beside the trail (wide layout only), deterministic.
 const r = rng(204);
@@ -233,7 +233,7 @@ const leadPath = seg(xNarrow(0), xn[0]);
           <div class="trail__card">
             {st.image && (
               <figure class="trail__photo">
-                <Image src={st.image} alt={st.imageAlt ?? ''} widths={[128, 256, 480, 720]} sizes="(max-width: 759px) 48vw, 128px" class="trail__img" loading="lazy" quality={70} />
+                <Image src={st.image} alt={st.imageAlt ?? ''} widths={[128, 256, 480, 720]} sizes="(max-width: 1099px) 48vw, 128px" class="trail__img" loading="lazy" quality={70} />
                 {st.caption && <figcaption class="label-s">{st.caption}</figcaption>}
               </figure>
             )}
@@ -307,16 +307,16 @@ const leadPath = seg(xNarrow(0), xn[0]);
 
 <style>
   .trail {
-    --step: 58vh;
+    --step: max(40vh, 320px);
     --night: #060605;
     position: relative;
-    height: calc((var(--n) + 1.6) * var(--step));
+    height: calc((var(--n) + 2.4) * var(--step));
     background: var(--night);
     overflow: clip;
   }
   @supports (height: 1svh) {
     .trail {
-      --step: 58svh;
+      --step: max(40svh, 320px);
     }
   }
 
@@ -462,19 +462,22 @@ const leadPath = seg(xNarrow(0), xn[0]);
   .trail__card {
     position: absolute;
     top: 0;
-    width: min(440px, 40vw);
+    /* outside the curve: room up to the page edge */
+    width: min(400px, calc(34vw - 92px));
     transform: translateY(-34px);
     display: flex;
     flex-direction: column;
     gap: 8px;
   }
+  /* Each card sits on the outside of its bend, so neighbours never
+     share space and the stations can sit closer together. */
   .is-right .trail__card {
+    left: calc(var(--xw) + 44px);
+  }
+  .is-left .trail__card {
     right: calc(100% - var(--xw) + 44px);
     align-items: flex-end;
     text-align: right;
-  }
-  .is-left .trail__card {
-    left: calc(var(--xw) + 44px);
   }
   .trail__photo {
     margin: 0 0 6px;
@@ -483,7 +486,7 @@ const leadPath = seg(xNarrow(0), xn[0]);
     gap: 6px;
     max-width: 200px;
   }
-  .is-right .trail__photo {
+  .is-left .trail__photo {
     align-items: flex-end;
   }
   .trail__photo figcaption {
@@ -544,7 +547,7 @@ const leadPath = seg(xNarrow(0), xn[0]);
   .trail__bibleg,
   .trail__bibchip {
     font-family: var(--font-mono);
-    font-size: max(7px, 4.6cqw);
+    font-size: max(9px, 4.6cqw);
     letter-spacing: 0.1em;
     text-transform: uppercase;
   }
@@ -631,7 +634,7 @@ const leadPath = seg(xNarrow(0), xn[0]);
     white-space: nowrap;
     border: 1.5px solid var(--paper-ink);
     border-radius: 3px;
-    font-size: max(6.5px, 3.8cqw);
+    font-size: max(8.5px, 3.8cqw);
     letter-spacing: 0.02em;
   }
   .trail__bibleg.is-ink {
@@ -756,10 +759,10 @@ const leadPath = seg(xNarrow(0), xn[0]);
     filter: brightness(0.14);
   }
 
-  /* Phones and small tablets: stations in normal flow, each as tall as its
+  /* Phones, tablets and small laptops: stations in normal flow, each as tall as its
      card, with the trail drawn per station (.trail__seg). About a third
      shorter than the fixed steps of the wide layout, and room for photos. */
-  @media (max-width: 759px) {
+  @media (max-width: 1099px) {
     .trail {
       height: auto;
     }
@@ -822,7 +825,7 @@ const leadPath = seg(xNarrow(0), xn[0]);
       text-align: left;
     }
     .trail__photo,
-    .is-right .trail__photo {
+    .is-left .trail__photo {
       align-items: flex-start;
       width: 60%;
       max-width: none;

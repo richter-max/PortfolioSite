@@ -60,8 +60,16 @@ const W = 560;
 const H = 220;
 const max = Math.max(10, Math.ceil(Math.max(...km, 0) / 10) * 10);
 const pts = km.map((v, i) => ({ x: km.length > 1 ? (i * W) / (km.length - 1) : 0, y: H - (v / max) * (H - 24), v }));
-const line = pts.map((p, i) => `${i ? 'L' : 'M'}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
-const area = pts.length ? `${line} L${W},${H} L0,${H} Z` : '';
+const toPath = (ps: typeof pts) => ps.map((p, i) => `${i ? 'L' : 'M'}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+// Finished weeks solid; the current week (still in progress) dashed, so a
+// Monday doesn't read like a collapse.
+const done = pts.slice(0, -1);
+const line = toPath(done);
+const nowSeg = pts.length > 1 ? toPath(pts.slice(-2)) : '';
+const area = pts.length ? `${toPath(pts)} L${W},${H} L0,${H} Z` : '';
+// Headline number: average of the last four finished weeks.
+const last4 = km.slice(-5, -1);
+const avg4 = last4.length ? Math.round((last4.reduce((a, b) => a + b, 0) / last4.length) * 10) / 10 : null;
 const peakIdx = km.length ? km.indexOf(Math.max(...km)) : -1;
 const peak = peakIdx >= 0 ? pts[peakIdx] : null;
 const year = new Date(live.updatedAt).getFullYear();
@@ -113,13 +121,15 @@ const year = new Date(live.updatedAt).getFullYear();
     {km.length > 0 && (
       <div class="train__km">
         <span class="label">Kilometres per week · last 12 weeks</span>
-        <span class="stat-l train__big">{km[peakIdx]}<span class="train__unit"> km peak</span></span>
+        <span class="stat-l train__big">{avg4 ?? km[peakIdx]}<span class="train__unit"> km{avg4 != null ? ' a week · last 4 weeks' : ' peak'}</span></span>
         <svg viewBox={`0 -20 ${W} ${H + 24}`} class="train__svg" role="img" aria-label={`Weekly kilometres for the last 12 weeks: ${km.join(', ')}. This week is still in progress.`}>
           <line x1="0" y1={H} x2={W} y2={H} class="train__base"></line>
           <path d={area} class="train__area"></path>
           <path d={line} class="train__line" pathLength="1"></path>
-          {pts.map((p, i) => <circle cx={p.x} cy={p.y} r={i === peakIdx ? 5 : 3} class="train__dot"></circle>)}
-          {peak && <text x={peak.x} y={peak.y - 14} text-anchor="middle" class="train__peak">{km[peakIdx]}</text>}
+          {nowSeg && <path d={nowSeg} class="train__now"></path>}
+          {pts.map((p, i) => <circle cx={p.x} cy={p.y} r={i === peakIdx ? 5 : 3} class:list={['train__dot', { 'is-now': i === pts.length - 1 }]}></circle>)}
+          {peak && <text x={peak.x} y={peak.y - 14} text-anchor="middle" class="train__peak">peak {km[peakIdx]}</text>}
+          {pts.length > 1 && <text x={pts[pts.length - 1].x} y={pts[pts.length - 1].y - 14} text-anchor="end" class="train__peak is-muted">so far {km[km.length - 1]}</text>}
         </svg>
         <div class="label-s train__axis"><span>12 weeks ago</span><span>This week, in progress</span></div>
       </div>
@@ -252,6 +262,20 @@ const year = new Date(live.updatedAt).getFullYear();
   .train__dot {
     fill: var(--ink);
   }
+  .train__dot.is-now {
+    fill: var(--surface);
+    stroke: var(--ink);
+    stroke-width: 1.5;
+  }
+  .train__now {
+    fill: none;
+    stroke: var(--ink-muted);
+    stroke-width: 2;
+    stroke-dasharray: 4 6;
+  }
+  .train__peak.is-muted {
+    fill: var(--ink-muted);
+  }
   .train__peak {
     fill: var(--ink);
     font-family: var(--font-mono);
@@ -281,6 +305,7 @@ const year = new Date(live.updatedAt).getFullYear();
     stroke-dashoffset: 1;
   }
   :global(.will-reveal) .train__area,
+  :global(.will-reveal) .train__now,
   :global(.will-reveal) .train__dot,
   :global(.will-reveal) .train__peak {
     opacity: 0;
@@ -299,6 +324,7 @@ const year = new Date(live.updatedAt).getFullYear();
     transition: stroke-dashoffset 2.2s var(--ease-wipe) 0.4s;
   }
   :global(.is-revealed) .train__area,
+  :global(.is-revealed) .train__now,
   :global(.is-revealed) .train__dot,
   :global(.is-revealed) .train__peak {
     transition: opacity 0.8s 2.2s;
