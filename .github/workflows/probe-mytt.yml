@@ -15,10 +15,12 @@ jobs:
           d=lambda x: re.sub(r'\s+',' ',H.unescape(re.sub(r'<[^>]+>',' ',x))).strip()
           tabs=re.findall(r'<table[\s\S]*?</table>',s)
           print(f'::notice::tables={len(tabs)}')
-          for k,t in enumerate(tabs):
-            for tr in re.findall(r'<tr[^>]*>([\s\S]*?)</tr>',t):
-              cells=[d(c) for c in re.findall(r'<t[dh][^>]*>([\s\S]*?)</t[dh]>',tr)]
-              print(f'::notice::T{k} '+'|'.join(cells))
+          t=tabs[1]
+          rows=[]
+          for tr in re.findall(r'<tr[^>]*>([\s\S]*?)</tr>',t):
+            cells=[d(c) for c in re.findall(r'<t[dh][^>]*>([\s\S]*?)</t[dh]>',tr)]
+            rows.append('|'.join(cells))
+          print('::notice::T1 '+' ## '.join(rows))
           b=d(re.sub(r'<script[\s\S]*?</script>','',s))
           for m in re.finditer(r'Doppel',b): print('::notice::ctx='+b[max(0,m.start()-80):m.start()+220])
           PY
