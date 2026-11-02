@@ -51,7 +51,7 @@ const label = me ? `My singles this season: ${won} won, ${lost} lost` : next ? `
     <div class="tt__obj" data-tilt-target>
       <div class="board" role="img" aria-label={label}>
         <span class="board__ball" aria-hidden="true"></span>
-        <div class="board__top"><span>{me ? `My singles · ${tt.season}` : `Richter · ${tt.season}`}</span><span>No. 204</span></div>
+        <div class="board__top"><span class="board__title">{me ? 'My singles' : 'First serve'}</span><span class="board__meta">{tt.season}<br />No. 204</span></div>
         <div class="board__bar"></div>
         {
           mode === 'record' ? (
@@ -190,9 +190,23 @@ const label = me ? `My singles this season: ${won} won, ${lost} lost` : next ? `
   .board__top {
     display: flex;
     justify-content: space-between;
+    align-items: flex-end;
+    gap: 12px;
+  }
+  .board__title {
+    font-family: var(--font-display);
+    font-stretch: var(--stretch-display);
+    font-weight: 800;
+    font-size: clamp(30px, 8vw, 44px);
+    line-height: 0.9;
+    text-transform: uppercase;
+  }
+  .board__meta {
     font-family: var(--font-mono);
     font-size: 11px;
+    line-height: 1.5;
     letter-spacing: 0.16em;
+    text-align: right;
     text-transform: uppercase;
   }
   .board__bar {
