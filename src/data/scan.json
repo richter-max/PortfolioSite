@@ -1,11 +1,11 @@
 {
-  "scannedAt": "2026-11-09T13:27:50.811Z",
+  "scannedAt": "2026-11-16T13:13:40.743Z",
   "target": "richtermax.com",
-  "discovery": "crt.sh",
-  "hosts": 2,
-  "resolved": 2,
+  "discovery": "fallback",
+  "hosts": 11,
+  "resolved": 11,
   "outOfScopeRejected": 0,
-  "durationSeconds": 4.4,
+  "durationSeconds": 30.4,
   "apex": {
     "https": true,
     "redirectsToHttps": true,
@@ -14,7 +14,7 @@
       "TLSv1.2",
       "TLSv1.3"
     ],
-    "certificateDaysLeft": 68,
+    "certificateDaysLeft": 61,
     "headers": [
       {
         "name": "Strict-Transport-Security",
@@ -40,9 +40,11 @@
     "risk": "low"
   },
   "findings": {
-    "high": 0,
+    "high": 9,
     "medium": 0,
     "low": 0
   },
-  "warnings": []
+  "warnings": [
+    "Network error reaching crt.sh: ReadTimeout; using the built-in hostname list. Coverage is not representative."
+  ]
 }
