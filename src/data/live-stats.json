@@ -1,12 +1,12 @@
 {
-  "updatedAt": "2026-11-18T12:28:19.042Z",
+  "updatedAt": "2026-11-19T12:19:16.132Z",
   "strava": {
     "streakWeeks": 56,
-    "sessionsThisYear": 327,
+    "sessionsThisYear": 329,
     "lastRun": {
-      "weekday": "Tuesday",
-      "km": 10.6,
-      "isoDate": "2026-11-17"
+      "weekday": "Wednesday",
+      "km": 15.8,
+      "isoDate": "2026-11-18"
     },
     "weeklyKmLast12": [
       52.4,
@@ -20,7 +20,7 @@
       20.7,
       79.3,
       15.8,
-      10.6
+      26.4
     ],
     "weeks": [
       {
@@ -818,15 +818,15 @@
       {
         "week": "2026-W47",
         "start": "2026-11-16",
-        "km": 10.6,
-        "sessions": 3,
-        "hours": 4.9,
+        "km": 26.4,
+        "sessions": 5,
+        "hours": 7.8,
         "sports": {
-          "strength": 2,
-          "run": 1
+          "strength": 3,
+          "run": 2
         },
         "kmBy": {
-          "run": 10.6
+          "run": 26.4
         }
       }
     ]
