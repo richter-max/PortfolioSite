@@ -1,11 +1,11 @@
 {
-  "scannedAt": "2026-11-16T13:13:40.743Z",
+  "scannedAt": "2026-11-23T15:29:37.109Z",
   "target": "richtermax.com",
   "discovery": "fallback",
   "hosts": 11,
   "resolved": 11,
   "outOfScopeRejected": 0,
-  "durationSeconds": 30.4,
+  "durationSeconds": 13.4,
   "apex": {
     "https": true,
     "redirectsToHttps": true,
@@ -14,7 +14,7 @@
       "TLSv1.2",
       "TLSv1.3"
     ],
-    "certificateDaysLeft": 61,
+    "certificateDaysLeft": 54,
     "headers": [
       {
         "name": "Strict-Transport-Security",
@@ -45,6 +45,6 @@
     "low": 0
   },
   "warnings": [
-    "Network error reaching crt.sh: ReadTimeout; using the built-in hostname list. Coverage is not representative."
+    "crt.sh returned HTTP 502; using the built-in hostname list. Coverage is not representative."
   ]
 }
